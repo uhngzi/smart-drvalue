@@ -1,40 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# SMART FRONT
 
-## Getting Started
+###
 
-First, run the development server:
+- 개발기간 : 24.12.31 ~ XX.XX.XX
+- 최신버전 : v0.1
+- 개발참여 : 승예지
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 빌드
+
+```
+$ yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 배포
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## 사용 기술
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+`Next.js` `yarn berry` `TypeScript` `tailwindcss` `styled-component` `antd`
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 프로젝트 구조
 
-## Learn More
+```
+  src
+    - api : API와 연결되는 정보 및 API 주소 폴더
+        - lib : API 연결 정보 폴더
+        - insert.ts : insert 관련 API 주소 파일
+        - list.ts : list 관련 API 주소 파일
+        - update.ts : update 관련 API 주소 파일
 
-To learn more about Next.js, take a look at the following resources:
+    - assets : 미디어 파일 저장 하는 폴더
+        - image : png, jpg 등 이미지 파일 저장 폴더
+        - logo : 로고에 쓰이는 이미지 파일 폴더
+        - svg : svg 파일 저장 폴더
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+    - components : 재사용되는 컴포넌트 폴더 (select, input 등...)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    - contents : 페이지 내 사용되는 컴포넌트 폴더 (모달창 내용 등...)
 
-## Deploy on Vercel
+    - data : 컬럼, 데이터 타입 등을 저장하는 폴더
+        - column : 페이지 내 기본 목록 컬럼을 저장하는 폴더
+        - type : 데이터 타입을 저장하는 폴더
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    - layout : 전체적인 틀로 사용되는 컴포넌트 폴더
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+    - pages : Next.js에서 사용하는 페이지 폴더
+
+    - styles : 프로젝트 내에서 공통적으로 설정하는 style
+    
+    - utils : 프로젝트 내에서 사용하는 유틸리티 폴더 (함수, 상수, 변수 등등)
+```
+
+### 스타일 축약
+
+```
+  wd : width
+  ht : height
+  bg : background color
+  fc, fs, fw : font color, size, weight
+  pd, pt, pl, pr, pb : padding top, left, right, bottom
+  mg, mt, ml, mr, mb : margin top, left, right, bottom
+  bd, bd_t, bd_l, bd_r, bd_b : border top, left, right, bottom
+  bc, bw : border color, width
+```

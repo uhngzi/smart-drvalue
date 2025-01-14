@@ -1,6 +1,37 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+import { QueryClientProvider } from '@tanstack/react-query';
+
+import type { AppProps } from 'next/app';
+
+import '@/styles/fonts.css';
+import '@/styles/globals.css';
+import StyledComponentsRegistry from '@/utils/registry';
+
+import { App as AntdApp, ConfigProvider } from 'antd';
+import koKR from 'antd/locale/ko_KR';
+import { client } from '@/api/lib/reactQuery';
+
+type AppPropsWithLayout = AppProps & {
+  Component: {
+    layout: (page: React.ReactNode) => React.ReactNode;
+  };
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  return (
+    <QueryClientProvider client={client}>
+      <ConfigProvider locale={koKR}>
+        <AntdApp>
+          <StyledComponentsRegistry>
+            {Component.layout ? (
+              Component.layout(<Component {...pageProps} />)
+            ) : (
+              <Component {...pageProps} />
+            )}
+            {/* <MainFooter /> */}
+          </StyledComponentsRegistry>
+        </AntdApp>
+      </ConfigProvider>
+    </QueryClientProvider>
+  );
 }
