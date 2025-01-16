@@ -2,13 +2,16 @@ import { Dispatch, SetStateAction } from 'react';
 
 import Download from '@/assets/svg/icons/s_download.svg';
 import OpenNewWindow from '@/assets/svg/icons/l_open_window.svg';
-import UploadIcon from '@/assets/svg/icons/Inbox.svg';
+import UploadIcon from '@/assets/svg/icons/folder.svg';
+import Klip from '@/assets/svg/icons/klip.svg';
+import Del from '@/assets/svg/icons/trash.svg';
 
 import { byteToKB } from '@/utils/formatBytes';
 
 import { message, Modal, UploadProps } from 'antd';
 import { UploadFile } from 'antd/es/upload';
 import Dragger from 'antd/es/upload/Dragger';
+import styled from 'styled-components';
 import { downloadFileByObjectName, sliceByDelimiter, uploadFile } from './utils';
 
 
@@ -19,7 +22,19 @@ interface Props {
   setFileIdList: Dispatch<SetStateAction<string[]>>;
 
   disabled?: boolean;
+  mult?: boolean;
 }
+
+const CustomDragger = styled(Dragger)`
+  .ant-upload-drag .ant-upload-btn{
+    padding: 0;
+  }
+    
+  .ant-upload-drag {
+    border-radius: 0;
+    border: 1px solid #D9D9D9;
+  }
+`
 
 const AntdDragger: React.FC<Props> = ({
   fileList,
@@ -28,10 +43,11 @@ const AntdDragger: React.FC<Props> = ({
   setFileIdList,
 
   disabled = false,
+  mult = false,
 }) => {
   const UploadProp: UploadProps = {
     name: 'file',
-    multiple: false,
+    multiple: mult,
     showUploadList: false,
     onChange: async info => {
       const { status } = info.file;
@@ -46,6 +62,8 @@ const AntdDragger: React.FC<Props> = ({
 
       if (info.file.status === 'done') {
         console.log('hi');
+        setFileList(prev => [...prev, info.file]);
+        setFileIdList(prev => [...prev, 'asdf']);
         // const response = await uploadFile(info.file);
         // if (response?.data.status === 200) {
         //   setFileList(prev => [...prev, info.file]);
@@ -66,30 +84,39 @@ const AntdDragger: React.FC<Props> = ({
 
   return (
     <>
-      <Dragger {...UploadProp} className="bg-white" disabled={disabled}>
-        <div className="flex-col v-h-center gap-40 py-48">
-          <p className="ant-upload-text">
-            첨부할 파일을 여기에 끌어다 놓거나 파일 선택 버튼을 직접
-            선택해주세요.
-          </p>
-          <button
-            className={`flex w-fit gap-4 self-center rounded-6 bg-[#5c6bc0] px-16 py-14 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} `}
-          >
-            <UploadIcon className="w-24 h-24" fill={'#FFFFFF'} />
-            <p className="font-[Pretendard-Medium] text-15 text-[#fff]">
-              파일 선택
+      <CustomDragger 
+        {...UploadProp} 
+        className="bg-white" 
+        disabled={disabled}
+      >
+        <div className={`flex-col v-h-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+          <div className="h-84 h-center">
+            <p className="w-48 h-48 v-h-center p-3">
+              <UploadIcon />
             </p>
-          </button>
+          </div>
+          <div className="h-88 pb-16">
+            <p className="text-[#000000] text-16">
+              Click or drag file to this area to upload
+            </p>
+            <p className="text-[#00000045] text-14">
+              Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
+            </p>
+          </div>
         </div>
-      </Dragger>
-      <div className="flex flex-col gap-16 rounded-8 border border-[#d2d2d2] px-16 py-18 mt-10">
+      </CustomDragger>
+      <div className="flex flex-col mt-20">
         {fileList?.map((file, idx) => (
-          <div className="h-center gap-16 border-[#d2d2d2]" key={idx}>
+          <div className="h-center h-32" key={idx}>
+            <p className="w-16 h-16 mr-8"><Klip /></p>
             {/* 파일 이름/형식/사이즈 */}
-            <p className="flex flex-1 text-15 text-[#444444]" key={idx}>
-              {sliceByDelimiter(file.name || '', '.', 'front')} [
-              {sliceByDelimiter(file.name || '', '.', 'back')}, {` `}
-              {Math.round(byteToKB(file.size || 0))}KB]
+            <p 
+              className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
+              onClick={() => downloadFileByObjectName(fileIdList[idx])}
+            >
+              {sliceByDelimiter(file.name || '', '.', 'front')}.
+              {sliceByDelimiter(file.name || '', '.', 'back')}
+              {/* {Math.round(byteToKB(file.size || 0))}KB] */}
             </p>
 
             {/* 삭제 버튼 */}
@@ -98,24 +125,26 @@ const AntdDragger: React.FC<Props> = ({
                 className="h-center cursor-pointer gap-2"
                 onClick={() => handleDeleteFile(idx)}
               >
-                <p className="text-14 text-[#444444]">삭제 X</p>
+                <p className="text-14 text-[#888888] w-16 h-16">
+                  <Del />
+                </p>
               </button>
             )}
 
             {/* 다운로드 버튼 */}
-            <button
+            {/* <button
               className="h-center cursor-pointer gap-2"
               onClick={() => downloadFileByObjectName(fileIdList[idx])}
             >
               <p className="text-14 text-[#444444]">다운로드</p>
               <Download />
-            </button>
+            </button> */}
 
             {/* 바로보기 버튼 */}
-            <button className="h-center cursor-pointer gap-2">
+            {/* <button className="h-center cursor-pointer gap-2">
               <p className="text-14 text-[#444444]">바로보기</p>
               <OpenNewWindow color={'#444444'} strokeWidth={1} />
-            </button>
+            </button> */}
           </div>
         ))}
       </div>

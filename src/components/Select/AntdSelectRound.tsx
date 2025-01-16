@@ -13,7 +13,7 @@ interface Props {
   styles?: componentsStylesType;
 }
 
-const AntdSelectFillRound : React.FC<Props> = ({ 
+const AntdSelectRound : React.FC<Props> = ({ 
   options, 
   defaultValue, 
   disabled, 
@@ -25,10 +25,9 @@ const AntdSelectFillRound : React.FC<Props> = ({
   return (
     <AndtSelectStyled
       $ht={styles?.ht?styles.ht:'30px'}
-      $bg={styles?.bg?styles.bg:'#F9F9FB'}
+      $bg={styles?.bg?styles.bg:'none'}
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
-      $fs={styles?.fs?styles.fs:'#D5D5D5'}
     >
       <Select
         className={`w-full ${className}`}
@@ -47,12 +46,10 @@ const AndtSelectStyled = styled.div<{
   $bg: string;
   $bw: string;
   $bc: string;
-  $fs: string;
 }>`
   width: fit-content;
   display: contents;
   height: ${({ $ht }) => $ht} !important;
-  font-size: 12px;
 
   .ant-select {
     height: ${({ $ht }) => $ht} !important;
@@ -67,4 +64,4 @@ const AndtSelectStyled = styled.div<{
   }
 `
 
-export default AntdSelectFillRound;
+export default AntdSelectRound;

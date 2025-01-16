@@ -65,6 +65,7 @@ const AndtSelectStyled = styled.div<{
     background: ${({ $bg }) => $bg} !important;
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
+    font-family: Pretendard-Regular;
   }
 `
 

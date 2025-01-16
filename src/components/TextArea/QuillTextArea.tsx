@@ -1,3 +1,4 @@
+import { componentsStylesType } from '@/data/type/componentStyles';
 import { useEffect, useMemo, useRef } from 'react';
 import ReactQuill, { DeltaStatic, EmitterSource } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -13,6 +14,8 @@ interface Props {
 
   placeholder?: string;
   height?: string;
+
+  styles?: componentsStylesType;
 }
 
 const formats = [
@@ -52,6 +55,7 @@ const QuillTextArea: React.FC<Props> = ({
 
   placeholder = '내용을 입력해주세요',
   height = '43px',
+  styles,
 }) => {
   const quillRef = useRef<any>(null);
 
@@ -116,6 +120,7 @@ const QuillTextArea: React.FC<Props> = ({
   return (
     <QuillTextAreaStyled
       $height={height}
+      $br={styles?.br ?? '6px'}
     >
       <ReactQuill
         ref={quillRef}
@@ -137,18 +142,19 @@ const QuillTextArea: React.FC<Props> = ({
 
 const QuillTextAreaStyled = styled.div<{
   $height: string;
+  $br: string;
 }>`
   .ql-toolbar {
     border-color: #d2d2d2;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    border-top-left-radius: ${({ $br }) => $br};
+    border-top-right-radius: ${({ $br }) => $br};
   }
 
   .ql-container {
     min-height: ${({ $height }) => $height};
     border-color: #d2d2d2;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: ${({ $br }) => $br};
+    border-bottom-right-radius: ${({ $br }) => $br};
 
     /* Update the following styles */
     white-space: normal; /* 기본 줄바꿈 설정 */

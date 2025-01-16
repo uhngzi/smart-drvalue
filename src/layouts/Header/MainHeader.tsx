@@ -12,7 +12,7 @@ const MainHeader: React.FC<Props> = ({ title }) => {
 
   return (
     <div className="h-80 w-full h-center justify-between bg-white px-25">
-      <p className="text-25 text-[#343C6A] font-se">
+      <p className="text-25 text-[#343C6A] font-medium">
         {router.pathname==='/'?'HOME':title}
       </p>
       <div className="flex">

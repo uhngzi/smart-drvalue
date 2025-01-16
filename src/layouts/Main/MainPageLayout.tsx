@@ -21,7 +21,7 @@ interface Props {
 const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
   const router = useRouter();
 
-  const [ collapsed, setCollapsed ] = useState<boolean>(false);
+  const [ collapsed, setCollapsed ] = useState<boolean>(true);
   const [ width, setWidth ] = useState<number>(240);
   useEffect(()=>{
     if(collapsed) setWidth(80);
@@ -47,8 +47,8 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
               {
                 menu.map(m=>(
                   router.pathname===m.link?
-                    <div className="w-fit px-30 py-10 border-b-3 border-b-point2 mr-10 text-16 text-point2">{m.text}</div> :
-                    <div className="w-fit px-30 py-10 mr-10 text-16">
+                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16 border-b-3 border-b-point2 text-point2">{m.text}</div> :
+                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16">
                       <Link href={m.link} className="text-[#718EBF]">{m.text}</Link>
                     </div>
                 ))

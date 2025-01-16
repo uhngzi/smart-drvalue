@@ -210,7 +210,7 @@ const SalesUserPage: React.FC & {
       <AntdModal 
         open={open}
         setOpen={setOpen}
-        width={1250}
+        width={1288}
         title={"고객발주 등록"}
         contents={<AddOrderContents setOpen={setOpen} />}
       />

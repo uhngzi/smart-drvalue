@@ -417,7 +417,7 @@ const SayangSampleAddPage: React.FC & {
   });
 
   return (
-    <div className="flex flex-col gap-40">
+    <div className="w-[1800px] flex flex-col gap-40">
       <FilterTab
         title="사양 및 생산의뢰 등록"
         titleEtc={

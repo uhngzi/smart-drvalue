@@ -10,7 +10,7 @@ interface Props {
   placeholder?: string;
 }
 
-const AntdInput: React.FC<Props> = ({
+const AntdInputRound: React.FC<Props> = ({
   value,
   onChange,
   className,
@@ -19,7 +19,7 @@ const AntdInput: React.FC<Props> = ({
 }) => {
   return (
     <AntdInputStyled
-      $ht={styles?.ht?styles.ht:'32px'}
+      $ht={styles?.ht?styles.ht:'30px'}
       $bg={styles?.bg?styles.bg:'none'}
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
@@ -49,9 +49,8 @@ const AntdInputStyled = styled.div<{
     background: ${({ $bg }) => $bg} !important;
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
-    border-radius: 0;
     font-family: Pretendard-Regular;
   }
 `
 
-export default AntdInput
+export default AntdInputRound

@@ -15,7 +15,13 @@ const CutSizeContents: React.FC<Props> = ({
       </div>
       
       <div className="w-full h-[140px] border-1 border-line bg-back rounded-14">
-        <p></p>
+        <p className="text-16 font-medium h-40 v-h-center">8등분/J</p>
+        <div className="h-100 flex flex-col text-12 font-medium gap-5 h-center">
+          <p className="h-center h-20 w-[160px]">간격(XY) : 2 | 3</p>
+          <p className="h-center h-20 w-[160px]">규격 : 489 X 280.36</p>
+          <p className="h-center h-20 w-[160px]">W/S : 520 X 310</p>
+          <p className="h-center h-20 w-[160px]">Trimmimg size : 516 X 306</p>
+        </div>
       </div>
 
       <div className="w-full h-[165px] flex flex-col gap-10">

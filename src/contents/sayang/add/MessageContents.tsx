@@ -14,7 +14,7 @@ const MessageContents: React.FC<Props> = ({
           <p className="w-24 h-24"><MessageOn /></p>
           <p className="text-16 font-semibold">제조 전달사항</p>
         </div>
-        <div className="w-full min-h-50 rounded-14 bg-back border-1 border-line">
+        <div className="w-full min-h-50 rounded-14 bg-back border-1 border-line text-12">
 
         </div>
       </div>
@@ -24,7 +24,7 @@ const MessageContents: React.FC<Props> = ({
           <p className="w-24 h-24"><MessageOn /></p>
           <p className="text-16 font-semibold">CAM 전달사항</p>
         </div>
-        <div className="w-full min-h-50 rounded-14 bg-back border-1 border-line">
+        <div className="w-full min-h-50 rounded-14 bg-back border-1 border-line text-12">
 
         </div>
       </div>
