@@ -18,8 +18,9 @@ export const TabSmall: React.FC<Props> = ({
   return (
     <div className="border-b-1 border-line w-full flex">
       {
-        items.map(i => (
+        items.map((i, idx) => (
           <div 
+            key={idx}
             className="min-w-67 min-h-46 px-10 py-12 mr-10 text-14 text-center"
             style={i.key===selectKey?{color:'#1814F3',borderBottom:'3px solid #1814F3'}:{}}
             onClick={()=>setSelectKey(i.key)}
@@ -45,10 +46,11 @@ export const TabLarge: React.FC<PropsLarge> = ({
   pathname,
 }) => {
   return (
-    <div className="border-b-1 border-line w-full flex">
+    <div className="border-b-1 border-line w-full flex" >
       {
-        items.map(i => (
+        items.map((i, idx) => (
           <div 
+            key={idx}
             className="w-fit px-30 py-10 mr-10 text-16"
             style={i.link===pathname?{color:'#1814F3',borderBottom:'3px solid #1814F3'}:{}}
           >

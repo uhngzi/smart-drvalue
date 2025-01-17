@@ -15,8 +15,8 @@ const FilterRound: React.FC<Props> = ({
     <FilterRoundStyled>
       <div className="rows">
         {
-          items.map(item => (
-            <div className={`items `+(item.className ?? '')}>
+          items.map((item, idx) => (
+            <div key={idx} className={`items `+(item.className ?? '')}>
               <div className="min-w-40">{item.label}</div>
               {item.content}
             </div>

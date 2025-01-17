@@ -16,7 +16,7 @@ import { Select } from "antd";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-const _SayangSamplePage: React.FC & {
+const SayangSamplePage_: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
@@ -58,8 +58,8 @@ const _SayangSamplePage: React.FC & {
   )
 }
 
-_SayangSamplePage.layout = (page: React.ReactNode) => (
+SayangSamplePage_.layout = (page: React.ReactNode) => (
   <MainPageLayout menuTitle="샘플">{page}</MainPageLayout>
 );
 
-export default _SayangSamplePage;
+export default SayangSamplePage_;

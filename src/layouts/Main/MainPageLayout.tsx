@@ -29,7 +29,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
   }, [collapsed])
 
   return (
-    <div className="flex">
+    <div className="flex" key="mainPageLayout">
       <div>
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
@@ -45,10 +45,10 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
           {menu && (
             <div className="w-full h-80 h-center px-15">
               {
-                menu.map(m=>(
+                menu.map((m, idx)=>(
                   router.pathname===m.link?
-                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16 border-b-3 border-b-point2 text-point2">{m.text}</div> :
-                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16">
+                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16 border-b-3 border-b-point2 text-point2" key={idx}>{m.text}</div> :
+                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16" key={idx}>
                       <Link href={m.link} className="text-[#718EBF]">{m.text}</Link>
                     </div>
                 ))
