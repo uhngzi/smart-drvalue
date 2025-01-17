@@ -20,7 +20,7 @@ export const TabSmall: React.FC<Props> = ({
       {
         items.map(i => (
           <div 
-            className="w-fit px-10 py-3 mr-10"
+            className="min-w-67 min-h-46 px-10 py-12 mr-10 text-14 text-center"
             style={i.key===selectKey?{color:'#1814F3',borderBottom:'3px solid #1814F3'}:{}}
             onClick={()=>setSelectKey(i.key)}
           >

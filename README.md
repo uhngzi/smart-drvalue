@@ -53,7 +53,7 @@ $ yarn dev
     - utils : 프로젝트 내에서 사용하는 유틸리티 폴더 (함수, 상수, 변수 등등)
 ```
 
-### 스타일 축약
+## 스타일 축약
 
 ```
   wd : width
@@ -64,4 +64,15 @@ $ yarn dev
   mg, mt, ml, mr, mb : margin top, left, right, bottom
   bd, bd_t, bd_l, bd_r, bd_b : border top, left, right, bottom
   bc, bw : border color, width
+```
+
+## 배포
+
+```
+  1. ssh -i smartFront.pem root@sydrvalue.cafe24.com
+  2. nvm use 20
+  3. cd /home/smart_front
+  4. git pull origin main
+  5. yarn build
+  6. pm2 restart
 ```

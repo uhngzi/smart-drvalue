@@ -13,6 +13,7 @@ export default {
         foreground: "var(--foreground)",
         
         'back': '#F5F6FA',
+        'back2': '#FBFBFB',
         'point1': '#4880FF',
         'point2': '#1814F3',
         'point3': '#1677FF',
@@ -27,6 +28,7 @@ export default {
         'rPurple': '#b8a9f0',
 
         'thead': '#F1F4F9',
+        'bdDefault': '#D9D9D9',
         'line': '#D5D5D5',
 
         'devider': '#979797',

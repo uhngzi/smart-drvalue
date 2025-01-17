@@ -20,7 +20,7 @@ const FilterTab: React.FC<Props> = ({
   contents,
 }) => {
   return (
-    <div className="flex flex-col bg-white p-30 rounded-14 gap-20 w-[1800px]">
+    <div className="flex flex-col bg-white p-30 rounded-14 gap-20 w-full">
       <div className="h-32 h-center text-22 text-[#222222] flex gap-10">
         {title}
         {titleEtc}
