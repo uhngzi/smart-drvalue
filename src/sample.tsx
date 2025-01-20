@@ -49,7 +49,7 @@ const SayangSamplePage_: React.FC & {
       <PopupCancleButton label="취소" click={()=>{setOpen(!open)}} />
       <FullOkButton label="확정저장" click={()=>{}} />
       <FullSubButton label="임시저장" click={()=>{}} />
-      <FullChip label="칩 내용" state="primary"/>
+      <FullChip label="칩 내용" state="pink"/>
       <LineChip label="내용" color="#979797"/>
       <AntdInput value={value} onChange={e=>setValue(e.target.value)} />
       <AntdDatePicker value={value2} onChange={value=>setValue2(value)} />
