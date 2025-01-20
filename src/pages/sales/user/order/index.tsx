@@ -1,5 +1,5 @@
 import AntdModal from "@/components/Modal/AntdModal";
-import AntdTable from "@/components/Table/AntdTable";
+import AntdTable from "@/components/List/AntdTable";
 import AddOrderContents from "@/contents/sales/user/modal/\bAddOrderContents";
 import { salesUserOrderClmn } from "@/data/columns/Sales";
 
@@ -81,7 +81,15 @@ const SalesUserPage: React.FC & {
 
   return (
     <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
-      <div className="">총 4건</div>
+      <div className="h-center justify-between">
+        <p>총 4건</p>
+        <div 
+          className="w-60 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer"
+          onClick={()=>{setOpen(true);}}
+        >
+          신규
+        </div>
+      </div>
       <AntdTable
         columns={salesUserOrderClmn(setOpen)}
         data={sampleDt}

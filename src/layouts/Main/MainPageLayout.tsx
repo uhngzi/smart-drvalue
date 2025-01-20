@@ -4,6 +4,7 @@ import MainHeader from "../Header/MainHeader";
 import Sider from "../Sider/Sider";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { TabLarge } from "@/components/Tab/Tabs";
 
 interface Props {
   children : React.ReactNode;
@@ -36,7 +37,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
 
       <div className='flex flex-col' 
         style={{
-          width:`calc(100vw - ${width}px)`
+          width:`calc(100% - ${width}px)`
         }}
       >
         <MainHeader title={menuTitle} />
@@ -44,15 +45,10 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
         <div className="w-full h-[calc(100vh-80px)] bg-back overflow-auto">
           {menu && (
             <div className="w-full h-80 h-center px-15">
-              {
-                menu.map((m, idx)=>(
-                  router.pathname===m.link?
-                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16 border-b-3 border-b-point2 text-point2" key={idx}>{m.text}</div> :
-                    <div className="w-fit px-30 py-10 font-medium mr-10 text-16" key={idx}>
-                      <Link href={m.link} className="text-[#718EBF]">{m.text}</Link>
-                    </div>
-                ))
-              }
+              <TabLarge
+                items={menu}
+                pathname={router.pathname}
+              />
             </div>
           )}
           <Contents>{children}</Contents>

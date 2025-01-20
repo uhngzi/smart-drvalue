@@ -9,7 +9,7 @@ import AntdInput from "@/components/Input/AntdInput";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AntdSelect from "@/components/Select/AntdSelect";
-import AntdTable from "@/components/Table/AntdTable";
+import AntdTable from "@/components/List/AntdTable";
 import { sayangColumn } from "@/data/columns/sayang";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { Select } from "antd";

@@ -20,6 +20,7 @@ interface Props {
     th_ht?: string;
     th_bg?: string;
     th_pd?: string;
+    th_fw?: string;
     td_ht?: string;
     td_bg?: string;
     td_pd?: string;
@@ -44,6 +45,7 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
       $thBackground={styles?.th_bg?styles.th_bg:'white'}
       $tdBackground={styles?.td_bg?styles.td_bg:'none'}
       $tdTextAlign={styles?.td_al?styles.td_al:'left'}
+      $thFontWeight={styles?.th_fw?styles.th_fw:'500'}
       $round={styles?.round||'14px'}
       $line={styles?.line==='n'?'0':'1px solid #D5D5D5'}
     >
@@ -53,7 +55,6 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
           components: {
             Table: {
               headerSplitColor: tableProps?.split ?? '#D5D5D5',
-              
             },
           },
         }}
@@ -74,6 +75,7 @@ const AntdTableStyled = styled.div<{
   $thBackground: string;
   $thHeight: string;
   $thPadding: string;
+  $thFontWeight: string;
   $tdBackground: string;
   $tdHeight: string;
   $tdTextAlign: string;
@@ -103,7 +105,7 @@ const AntdTableStyled = styled.div<{
 
       text-align: center;
 
-      font-weight: 500;
+      font-weight: ${({ $thFontWeight }) => $thFontWeight};
       font-size: 12px;
       color: #444444;
 

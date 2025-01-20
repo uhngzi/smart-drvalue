@@ -1,4 +1,5 @@
 import Cut from "@/assets/svg/icons/cut.svg";
+import TitleIcon from "@/components/Text/TitleIcon";
 
 interface Props {
 
@@ -9,10 +10,10 @@ const CutSizeContents: React.FC<Props> = ({
 }) => {
   return (
     <div className="flex flex-col gap-20">
-      <div className="h-center gap-5">
-        <p className="w-24 h-24"><Cut /></p>
-        <p className="text-16 font-semibold">재단 사이즈</p>
-      </div>
+      <TitleIcon 
+        title="재단 사이즈"
+        icon={<Cut />}
+      />
       
       <div className="w-full h-[140px] border-1 border-line bg-back rounded-14">
         <p className="text-16 font-medium h-40 v-h-center">8등분/J</p>

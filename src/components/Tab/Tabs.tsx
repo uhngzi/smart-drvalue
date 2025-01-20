@@ -46,15 +46,15 @@ export const TabLarge: React.FC<PropsLarge> = ({
   pathname,
 }) => {
   return (
-    <div className="border-b-1 border-line w-full flex" >
+    <div className="w-full flex" >
       {
         items.map((i, idx) => (
           <div 
             key={idx}
             className="w-fit px-30 py-10 mr-10 text-16"
-            style={i.link===pathname?{color:'#1814F3',borderBottom:'3px solid #1814F3'}:{}}
+            style={i.link===pathname?{borderBottom:'3px solid #1814F3'}:{}}
           >
-            <Link href={i.link} className="text-[#718EBF]">{i.text}</Link>
+            <Link href={i.link} className={i.link===pathname?"text-point2":"text-[#718EBF]"}>{i.text}</Link>
           </div>
         ))
       }

@@ -1,4 +1,5 @@
 import MessageOn from "@/assets/svg/icons/message_on.svg";
+import TitleIcon from "@/components/Text/TitleIcon";
 
 interface Props {
 
@@ -9,11 +10,11 @@ const LaminationContents: React.FC<Props> = ({
 }) => {
   return (
     <div className="flex flex-col gap-20">
-      <div className="h-center gap-10">
-        <div className="w-[50%] h-center gap-5">
-          <p className="w-24 h-24"><MessageOn /></p>
-          <p className="text-16 font-semibold">적층구조</p>
-        </div>
+      <div className="h-center justify-between">
+        <TitleIcon 
+          title="적층구조"
+          icon={<MessageOn />}
+        />
         <div className="w-[50%] v-h-center h-24 rounded-6 border-[0.6px] borer-line bg-back text-14">
           코드 : 040000A
         </div>

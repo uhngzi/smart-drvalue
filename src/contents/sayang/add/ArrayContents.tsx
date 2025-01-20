@@ -1,5 +1,6 @@
 import ArrayIcon from "@/assets/svg/icons/array.svg";
 import AntdSelect from "@/components/Select/AntdSelect";
+import TitleIcon from "@/components/Text/TitleIcon";
 
 interface Props {
 
@@ -10,10 +11,10 @@ const ArrayContents: React.FC<Props> = ({
 }) => {
   return (
     <div className="w-full flex flex-col gap-20">
-      <div className="h-center gap-5">
-        <p className="w-24 h-24"><ArrayIcon /></p>
-        <p className="text-16 font-semibold">배열 도면</p>
-      </div>
+      <TitleIcon
+        title="배열 도면"
+        icon={<ArrayIcon />}
+      />
 
       <div className="w-full h-[310px] flex flex-col gap-30">
         <div className="w-full h-[111px] border-1 border-line flex">

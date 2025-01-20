@@ -34,8 +34,8 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const currentPath = router.pathname.split('/').slice(1).join();
   const [newPath, setNewPath] = useState<string>('');
   useEffect(()=>{
-    const path = currentPath.split(',');
-    if(path.length > 2) path.pop();       //3뎁스일 때 마지막을 제외한 키 값 추출
+    //3뎁스일 때 마지막을 제외한 키 값 추출
+    const path = currentPath.split(',').slice(0, 2);
     setNewPath(path.join('/'));
   },[currentPath])
 
@@ -86,12 +86,12 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       children: [
         {
           key: 'sayang/model',
-          title: 'sayang/model/add',
+          title: 'sayang/model/wait',
           label: '모델 등록 및 현황',
         },
         {
           key: 'sayang/sample',
-          title: 'sayang/sample/add',
+          title: 'sayang/sample/wait',
           label: '샘플-사양등록및현황',
         },
       ]

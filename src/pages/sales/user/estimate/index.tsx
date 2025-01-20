@@ -6,7 +6,7 @@ import DescriptionItems from "@/components/Description/DescriptionItems";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
-import AntdTable from "@/components/Table/AntdTable";
+import AntdTable from "@/components/List/AntdTable";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 

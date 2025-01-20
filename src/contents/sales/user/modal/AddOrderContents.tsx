@@ -1,8 +1,7 @@
 import AntdInput from "@/components/Input/AntdInput";
 import AntdSelect from "@/components/Select/AntdSelect";
 import AntdDragger from "@/components/Upload/AntdDragger";
-import PopupOkButton from "@/components/Button/PopupOkButton";
-import PopupCancleButton from "@/components/Button/PopupCancleButton";
+import TitleSmall from "@/components/Text/TitleSmall";
 
 import Submit from "@/assets/svg/icons/submit.svg";
 import Edit from "@/assets/svg/icons/memo.svg"
@@ -10,7 +9,6 @@ import Edit from "@/assets/svg/icons/memo.svg"
 import { SetStateAction, useState } from "react";
 import dynamic from "next/dynamic";
 import { Divider } from "antd";
-import TittleSmall from "@/components/Text/TitleSmall";
 
 const QuillTextArea = dynamic(
   () => import('@/components/TextArea/QuillTextArea'),
@@ -35,14 +33,14 @@ const AddOrderContents: React.FC<Props> = ({
       <div className="w-full h-center bg-white border-[0.3px] border-[#B9B9B9] rounded-14 p-30">
         <div className="w-[800px] h-[414px]">
           <div className="mb-24">
-            <TittleSmall title="고객"/>
+            <TitleSmall title="고객"/>
             <AntdSelect 
               options={[{value:1,label:'비케이전자'},{value:2,label:'주식회사 디알밸류'}]}
               styles={{ht:'40px',}}
             />
           </div>
           <div className="mb-24">
-            <TittleSmall title="발주제목"/>
+            <TitleSmall title="발주제목"/>
             <AntdInput styles={{ht:'40px'}}/>
           </div>
           <div className="mb-24">
@@ -56,7 +54,7 @@ const AddOrderContents: React.FC<Props> = ({
         </div>
         <Divider type="vertical" style={{height:414,borderLeft:'1px solid #D9D9D9',marginLeft:20,marginRight:20,width:1}} />
         <div className="w-[347px] h-[414px]">
-          <TittleSmall title="발주 첨부파일"/>
+          <TitleSmall title="발주 첨부파일"/>
           <div className="w-full h-[172px]">
             <AntdDragger
               fileList={fileList}
@@ -70,7 +68,7 @@ const AddOrderContents: React.FC<Props> = ({
       </div>
 
       <div className="w-full h-[150px] bg-white border-[0.3px] border-[#B9B9B9] rounded-14 px-30 py-20">
-        <TittleSmall title="담당자 정보"/>
+        <TitleSmall title="담당자 정보"/>
         <div className="flex flex-col gap-4">
           <div className="w-full h-32 h-center gap-10">
             <p className="w-[210px]">

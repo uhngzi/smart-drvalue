@@ -19,7 +19,7 @@ const FullOkButtonSmall : React.FC<Props> = ({
     <>
       <Button 
         //default style (className으로 해당 값 변경 시 !important로 지정)
-        style={{ backgroundColor:'#4880FF', color:'#FFF', fontWeight:600, border:0, boxShadow:'none' }}
+        style={{ backgroundColor:'#4880FF', color:'#FFF', fontWeight:500, border:0, boxShadow:'none' }}
         className={className}
         onClick={click}
         disabled={disabled}

@@ -3,7 +3,7 @@ interface Props {
   height?: string;
 }
 
-const TittleSmall: React.FC<Props> = ({
+const TitleSmall: React.FC<Props> = ({
   title,
   height = 30,
 }) => {
@@ -12,4 +12,4 @@ const TittleSmall: React.FC<Props> = ({
   )
 }
 
-export default TittleSmall;
+export default TitleSmall;
