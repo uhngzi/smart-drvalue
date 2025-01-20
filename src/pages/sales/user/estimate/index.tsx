@@ -76,9 +76,9 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
     render: (value) => (
       <div className="v-h-center">{
         value==="super"?
-        <FullChip label="초긴급" state="super"/>:
+        <FullChip label="초긴급" state="purple"/>:
         value==="hot"?
-        <FullChip label="긴급" state="primary"/>:
+        <FullChip label="긴급" state="pink"/>:
         <FullChip label="일반" />
       }</div>
     )
@@ -92,9 +92,9 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
     render: (value) => (
       <div className="v-h-center">{
         value==="re"?
-        <FullChip label="반복" state="re"/>:
+        <FullChip label="반복" state="mint"/>:
         value==="edit"?
-        <FullChip label="수정" state="warning"/>:
+        <FullChip label="수정" state="yellow"/>:
         <FullChip label="신규" />
       }</div>
     )
@@ -145,8 +145,8 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
         value===3?
         <FullChip label="완료"/>:
         value===2?
-        <FullChip label="등록중" state="re" click={()=>setOpen(true)}/>:
-        <FullChip label="대기" state="warning"/>
+        <FullChip label="등록중" state="mint" click={()=>setOpen(true)}/>:
+        <FullChip label="대기" state="yellow"/>
       }</div>
     )
   },
