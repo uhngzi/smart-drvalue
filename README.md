@@ -70,9 +70,9 @@ $ yarn dev
 
 ```
   1. ssh -i smartFront.pem root@sydrvalue.cafe24.com
-  2. nvm use 20
-  3. cd /home/smart_front
-  4. git pull origin main
+  2. nvm use 22
+  3. cd /home/smart/smart-front
+  4. git pull
   5. yarn build
-  6. pm2 restart
+  6. pm2 restart smart
 ```
