@@ -89,8 +89,8 @@ const AntdPaginationStyled = styled.div`
     background-color: #4880FF;
     a {
       color: white;
-      font-family: 'Pretendard-Bold';
       font-size: 17px;
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
     }
   }
 

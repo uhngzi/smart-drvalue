@@ -3,7 +3,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import AntdTable from "@/components/Table/AntdTable";
 import AntdInputFill from "@/components/Input/AntdInputFill";
 import AntdSelectFill from "@/components/Select/AntdSelectFill";
-import FilterTab from "@/components/Filter/FilterTab";
+
 import CutSizeContents from "@/contents/sayang/add/CutSizeContents";
 import LaminationContents from "@/contents/sayang/add/LaminationContents";
 import MessageContents from "@/contents/sayang/add/MessageContents";
@@ -21,6 +21,7 @@ import { Checkbox, TableProps } from "antd";
 import { filterType } from "@/data/type/filter";
 import FullOkButton from "@/components/Button/FullOkButton";
 import FullSubButton from "@/components/Button/FullSubButton";
+import FilterMain from "@/layouts/Body/Grid/FilterMain";
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
 const divTopClass = "h-[100%] flex flex-col items-start";
@@ -417,75 +418,72 @@ const SayangSampleAddPage: React.FC & {
   });
 
   return (
-    <div className="w-[1800px] flex flex-col gap-40">
-      <FilterTab
-        title="사양 및 생산의뢰 등록"
-        titleEtc={
+    <FilterMain
+      filter={filter}
+      setFilter={setFilter}
+      filterTitle="사양 및 생산의뢰 등록"
+      titleEtc={
+        <BorderButton 
+          label={
+            <div className="h-center gap-10 text-14 text-[#666666]">
+              <p className="w-15 h-15"><Back /></p>
+              <p>이전 단계</p>
+            </div>
+          }
+          click={()=>{}}
+          styles={{bc:'#666666'}}
+        />
+      }
+      filterBtn={
+        <div className="h-center gap-20 min-w-[200px]">
           <BorderButton 
-            label={
-              <div className="h-center gap-10 text-14 text-[#666666]">
-                <p className="w-15 h-15"><Back /></p>
-                <p>이전 단계</p>
-              </div>
-            }
+            label={<><p className="w-18 h-18 text-point1 mr-5"><Plus /></p><p className="text-point1">모델추가</p></>}
             click={()=>{}}
-            styles={{bc:'#666666'}}
+            styles={{bc:'#4880FF'}}
           />
-        }
-        filter={filter}
-        setFilter={setFilter}
-        filterButton={
-          <div className="h-center gap-20 min-w-[200px]">
-            <BorderButton 
-              label={<><p className="w-18 h-18 text-point1 mr-5"><Plus /></p><p className="text-point1">모델추가</p></>}
-              click={()=>{}}
-              styles={{bc:'#4880FF'}}
-            />
-            <BorderButton 
-              label={<><p className="w-18 h-18 mr-5"><Data /></p><p>공정지정</p></>}
-              click={()=>{}}
-            />
-            <BorderButton 
-              label={<p className="w-20 h-20"><Print /></p>}
-              click={()=>{}}
-            />
+          <BorderButton 
+            label={<><p className="w-18 h-18 mr-5"><Data /></p><p>공정지정</p></>}
+            click={()=>{}}
+          />
+          <BorderButton 
+            label={<p className="w-20 h-20"><Print /></p>}
+            click={()=>{}}
+          />
+        </div>
+      }
+      filterContents={
+        <div>
+          <AntdTable
+            columns={sampleColumn}
+            data={sampleData}
+            styles={{th_bg:'#F9F9FB',th_ht:'30px',td_ht:'170px',td_pd:'15px 3.8px'}}
+            tableProps={{split:'none'}}
+          />
+        </div>
+      }
+      main={
+        <div className="flex justify-between gap-10">
+          <div className="min-w-[300px]">
+            <LaminationContents />
           </div>
-        }
-        contents={
-          <div>
-            <AntdTable
-              columns={sampleColumn}
-              data={sampleData}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',td_ht:'170px',td_pd:'15px 3.8px'}}
-              tableProps={{split:'none'}}
-            />
+          <div className="min-w-[550px]">
+            <MessageContents />
           </div>
-        }
-      />
-
-      <div className="flex w-full bg-white p-30 rounded-14 gap-64 w-[1800px]">
-        <div className="w-[300px]">
-          <LaminationContents />
+          <div className="min-w-[400px]">
+            <ArrayContents />
+          </div>
+          <div className="min-w-[300px]">
+            <CutSizeContents />
+          </div>
         </div>
-        
-        <div className="w-[550px]">
-          <MessageContents />
+      }
+      btn={
+        <div className="v-h-center py-50 gap-15">
+          <FullOkButton label="확정저장" click={()=>{}}/>
+          <FullSubButton label="임시저장" click={()=>{}}/>
         </div>
-
-        <div className="w-[400px]">
-          <ArrayContents />
-        </div>
-
-        <div className="w-[300px]">
-          <CutSizeContents />
-        </div>
-      </div>
-
-      <div className="v-h-center py-50 gap-15">
-        <FullOkButton label="확정저장" click={()=>{}}/>
-        <FullSubButton label="임시저장" click={()=>{}}/>
-      </div>
-    </div>
+      }
+    />
   )
 }
 

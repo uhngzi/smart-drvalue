@@ -37,7 +37,7 @@ const AntdModal: React.FC<Props> = ({
       centered
     >
         <div className="w-full h-80 px-30 h-center justify-between">
-          <p className="text-20 font-semibold ">{title}</p>
+          <p className="text-20 font-medium ">{title}</p>
           <p 
             className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
             onClick={()=>setOpen(false)}

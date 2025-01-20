@@ -12,7 +12,6 @@ const Contents: React.FC<Props> = ({ children, padding }) => {
 const ContentsStyled = styled.div<{
   $padding: string;
 }>`
-  width: 1800px;
   padding: ${({ $padding }) => $padding};
 `
 

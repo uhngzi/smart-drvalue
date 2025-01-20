@@ -9,15 +9,13 @@
 ## 빌드
 
 ```
+  // 초기에만 실행
+  $ yarn
+
 $ yarn dev
 ```
 
-## 배포
-
-```
-```
-
-## 사용 기술
+## 사용 기술 및 라이브러리
 
 `Next.js` `yarn berry` `TypeScript` `tailwindcss` `styled-component` `antd`
 
@@ -73,6 +71,8 @@ $ yarn dev
   2. nvm use 22
   3. cd /home/smart/smart-front
   4. git pull
+    - 개인 계정명
+    - 개인 토큰 (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)
   5. yarn build
   6. pm2 restart smart
 ```

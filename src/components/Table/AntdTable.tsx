@@ -82,6 +82,8 @@ const AntdTableStyled = styled.div<{
   $line: string;
 }>`
   width: 100%;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  
   .ant-table { 
     background: none;
 
@@ -101,8 +103,7 @@ const AntdTableStyled = styled.div<{
 
       text-align: center;
 
-      font-family: 'Pretendard-Medium';
-      font-weight: bold;
+      font-weight: 500;
       font-size: 12px;
       color: #444444;
 
@@ -143,7 +144,10 @@ const AntdTableStyled = styled.div<{
       border-top: 1px solid #D5D5D5;
 
       text-align: ${({ $tdTextAlign }) => $tdTextAlign };
+
+      font-weight: 500;
       font-size: 12px;
+      color: #444444;
     }
 
     & tr:last-child td {

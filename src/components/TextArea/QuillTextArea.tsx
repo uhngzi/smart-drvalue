@@ -133,7 +133,7 @@ const QuillTextArea: React.FC<Props> = ({
         preserveWhitespace
       />
       {setLength && <div className="h-center gap-2 justify-end text-12 text-[#555555] p-10">
-        <p className="font-[Pretendard-Medium] text-[#246beb]">{length}</p>
+        <p className="font-medium text-[#246beb]">{length}</p>
         <p>/1000</p>
       </div>}
     </QuillTextAreaStyled>
@@ -160,6 +160,8 @@ const QuillTextAreaStyled = styled.div<{
     white-space: normal; /* 기본 줄바꿈 설정 */
     word-wrap: break-word; /* 단어 내 줄바꿈 */
     word-break: break-all; /* 모든 문자 줄바꿈 허용 */
+    
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   }
 `;
 

@@ -50,7 +50,7 @@ const AntdInputStyled = styled.div<{
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
     border-radius: 0;
-    font-family: Pretendard-Regular;
+    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   }
 `
 
