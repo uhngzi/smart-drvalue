@@ -34,6 +34,109 @@ const items: MenuProps['items'] = [
   },
 ]
 
+type DataType = {
+  id: number;
+  cuNm: string;
+  no: string;
+  modelNm: string;
+  rev: string;
+  cuCode: string;
+  layer: string;
+  thic: string;
+  unit: string;
+  wonpan: string;
+  makeNm: string;
+  texture: string;
+  surf: string;
+  dongbackO: string;
+  donbackI: string;
+  smprint: string;
+  smcolor: string;
+  smtype: string;
+  mkprint: string;
+  mkcolor: string;
+  mktype: string;
+  tprintstate: string;
+  tprinttype: string;
+  outtype: string;
+  vcut: number | null;
+  doNum: string;
+  pmNum: string;
+  pcsX: string;
+  pcsY: string;
+  kitX: string;
+  kitY: string;
+  pnlX: string;
+  pnlY: string;
+  kitArX: string;
+  kitArY: string;
+  pnlArX: string;
+  pnlArY: string;
+  kit_pcs: string;
+  pnl_kit: string;
+  sth_pnl: string;
+  sth_pcs: string;
+  dogeumP: string;
+  dogeumM: string;
+  dogeumNiP: string;
+  dogeumNiM: string;
+  dogeumAuP: string;
+  dogeumAuM: string;
+  pin: string;
+}
+const newData = (id:number) => {
+  return {
+    id: id,
+    cuNm: '',
+    no: '',
+    modelNm: '',
+    rev: '',
+    cuCode: '',
+    layer: '',
+    thic: '',
+    unit: '',
+    wonpan: '',
+    makeNm: '',
+    texture: '',
+    surf: '',
+    dongbackO: '',
+    donbackI: '',
+    smprint: '',
+    smcolor: '',
+    smtype: '',
+    mkprint: '',
+    mkcolor: '',
+    mktype: '',
+    tprintstate: '',
+    tprinttype: '',
+    outtype: '',
+    vcut: 0,
+    doNum: '',
+    pmNum: '',
+    pcsX: '',
+    pcsY: '',
+    kitX: '',
+    kitY: '',
+    pnlX: '',
+    pnlY: '',
+    kitArX: '',
+    kitArY: '',
+    pnlArX: '',
+    pnlArY: '',
+    kit_pcs: '',
+    pnl_kit: '',
+    sth_pnl: '',
+    sth_pcs: '',
+    dogeumP: '',
+    dogeumM: '',
+    dogeumNiP: '',
+    dogeumNiM: '',
+    dogeumAuP: '',
+    dogeumAuM: '',
+    pin: '',
+  }
+}
+
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -123,6 +226,24 @@ const SayangModelAddPage: React.FC & {
   useEffect(()=>{
     setFilterModel(data.filter((f:any) => f.modelNm.includes(searchModel)));
   }, [searchModel])
+
+  const [model, setModel] = useState<Array<DataType>>([]);
+  const [modelNew, setModelNew] = useState<DataType>(newData(model.length));
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    name: string,
+    type: 'one' | 'mult',
+  ) => {
+    const { value } = e.target;
+    if(type === 'one')
+      setModelNew(prev => ({ ...prev, [name]: value }));
+    else {
+
+    }
+  };
+  useEffect(()=>{
+    console.log(model);
+  },[model])
   
   return (
     <>
@@ -138,11 +259,15 @@ const SayangModelAddPage: React.FC & {
           />
         }
 
-        main={<>
-            <div className="min-w-[1022px] border-1 border-line rounded-14 p-20 flex flex-col h-full gap-17">
+        main={
+          <div 
+            className="v-h-center gap-20"
+            style={{minWidth:model.length > 0?"2050px":"1022px"}}
+          >
+            <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 flex flex-col h-full gap-17 mx-20">
               <div className="h-95 flex flex-col gap-17">
                 <div className="w-full min-h-32 h-center justify-between">
-                  <p className="text-16 font-semibold">신규 모델 사양 등록</p>
+                  <p className="text-16 font-semibold">모델등록</p>
                   <div className="w-96 h-32 px-15 h-center justify-between text-14 border-1 border-bdDefault rounded-6 mr-20">
                     <p className="min-w-16 min-h-16 text-[#FE5C73]"><Back stroke={'#FE5C73'} /></p>
                     초기화
@@ -154,32 +279,36 @@ const SayangModelAddPage: React.FC & {
                 </div>
               </div>
               <div className="flex min-w-[982px]">
-                <ModelContents/>
+                <ModelContents item={modelNew} handleInputChange={handleInputChange} type={'one'}/>
               </div>
               <div className="w-full h-center justify-end">
                 <FullOkButtonSmall
-                  click={()=>{}}
+                  click={()=>{
+                    setModel(((prev) => [...prev, modelNew]));
+                    setModelNew(newData(model.length+1));
+                  }}
                   label="저장"
                 />
               </div>
             </div>
-            <div className="min-w-[1022px] border-1 border-line rounded-14 p-20 flex flex-col h-full gap-17 bg-back2">
+            {model.length > 0 ?
+            <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 mr-20 flex flex-col h-full gap-17 bg-back2">
               <div className="h-95 flex flex-col gap-17">
                 <div className="w-full min-h-32 h-center justify-between">
-                  <p className="text-16 font-semibold">모델 사양 비교</p>
+                  <p className="text-16 font-semibold">모델등록중</p>
                   <EditButtonSmall label="수정" click={()=>{}} />
                 </div>
                 <TabSmall
-                  items={[
-                    {key:1,text:'모델1'},
-                    {key:2,text:'모델2'},
-                  ]}
+                  items={model.map(i=>({
+                    key:i.id,
+                    text:i.modelNm
+                  }))}
                   selectKey={selectTab}
                   setSelectKey={setSelectTab}
                 />
               </div>
               <div className="flex min-w-[982px]">
-                <ModelContents />
+                <ModelContents item={model[selectTab]} handleInputChange={handleInputChange} type={'mult'}/>
               </div>
               <div className="w-full h-center justify-end">
                 <FullOkButtonSmall
@@ -188,7 +317,10 @@ const SayangModelAddPage: React.FC & {
                 />
               </div>
             </div>
-        </>}
+            :
+            <></>}
+          </div>
+        }
 
         tab={<>
           <div 

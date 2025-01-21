@@ -30,7 +30,7 @@ const AddOrderContents: React.FC<Props> = ({
 
   return (
     <div className="w-full flex flex-col gap-10">
-      <div className="w-full h-center bg-white border-[0.3px] border-[#B9B9B9] rounded-14 p-30">
+      <div className="w-full h-center bg-white border-[0.5px] border-[#B9B9B91] rounded-14 p-30">
         <div className="w-[800px] h-[414px]">
           <div className="mb-24">
             <TitleSmall title="고객"/>
@@ -67,7 +67,7 @@ const AddOrderContents: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="w-full h-[150px] bg-white border-[0.3px] border-[#B9B9B9] rounded-14 px-30 py-20">
+      <div className="w-full h-[150px] bg-white border-[0.3px] border-[#B9B9B91] rounded-14 px-30 py-20">
         <TitleSmall title="담당자 정보"/>
         <div className="flex flex-col gap-4">
           <div className="w-full h-32 h-center gap-10">

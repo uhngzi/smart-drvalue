@@ -6,11 +6,13 @@ import Arrow from "@/assets/svg/icons/l_drop_down.svg";
 
 interface Props {
   options: Array<selectType>;
+  value?: any;
   defaultValue?: any;
   disabled?: boolean;
   loading?: boolean;
   className?: string;
   styles?: componentsStylesType;
+  onChange?: React.ChangeEventHandler<HTMLSelectElement>;
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -20,6 +22,8 @@ const AntdSelect : React.FC<Props> = ({
   loading, 
   className,
   styles,
+  value,
+  onChange,
 }) => {
 
   return (
@@ -30,6 +34,8 @@ const AntdSelect : React.FC<Props> = ({
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
     >
       <Select
+        value={value}
+        onChange={onChange}
         className={`w-full ${className}`}
         options={options}
         defaultValue={defaultValue}

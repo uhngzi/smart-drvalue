@@ -5,6 +5,7 @@ import styled from "styled-components";
 interface Props {
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  name?: string;
   className?: string;
   styles?: componentsStylesType;
   placeholder?: string;
@@ -13,6 +14,7 @@ interface Props {
 const AntdInputFillRound: React.FC<Props> = ({
   value,
   onChange,
+  name,
   className,
   styles,
   placeholder,
@@ -28,6 +30,7 @@ const AntdInputFillRound: React.FC<Props> = ({
       <Input
         value={value}
         onChange={onChange}
+        name={name}
         className={`${className}`}
         placeholder={placeholder}
       />

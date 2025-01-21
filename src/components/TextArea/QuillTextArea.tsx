@@ -132,7 +132,7 @@ const QuillTextArea: React.FC<Props> = ({
         placeholder={placeholder}
         preserveWhitespace
       />
-      {setLength && <div className="h-center gap-2 justify-end text-12 text-[#555555] p-10">
+      {setLength && <div className="h-center gap-2 justify-end text-[#555555] p-10">
         <p className="font-medium text-[#246beb]">{length}</p>
         <p>/1000</p>
       </div>}

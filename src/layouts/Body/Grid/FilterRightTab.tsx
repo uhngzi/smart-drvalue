@@ -38,8 +38,8 @@ const FilterRightTab: React.FC<Props> = ({
           contents={filterContents}
         />
 
-        <div className="w-full flex bg-white p-20 rounded-14 gap-20 overflow-auto">
-          {main}
+        <div className="w-full h-[990px] bg-white p-20 text-center rounded-14 overflow-auto">
+            {main}
         </div>
       </div>
       

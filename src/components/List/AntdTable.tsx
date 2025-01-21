@@ -106,7 +106,7 @@ const AntdTableStyled = styled.div<{
       text-align: center;
 
       font-weight: ${({ $thFontWeight }) => $thFontWeight};
-      font-size: 12px;
+      font-size: 14px;
       color: #444444;
 
       background-color: transparent;
@@ -148,7 +148,7 @@ const AntdTableStyled = styled.div<{
       text-align: ${({ $tdTextAlign }) => $tdTextAlign };
 
       font-weight: 500;
-      font-size: 12px;
+      font-size: 14px;
       color: #444444;
     }
 
