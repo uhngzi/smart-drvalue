@@ -11,6 +11,7 @@ interface Props {
   loading?: boolean;
   className?: string;
   styles?: componentsStylesType;
+  placeholder?:string;
 }
 
 const AntdSelectRound : React.FC<Props> = ({ 
@@ -20,6 +21,7 @@ const AntdSelectRound : React.FC<Props> = ({
   loading, 
   className,
   styles,
+  placeholder,
 }) => {
 
   return (
@@ -36,6 +38,7 @@ const AntdSelectRound : React.FC<Props> = ({
         disabled={disabled}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
+        placeholder={placeholder}
       />
     </AndtSelectStyled>
   )
