@@ -130,7 +130,7 @@ export const sayangSampleWaitClmn = (
     render: (value) => (
       <div className="w-full h-full v-h-center">
         <div 
-          className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer"
+          className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer hover:bg-[#E9EDF5]"
           onClick={()=>{router.push(`/sayang/sample/form/${value}`)}}
         >
           <p className="w-14 h-14"><Edit /></p>
