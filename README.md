@@ -17,7 +17,7 @@ $ yarn dev
 
 ## 사용 기술 및 라이브러리
 
-`Next.js` `yarn berry` `TypeScript` `tailwindcss` `styled-component` `antd`
+`Next.js` `yarn berry` `TypeScript` `tailwind css` `styled-component` `antd`
 
 ## 프로젝트 구조
 

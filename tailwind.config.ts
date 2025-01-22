@@ -14,6 +14,7 @@ export default {
         
         'back': '#F5F6FA',
         'back2': '#FBFBFB',
+        
         'point1': '#4880FF',
         'point2': '#1814F3',
         'point3': '#1677FF',
