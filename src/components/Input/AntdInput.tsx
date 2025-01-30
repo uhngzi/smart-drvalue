@@ -8,6 +8,7 @@ interface Props {
   className?: string;
   styles?: componentsStylesType;
   placeholder?: string;
+  type?: string;
 }
 
 const AntdInput: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const AntdInput: React.FC<Props> = ({
   className,
   styles,
   placeholder,
+  type,
 }) => {
   return (
     <AntdInputStyled
@@ -30,6 +32,7 @@ const AntdInput: React.FC<Props> = ({
         onChange={onChange}
         className={`${className}`}
         placeholder={placeholder}
+        type={type}
       />
     </AntdInputStyled>
   )

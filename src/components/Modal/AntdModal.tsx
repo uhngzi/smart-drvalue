@@ -10,15 +10,9 @@ interface Props {
   contents?: any;
   footer?: any;
   width?: number;
+  onClose?: () => void;
+  full?: boolean;
 }
-
-const CustomModal = styled(Modal)`
-  .ant-modal-content {
-    background: #F5F6FA;
-    border-radius: 14px;
-    padding: 0;
-  }
-`
 
 const AntdModal: React.FC<Props> = ({
   open,
@@ -27,27 +21,49 @@ const AntdModal: React.FC<Props> = ({
   contents,
   footer,
   width,
+  onClose,
+  full,
 }) => {
+  const CustomModal = styled(Modal)<{
+    full?: boolean
+  }>`
+    & .ant-modal-content {
+      background: #F5F6FA;
+      border-radius: 14px;
+      padding: 0;
+      max-height: ${full ? '100vh' : '90vh'} !important;
+      overflow: hidden;
+  
+      & .ant-modal-body {
+        overflow: hidden;
+        max-height: ${full ? '100vh' : '90vh'} !important;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  `
+
   return (
     <CustomModal 
       open={open}
       closeIcon={null}
-      width={width}
+      width={full ? '100%' : width}
       footer={footer||null}
+      destroyOnClose={false}
       centered
     >
-        <div className="w-full h-80 px-30 h-center justify-between">
-          <p className="text-20 font-medium ">{title}</p>
-          <p 
-            className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
-            onClick={()=>setOpen(false)}
-          >
-            <Close />
-          </p>
-        </div>
-        <div className="w-full px-20 pb-20">
-          {contents}
-        </div>
+      <div className="w-full h-80 shrink-0 px-30 h-center justify-between">
+        <p className="text-20 font-medium ">{title}</p>
+        <p 
+          className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+          onClick={onClose || (()=>setOpen(false))}
+        >
+          <Close />
+        </p>
+      </div>
+      <div className="w-full flex-1 px-20 pb-20 overflow-y-auto">
+        {contents}
+      </div>
     </CustomModal>
   )
 }

@@ -5,7 +5,10 @@ import { salesUserOrderClmn } from "@/data/columns/Sales";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAPI } from "@/api/get";
+import { useQuery } from "@tanstack/react-query";
+import { salesOrderRType } from "@/data/type/sales/order";
 
 const sampleDt = [
   {
@@ -79,6 +82,19 @@ const SalesUserPage: React.FC & {
 } = () => {
   const [ open, setOpen ] = useState<boolean>(false);
 
+  const [ data, setData ] = useState<Array<salesOrderRType>>([]);
+  const { data:queryData, isLoading, refetch } = useQuery({
+    queryKey: ['salesUserPage'],
+    queryFn: async () => {
+      return getAPI('core-d1', 'tenant', 'sales-order/jsxcrud/many');
+    }
+  });
+  useEffect(()=>{
+    if(isLoading) {
+      setData(queryData ?? []);
+    }
+  }, [queryData]);
+
   return (
     <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
       <div className="h-center justify-between">
@@ -92,11 +108,11 @@ const SalesUserPage: React.FC & {
       </div>
       <AntdTable
         columns={salesUserOrderClmn(setOpen)}
-        data={sampleDt}
+        data={data}
         styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
       />
       
-      <AntdModal 
+      <AntdModal
         open={open}
         setOpen={setOpen}
         width={1288}

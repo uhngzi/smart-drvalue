@@ -20,6 +20,7 @@ import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import styled from "styled-components";
 import Image from "next/image";
 import { useEffect, useState } from "react"
+import { loginCheck, logout } from "@/utils/signUtil"
 
 interface Props {
   collapsed: boolean;
@@ -38,6 +39,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     const path = currentPath.split(',').slice(0, 2);
     setNewPath(path.join('/'));
   },[currentPath])
+
+  const [signIn, setSignIn] = useState<boolean>(false);
+  useEffect(()=>{
+    setSignIn(loginCheck);
+  }, [signIn])
 
   const items: ItemType<MenuItemType>[] = [
     {
@@ -167,18 +173,30 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               title: '',
               label:'설정',
               icon: <p className={iconClassNm}><Setting /></p>,
-              children: [
-                {
-                  key: 'setting/profile',
-                  label: '프로필',
-                }
-              ]
+              onClick:() => {
+                router.push('/setting');
+              }
+              // children: [
+              //   {
+              //     key: 'setting/profile',
+              //     label: '프로필',
+              //   }
+              // ]
             },
             {
-              key: 'logout',
+              key: signIn?'logout':'login',
               title: '',
-              label:'로그아웃',
-              icon: <p className={iconClassNm}><Logout /></p>,
+              label:signIn?'로그아웃':'로그인',
+              icon: <p className={iconClassNm}>{signIn?<Logout />:<Login />}</p>,
+              onClick:()=>{
+                if(signIn) {
+                  logout();
+                  setSignIn(false);
+                  router.push('/');
+                } else {
+                  router.push('/sign/in');
+                }
+              }
             },
           ]}
           className="sider__menu h-[100%]"

@@ -22,6 +22,7 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import { useEffect, useState } from "react";
 import { Dropdown, Space } from "antd";
 import type { MenuProps } from 'antd';
+import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model/add/AddModal";
 
 const items: MenuProps['items'] = [
   {
@@ -33,109 +34,6 @@ const items: MenuProps['items'] = [
     key: 1,
   },
 ]
-
-type DataType = {
-  id: number;
-  cuNm: string;
-  no: string;
-  modelNm: string;
-  rev: string;
-  cuCode: string;
-  layer: string;
-  thic: string;
-  unit: string;
-  wonpan: string;
-  makeNm: string;
-  texture: string;
-  surf: string;
-  dongbackO: string;
-  donbackI: string;
-  smprint: string;
-  smcolor: string;
-  smtype: string;
-  mkprint: string;
-  mkcolor: string;
-  mktype: string;
-  tprintstate: string;
-  tprinttype: string;
-  outtype: string;
-  vcut: number | null;
-  doNum: string;
-  pmNum: string;
-  pcsX: string;
-  pcsY: string;
-  kitX: string;
-  kitY: string;
-  pnlX: string;
-  pnlY: string;
-  kitArX: string;
-  kitArY: string;
-  pnlArX: string;
-  pnlArY: string;
-  kit_pcs: string;
-  pnl_kit: string;
-  sth_pnl: string;
-  sth_pcs: string;
-  dogeumP: string;
-  dogeumM: string;
-  dogeumNiP: string;
-  dogeumNiM: string;
-  dogeumAuP: string;
-  dogeumAuM: string;
-  pin: string;
-}
-const newData = (id:number) => {
-  return {
-    id: id,
-    cuNm: '',
-    no: '',
-    modelNm: '',
-    rev: '',
-    cuCode: '',
-    layer: '',
-    thic: '',
-    unit: '',
-    wonpan: '',
-    makeNm: '',
-    texture: '',
-    surf: '',
-    dongbackO: '',
-    donbackI: '',
-    smprint: '',
-    smcolor: '',
-    smtype: '',
-    mkprint: '',
-    mkcolor: '',
-    mktype: '',
-    tprintstate: '',
-    tprinttype: '',
-    outtype: '',
-    vcut: 0,
-    doNum: '',
-    pmNum: '',
-    pcsX: '',
-    pcsY: '',
-    kitX: '',
-    kitY: '',
-    pnlX: '',
-    pnlY: '',
-    kitArX: '',
-    kitArY: '',
-    pnlArX: '',
-    pnlArY: '',
-    kit_pcs: '',
-    pnl_kit: '',
-    sth_pnl: '',
-    sth_pcs: '',
-    dogeumP: '',
-    dogeumM: '',
-    dogeumNiP: '',
-    dogeumNiM: '',
-    dogeumAuP: '',
-    dogeumAuM: '',
-    pin: '',
-  }
-}
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -227,8 +125,8 @@ const SayangModelAddPage: React.FC & {
     setFilterModel(data.filter((f:any) => f.modelNm.includes(searchModel)));
   }, [searchModel])
 
-  const [model, setModel] = useState<Array<DataType>>([]);
-  const [modelNew, setModelNew] = useState<DataType>(newData(model.length));
+  const [model, setModel] = useState<Array<modelSampleDataType>>([]);
+  const [modelNew, setModelNew] = useState<modelSampleDataType>(newModelSampleData(model.length));
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     name: string,
@@ -236,14 +134,24 @@ const SayangModelAddPage: React.FC & {
   ) => {
     const { value } = e.target;
     if(type === 'one')
-      setModelNew(prev => ({ ...prev, [name]: value }));
+      setModelNew((prev:modelSampleDataType) => ({ ...prev, [name]: value }));
     else {
 
     }
   };
-  useEffect(()=>{
-    console.log(model);
-  },[model])
+  const handleDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    key?: string
+  ) => {
+    if(typeof e === "string") {
+      const parsedDate = new Date(e);
+      console.log(e, parsedDate);
+    } else {
+      const { value } = e.target;
+      console.log(value);
+    }
+  }
   
   return (
     <>
@@ -285,7 +193,7 @@ const SayangModelAddPage: React.FC & {
                 <FullOkButtonSmall
                   click={()=>{
                     setModel(((prev) => [...prev, modelNew]));
-                    setModelNew(newData(model.length+1));
+                    setModelNew(newModelSampleData(model.length+1));
                   }}
                   label="저장"
                 />
@@ -363,15 +271,16 @@ const SayangModelAddPage: React.FC & {
                 labelWidth={150}
                 gap={24}
                 items={[
-                  {label:'고객명(고객코드)', type:'input'},
-                  {label:'고객발주(고객요구)명', type:'input'},
-                  {label:'고객 담당자명', type:'input'},
-                  {label:'전화번호', type:'input'},
-                  {label:'이메일', type:'input'},
-                  {label:'영업담당자명', type:'input'},
-                  {label:'접수일', type:'date',value:null,change:()=>{}},
-                  {label:'발주(요청)일', type:'date',value:null,change:()=>{}},
+                  {name:'1',label:'고객명(고객코드)', type:'input'},
+                  {name:'2',label:'고객발주(고객요구)명', type:'input'},
+                  {name:'3',label:'고객 담당자명', type:'input'},
+                  {name:'4',label:'전화번호', type:'input'},
+                  {name:'5',label:'이메일', type:'input'},
+                  {name:'6',label:'영업담당자명', type:'input'},
+                  {name:'7',label:'접수일', type:'date'},
+                  {name:'8',label:'발주(요청)일', type:'date'},
                 ]}
+                handleDataChange={handleDataChange}
               />
               <div className="w-full h-36 gap-5 flex mt-4">
                 <p 

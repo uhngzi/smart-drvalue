@@ -1,13 +1,18 @@
-import AntdTable from "@/components/List/AntdTable";
-import { sayangModelWaitClmn } from "@/data/columns/Sayang";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import { useRouter } from "next/router";
 import { useState } from "react";
+import { useRouter } from "next/router";
+
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
+import { sayangModelWaitClmn } from "@/data/columns/Sayang";
+
+import AntdTable from "@/components/List/AntdTable";
+import AddModal from "@/contents/sayang/model/add/AddModal";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+
 
   const [data, setData] = useState([
     {
@@ -56,20 +61,23 @@ const SayangModelWaitPage: React.FC & {
       submitDt:'2025-01-06',
     },
   ])
+  
+  const [newOpen, setNewOpen] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
-      <div className="h-center justify-between">
-        <p>총 {data.length}건</p>
-      </div>
       <AntdTable
-        columns={sayangModelWaitClmn(router)}
+        columns={sayangModelWaitClmn(router, setNewOpen)}
         data={data}
-        styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+        styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
+      />
+      <AddModal
+        open={newOpen}
+        setOpen={setNewOpen}
       />
     </div>
-  )
-}
+  );
+};
 
 SayangModelWaitPage.layout = (page: React.ReactNode) => (
   <MainPageLayout 

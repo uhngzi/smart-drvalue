@@ -4,19 +4,27 @@ import AntdSelect from "../Select/AntdSelect";
 
 interface Props {
   items: Array<{
-    label:string;
+    label: string;
+    name: string;
     type: 'input' | 'select' | 'date' | 'other';
     value?: any;
-    change?: () => void;
     other?: any;
     className?: string;
     styles?: any;
     option?: Array<{value:any,label:string}>;
+    key?: string;
+    inputType?: string;
   }>;
   labelWidth?: number;
   width?: string;
   height?: string;
   gap?: number;
+  handleDataChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => void;
 }
 
 const InputList: React.FC<Props> = ({
@@ -25,6 +33,7 @@ const InputList: React.FC<Props> = ({
   width,
   height = 36,
   gap,
+  handleDataChange,
 }) => {
   return (
     <>
@@ -45,8 +54,11 @@ const InputList: React.FC<Props> = ({
               {
                 item.type === 'input' ?
                 <AntdInput 
+                  value={item.value ?? ''}
                   className={item.className+" "+(width??"w-full")}
                   styles={{...item.styles, ht:height}}
+                  onChange={(e)=>handleDataChange(e, item.name, 'input')}
+                  type={item.inputType}
                 />
                 :
                 item.type === 'select' ?
@@ -54,12 +66,13 @@ const InputList: React.FC<Props> = ({
                   options={item.option||[]}
                   className={item.className+" "+(width??"w-full")}
                   styles={{...item.styles, ht:height}}
+                  onChange={(e)=>handleDataChange(e, item.name, 'select', item.key)}
                 />
                 :
                 item.type === 'date' ?
                 <AntdDatePicker 
                   value={item.value}
-                  onChange={(e)=>item.change}
+                  onChange={(e:Date)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
                   className={item.className+" "+(width??"w-full")}
                   styles={{...item.styles, ht:height, bc:'#D9D9D9', bw:'1px', br: '0px'}}
                 />

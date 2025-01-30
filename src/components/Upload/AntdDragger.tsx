@@ -6,13 +6,14 @@ import UploadIcon from '@/assets/svg/icons/folder.svg';
 import Klip from '@/assets/svg/icons/klip.svg';
 import Del from '@/assets/svg/icons/trash.svg';
 
-import { byteToKB } from '@/utils/formatBytes';
-
 import { message, Modal, UploadProps } from 'antd';
 import { UploadFile } from 'antd/es/upload';
 import Dragger from 'antd/es/upload/Dragger';
 import styled from 'styled-components';
-import { downloadFileByObjectName, sliceByDelimiter, uploadFile } from './utils';
+import { downloadFileByObjectName, sliceByDelimiter, uploadFile } from './upLoadUtils';
+import { instance } from '@/api/lib/axios';
+import cookie from 'cookiejs';
+import { cookieName } from '@/api/lib/config';
 
 
 interface Props {
@@ -46,7 +47,7 @@ const AntdDragger: React.FC<Props> = ({
   mult = false,
 }) => {
   const UploadProp: UploadProps = {
-    name: 'file',
+    name: 'files',
     multiple: mult,
     showUploadList: false,
     onChange: async info => {
@@ -61,9 +62,11 @@ const AntdDragger: React.FC<Props> = ({
       }
 
       if (info.file.status === 'done') {
-        console.log('hi');
         setFileList(prev => [...prev, info.file]);
         setFileIdList(prev => [...prev, 'asdf']);
+        const formData = new FormData();
+        // formData.append('files', info.fileList);
+        // const response = await instance.post('file-mng/v1/tenant/file-manager/upload/multiple', formData)
         // const response = await uploadFile(info.file);
         // if (response?.data.status === 200) {
         //   setFileList(prev => [...prev, info.file]);
@@ -88,6 +91,12 @@ const AntdDragger: React.FC<Props> = ({
         {...UploadProp} 
         className="bg-white" 
         disabled={disabled}
+        name="files"
+        headers={{
+         'x-tenant-code' : 'test',
+          Authorization: `bearer ${cookie.get(cookieName)}`,
+        }}
+        action={`http://115.68.221.100:3300/api/serv/file-mng/v1/tenant/file-manager/upload/multiple`}
       >
         <div className={`flex-col v-h-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
           <div className="h-84 h-center">

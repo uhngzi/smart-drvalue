@@ -43,3 +43,16 @@ body {
     font-size: 1.3889vw;
   }
 }
+
+/* antd 모달 관련 스타일 */
+.ant-modal-root {
+  z-index: 1000 !important;
+}
+
+.ant-modal-mask {
+  z-index: 1000 !important;
+}
+
+.ant-modal-wrap {
+  z-index: 1000 !important;
+}

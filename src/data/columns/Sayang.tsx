@@ -131,7 +131,7 @@ export const sayangSampleWaitClmn = (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer hover:bg-[#E9EDF5]"
-          onClick={()=>{router.push(`/sayang/sample/form/${value}`)}}
+          onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
         >
           <p className="w-14 h-14"><Edit /></p>
         </div>
@@ -459,6 +459,7 @@ export const sayangSampleWaitAddClmn = (
 
 export const sayangModelWaitClmn = (
   router:NextRouter,
+  setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): TableProps['columns'] => [
   {
     title: '대기',
@@ -585,7 +586,10 @@ export const sayangModelWaitClmn = (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{router.push(`/sayang/model/wait/form/${value}`)}}
+          onClick={()=>{
+            setNewOpen(true);
+            // router.push(`/sayang/model/wait/form/${value}`);
+          }}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>

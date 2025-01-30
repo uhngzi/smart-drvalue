@@ -3,21 +3,26 @@ import { baseURL, cookieName } from "./config";
 import axios from "axios";
 import cookie from "cookiejs";
 
+// 브라우저 환경인지 체크
+const isBrowser = typeof window !== 'undefined';
+
 export const instance = axios.create({
   baseURL,
+  headers: {
+    Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
+    'x-tenant-code': 'test',
+  },
 });
 
 instance.interceptors.request.use(
   (config) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
-        "color: pink"
-      );
-      console.log("Payload:", config.data);
-    }
-
-    config.headers["Authorization"] = `bearer ${cookie.get(cookieName)}`;
+    console.log(
+      `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+      "color: pink"
+    );
+    
+    config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
+    config.headers["x-tenant-code"] = 'test';
 
     return config;
   },
