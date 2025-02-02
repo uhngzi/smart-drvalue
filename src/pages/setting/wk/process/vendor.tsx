@@ -261,7 +261,7 @@ const WkProcessVendorListPage: React.FC & {
                 label: '공정그룹',
                 type: 'select',
                 value: newData.processGroup.id,
-                option: dataGroup?.map((item)=>({value:item.id,label:item.prcGrpNm})) ?? []
+                option: dataGroup?.map((item:processGroupRType)=>({value:item.id,label:item.prcGrpNm})) ?? []
               },
               { 
                 name: 'process',

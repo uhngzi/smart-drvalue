@@ -5,11 +5,10 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import { processGroupRType, processRType } from "@/data/type/base/process";
 import { useQuery } from "@tanstack/react-query";
 import { Tree, TreeDataNode } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Star from "@/assets/svg/icons/star.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
-
 import styled from "styled-components";
 
 const ProcessSelection: React.FC = () => {
@@ -112,7 +111,7 @@ const ProcessSelection: React.FC = () => {
             dataProcess.map((group:processGroupRType) => (
               group.processes?.map((process:processRType) => (
                 selectedKeys.includes(process.id) ? 
-                <div className="w-full h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10">
+                <div key={process.id} className="w-full h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10">
                   <Star />
                   <div className="flex-1 h-full h-center gap-50">
                     <div className="w-[120px] h-center" style={{letterSpacing:-0.05, fontWeight:500}}>

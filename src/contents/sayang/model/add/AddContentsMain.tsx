@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { modelSampleDataType, newModelSampleData } from "@/pages/sayang/model/wait";
 
 import ModelContents from "./ModelContents";
 
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
-import EditButtonSmall from "@/components/Button/EditButtonSmall";  
-import { TabSmall } from "@/components/Tab/Tabs";
 
 import Hint from "@/assets/svg/icons/hint.svg";
 import Back from "@/assets/svg/icons/back.svg";
+import { modelSampleDataType, newModelSampleData } from "./AddModal";
 
 interface Props {
   model: modelSampleDataType[];
@@ -18,8 +16,6 @@ interface Props {
 }
 
 const AddContentsMain: React.FC<Props> = React.memo(({ model, setModel, modelNew, setModelNew }) => {
-  console.log("AddContentsMain 렌더링됨");
-
   const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     name: string,

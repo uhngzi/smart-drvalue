@@ -1,7 +1,5 @@
 import InputList from "@/components/List/InputList";
-import { cuRType } from "@/data/type/base/cu";
-import { newDataProcessVendorCUType, newDataProcessVendorPriceCUType, processGroupRType, processRType, processVendorCUType, processVendorPriceCUType, processVendorRType } from "@/data/type/base/process";
-import { useEffect } from "react";
+import { newDataProcessVendorCUType, processVendorCUType, processVendorPriceCUType } from "@/data/type/base/process";
 
 interface Props {
   handleDataChange: (

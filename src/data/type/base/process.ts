@@ -1,6 +1,6 @@
 export type processRType = {
   id: string;
-  processGroup?: {
+  processGroup: {
     id: string;
     prcGrpNm: string;
     useYn: boolean;
