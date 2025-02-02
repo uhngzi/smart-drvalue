@@ -1,13 +1,13 @@
 export type processRType = {
   id: string;
-  processGroup: {
+  processGroup?: {
     id: string;
     prcGrpNm: string;
     useYn: boolean;
-    processes: Array<any>;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    processes?: Array<any>;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+    deletedAt?: Date | null;
   },
   prcNm: string;
   useYn: boolean;

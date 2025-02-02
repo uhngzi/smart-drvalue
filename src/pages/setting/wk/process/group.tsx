@@ -198,6 +198,8 @@ WkProcessGroupListPage.layout = (page: React.ReactNode) => (
     menu={[
       { text: '공정', link: '/setting/wk/process/base' },
       { text: '공정그룹', link: '/setting/wk/process/group' },
+      { text: '공정 공급처', link: '/setting/wk/process/vendor' },
+      { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
     ]}
   >{page}</SettingPageLayout>
 )

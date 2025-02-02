@@ -2,6 +2,7 @@ import { Modal } from "antd";
 import styled from "styled-components";
 
 import Close from "@/assets/svg/icons/s_close.svg";
+import { createStyles } from "antd-style";
 
 interface Props {
   open: boolean;
@@ -24,32 +25,49 @@ const AntdModal: React.FC<Props> = ({
   onClose,
   full,
 }) => {
-  const CustomModal = styled(Modal)<{
-    full?: boolean
-  }>`
-    & .ant-modal-content {
-      background: #F5F6FA;
-      border-radius: 14px;
-      padding: 0;
-      max-height: ${full ? '100vh' : '90vh'} !important;
-      overflow: hidden;
+  const useStyle = createStyles(({ token }) => ({
+    'my-modal-body': {
+      overflow: 'hidden',
+      maxHeight: full ? '100vh' : '90vh',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    'my-modal-content': {
+      background: '#F5F6FA',
+      borderRadius: '14px',
+      padding: 0,
+      maxHeight: full ? '100vh' : '90vh',
+    },
+  }));
   
-      & .ant-modal-body {
-        overflow: hidden;
-        max-height: ${full ? '100vh' : '90vh'} !important;
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  `
+  const { styles } = useStyle();
+
+  const classNames = {
+    body: styles['my-modal-body'],
+    content: styles['my-modal-content'],
+  };
+
+  const modalStyles = {
+    body: {
+      maxHeight: full ? '100vh' : '90vh',
+    },
+    content: {
+      background: '#F5F6FA',
+      borderRadius: '14px',
+      padding: 0,
+      maxHeight: full ? '100vh' : '90vh'
+    },
+  };
 
   return (
-    <CustomModal 
+    <Modal 
+      classNames={classNames}
+      styles={modalStyles}
       open={open}
       closeIcon={null}
+      destroyOnClose={false}
       width={full ? '100%' : width}
       footer={footer||null}
-      destroyOnClose={false}
       centered
     >
       <div className="w-full h-80 shrink-0 px-30 h-center justify-between">
@@ -64,7 +82,7 @@ const AntdModal: React.FC<Props> = ({
       <div className="w-full flex-1 px-20 pb-20 overflow-y-auto">
         {contents}
       </div>
-    </CustomModal>
+    </Modal>
   )
 }
 

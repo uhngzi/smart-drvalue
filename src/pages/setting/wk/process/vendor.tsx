@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 
@@ -6,17 +6,18 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { newDataProcessCUType, processCUType, processGroupRType, processRType } from "@/data/type/base/process";
+import { newDataProcessVendorCUType, processGroupRType, processRType, processVendorCUType, processVendorRType } from "@/data/type/base/process";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
-import AddContents from "@/contents/base/wk/process/base/AddContents";
 import AntdPagination from "@/components/Pagination/AntdPagination";
+import AddContents from "@/contents/base/wk/process/vendor/AddContents";
+import { cuRType } from "@/data/type/base/cu";
 
-const WkProcessListPage: React.FC & {
+const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
@@ -31,9 +32,32 @@ const WkProcessListPage: React.FC & {
     setPagination({ ...pagination, current: page });
   };
 
-  // --------- 리스트 데이터 시작 ---------
+  // --------- 필요 데이터 시작 ----------
+  const [ dataVendor, setDataVendor ] = useState<Array<cuRType>>([]);
+  const { data:queryDataVendor } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['setting', 'client', 'vndr'],
+    queryFn: async () => {
+      setDataVendor([]);
+      const result = await getAPI('baseinfo', 'tenant', 'biz-partner/jsxcrud/many', {
+        s_search: "prtTypeEm",
+        s_type: 'eq',
+        s_list:[`"vndr"`]
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        setDataVendor(result.data.data ?? []);
+        console.log('vendor : ', result.data.data);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+
   const [ dataGroup, setDataGroup ] = useState<Array<processGroupRType>>([]);
-  const { data:queryDataGroup, refetch:refetchGroup } = useQuery<
+  const { data:queryDataGroup } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['setting', 'wk', 'process', 'group'],
@@ -43,6 +67,7 @@ const WkProcessListPage: React.FC & {
 
       if (result.resultCode === 'OK_0000') {
         setDataGroup(result.data.data ?? []);
+        console.log('group : ', result.data.data);
       } else {
         console.log('error:', result.response);
       };
@@ -50,15 +75,36 @@ const WkProcessListPage: React.FC & {
     },
   });
 
-  const [ data, setData ] = useState<Array<processRType>>([]);
+  const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
+  const { data:queryDataProcess } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['setting', 'wk', 'process'],
+    queryFn: async () => {
+      setDataProcess([]);
+      const result = await getAPI('baseinfo', 'tenant', 'process/jsxcrud/many');
+
+      if (result.resultCode === 'OK_0000') {
+        setDataProcess(result.data.data ?? []);
+        console.log('process : ', result.data.data);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+  // ---------- 필요 데이터 끝 -----------
+
+  // --------- 리스트 데이터 시작 ---------
+  const [ data, setData ] = useState<Array<processVendorRType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryKey: ['setting', 'wk', 'process', 'vendor', pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process/jsxcrud/many', {
+      const result = await getAPI('baseinfo', 'tenant', 'process-vendor/jsxcrud/many', {
         limit: pagination.size,
         page: pagination.current,
       });
@@ -66,13 +112,11 @@ const WkProcessListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         setData(result.data.data ?? []);
         setTotalData(result.data.total ?? 0);
-        console.log(result.data);
+        console.log('data : ', result.data.data);
       } else {
         console.log('error:', result.response);
       }
-
       setDataLoading(false);
-      console.log(result.data);
       return result;
     },
   });
@@ -85,7 +129,7 @@ const WkProcessListPage: React.FC & {
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<processCUType>(newDataProcessCUType);
+  const [ newData, setNewData ] = useState<processVendorCUType>(newDataProcessVendorCUType);
     //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -97,8 +141,11 @@ const WkProcessListPage: React.FC & {
       const { value } = e.target;
       setNewData({...newData, [name]: value});
     } else if(type === "select") {
-      if(key === 'prcGrpNm') {
-        setNewData({...newData, processGroup: {id: e.toString()}});
+      if(key) {
+        setNewData({...newData, [name]: { 
+          ...((newData as any)[name] || {}), // 기존 객체 값 유지
+          [key]: e.toString(), // 새로운 key 값 업데이트
+        }});
       } else {
         setNewData({...newData, [name]: e});
       }
@@ -108,13 +155,14 @@ const WkProcessListPage: React.FC & {
   const handleSubmitNewData = async () => {
     try {
       console.log(newData);
-      const result = await postAPI('baseinfo', 'tenant', 'process', true, newData);
+      const result = await postAPI('baseinfo', 'tenant', 'process-vendor', true, newData);
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
         setResultOpen(true);
         setResultType('success');
+        setNewData(newDataProcessVendorCUType);
       } else {
         setNewOpen(false);
         setResultOpen(true);
@@ -161,9 +209,17 @@ const WkProcessListPage: React.FC & {
             },
             {
               title: '공정명',
-              dataIndex: 'prcNm',
-              key: 'prcNm',
+              dataIndex: 'process',
+              key: 'process',
               align: 'center',
+              render: (item:processRType) => item.prcNm,
+            },
+            {
+              title: '공급처명',
+              dataIndex: 'vendor',
+              key: 'vendor',
+              align: 'center',
+              render: (item:cuRType) => item.prtNm,
             },
             {
               title: '사용여부',
@@ -198,25 +254,56 @@ const WkProcessListPage: React.FC & {
             handleSubmitNewData={handleSubmitNewData}
             setNewOpen={setNewOpen}
             setNewData={setNewData}
-            dataGroup={dataGroup}
+            item={[
+              { 
+                name: 'processGroup',
+                key: 'id',
+                label: '공정그룹',
+                type: 'select',
+                value: newData.processGroup.id,
+                option: dataGroup?.map((item)=>({value:item.id,label:item.prcGrpNm})) ?? []
+              },
+              { 
+                name: 'process',
+                key: 'id',
+                label: '공정',
+                type: 'select',
+                value: newData.process.id,
+                option: dataProcess?.filter((item:processRType)=>item.processGroup.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
+              },
+              { 
+                name: 'vendor',
+                key: 'id',
+                label: '공급처',
+                type: 'select',
+                value: newData.vendor.id,
+                option: dataVendor?.map((item)=>({value:item.id,label:item.prtNm})) ?? []
+              },
+              { 
+                name: 'useYn',
+                label: '사용여부',
+                type: 'select',
+                option: [{value:true,label:"사용"},{value:false,label:"미사용"}],
+                value: newData.useYn,
+              },
+            ]}
           />
         }
         onClose={()=>{
           setNewOpen(false);
-          setNewData(newDataProcessCUType);
+          setNewData(newDataProcessVendorCUType);
         }}
       />
 
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "success" ? "공정 등록 성공" : "공정 등록 실패"}
-        contents={resultType === "success" ? <div>공정 등록이 완료되었습니다.</div> : <div>공정 등록이 실패하였습니다.</div>}
+        title={resultType === "success" ? "공정 공급처 등록 성공" : "공정 공급처 등록 실패"}
+        contents={resultType === "success" ? <div>공정 공급처 등록이 완료되었습니다.</div> : <div>공정 공급처 등록이 실패하였습니다.</div>}
         type={resultType} 
         onOk={()=>{
           refetch();
           setResultOpen(false);
-          setNewData(newDataProcessCUType);
         }}
         hideCancel={true}
         theme="base"
@@ -225,7 +312,7 @@ const WkProcessListPage: React.FC & {
   )
 }
 
-WkProcessListPage.layout = (page: React.ReactNode) => (
+WkProcessVendorListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
       { text: '공정', link: '/setting/wk/process/base' },
@@ -236,4 +323,4 @@ WkProcessListPage.layout = (page: React.ReactNode) => (
   >{page}</SettingPageLayout>
 )
 
-export default WkProcessListPage;
+export default WkProcessVendorListPage;
