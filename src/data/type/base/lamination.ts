@@ -23,3 +23,16 @@ export type laminationCUType = {
   lamDtlRealThk: number;
   useYn: boolean;
 }
+
+export const newLaminationCUType  = ():laminationCUType => {
+  return {
+    lamDtlTypeEm: '',
+    matCd: '',
+    matThk: 0,
+    copOut: '',
+    copIn: '',
+    lamDtlThk: 0,
+    lamDtlRealThk: 0,
+    useYn: true,
+  }
+}
