@@ -228,6 +228,7 @@ const LaminationContents: React.FC<Props> = ({
                     {
                       lamination.map((item:laminationRType, index:number) => (
                         <div
+                          key={item.id}
                           className="h-26 h-center border-1 border-line justify-between rounded-4"
                           style={{background:color[index  % 5]}}
                         >
