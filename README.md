@@ -63,17 +63,3 @@ $ yarn dev
   bd, bd_t, bd_l, bd_r, bd_b : border top, left, right, bottom
   bc, bw : border color, width
 ```
-
-## 배포
-
-```
-ssh -i smartFront.pem root@115.68.221.100
-  BHM<9O2-
-cd /home/smart/smart-front
-git pull
-  개인 계정명
-  개인 토큰
-    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
-yarn build
-pm2 restart smart
-```
