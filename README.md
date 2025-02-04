@@ -73,7 +73,6 @@ cd /home/smart/smart-front
 git pull
   개인 계정명
   개인 토큰
-    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
 yarn build
 pm2 restart smart
 ```
