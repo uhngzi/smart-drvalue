@@ -7,6 +7,8 @@ interface Props {
   close: ()=>void;
   placement?: 'right' | 'left' | 'top' | 'bottom';
   width?: number;
+  maskClosable?: boolean;
+  mask?: boolean;
 }
 
 const AntdDrawer: React.FC<Props> = ({
@@ -15,6 +17,8 @@ const AntdDrawer: React.FC<Props> = ({
   close,
   placement = "right",
   width = 510,
+  maskClosable = true,
+  mask = true,
 }) => {
   return (
     <AntdDrawerStyled
@@ -23,8 +27,10 @@ const AntdDrawer: React.FC<Props> = ({
       open={open}
       onClose={close}
       width={width}
+      maskClosable={maskClosable}
+      mask={mask}
     >
-        {children}
+      {children}
     </AntdDrawerStyled>
   )
 }

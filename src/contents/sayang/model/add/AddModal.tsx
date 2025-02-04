@@ -424,16 +424,26 @@ const AddModal: React.FC<Props> = ({
       <AntdDrawer
         open={drawerOpen}
         close={()=>{setDrawerOpen(false)}}
+        maskClosable={false}
+        mask={false}
       >
         <div className="w-full h-full px-20 py-30 flex flex-col gap-20">
-          <TabSmall
-            items={[
-              {key:1,text:'고객발주(요구)정보'},
-              {key:2,text:'모델목록'},
-            ]}
-            selectKey={selectTabDrawer}
-            setSelectKey={setSelectTabDrawer}
-          />
+          <div className="flex">
+            <TabSmall
+              items={[
+                {key:1,text:'고객발주(요구)정보'},
+                {key:2,text:'모델목록'},
+              ]}
+              selectKey={selectTabDrawer}
+              setSelectKey={setSelectTabDrawer}
+            />
+            <p 
+              className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+              onClick={(()=>setDrawerOpen(false))}
+            >
+              <Close />
+            </p>
+          </div>
           { selectTabDrawer === 1 ?
             <>
               <InputList
