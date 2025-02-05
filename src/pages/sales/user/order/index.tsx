@@ -1,7 +1,7 @@
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdTable from "@/components/List/AntdTable";
 import AddOrderContents from "@/contents/sales/user/modal/\bAddOrderContents";
-import { salesUserOrderClmn } from "@/data/columns/Sales";
+import { salesUserOrderClmn, salesUserOrderClmnMui } from "@/data/columns/Sales";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
@@ -10,6 +10,7 @@ import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
 import { salesOrderRType } from "@/data/type/sales/order";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
+import MuiTable from "@/components/List/MuiTable";
 
 const sampleDt = [
   {
@@ -117,6 +118,12 @@ const SalesUserPage: React.FC & {
         columns={salesUserOrderClmn(setOpen)}
         data={data}
         styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+      />
+
+      <MuiTable
+        columns={salesUserOrderClmnMui(setOpen)}
+        rows={data}
+        rowCount={0}
       />
       
       <AntdModal

@@ -11,6 +11,11 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.22.1",
     "@ant-design/icons": "^5.5.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.3",
+    "@mui/system": "^6.4.3",
+    "@mui/x-data-grid": "^7.25.0",
     "@nestjsx/crud-request": "^5.0.0-alpha.3",
     "@tanstack/react-query": "^5.62.11",
     "antd": "^5.22.7",
