@@ -3,6 +3,9 @@ import { instance, instanceRoot } from "./lib/axios"
 
 /*
   *** API 사용 예시 ***
+  115.68.221.100:3300/api/serv/baseinfo/v1/tenant/biz-partner/jsxcrud/many
+  BASE URL                    /${type}/v1/${utype}${url}
+  
   getAPI({
     type: 'baseinfo',
     utype: 'tenant/',     ** 생략 가능
