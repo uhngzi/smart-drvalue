@@ -54,6 +54,7 @@ export const getAPI = async (
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null
       }
     });
+    console.log('GET RESPONSE : ', response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
@@ -65,6 +66,7 @@ export const getAPI = async (
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null
       }
     });
+    console.log('GET RESPONSE : ', response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
