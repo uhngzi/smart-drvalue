@@ -1,4 +1,5 @@
 import { cuMngRType, cuRType } from "../base/cu";
+import { HotGrade, ModelStatus } from "../enum";
 
 export type salesOrderRType = {
   id: string;
@@ -63,11 +64,47 @@ export type salesOrderRType = {
 
 export type salesOrderCUType = {
   partnerId: string;
-  partnerManagerId: string;
+  partnerManagerId?: string;
   orderName: string;
-  orderDt: Date;
-  orderRepDt: Date;
+  orderDt: Date | null;
+  orderRepDt: Date | null;
   orderTxt: string;
   empId: string;
-  files: Array<string>;
+  hotGrade: HotGrade | '';
+  files?: Array<string>;
+  products?: Array<{
+      customPartnerManagerId?: string;
+      currPrdInfo?: {
+        id: string;
+        name: string;
+      },
+      modelId?: string;
+      modelStatus: ModelStatus | '';
+      orderDt: Date;
+      orderNo: string;
+      orderTit: string;
+      prtOrderNo?: string;
+      orderPrdRemark?: string;
+      orderPrdCnt: number;
+      orderPrdUnitPrice: number;
+      orderPrdPrice: number;
+      orderPrdDueReqDt?: Date;
+      orderPrdDueDt?: Date;
+      orderPrdHotGrade: HotGrade;
+  }>
+}
+
+export const newDatasalesOrderCUType = ():salesOrderCUType => {
+  return {
+    partnerId: '',
+    partnerManagerId: '',
+    orderName: '',
+    orderDt: null,
+    orderRepDt: null,
+    orderTxt: '',
+    empId: '',
+    hotGrade: '',
+    files: [],
+    products: [],
+  }
 }

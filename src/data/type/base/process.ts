@@ -1,3 +1,5 @@
+import { LayerEm, ModelTypeEm } from "../enum";
+
 export type processRType = {
   id: string;
   processGroup: {
@@ -122,8 +124,8 @@ export type processVendorPriceRType = {
   vendor: processVendorRType;
   priceNm: string;
   priceUnit: number;
-  modelTypeEm: string;
-  layerEm: string;
+  modelTypeEm: ModelTypeEm | '';
+  layerEm: LayerEm | '';
   thk: number;
   matCd: string;
   metCd: string;
@@ -150,8 +152,8 @@ export type processVendorPriceCUType = {
   vendor: { id: string; };
   priceNm: string;
   priceUnit: number;
-  modelTypeEm: string;
-  layerEm: string;
+  modelTypeEm: ModelTypeEm | '';
+  layerEm: LayerEm | '';
   thk: number;
   pnlcntMin: number;
   pnlcntMax: number;
@@ -202,8 +204,8 @@ export type processVendorPriceHistoryRType = {
     id: string;
     priceNm: string;
     priceUnit: number;
-    modelTypeEm: string;
-    layerEm: string;
+    modelTypeEm: ModelTypeEm | '';
+    layerEm: LayerEm | '';
     thk: number;
     matCd: string;
     metCd: string;
