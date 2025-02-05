@@ -62,16 +62,10 @@ const AntdDragger: React.FC<Props> = ({
       }
 
       if (info.file.status === 'done') {
+        const file = info.file.response.data[0];
         setFileList(prev => [...prev, info.file]);
-        setFileIdList(prev => [...prev, 'asdf']);
-        const formData = new FormData();
-        // formData.append('files', info.fileList);
-        // const response = await instance.post('file-mng/v1/tenant/file-manager/upload/multiple', formData)
-        // const response = await uploadFile(info.file);
-        // if (response?.data.status === 200) {
-        //   setFileList(prev => [...prev, info.file]);
-        //   setFileIdList(prev => [...prev, response.data.data.fullName]);
-        // }
+        setFileIdList(prev => [...prev, file.uploadEntityResult.id]);
+        console.log(info, info.file);
       }
     },
   };
