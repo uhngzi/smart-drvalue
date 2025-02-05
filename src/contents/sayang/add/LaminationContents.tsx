@@ -111,7 +111,11 @@ const LaminationContents: React.FC<Props> = ({
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'lamination-source/jsxcrud/many');
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'lamination-source/jsxcrud/many'
+      });
 
       if (result.resultCode === 'OK_0000') {
         setData(result.data.data ?? []);

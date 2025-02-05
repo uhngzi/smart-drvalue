@@ -40,7 +40,11 @@ const WkProcessVendorListPage: React.FC & {
     queryKey: ['setting', 'client', 'vndr'],
     queryFn: async () => {
       setDataVendor([]);
-      const result = await getAPI('baseinfo', 'tenant', 'biz-partner/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner/jsxcrud/many'
+      },{
         s_search: "prtTypeEm",
         s_type: 'eq',
         s_list:[`"vndr"`]
@@ -63,7 +67,11 @@ const WkProcessVendorListPage: React.FC & {
     queryKey: ['setting', 'wk', 'process', 'group'],
     queryFn: async () => {
       setDataGroup([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process-group/jsxcrud/many');
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      });
 
       if (result.resultCode === 'OK_0000') {
         setDataGroup(result.data.data ?? []);
@@ -82,7 +90,11 @@ const WkProcessVendorListPage: React.FC & {
     queryKey: ['setting', 'wk', 'process'],
     queryFn: async () => {
       setDataProcess([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process/jsxcrud/many');
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process/jsxcrud/many'
+      });
 
       if (result.resultCode === 'OK_0000') {
         setDataProcess(result.data.data ?? []);
@@ -104,7 +116,11 @@ const WkProcessVendorListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process-vendor/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-vendor/jsxcrud/many'
+      },{
         limit: pagination.size,
         page: pagination.current,
       });

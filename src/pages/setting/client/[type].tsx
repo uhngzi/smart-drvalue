@@ -44,7 +44,11 @@ const ClientCuListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'biz-partner/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'biz-partner/jsxcrud/many'
+      },{
         limit: pagination.size,
         page: pagination.current,
         s_search: "prtTypeEm",

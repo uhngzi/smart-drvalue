@@ -40,7 +40,11 @@ const WkProcessGroupListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process-group/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      },{
         limit: pagination.size,
         page: pagination.current,
       });

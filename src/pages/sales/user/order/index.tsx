@@ -86,7 +86,11 @@ const SalesUserPage: React.FC & {
   const { data:queryData, isLoading, refetch } = useQuery({
     queryKey: ['salesUserPage'],
     queryFn: async () => {
-      return getAPI('core-d1', 'tenant', 'sales-order/jsxcrud/many');
+      return getAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'sales-order/jsxcrud/many'
+      });
     }
   });
   useEffect(()=>{

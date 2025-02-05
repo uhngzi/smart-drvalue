@@ -38,7 +38,11 @@ const WkLaminationListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'lamination-source/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'lamination-source/jsxcrud/many'
+      },{
         limit: pagination.size,
         page: pagination.current,
       });

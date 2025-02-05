@@ -23,7 +23,11 @@ const ProcessSelection: React.FC = () => {
       setDataLoading(true);
       setDataTree([]);
       setDataProcess([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process-group/jsxcrud/many');
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      });
 
       if (result.resultCode === 'OK_0000') {
         const data = result.data.data ?? [];

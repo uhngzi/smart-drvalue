@@ -1,28 +1,40 @@
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { instance } from "./lib/axios"
+import { instance, instanceRoot } from "./lib/axios"
 
 /*
-  *** params 예시 ***
-  {
+  *** API 사용 예시 ***
+  getAPI({
+    type: 'baseinfo',
+    utype: 'tenant/',     ** 생략 가능
+    url: 'process/jsxcrud/many',  ** 맨앞에 / 생략
+  },{
     limit: 1,
     page: 1,
     s_search: "id",
     s_type: "in",
     s_list: ['"1"'],
-  }
+  })
 
-  *** 주의 ***
-  s 사용 시 작은 따옴표 내에 큰 따옴표로 묶어줘야 합니다.
-  예시 : ['"..내용.."']
+  *** server 설명 ***
+  type
+    - 파일관리 | 권한 | 동기화 | 기초정보 | 메인서버
+  utype
+    - 로그인한 사용자
+    - root와 tenant가 대표적이며 그 외는 생략하고 url에 적어주시면 됩니다.
+  url
+    - API 세부 URL
+  
+  *** params 사용 시 주의 ***
+  s_list 사용 시 작은 따옴표 내에 큰 따옴표로 반드시 묶어줘야 합니다.
+    예) ['"..내용.."']
 */
 
 export const getAPI = async (
-  //서버의 종류
-  type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1',
-  //서비스 종류
-  service: 'root' | 'tenant' | 'etc',
-  //API 주소
-  url: string,
+  server: {
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1',
+    utype?: 'root/' | 'tenant/',
+    url: string,
+  },
   params?: {
     limit?: number,
     page?: number,
@@ -31,8 +43,8 @@ export const getAPI = async (
     s_list?: Array<string>
   }
 ): Promise<apiGetResponseType>  => {
-  if(service === 'etc') {
-    const response = await instance.get(`${type}/v1/${url}`, {
+  if(server.utype === 'tenant/') {
+    const response = await instance.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,
@@ -43,7 +55,7 @@ export const getAPI = async (
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
   } else {
-    const response = await instance.get(`${type}/v1/${service}/${url}`, {
+    const response = await instanceRoot.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,

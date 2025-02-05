@@ -22,7 +22,7 @@ interface Props {
 const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
   const router = useRouter();
 
-  const [ collapsed, setCollapsed ] = useState<boolean>(true);
+  const [ collapsed, setCollapsed ] = useState<boolean>(false);
   const [ width, setWidth ] = useState<number>(240);
   useEffect(()=>{
     if(collapsed) setWidth(80);
