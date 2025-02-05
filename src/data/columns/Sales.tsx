@@ -12,35 +12,43 @@ export const salesUserOrderClmn = (
     align: 'center',
   },
   {
-    title: '관리No',
-    width: 130,
+    title: '고객명',
+    width: 250,
     dataIndex: 'no',
     key: 'no',
     align: 'center',
   },
   {
-    title: '업체명/코드',
-    width: 130,
+    title: '고객코드',
+    width: 120,
     dataIndex: 'cuName',
     key: 'cuName',
     align: 'center',
   },
   {
-    title: '고객요구(발주)명',
+    title: '발주명',
+    width: 360,
     dataIndex: 'orderName',
     key: 'orderName',
     align: 'center',
   },
   {
-    title: '업체담당',
-    width: 80,
+    title: '모델수',
+    width: 70,
+    dataIndex: 'mngName',
+    key: 'mngName',
+    align: 'center',
+  },
+  {
+    title: '고객처 담당',
+    width: 120,
     dataIndex: 'mngName',
     key: 'mngName',
     align: 'center',
   },
   {
     title: '긴급',
-    width: 100,
+    width: 80,
     dataIndex: 'hot',
     key: 'hot',
     align: 'center',
@@ -57,54 +65,22 @@ export const salesUserOrderClmn = (
     ),
   },
   {
-    title: '구분',
-    width: 100,
-    dataIndex: 'state',
-    key: 'state',
-    align: 'center',
-    render: (value: number) => (
-      <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="신규" />
-        ) : value === 2 ? (
-          <FullChip label="수정" state="yellow" />
-        ) : (
-          <FullChip label="반복" state="mint"/>
-        )}
-      </div>
-    ),
-  },
-  {
-    title: '두께',
-    width: 80,
+    title: '영업담당',
+    width: 120,
     dataIndex: 'thic',
     align: 'center',
     key: 'thic',
   },
   {
-    title: '층',
-    width: 80,
+    title: '발주접수일',
+    width: 150,
     dataIndex: 'layer',
     align: 'center',
     key: 'layer',
   },
   {
-    title: '영업담당',
-    width: 80,
-    dataIndex: 'saleMng',
-    align: 'center',
-    key: 'saleMng',
-  },
-  {
-    title: '발주(요구) 접수일',
-    width: 120,
-    dataIndex: 'orderDt',
-    align: 'center',
-    key: 'orderDt',
-  },
-  {
     title: '발주일',
-    width: 120,
+    width: 150,
     dataIndex: 'submitDt',
     align: 'center',
     key: 'submitDt',
