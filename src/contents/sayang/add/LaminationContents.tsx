@@ -131,7 +131,7 @@ const LaminationContents: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col gap-20">
-      <div className="h-center justify-between">
+      <div className="v-between-h-center">
         <div
           className="cursor-pointer"
           onClick={()=>setOpen(true)}
@@ -161,7 +161,7 @@ const LaminationContents: React.FC<Props> = ({
         contents={
           <div className="v-h-center gap-20 px-10">
             <div className="min-w-[319px] h-[612px] bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30 flex flex-col gap-20">
-              <div className="h-center justify-between h-40">
+              <div className="v-between-h-center h-40">
                 <p className="text-16 font-medium">적층구조 라이브러리</p>
                 <div className="w-96 h-24 flex v-h-center">
                   <div className="w-42 border-[1.6px] border-point1 v-h-center text-point1">
@@ -172,7 +172,7 @@ const LaminationContents: React.FC<Props> = ({
                   </div>
                 </div>
               </div>
-              <div className="h-32 h-center justify-between">
+              <div className="h-32 v-between-h-center">
                 <AntdSelectRound
                   options={[{value:1,label:'1'}]}
                   placeholder={"층선택"}
@@ -218,7 +218,7 @@ const LaminationContents: React.FC<Props> = ({
             </div>
             <div className="min-w-[665px] h-[612px] v-h-center gap-5">
               <div className="min-w-[298px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
-                <div className="h-center justify-between h-40 w-full mb-20">
+                <div className="v-between-h-center h-40 w-full mb-20">
                     <p className="text-16 font-medium">적층구조 라이브러리 구성/편집</p>
                   <div
                     className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
@@ -233,7 +233,7 @@ const LaminationContents: React.FC<Props> = ({
                       lamination.map((item:laminationRType, index:number) => (
                         <div
                           key={item.id}
-                          className="h-26 h-center border-1 border-line justify-between rounded-4"
+                          className="h-26 v-between-h-center border-1 border-line rounded-4"
                           style={{background:color[index  % 5]}}
                         >
                           <div className="w-40 v-h-center">
@@ -311,7 +311,7 @@ const LaminationContents: React.FC<Props> = ({
                 </div>
               </div>
               <div className="min-w-[333px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
-                <div className="h-center justify-between h-40 w-full mb-20">
+                <div className="v-between-h-center h-40 w-full mb-20">
                   <p className="text-16 font-medium">적층구조 구성요소</p>
                   <div className="w-[128px] h-24 flex v-h-center">
                     <div
@@ -350,7 +350,7 @@ const LaminationContents: React.FC<Props> = ({
                   </div>
                 </div>
                 <div className="h-[480px] overflow-y-auto text-12">
-                  <div className="h-40 bg-back h-center justify-between">
+                  <div className="h-40 bg-back v-between-h-center">
                     <p className="w-70 v-h-center">재질</p>
                     <p className="w-56 v-h-center">동박</p>
                     <p className="w-56 v-h-center">두께</p>

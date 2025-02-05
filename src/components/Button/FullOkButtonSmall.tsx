@@ -24,7 +24,7 @@ const FullOkButtonSmall : React.FC<Props> = ({
         onClick={click}
         disabled={disabled}
       >
-        <div className="w-full h-center justify-between gap-10">
+        <div className="w-full v-between-h-center gap-10">
           <p className="w-14 h-14"><Submit stroke={'#fff'} /></p>
           <p className="">{label}</p>
         </div>

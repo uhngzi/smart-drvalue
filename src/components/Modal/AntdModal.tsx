@@ -70,7 +70,7 @@ const AntdModal: React.FC<Props> = ({
       footer={footer||null}
       centered
     >
-      <div className="w-full h-80 shrink-0 px-30 h-center justify-between">
+      <div className="w-full h-80 shrink-0 px-30 v-between-h-center">
         <p className="text-20 font-medium ">{title}</p>
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"

@@ -35,7 +35,7 @@ const ProcessSelection: React.FC = () => {
           title: 
             <div className="parent-node flex items-center gap-10">
               <Star />
-              <div className="flex-1 h-center justify-between">
+              <div className="flex-1 v-between-h-center">
                 <span>{item.prcGrpNm}</span>
                 <span className="parent-count font-bold text-[#888]">{item.processes.length}</span>
               </div>

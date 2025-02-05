@@ -4,7 +4,7 @@ import BorderButton from "@/components/Button/BorderButton";
 import EditButtonSmall from "@/components/Button/EditButtonSmall";
 import ModelContents from "@/contents/sayang/model/add/ModelContents";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
-import AntdDrawer from "@/components/Modal/AntdDrawer";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import InputList from "@/components/List/InputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
@@ -174,9 +174,9 @@ const SayangModelAddPage: React.FC & {
           >
             <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 flex flex-col h-full gap-17 mx-20">
               <div className="h-95 flex flex-col gap-17">
-                <div className="w-full min-h-32 h-center justify-between">
+                <div className="w-full min-h-32 v-between-h-center">
                   <p className="text-16 font-semibold">모델등록</p>
-                  <div className="w-96 h-32 px-15 h-center justify-between text-14 border-1 border-bdDefault rounded-6 mr-20">
+                  <div className="w-96 h-32 px-15 v-between-h-center text-14 border-1 border-bdDefault rounded-6 mr-20">
                     <p className="min-w-16 min-h-16 text-[#FE5C73]"><Back stroke={'#FE5C73'} /></p>
                     초기화
                   </div>
@@ -202,7 +202,7 @@ const SayangModelAddPage: React.FC & {
             {model.length > 0 ?
             <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 mr-20 flex flex-col h-full gap-17 bg-back2">
               <div className="h-95 flex flex-col gap-17">
-                <div className="w-full min-h-32 h-center justify-between">
+                <div className="w-full min-h-32 v-between-h-center">
                   <p className="text-16 font-semibold">모델등록중</p>
                   <EditButtonSmall label="수정" click={()=>{}} />
                 </div>

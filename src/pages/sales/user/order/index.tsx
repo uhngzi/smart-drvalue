@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
 import { salesOrderRType } from "@/data/type/sales/order";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
 
 const sampleDt = [
   {
@@ -81,6 +82,7 @@ const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const [ open, setOpen ] = useState<boolean>(false);
+  const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
 
   const [ data, setData ] = useState<Array<salesOrderRType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
@@ -101,7 +103,7 @@ const SalesUserPage: React.FC & {
 
   return (
     <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
-      <div className="h-center justify-between">
+      <div className="v-between-h-center">
         <p>총 4건</p>
         <div 
           className="w-60 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer"
@@ -110,6 +112,7 @@ const SalesUserPage: React.FC & {
           신규
         </div>
       </div>
+
       <AntdTable
         columns={salesUserOrderClmn(setOpen)}
         data={data}
@@ -123,6 +126,17 @@ const SalesUserPage: React.FC & {
         title={"고객발주 등록"}
         contents={<AddOrderContents setOpen={setOpen} />}
       />
+
+      <AntdDrawer
+        open={drawerOpen}
+        close={()=>{setDrawerOpen(false)}}
+        maskClosable={false}
+        mask={false}
+      >
+        <div>
+
+        </div>
+      </AntdDrawer>
     </div>
   )
 };
