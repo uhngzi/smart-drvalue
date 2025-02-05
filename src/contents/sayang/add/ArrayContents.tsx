@@ -32,11 +32,11 @@ const ArrayContents: React.FC<Props> = ({
             <div className="h-74 h-center">
               <p className="w-60 h-full bg-back v-h-center p-5">원판</p>
               <div className="w-[209px] h-full">
-                <div className="w-[209px] h-37 h-center justify-between p-5">
+                <div className="w-[209px] h-37 v-between-h-center p-5">
                   <p>{'NY-2140 (난야)'}</p>
                   <p>FR-1</p>
                 </div>
-                <div className="w-full h-[50%] h-center justify-between border-t-1 border-line p-5">
+                <div className="w-full h-[50%] v-between-h-center border-t-1 border-line p-5">
                   <p>{'1040 x 1240'}</p>
                 </div>
               </div>

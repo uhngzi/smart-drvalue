@@ -26,7 +26,7 @@ const FilterTab: React.FC<Props> = ({
         {titleEtc}
       </div>
 
-      <div className="h-60 w-full h-center justify-between">
+      <div className="h-60 w-full v-between-h-center">
         <DefaultFilter filter={filter} setFilter={setFilter}/>
         {filterButton}
       </div>

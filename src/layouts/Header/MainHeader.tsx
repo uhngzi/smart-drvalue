@@ -11,7 +11,7 @@ const MainHeader: React.FC<Props> = ({ title }) => {
   const router = useRouter();
 
   return (
-    <div className="h-80 w-full h-center justify-between bg-white px-25">
+    <div className="h-80 w-full v-between-h-center bg-white px-25">
       <p className="text-25 text-[#343C6A] font-medium">
         {router.pathname==='/'?'HOME':title}
       </p>

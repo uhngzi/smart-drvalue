@@ -68,6 +68,11 @@ export default {
           'align-items': 'center',
           'justify-content' : 'center',
         },
+        '.v-between-h-center': {
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content' : 'space-between',
+        },
       });
 
       addUtilities({

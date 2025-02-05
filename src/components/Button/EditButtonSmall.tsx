@@ -24,7 +24,7 @@ const EditButtonSmall : React.FC<Props> = ({
         onClick={click}
         disabled={disabled}
       >
-        <div className="w-full h-center justify-between gap-10">
+        <div className="w-full v-between-h-center gap-10">
           <p className="w-14 h-14"><Edit /></p>
           <p className="">{label}</p>
         </div>

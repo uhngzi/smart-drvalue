@@ -270,7 +270,7 @@ const SalesUserEstimatePage: React.FC & {
                 </div>
                 <div className="px-10 py-20 flex flex-col gap-10">
                   <p className="font-semibold text-16">담당자 정보</p>
-                  <div className="h-center justify-between">
+                  <div className="v-between-h-center">
                     <AntdSelect options={[{value:1, label:'담당자1'}]} className="w-[150px]" defaultValue={1}/>
                     <p className="font-semibold">010-0000-0000</p>
                     <p className="font-semibold">dravinon@naver.com</p>
