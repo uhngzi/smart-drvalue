@@ -39,7 +39,11 @@ const WkProcessListPage: React.FC & {
     queryKey: ['setting', 'wk', 'process', 'group'],
     queryFn: async () => {
       setDataGroup([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process-group/jsxcrud/many');
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      });
 
       if (result.resultCode === 'OK_0000') {
         setDataGroup(result.data.data ?? []);
@@ -58,7 +62,11 @@ const WkProcessListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI('baseinfo', 'tenant', 'process/jsxcrud/many', {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process/jsxcrud/many'
+      },{
         limit: pagination.size,
         page: pagination.current,
       });
