@@ -94,7 +94,12 @@ const WkLaminationListPage: React.FC & {
   const handleSubmitNewData = async () => {
     try {
       console.log(newData);
-      const result = await postAPI('baseinfo', 'tenant', 'lamination-source', true, newData);
+      const result = await postAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'lamination-source',
+        jsx: 'jsxcrud'
+      }, newData);
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {

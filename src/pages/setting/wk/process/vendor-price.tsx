@@ -167,8 +167,12 @@ const WkProcessVendorPriceListPage: React.FC & {
   const handleSubmitNewData = async () => {
     try {
       console.log(newData);
-      const result = await postAPI('baseinfo', 'tenant', 'process-vendor-price', true, {...newData, layerEm: "2L"});
-      console.log(result);
+      const result = await postAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'process-vendor-price',
+        jsx: 'jsxcrud'
+      }, {...newData, layerEm: "2L"});
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
@@ -463,8 +467,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 WkProcessVendorPriceListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
-      { text: '공정', link: '/setting/wk/process/base' },
-      { text: '공정그룹', link: '/setting/wk/process/group' },
+      { text: '공정', link: '/setting/wk/process/list' },
       { text: '공정 공급처', link: '/setting/wk/process/vendor' },
       { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
     ]}

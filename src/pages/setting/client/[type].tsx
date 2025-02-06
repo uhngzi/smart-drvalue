@@ -107,7 +107,12 @@ const ClientCuListPage: React.FC & {
   const handleSubmitNewData = async () => {
     try {
       console.log(newData);
-      const result = await postAPI('baseinfo', 'tenant', 'biz-partner', true, {...newData, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'});
+      const result = await postAPI({
+        type:'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner',
+        jsx: 'jsxcrud'
+      }, {...newData, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'});
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {
