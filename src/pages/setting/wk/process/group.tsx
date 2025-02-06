@@ -6,7 +6,7 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { newDataProcessCUType, newDataProcessGroupCUType, processCUType, processGroupCUType, processRType } from "@/data/type/base/process";
+import { newDataProcessCUType, newDataProcessGroupCUType, processCUType, processGroupCUType, processGroupRType, processRType } from "@/data/type/base/process";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
@@ -15,6 +15,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AddContents from "@/contents/base/wk/process/group/AddContents";
 import AntdPagination from "@/components/Pagination/AntdPagination";
+import CustomTree from "@/components/Tree/CustomTree";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -32,7 +33,7 @@ const WkProcessGroupListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<processRType>>([]);
+  const [ data, setData ] = useState<Array<processGroupRType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -52,6 +53,17 @@ const WkProcessGroupListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         setData(result.data.data ?? []);
         setTotalData(result.data.total ?? 0);
+
+        const arr = (result.data.data ?? []).map((group:processGroupRType)=> ({
+          id: group.id,
+          label: group.prcGrpNm,
+          useYn: group.useYn,
+          children: group.processes.map((process:processRType) => ({
+            id: process.id,
+            label: process.prcNm,
+            useYn: group.useYn,
+          }))
+        }));
       } else {
         console.log('error:', result.response);
       }
@@ -122,6 +134,11 @@ const WkProcessGroupListPage: React.FC & {
             등록
           </div>
         </div>
+
+        <CustomTree
+          items={data}
+          initFn={newDataProcessCUType}
+        />
         
         <AntdTable
           columns={[
