@@ -59,6 +59,21 @@ const MuiTable: React.FC<Props> = ({
         //열숨김
         columnVisibilityModel={visibilityModal}
         onColumnVisibilityModelChange={visibilityChange}
+        
+        sx={{
+          "& .header": {
+            backgroundColor: "#FAFAFA !important",
+          },
+          "& .pinned-column": {
+            position: "sticky",
+            left: 0,
+            backgroundColor: "#fff",
+            zIndex: 2,
+          },
+          "& .MuiDataGrid-columnHeaders .pinned-column": {
+            zIndex: 3, // 헤더는 더 높은 zIndex 적용
+          },
+        }}
       />
     </>
   )
