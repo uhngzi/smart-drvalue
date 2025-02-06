@@ -1,4 +1,4 @@
-import { apiGetResponseType } from "@/data/type/apiResponse";
+import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
 import { instance, instanceRoot } from "./lib/axios"
 
 /*
@@ -45,9 +45,9 @@ export const getAPI = async (
     s_type?: 'in' | 'or' | 'eq' | 'regex' | 'elemMatch' | 'ne' | 'nin' | 'all',
     s_list?: Array<string>
   }
-): Promise<apiGetResponseType>  => {
-  if(server.utype === 'tenant/') {
-    const response = await instance.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
+): Promise<apiGetResponseType | apiAuthResponseType>  => {
+  if(server.utype === 'root/') {
+    const response = await instanceRoot.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,
@@ -59,7 +59,7 @@ export const getAPI = async (
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
   } else {
-    const response = await instanceRoot.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
+    const response = await instance.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,

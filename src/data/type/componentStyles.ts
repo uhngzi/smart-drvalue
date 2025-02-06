@@ -56,3 +56,13 @@ export type selectType = {
   value:any;
   label:string;
 }
+
+export type treeType = {
+  id: string;
+  label: string;
+  children?: Array<{
+    id: string;
+    label: string;
+  }>;
+  open: boolean;
+}

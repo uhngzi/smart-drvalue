@@ -10,6 +10,12 @@ export type apiGetResponseType = {
   response: any;
 }
 
+export type apiAuthResponseType = {
+  data: any;
+  resultCode: string;
+  response: any;
+}
+
 export type apiPatchResponseType = {
   data: {
     data: any;

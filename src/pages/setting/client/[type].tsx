@@ -45,7 +45,7 @@ const ClientCuListPage: React.FC & {
       setDataLoading(true);
       setData([]);
       const result = await getAPI({
-        type: 'baseinfo', 
+        type: 'baseinfo',
         utype: 'tenant/',
         url: 'biz-partner/jsxcrud/many'
       },{
@@ -108,11 +108,12 @@ const ClientCuListPage: React.FC & {
     try {
       console.log(newData);
       const result = await postAPI({
-        type:'baseinfo',
+        type: 'baseinfo',
         utype: 'tenant/',
         url: 'biz-partner',
-        jsx: 'jsxcrud'
-      }, {...newData, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'});
+        jsx: 'jsxcrud'},
+        { ...newData, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
+      );
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {
@@ -137,7 +138,7 @@ const ClientCuListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="v-between-h-center p-20">
+        <div className="h-center justify-between p-20">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"

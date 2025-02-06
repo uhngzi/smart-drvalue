@@ -2,8 +2,11 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
+import { HotGrade } from '../type/enum';
+import { salesOrderRType } from '../type/sales/order';
 
 export const salesUserOrderClmn = (
+  totalData: number,
   setOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): TableProps['columns'] => [
@@ -13,6 +16,7 @@ export const salesUserOrderClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
     title: '고객명',
@@ -20,13 +24,23 @@ export const salesUserOrderClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
+    render: (value, record) => (
+      <div className="w-full h-full v-h-center">
+        {record.prtInfo.prt.prtNm}
+      </div>
+    )
   },
   {
     title: '고객코드',
     width: 120,
-    dataIndex: 'prtCode',
-    key: 'prtCode',
+    dataIndex: 'prtRegCd',
+    key: 'prtRegCd',
     align: 'center',
+    render: (value, record) => (
+      <div className="w-full h-full v-h-center">
+        {record.prtInfo.prt.prtRegCd}
+      </div>
+    )
   },
   {
     title: '발주명',
@@ -45,9 +59,14 @@ export const salesUserOrderClmn = (
   {
     title: '고객처 담당',
     width: 120,
-    dataIndex: 'prtMngName',
-    key: 'prtMngName',
+    dataIndex: 'prtMngNm',
+    key: 'prtMngNm',
     align: 'center',
+    render: (value, record) => (
+      <div className="w-full h-full v-h-center">
+        {record.prtInfo.mng.prtMngNm}
+      </div>
+    )
   },
   {
     title: '긴급',
@@ -55,14 +74,14 @@ export const salesUserOrderClmn = (
     dataIndex: 'hotGrade',
     key: 'hotGrade',
     align: 'center',
-    render: (value: number) => (
+    render: (value: HotGrade) => (
       <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="일반" />
-        ) : value === 2 ? (
+        { value === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : value === HotGrade.URGENT ? (
           <FullChip label="긴급" state="pink" />
         ) : (
-          <FullChip label="초긴급" state="purple"/>
+          <FullChip label="일반" />
         )}
       </div>
     ),
@@ -70,9 +89,14 @@ export const salesUserOrderClmn = (
   {
     title: '영업담당',
     width: 120,
-    dataIndex: 'prtMngNm',
+    dataIndex: 'empNm',
     align: 'center',
-    key: 'prtMngNm',
+    key: 'empNm',
+    render: (value, record) => (
+      <div className="w-full h-full v-h-center">
+        {record.emp.name}
+      </div>
+    )
   },
   {
     title: '발주접수일',

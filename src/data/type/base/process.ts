@@ -1,4 +1,4 @@
-import { LayerEm, ModelTypeEm } from "../enum";
+import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
 
 export type processRType = {
   id: string;
@@ -69,7 +69,7 @@ export type processVendorRType = {
     updatedAt: Date;
     deletedAt: Date;
     id: string;
-    prtTypeEm: 'cs' | 'vndr' | 'sup' | 'both';
+    prtTypeEm: PrtTypeEm;
     prtNm: string;
     prtRegCd: number | null;
     prtSnm: string;

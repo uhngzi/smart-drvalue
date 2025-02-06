@@ -38,3 +38,17 @@ export enum ModelTypeEm {
   SAMPLE = "sample",
   PRODUCTION = "production"
 }
+
+export enum SalesOrderStatus {
+  MODEL_REG_WAITING = 'model_reg_waiting', // 대기
+  MODEL_REG_REGISTERING = 'model_reg_registering', // 등록중
+  MODEL_REG_COMPLETED = 'model_reg_completed', // 완료
+  MODEL_REG_DISCARDED = 'model_reg_discarded', // 폐기
+}
+
+export enum PrtTypeEm {
+  CS = 'cs',
+  VNDR = 'vndr',
+  SUP = 'sup',
+  BOTH = 'both',
+}

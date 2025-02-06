@@ -19,6 +19,7 @@ import CustomTree from "@/components/Tree/CustomTree";
 import { patchAPI } from "@/api/patch";
 import { message, notification } from "antd";
 import useToast from "@/utils/useToast";
+import { treeType } from "@/data/type/componentStyles";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -38,15 +39,7 @@ const WkProcessGroupListPage: React.FC & {
 
   // --------- 리스트 데이터 시작 ---------
   const [ data, setData ] = useState<Array<processGroupRType>>([]);
-  const [ treeData, setTreeData ] = useState<Array<{
-    id: string;
-    label: string;
-    children?: Array<{
-      id: string;
-      label: string;
-    }>;
-    open: boolean;
-  }>>([]);
+  const [ treeData, setTreeData ] = useState<treeType[]>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({

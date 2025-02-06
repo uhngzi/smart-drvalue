@@ -32,7 +32,7 @@ const CustomDragger = styled(Dragger)`
   }
     
   .ant-upload-drag {
-    border-radius: 0;
+    border-radius: 2px;
     border: 1px solid #D9D9D9;
   }
 `
@@ -62,9 +62,11 @@ const AntdDragger: React.FC<Props> = ({
       }
 
       if (info.file.status === 'done') {
-        const file = info.file.response.data[0];
+        const filesNm = (info.file.response.data ?? []).map((file:any) => {
+          return file?.uploadEntityResult?.storageName;
+        });
         setFileList(prev => [...prev, info.file]);
-        setFileIdList(prev => [...prev, file.uploadEntityResult.id]);
+        setFileIdList(prev => [...prev, ...filesNm]);
         console.log(info, info.file);
       }
     },
@@ -108,7 +110,7 @@ const AntdDragger: React.FC<Props> = ({
           </div>
         </div>
       </CustomDragger>
-      <div className="flex flex-col mt-20">
+      <div className="flex flex-col mt-20 max-h-100 overflow-y-auto">
         {fileList?.map((file, idx) => (
           <div className="h-center h-32" key={idx}>
             <p className="w-16 h-16 mr-8"><Klip /></p>

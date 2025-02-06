@@ -1,6 +1,8 @@
+import { PrtTypeEm } from "../enum";
+
 export type cuRType = {
   id: string;
-  prtTypeEm: 'cs' | 'vndr' | 'sup' | 'both';
+  prtTypeEm: PrtTypeEm;
   prtNm: string;
   prtRegCd: number | null;
   prtSnm: string;
@@ -18,14 +20,14 @@ export type cuRType = {
   prtFax: string;
   prtEmail: string;
   emp: { id?: string; };
-  managers: Array<any>;
+  managers: Array<cuMngRType>;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
 }
 
 export type cuCUType = {
-  prtTypeEm: 'cs' | 'vndr' | 'sup' | 'both' | '';
+  prtTypeEm: PrtTypeEm;
   prtNm: string;
   prtRegCd: number | null;
   prtSnm: string;
@@ -47,7 +49,7 @@ export type cuCUType = {
 
 export const newDataCuType = ():cuCUType => {
   return {
-    prtTypeEm: '',
+    prtTypeEm: PrtTypeEm.CS,
     prtNm: '',
     prtRegCd: null,
     prtSnm: '',

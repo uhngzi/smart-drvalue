@@ -18,7 +18,7 @@ interface Props {
   presets?: 'pre' | 'post';
   placeholder?: string;
   styles?: componentsStylesType;
-  suffixIcon?: null | 'down';
+  suffixIcon?: null | 'down' | 'cal';
 }
 
 const AntdDatePicker: React.FC<Props> = ({
@@ -74,7 +74,7 @@ const AntdDatePicker: React.FC<Props> = ({
         disabled={disabled}
         presets={presets==='pre'?datePresetsPre:presets==='post'?datePresetsPost:[]}
         placeholder={placeholder}
-        suffixIcon={suffixIcon===null?null:suffixIcon==='down'?<DownOutlined />:<Calendar width="16" height="17"/>}
+        suffixIcon={suffixIcon==='down'?<DownOutlined />:suffixIcon==='cal'?<Calendar width="16" height="17"/>:null}
       />
     </AntdDatePickerStyled>
   )

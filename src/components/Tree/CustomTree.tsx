@@ -6,17 +6,10 @@ import Edit from "@/assets/svg/icons/s_ellipsis.svg"
 
 import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import { treeType } from "@/data/type/componentStyles"
 
 interface Props {
-  data: Array<{
-    id: string;
-    label: string;
-    children?: Array<{
-      id: string;
-      label: string;
-    }>;
-    open: boolean;
-  }>;
+  data: treeType[];
   handleDataChange: (
     type:'main' | 'child',
     id:string,
@@ -30,15 +23,7 @@ const CustomTree:React.FC<Props> = ({
   handleDataChange,
 }) => {
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
-  const [ list, setList ] = useState<Array<{
-    id: string;
-    label: string;
-    children?: Array<{
-      id: string;
-      label: string;
-    }>;
-    open: boolean;
-  }>>([]);
+  const [ list, setList ] = useState<treeType[]>([]);
 
   useEffect(()=>{
     if(data.length > 0) {
@@ -132,7 +117,7 @@ const CustomTree:React.FC<Props> = ({
       {
         list.map((item) => (
           <>
-            <div className="w-full h-40 h-center gap-10">
+            <div className="w-full h-40 h-center gap-10" key={item.id}>
               { item.open ? <CaretDownFilled onClick={()=>handleShowList(item.id)} /> : <CaretUpFilled onClick={()=>handleShowList(item.id)} />}
               <div className="relative flex-1">
                 <input
@@ -171,6 +156,7 @@ const CustomTree:React.FC<Props> = ({
               className={`transition-all duration-300 ease-in-out overflow-hidden ${
                 item.open ? "max-h-full opacity-100" : "max-h-0 opacity-0"
               }`}
+              key={item.id+'child'}
             >
               {item.children?.map((child) => (
                 <div key={child.id} className="w-full h-40 h-center gap-10 pl-20">
