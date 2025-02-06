@@ -15,7 +15,6 @@ import Excel from "@/assets/png/excel.png"
 import Print from "@/assets/png/print.png"
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 
-
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import { salesOrderRType } from "@/data/type/sales/order";
@@ -129,7 +128,10 @@ const SalesUserPage: React.FC & {
 
   return (
     <>
-      <div className="w-full h-50 flex h-center justify-end px-60 pt-10 absolute top-0">
+      <div 
+        className="w-full h-50 flex h-center justify-end px-60 pt-10 absolute top-0"
+        onClick={()=>{setOpen(true)}}
+      >
         <div className="w-80 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer flex gap-4 z-20">
           <SplusIcon stroke="#FFF"className="w-16 h-16"/>
           <span>신규</span>
