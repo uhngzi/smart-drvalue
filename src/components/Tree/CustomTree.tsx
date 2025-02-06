@@ -24,7 +24,6 @@ const CustomTree:React.FC<Props> = ({
     label: string;
     children: Array<any>;
   }>>([]);
-
   useEffect(()=>{
     if(items.length > 0) {
       setList(items);
