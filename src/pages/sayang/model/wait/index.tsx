@@ -65,7 +65,7 @@ const SayangModelWaitPage: React.FC & {
   const [newOpen, setNewOpen] = useState<boolean>(false);
 
   return (
-    <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
+    <div className="flex flex-col gap-20">
       <AntdTable
         columns={sayangModelWaitClmn(router, setNewOpen)}
         data={data}

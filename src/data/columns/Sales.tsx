@@ -2,8 +2,11 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 import { GridColDef } from '@mui/x-data-grid';
 
+import Edit from '@/assets/svg/icons/memo.svg';
+
 export const salesUserOrderClmn = (
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -15,43 +18,43 @@ export const salesUserOrderClmn = (
   {
     title: '고객명',
     width: 250,
-    dataIndex: 'no',
-    key: 'no',
+    dataIndex: 'prtNm',
+    key: 'prtNm',
     align: 'center',
   },
   {
     title: '고객코드',
     width: 120,
-    dataIndex: 'cuName',
-    key: 'cuName',
+    dataIndex: 'prtCode',
+    key: 'prtCode',
     align: 'center',
   },
   {
     title: '발주명',
     width: 360,
-    dataIndex: 'orderName',
-    key: 'orderName',
+    dataIndex: 'orderNm',
+    key: 'orderNm',
     align: 'center',
   },
   {
     title: '모델수',
     width: 70,
-    dataIndex: 'mngName',
-    key: 'mngName',
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
     align: 'center',
   },
   {
     title: '고객처 담당',
     width: 120,
-    dataIndex: 'mngName',
-    key: 'mngName',
+    dataIndex: 'prtMngName',
+    key: 'prtMngName',
     align: 'center',
   },
   {
     title: '긴급',
     width: 80,
-    dataIndex: 'hot',
-    key: 'hot',
+    dataIndex: 'hotGrade',
+    key: 'hotGrade',
     align: 'center',
     render: (value: number) => (
       <div className="v-h-center">
@@ -68,41 +71,43 @@ export const salesUserOrderClmn = (
   {
     title: '영업담당',
     width: 120,
-    dataIndex: 'thic',
+    dataIndex: 'prtMngNm',
     align: 'center',
-    key: 'thic',
+    key: 'prtMngNm',
   },
   {
     title: '발주접수일',
     width: 150,
-    dataIndex: 'layer',
+    dataIndex: 'orderRepDt',
     align: 'center',
-    key: 'layer',
+    key: 'orderRepDt',
   },
   {
     title: '발주일',
     width: 150,
-    dataIndex: 'submitDt',
+    dataIndex: 'orderDt',
     align: 'center',
-    key: 'submitDt',
+    key: 'orderDt',
   },
   {
-    title: '모델 등록',
-    width: 100,
-    dataIndex: 'model',
+    title: '모델등록',
+    width: 150,
+    dataIndex: 'id',
+    key: 'id',
     align: 'center',
-    key: 'model',
-    render: (value: number) => (
-      <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="완료" />
-        ) : value === 2 ? (
-          <FullChip label="등록중" state="mint" click={() => setOpen(true)} />
-        ) : (
-          <FullChip label="대기" state="yellow" click={() => setOpen(true)} />
-        )}
+    render: (value) => (
+      <div className="w-full h-full v-h-center">
+        <div 
+          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
+          onClick={()=>{
+            setNewOpen(true);
+            // router.push(`/sayang/model/wait/form/${value}`);
+          }}
+        >
+          <p className="w-18 h-18"><Edit /></p>
+        </div>
       </div>
-    ),
+    )
   },
 ];
 

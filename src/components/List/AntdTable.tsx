@@ -37,9 +37,9 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
   return (
     <AntdTableStyled 
       className={className}
-      $padding={styles?.pd?styles.pd:'10px'}
-      $thPadding={styles?.th_pd?styles.th_pd:'10px'}
-      $tdPadding={styles?.td_pd?styles.td_pd:'10px'}
+      $padding={styles?.pd?styles.pd:'0 10px'}
+      $thPadding={styles?.th_pd?styles.th_pd:'0 10px'}
+      $tdPadding={styles?.td_pd?styles.td_pd:'0 10px'}
       $thHeight={styles?.th_ht ?? '55px'}
       $tdHeight={styles?.td_ht ?? '55px'}
       $thBackground={styles?.th_bg?styles.th_bg:'white'}
@@ -47,14 +47,14 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
       $tdTextAlign={styles?.td_al?styles.td_al:'left'}
       $thFontWeight={styles?.th_fw?styles.th_fw:'500'}
       $round={styles?.round||'14px'}
-      $line={styles?.line==='n'?'0':'1px solid #D5D5D5'}
+      $line={styles?.line==='n'?'0':'1px solid #0000000F'}
     >
       <ConfigProvider 
         theme={{ 
           ...AntdTableTheme,
           components: {
             Table: {
-              headerSplitColor: tableProps?.split ?? '#D5D5D5',
+              headerSplitColor: tableProps?.split ?? '#0000000F',
             },
           },
         }}
@@ -143,17 +143,17 @@ const AntdTableStyled = styled.div<{
       height: ${({ $tdHeight }) => $tdHeight};
       padding: ${({ $tdPadding }) => $tdPadding};
       border: 0;
-      border-top: 1px solid #D5D5D5;
+      border-top: 1px solid #0000000F;
 
       text-align: ${({ $tdTextAlign }) => $tdTextAlign };
 
-      font-weight: 500;
+      font-weight: 400;
       font-size: 14px;
       color: #444444;
     }
 
     & tr:last-child td {
-      border-bottom: 1px solid #D5D5D5;
+      border-bottom: 1px solid #0000000F;
     }
     
     & tr td:first-child {
@@ -168,13 +168,13 @@ const AntdTableStyled = styled.div<{
     
     & tr:last-child td:last-child {
       border-radius: 0 0 ${({ $round }) => $round } 0;
-      border-bottom: 1px solid #D5D5D5;
+      border-bottom: 1px solid #0000000F;
       border-right: ${({ $line }) => $line};
     }
     
     & tr:last-child td:first-child {
       border-radius: 0 0 0 ${({ $round }) => $round };
-      border-bottom: 1px solid #D5D5D5;;
+      border-bottom: 1px solid #0000000F;;
       border-left: ${({ $line }) => $line};
     }
   }

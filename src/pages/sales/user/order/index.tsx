@@ -3,6 +3,8 @@ import AntdTable from "@/components/List/AntdTable";
 import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import { salesUserOrderClmn, salesUserOrderClmnMui } from "@/data/columns/Sales";
 
+import Bell from "@/assets/svg/icons/bell_line.svg"
+
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import { useEffect, useState } from "react";
@@ -11,72 +13,65 @@ import { useQuery } from "@tanstack/react-query";
 import { salesOrderRType } from "@/data/type/sales/order";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import MuiTable from "@/components/List/MuiTable";
+import Image from "next/image";
 
 const sampleDt = [
   {
     key:4,
     index:4,
-    no:'900-0894',
-    cuName:'GPN/900',
-    orderName:'SWEDF 모델 재생산 100PCS',
-    mngName:'홍길동',
-    hot:1,
-    state:2,
-    thic:0.1,
-    layer:1,
-    saleMng:'홍길동',
+    prtNm:'아무개 거래처',
+    prtCode:'C0001',
+    orderNm:'SWEDF 모델 재생산 100PCS',
+    modelCnt: 10,
+    prtMngName:'아무개',
+    hotGrade:1,
+    prtMngNm:'홍길동',
+    orderRepDt:'2024-12-01',
     orderDt:'2024-12-01',
-    submitDt:'2024-12-01',
     model:'등록',
   },
   {
-    key:3,
+    key:5,
     index:3,
-    no:'900-0894',
-    cuName:'GPN/900',
-    orderName:'SWEDF 모델 재생산 100PCS',
-    mngName:'홍길동',
-    hot:2,
-    state:3,
-    thic:0.1,
-    layer:1,
-    saleMng:'홍길동',
-    orderDt:'2024-12-01',
-    submitDt:'2024-12-01',
-    model:3,
+    prtNm:'홍길동 거래처',
+    prtCode:'C0002',
+    orderNm:'XYZ 모델 재생산 50PCS',
+    modelCnt: 5,
+    prtMngName:'홍길동',
+    hotGrade:2,
+    prtMngNm:'이순신',
+    orderRepDt:'2024-12-02',
+    orderDt:'2024-12-02',
+    model:'등록',
   },
   {
-    key:2,
+    key:6,
     index:2,
-    no:'900-0894',
-    cuName:'GPN/900',
-    orderName:'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-    mngName:'홍길동',
-    hot:3,
-    state:1,
-    thic:0.1,
-    layer:1,
-    saleMng:'홍길동',
-    orderDt:'2024-12-01',
-    submitDt:'2024-12-01',
-    model:2,
+    prtNm:'이순신 거래처',
+    prtCode:'C0003',
+    orderNm:'ABC 모델 재생산 200PCS',
+    modelCnt: 20,
+    prtMngName:'이순신',
+    hotGrade:3,
+    prtMngNm:'강감찬',
+    orderRepDt:'2024-12-03',
+    orderDt:'2024-12-03',
+    model:'등록',
   },
   {
-    key:1,
+    key:7,
     index:1,
-    no:'900-0894',
-    cuName:'GPN/900',
-    orderName:'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-    mngName:'홍길동',
-    hot:2,
-    state:2,
-    thic:0.1,
-    layer:1,
-    saleMng:'홍길동',
-    orderDt:'2024-12-01',
-    submitDt:'2024-12-01',
-    model:1,
-  },
+    prtNm:'강감찬 거래처',
+    prtCode:'C0004',
+    orderNm:'DEF 모델 재생산 150PCS',
+    modelCnt: 15,
+    prtMngName:'강감찬',
+    hotGrade:4,
+    prtMngNm:'유관순',
+    orderRepDt:'2024-12-04',
+    orderDt:'2024-12-04',
+    model:'등록',
+  }
 ]
 
 const SalesUserPage: React.FC & {
@@ -84,6 +79,7 @@ const SalesUserPage: React.FC & {
 } = () => {
   const [ open, setOpen ] = useState<boolean>(false);
   const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+  const [newOpen, setNewOpen] = useState<boolean>(false);
 
   const [ data, setData ] = useState<Array<salesOrderRType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
@@ -101,22 +97,14 @@ const SalesUserPage: React.FC & {
       setData(queryData ?? []);
     }
   }, [queryData]);
-
   return (
-    <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
-      <div className="v-between-h-center">
+    <div className="flex flex-col gap-20" style={{borderTop:'1px solid #0000000F'}}>
+      {/* <div className="h-center justify-between">
         <p>총 4건</p>
-        <div 
-          className="w-60 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer"
-          onClick={()=>{setOpen(true);}}
-        >
-          신규
-        </div>
-      </div>
-
+      </div> */}
       <AntdTable
-        columns={salesUserOrderClmn(setOpen)}
-        data={data}
+        columns={salesUserOrderClmn(setOpen, setNewOpen)}
+        data={sampleDt}
         styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
       />
 

@@ -233,8 +233,8 @@ const SalesUserEstimatePage: React.FC & {
   const [fileIdList, setFileIdList] = useState<string[]>([]);
 
   return (
-    <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
-      <div className="">총 4건</div>
+    <div className="flex flex-col gap-20">
+      {/* <div className="">총 4건</div> */}
       <AntdTable
         columns={sampleCl(setOpen)}
         data={sampleDt}

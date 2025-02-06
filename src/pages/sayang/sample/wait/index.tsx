@@ -77,7 +77,7 @@ const SayangSampleListPage: React.FC & {
 
   return (
     <div className="flex flex-col gap-40">
-      <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
+      <div className="flex flex-col gap-20">
         <TitleSmall title={`사양등록 중 ${data.length}건`} />
         <AntdTable
           columns={sayangSampleWaitClmn(router)}
@@ -86,7 +86,7 @@ const SayangSampleListPage: React.FC & {
         />
       </div>
       <div className="w-full h-1 border-b-1 border-line"></div>
-      <div className="flex flex-col bg-white p-30 rounded-14 gap-20">
+      <div className="flex flex-col gap-20">
         <TitleSmall title={`사양등록 대기 ${data.length}건`} />
         <AntdTable
           columns={sayangSampleWaitClmn(router)}
