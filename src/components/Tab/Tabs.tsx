@@ -46,7 +46,7 @@ export const TabLarge: React.FC<PropsLarge> = ({
   pathname,
 }) => {
   return (
-    <div className="w-full flex">
+    <div className="w-full flex h-50 z-10 relative"  style={{borderBottom:'1px solid #D9D9D9'}}>
       {
         items.map((i, idx) => (
           <div 

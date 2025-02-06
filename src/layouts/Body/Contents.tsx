@@ -6,7 +6,7 @@ interface Props {
 }
 
 const Contents: React.FC<Props> = ({ children, padding }) => {
-  return <ContentsStyled $padding={padding||'0 40px 0 40px'} className="bg-white rounded-14">{children}</ContentsStyled>
+  return <ContentsStyled $padding={padding||'0 40px 0 40px'} className="bg-white rounded-14 relative">{children}</ContentsStyled>
 }
 
 const ContentsStyled = styled.div<{

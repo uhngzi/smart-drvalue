@@ -5,7 +5,6 @@ import Sider from "../Sider/Sider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { TabLarge } from "@/components/Tab/Tabs";
-import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import { Button, Dropdown, MenuProps, Pagination } from "antd";
 import Image from "next/image";
 import { MoreOutlined } from "@ant-design/icons";
@@ -70,18 +69,10 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
         <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
           <Contents padding="10px 30px 20px 30px">
             {menu && (
-              <div className="flex w-full h-center" style={{borderBottom:'1px solid #D9D9D9'}}>
-                <TabLarge
-                  items={menu}
-                  pathname={router.pathname}
-                />
-                <div 
-                  className="w-80 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer flex gap-4"
-                >
-                  <SplusIcon stroke="#FFF"className="w-16 h-16"/>
-                  <span>신규</span>
-                </div>
-              </div>
+              <TabLarge
+                items={menu}
+                pathname={router.pathname}
+              />
             )}
             {children}
           </Contents>
