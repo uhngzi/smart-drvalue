@@ -9,3 +9,17 @@ export type apiGetResponseType = {
   resultCode: string;
   response: any;
 }
+
+export type apiPatchResponseType = {
+  data: {
+    data: any;
+    status: number;
+    resultCode: string;
+    message: string;
+    path: string;
+    timestamp: Date;
+    requestUser: any;
+  }
+  resultCode: string;
+  response: any;
+}

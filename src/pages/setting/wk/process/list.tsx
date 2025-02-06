@@ -16,11 +16,15 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AddContents from "@/contents/base/wk/process/group/AddContents";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import CustomTree from "@/components/Tree/CustomTree";
+import { patchAPI } from "@/api/patch";
+import { message, notification } from "antd";
+import useToast from "@/utils/useToast";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { showToast, ToastContainer } = useToast();
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -34,7 +38,15 @@ const WkProcessGroupListPage: React.FC & {
 
   // --------- 리스트 데이터 시작 ---------
   const [ data, setData ] = useState<Array<processGroupRType>>([]);
-  const [ treeData, setTreeData ] = useState<Array<processGroupRType>>([]);
+  const [ treeData, setTreeData ] = useState<Array<{
+    id: string;
+    label: string;
+    children?: Array<{
+      id: string;
+      label: string;
+    }>;
+    open: boolean;
+  }>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -58,12 +70,11 @@ const WkProcessGroupListPage: React.FC & {
         const arr = (result.data.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
-          useYn: group.useYn,
           children: group.processes.map((process:processRType) => ({
             id: process.id,
             label: process.prcNm,
-            useYn: process.useYn,
           })),
+          open: true,
         }));
         setTreeData(arr);
       } else {
@@ -102,7 +113,12 @@ const WkProcessGroupListPage: React.FC & {
   const handleSubmitNewData = async () => {
     try {
       console.log(newData);
-      const result = await postAPI('baseinfo', 'tenant', 'process-group', true, newData);
+      const result = await postAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'process-group',
+        jsx: 'jsxcrud'
+      }, newData);
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {
@@ -122,12 +138,70 @@ const WkProcessGroupListPage: React.FC & {
   }
   // ----------- 신규 데이터 끝 -----------
 
+  const handleTreeDataChange = async (
+    type:'main'|'child',
+    id:string,
+    value:string,
+    parentsId?: string,
+  ) => {
+    console.log(type, id, value);
+    const url = type === 'main' ? 'process-group' : 'process';
+    const jsonData = 
+      type === 'main' ? 
+      {
+        prcGrpNm: value,
+        useYn: true
+      } : {
+        processGroup: {
+          id: parentsId
+        },
+        prcNm: value,
+        useYn: true,
+      }
+    console.log(JSON.stringify(jsonData));
+    if(id.includes('new')) {
+      const result = await postAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: url,
+        jsx: 'jsxcrud'
+      }, jsonData);
+
+      if(result.resultCode === "OK_0000") {
+        showToast("등록 완료", "success");
+      } else {
+        showToast("등록 실패", "error");
+      }
+    } else {
+      const result = await patchAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: url,
+        jsx: 'jsxcrud',
+      }, id, jsonData);
+
+      if(result.resultCode === "OK_0000") {
+        showToast("수정 완료", "success");
+        console.log('ok');
+      } else {
+        showToast("실패 완료", "error");
+      }
+    }
+  }
+
   return (
     <>
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="v-between-h-center p-20">
+        <div className="p-20">
+          <CustomTree
+            data={treeData}
+            handleDataChange={handleTreeDataChange}
+          />
+        </div>
+
+        {/* <div className="v-between-h-center p-20">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
@@ -136,11 +210,6 @@ const WkProcessGroupListPage: React.FC & {
             등록
           </div>
         </div>
-
-        <CustomTree
-          items={treeData}
-          initFn={newDataProcessCUType}
-        />
         
         <AntdTable
           columns={[
@@ -166,16 +235,16 @@ const WkProcessGroupListPage: React.FC & {
             },
           ]}
           data={data}
-        />
+        /> */}
 
-        <div className="w-full h-100 v-h-center">
+        {/* <div className="w-full h-100 v-h-center">
           <AntdPagination
             current={pagination.current}
             total={totalData}
             size={pagination.size}
             onChange={handlePageChange}
           />
-        </div>
+        </div> */}
       </>}
         
       <AntdModal
@@ -198,6 +267,7 @@ const WkProcessGroupListPage: React.FC & {
         }}
       />
 
+      <ToastContainer />
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
@@ -219,8 +289,7 @@ const WkProcessGroupListPage: React.FC & {
 WkProcessGroupListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
-      { text: '공정', link: '/setting/wk/process/base' },
-      { text: '공정그룹', link: '/setting/wk/process/group' },
+      { text: '공정', link: '/setting/wk/process/list' },
       { text: '공정 공급처', link: '/setting/wk/process/vendor' },
       { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
     ]}

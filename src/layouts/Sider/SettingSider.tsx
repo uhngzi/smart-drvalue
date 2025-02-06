@@ -120,7 +120,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
       children: [
         {
           key: 'wk/process',
-          title: 'wk/process/base',
+          title: 'wk/process/list',
           label: '공정 정보',
         },
         {
