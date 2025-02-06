@@ -29,7 +29,7 @@ const FullChip: React.FC<Props> = ({
   return (
     <>
       <div 
-        className={`flex w-fit p-5 rounded-4 ${bg} ${fc} font-medium ${className}`+(click?' cursor-pointer':' cursor-default')}
+        className={`w-fit p-5 rounded-4 h-25 v-h-center ${bg} ${fc} font-medium ${className}`+(click?' cursor-pointer':' cursor-default')}
         onClick={click}
       >
         {label}
