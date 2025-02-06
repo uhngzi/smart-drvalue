@@ -113,11 +113,9 @@ export const salesUserOrderClmnMui = (
   {
     field : 'no',
     headerName : 'No.',
-    width: 80,
+    width: 50,
     align: 'center',
     editable: false,
-    headerClassName: "pinned-column header",
-    cellClassName: "pinned-column",
   },
   {
     field: 'ㄱ',
@@ -141,7 +139,7 @@ export const salesUserOrderClmnMui = (
   {
     field: 'mngName',
     headerName: '업체담당',
-    width: 100,
+    width: 80,
     align: 'center',
   },
   {
@@ -181,14 +179,14 @@ export const salesUserOrderClmnMui = (
   {
     field: 'thic',
     headerName: '두께',
-    width: 100,
+    width: 80,
     align: 'center',
     type: 'number',
   },
   {
     field: 'layer',
     headerName: '층',
-    width: 100,
+    width: 80,
     align: 'center',
   },
   {

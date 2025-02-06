@@ -60,9 +60,7 @@ const theme = createTheme({
           borderTop: "1px solid rgba(0, 0, 0, 0.06)",
           borderBottom: "1px solid rgba(0, 0, 0, 0.06) !important",
           padding: 16,
-        },
-        columnHeaderTitleContainer: {
-          justifyContent: "center",
+          textAlign: "center",
         }
       },
     },

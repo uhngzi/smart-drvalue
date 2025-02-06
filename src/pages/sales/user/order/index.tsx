@@ -122,7 +122,6 @@ const SalesUserPage: React.FC & {
 
       <MuiTable
         columns={salesUserOrderClmnMui(setOpen)}
-        rows={[{no:1,id:1}]}
         rowCount={0}
       />
       
