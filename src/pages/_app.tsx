@@ -7,10 +7,8 @@ import '@/styles/globals.css';
 import StyledComponentsRegistry from '@/utils/registry';
 
 import { App as AntdApp, ConfigProvider } from 'antd';
-import { ThemeProvider } from "@mui/material/styles";
 import ko_KR from 'antd/locale/ko_KR';
 import { client } from '@/api/lib/reactQuery';
-import theme from '@/styles/theme';
 
 type AppPropsWithLayout = AppProps & {
   Component: {
@@ -21,7 +19,6 @@ type AppPropsWithLayout = AppProps & {
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <QueryClientProvider client={client}>
-      <ThemeProvider theme={theme}>
       <ConfigProvider 
         locale={ko_KR}
         theme={{
@@ -41,7 +38,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           </StyledComponentsRegistry>
         </AntdApp>
       </ConfigProvider>
-      </ThemeProvider>
     </QueryClientProvider>
   );
 }
