@@ -1,6 +1,6 @@
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdTable from "@/components/List/AntdTable";
-import AddOrderContents from "@/contents/sales/user/modal/\bAddOrderContents";
+import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import { salesUserOrderClmn, salesUserOrderClmnMui } from "@/data/columns/Sales";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -122,6 +122,9 @@ const SalesUserPage: React.FC & {
 
       <MuiTable
         columns={salesUserOrderClmnMui(setOpen)}
+        rows={[
+          {no:1,id:1,orderName:'ㅇㅇㅇ'}
+        ]}
         rowCount={0}
       />
       
