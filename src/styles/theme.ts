@@ -43,14 +43,19 @@ const theme = createTheme({
     MuiDataGrid: {
       styleOverrides: {
         root: {
-          fontSize: "14px", // DataGrid 기본 글자 크기
+          border: 0,
+          fontSize: "14px",
+          borderRadius: 0,
         },
         cell: {
           height: 55,
           color: "#444444",
           fontWeight: 400,
-          borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+          borderTop: 0,
           borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+          padding: 16,
+          display: 'flex',
+          alignItems: 'center',
         },
         columnHeader: {
           height: 56,
@@ -63,6 +68,9 @@ const theme = createTheme({
         },
         columnHeaderTitleContainer: {
           justifyContent: "center",
+        },
+        columnSeparator: {
+          color: "rgba(0, 0, 0, 0.06)"
         }
       },
     },

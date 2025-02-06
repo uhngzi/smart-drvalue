@@ -8,7 +8,7 @@ interface Props {
   loading?: boolean;
   visibilityModal?: GridColumnVisibilityModel;
   visibilityChange?: (model: GridColumnVisibilityModel, details: GridCallbackDetails) => void;
-  paging?: true;
+  paging?: true | undefined;
   paginationModel?: {
     pageSize: number;
     page: number;
@@ -23,7 +23,7 @@ const MuiTable: React.FC<Props> = ({
   loading = false,
   visibilityModal,
   visibilityChange,
-  paging,
+  paging = undefined,
   paginationModel,
   onPaginationModelChange,
 }) => {
@@ -39,22 +39,18 @@ const MuiTable: React.FC<Props> = ({
         rowHeight={55}
         columnHeaderHeight={56}
         localeText={koKR.components.MuiDataGrid.defaultProps.localeText}
+        hideFooter
         
         //수정 및 추가
         editMode="row"
         
         //필터
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{toolbar: {showQuickFilter: true}}}
+        // slots={{ toolbar: GridToolbar }}
+        // slotProps={{toolbar: {showQuickFilter: true}}}
 
         //페이징
         paginationMode="server"
-        pagination={paging}
-        pageSizeOptions={[15, 25, 50, 100]}
-        initialState={{
-          pagination: { paginationModel: paginationModel },
-        }}
-        onPaginationModelChange={onPaginationModelChange}
+        pagination={undefined}
 
         //열숨김
         columnVisibilityModel={visibilityModal}

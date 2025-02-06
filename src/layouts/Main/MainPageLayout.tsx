@@ -77,20 +77,12 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
                 />
                 <div 
                   className="w-80 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer flex gap-4"
-                  // onClick={()=>{setOpen(true);}}
                 >
                   <SplusIcon stroke="#FFF"className="w-16 h-16"/>
                   <span>신규</span>
                 </div>
               </div>
             )}
-            <div className="flex w-full h-50 gap-20 justify-end items-center">
-              <span>총 4건</span>
-              <Pagination size="small" defaultCurrent={1} total={50} />
-              <Dropdown menu={menuProps} trigger={['click']} placement="bottomCenter" getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}>
-                <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
-              </Dropdown>
-            </div>
             {children}
           </Contents>
         </div>
