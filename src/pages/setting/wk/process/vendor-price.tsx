@@ -15,7 +15,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
-import { cuRType } from "@/data/type/base/cu";
+import { partnerRType } from "@/data/type/base/partner";
 
 const WkProcessVendorPriceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -235,7 +235,7 @@ const WkProcessVendorPriceListPage: React.FC & {
               dataIndex: 'vendor',
               key: 'vendor',
               align: 'center',
-              render: (item:cuRType) => item.prtNm,
+              render: (item:partnerRType) => item.prtNm,
             },
             {
               title: '가격명',
@@ -304,7 +304,7 @@ const WkProcessVendorPriceListPage: React.FC & {
                 label: '공정',
                 type: 'select',
                 value: newData.process.id,
-                option: dataProcess?.filter((item:processRType)=>item.processGroup.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
+                option: dataProcess?.filter((item:processRType)=>item?.processGroup?.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
               },
               { 
                 name: 'vendor',

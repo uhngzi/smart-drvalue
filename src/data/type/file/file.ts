@@ -1,3 +1,5 @@
+// 파일
+
 export type fileMultiUploadRType = {
   originUploadResult: {
     eTag: string;
@@ -10,14 +12,14 @@ export type fileMultiUploadRType = {
     originalName: string;
     storageName: string;
     uploaderType: string;
-    uploaderDetail: string;
+    uploaderDetail?: string;
     uploaderId: string;
     uploadIp: string;
     type: string;
-    description: string;
-    updatedAt: Date;
-    createdAt: Date;
-    deletedAt: null,
+    description?: string;
+    updatedAt?: Date | null;
+    createdAt?: Date | null;
+    deletedAt?: Date | null,
     id: string;
   };
 }

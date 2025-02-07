@@ -1,6 +1,10 @@
+// 기초정보 - 적층구조
+
+import { LamDtlTypeEm } from "../enum";
+
 export type laminationRType = {
   id: string;
-  lamDtlTypeEm: string;
+  lamDtlTypeEm: LamDtlTypeEm;
   matCd: string;
   matThk: number;
   copOut: string;
@@ -8,13 +12,13 @@ export type laminationRType = {
   lamDtlThk: number;
   lamDtlRealThk: number;
   useYn: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type laminationCUType = {
-  lamDtlTypeEm: string;
+  lamDtlTypeEm: LamDtlTypeEm | null;
   matCd: string;
   matThk: number;
   copOut: string;
@@ -26,7 +30,7 @@ export type laminationCUType = {
 
 export const newLaminationCUType  = ():laminationCUType => {
   return {
-    lamDtlTypeEm: '',
+    lamDtlTypeEm: null,
     matCd: '',
     matThk: 0,
     copOut: '',

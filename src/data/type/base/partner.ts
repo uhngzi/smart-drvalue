@@ -1,6 +1,8 @@
+// 기초정보 - 거래처, 거래처 담당자
+
 import { PrtTypeEm } from "../enum";
 
-export type cuRType = {
+export type partnerRType = {
   id: string;
   prtTypeEm: PrtTypeEm;
   prtNm: string;
@@ -19,15 +21,15 @@ export type cuRType = {
   prtTel: string;
   prtFax: string;
   prtEmail: string;
-  emp: { id?: string; };
-  managers: Array<cuMngRType>;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  emp?: { id?: string; };
+  managers?: Array<partnerMngRType>;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
-export type cuCUType = {
-  prtTypeEm: PrtTypeEm;
+export type partnerCUType = {
+  prtTypeEm: PrtTypeEm | null;
   prtNm: string;
   prtRegCd: number | null;
   prtSnm: string;
@@ -44,12 +46,12 @@ export type cuCUType = {
   prtTel: string;
   prtFax: string;
   prtEmail: string;
-  emp: { id?: string; };
+  emp?: { id?: string; };
 }
 
-export const newDataCuType = ():cuCUType => {
+export const newDataPartnerType = ():partnerCUType => {
   return {
-    prtTypeEm: PrtTypeEm.CS,
+    prtTypeEm: null,
     prtNm: '',
     prtRegCd: null,
     prtSnm: '',
@@ -70,9 +72,9 @@ export const newDataCuType = ():cuCUType => {
   }
 }
 
-export type cuMngRType = {
+export type partnerMngRType = {
   id: string;
-  partner: cuRType;
+  partner?: partnerRType;
   prtMngNm: string;
   prtMngDeptNm: string;
   prtMngTeamNm: string;
@@ -80,18 +82,31 @@ export type cuMngRType = {
   prtMngMobile: string;
   prtMngFax: string;
   prtMngEmail: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
-export type cuMngCUType = {
+export type partnerMngCUType = {
   partner: { id: string; };
   prtMngNm: string;
-  prtMngDeptNm: string;
-  prtMngTeamNm: string;
-  prtMngTel: string;
-  prtMngMobile: string;
-  prtMngFax: string;
-  prtMngEmail: string;
+  prtMngDeptNm?: string;
+  prtMngTeamNm?: string;
+  prtMngTel?: string;
+  prtMngMobile?: string;
+  prtMngFax?: string;
+  prtMngEmail?: string;
+}
+
+export const newDataPartnerMngType = ():partnerMngCUType => {
+  return {
+    partner: { id: '' },
+    prtMngNm: '',
+    prtMngDeptNm: '',
+    prtMngTeamNm: '',
+    prtMngTel: '',
+    prtMngMobile: '',
+    prtMngFax: '',
+    prtMngEmail: '',
+  }
 }

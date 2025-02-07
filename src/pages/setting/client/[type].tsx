@@ -8,7 +8,7 @@ import { postAPI } from "@/api/post";
 
 import { autoHyphenBusinessLicense } from "@/utils/formatBusinessHyphen";
 
-import { cuCUType, cuRType, newDataCuType } from "@/data/type/base/cu";
+import { partnerCUType, partnerRType, newDataPartnerType } from "@/data/type/base/partner";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
@@ -36,7 +36,7 @@ const ClientCuListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<cuRType>>([]);
+  const [ data, setData ] = useState<Array<partnerRType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -78,7 +78,7 @@ const ClientCuListPage: React.FC & {
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<cuCUType>(newDataCuType);
+  const [ newData, setNewData ] = useState<partnerCUType>(newDataPartnerType);
     //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -233,7 +233,7 @@ const ClientCuListPage: React.FC & {
         }
         onClose={()=>{
           setNewOpen(false);
-          setNewData(newDataCuType);
+          setNewData(newDataPartnerType);
         }}
       />
 
@@ -246,7 +246,7 @@ const ClientCuListPage: React.FC & {
         onOk={()=>{
           refetch();
           setResultOpen(false);
-          setNewData(newDataCuType);
+          setNewData(newDataPartnerType);
         }}
         hideCancel={true}
         theme="base"

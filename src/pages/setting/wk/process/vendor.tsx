@@ -15,7 +15,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
-import { cuRType } from "@/data/type/base/cu";
+import { partnerRType } from "@/data/type/base/partner";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -33,7 +33,7 @@ const WkProcessVendorListPage: React.FC & {
   };
 
   // --------- 필요 데이터 시작 ----------
-  const [ dataVendor, setDataVendor ] = useState<Array<cuRType>>([]);
+  const [ dataVendor, setDataVendor ] = useState<Array<partnerRType>>([]);
   const { data:queryDataVendor } = useQuery<
     apiGetResponseType, Error
   >({
@@ -240,7 +240,7 @@ const WkProcessVendorListPage: React.FC & {
               dataIndex: 'vendor',
               key: 'vendor',
               align: 'center',
-              render: (item:cuRType) => item.prtNm,
+              render: (item:partnerRType) => item.prtNm,
             },
             {
               title: '사용여부',

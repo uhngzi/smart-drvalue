@@ -1,5 +1,5 @@
 import InputList from "@/components/List/InputList";
-import { cuCUType, newDataCuType } from "@/data/type/base/cu";
+import { partnerCUType, newDataPartnerType } from "@/data/type/base/partner";
 
 interface Props {
   handleDataChange: (
@@ -10,7 +10,7 @@ interface Props {
   newData: any;
   handleSubmitNewData: () => void;
   setNewOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setNewData: React.Dispatch<React.SetStateAction<cuCUType>>;
+  setNewData: React.Dispatch<React.SetStateAction<partnerCUType>>;
 }
 
 const AddContents: React.FC<Props> = ({ 
@@ -51,7 +51,7 @@ const AddContents: React.FC<Props> = ({
         <div
           className="w-80 h-30 v-h-center rounded-6 border-1 border-line bg-white cursor-pointer"
           onClick={()=>{
-            setNewData(newDataCuType);
+            setNewData(newDataPartnerType);
             setNewOpen(false);
           }}
         >

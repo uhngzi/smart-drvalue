@@ -1,58 +1,84 @@
+// 기초정보 - 공통코드 그룹, 공통코드
+
 export type commonCodeGroupRType = {
   id: string;
   cdGrpNm: string;
   cdGrpDesc: string;
-  dept: {
+  useYn: boolean;
+  dept?: {
     id: string;
     deptNm: string;
     useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
   },
-  useYn: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type commonCodeGroupCUType = {
   cdGrpNm: string;
-  cdGrpDesc: string;
+  cdGrpDesc?: string;
   dept: { id: string; };
   useYn: boolean;
 }
 
+export const newDataCommonCodeGroupType = ():commonCodeGroupCUType => {
+  return {
+    cdGrpNm: '',
+    cdGrpDesc: '',
+    dept: { id: '' },
+    useYn: true,
+  }
+}
+
 export type commonCodeRType = {
   id: string;
-  codeGroup: {
+  cdNm: string;
+  cdDesc?: string;
+  useYn: boolean;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
+  codeGroup?: {
     id: string;
     cdGrpNm: string;
     cdGrpDesc: string;
-    dept: {
+    useYn: boolean;
+    dept?: {
       id: string;
       deptNm: string;
       useYn: boolean;
-      createdAt: Date;
-      updatedAt: Date;
-      deletedAt: Date;
+      createdAt: Date | null;
+      updatedAt: Date | null;
+      deletedAt: Date | null;
     },
-    useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
   },
-  cdNm: string;
-  cdDesc: string;
-  useYn: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
 }
 
 export type commonCodeCUType = {
-  codeGroup: { id: string; };
-  cdNm: string;
-  cdDesc: string;
-  useYn: boolean;
+  productLinesGroup: {
+    id: string;
+  },
+  process: {
+    id: string;
+  },
+  prcWkRemark?: string;
+}
+
+export const newDataCommonCode = ():commonCodeCUType => {
+  return {
+    productLinesGroup: {
+      id: '',
+    },
+    process: {
+      id: '',
+    },
+    prcWkRemark: '',
+  }
 }

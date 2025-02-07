@@ -52,3 +52,16 @@ export enum PrtTypeEm {
   SUP = 'sup',
   BOTH = 'both',
 }
+
+export enum LamDtlTypeEm {
+  CF = 'cf',
+  PP = 'pp',
+  CCL = 'ccl',
+}
+
+export enum OffdayTypeEm {
+  HOLIDAY = 'holiday',
+  COMPANY = 'company',
+  SPECIAL = 'special',
+  OTHER = 'other' 
+}

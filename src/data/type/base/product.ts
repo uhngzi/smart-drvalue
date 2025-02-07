@@ -1,43 +1,46 @@
+// 기초정보 - 제품군
+
 import { processRType } from "./process";
 
 export type productLinesRType = {
   id: string;
-  productLinesGroup: {
-    id: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-  },
-  process: processRType;
+  productLinesGroup?: productLinesGroupRType;
+  process?: processRType;
   prcWkRemark: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type productLinesCUType = {
   productLinesGroup: { id: string; };
   process: { id: string; };
-  prcWkRemark: string;
+  prcWkRemark?: string;
+}
+
+export const newDataProductLinesType = ():productLinesCUType => {
+  return {
+    productLinesGroup: { id: '' },
+    process: { id: '' },
+    prcWkRemark: '',
+  }
 }
 
 export type productLinesGroupRType = {
   id: string;
   name: string;
-  productLines: Array<{
-    id: string;
-    process: processRType;
-    prcWkRemark: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-  }>
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  productLines?: productLinesRType;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type productLinesGroupCUType = {
   name: string;
+}
+
+export const newDataProductLinesGroupType = ():productLinesGroupCUType => {
+  return {
+    name: '',
+  }
 }

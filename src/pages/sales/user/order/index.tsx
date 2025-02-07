@@ -28,7 +28,7 @@ import { salesUserOrderClmn } from "@/data/columns/Sales";
 import TitleSmall from "@/components/Text/TitleSmall";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { getClientCsAPI } from "@/api/cache/client";
-import { cuMngRType, cuRType } from "@/data/type/base/cu";
+import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import { HotGrade } from "@/data/type/enum";
@@ -109,7 +109,7 @@ const SalesUserPage: React.FC & {
   useEffect(()=>{console.log(formData, me);},[formData]);
 
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
-  const [ csMngList, setCsMngList ] = useState<Array<cuMngRType>>([]);
+  const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
   const { data:cs } = useQuery({
     queryKey: ["getClientCs"],
     queryFn: () => getClientCsAPI(),
@@ -117,7 +117,7 @@ const SalesUserPage: React.FC & {
   
   useEffect(()=>{
     if(cs?.data.data?.length) {
-      setCsList(cs.data.data.map((cs:cuRType) => ({
+      setCsList(cs.data.data.map((cs:partnerRType) => ({
         value:cs.id,
         label:cs.prtNm
       })));
@@ -126,8 +126,8 @@ const SalesUserPage: React.FC & {
 
   useEffect(()=>{
     if(formData.partnerId !== '' && cs?.data.data?.length) {
-      const data = cs?.data.data as cuRType[];
-      const mng = data.find((cu:cuRType) => cu.id === formData.partnerId)?.managers;
+      const data = cs?.data.data as partnerRType[];
+      const mng = data.find((cu:partnerRType) => cu.id === formData.partnerId)?.managers;
       setCsMngList(mng ?? []);
     }
   }, [formData.partnerId])
@@ -294,7 +294,7 @@ const SalesUserPage: React.FC & {
               <LabelMedium label="담당자 정보"/>
               <div className="w-full h-1 border-t-1"/>
               {
-                csMngList.map((mng:cuMngRType) => (
+                csMngList.map((mng:partnerMngRType) => (
                   <div className="w-full h-40 h-center gap-10" key={mng.id}>
                     <p className="w-100 h-center gap-8">
                       <Radio

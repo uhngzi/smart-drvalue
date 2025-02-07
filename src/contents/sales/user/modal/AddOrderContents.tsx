@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 import { Divider } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { getClientCsAPI } from "@/api/cache/client";
-import { cuRType } from "@/data/type/base/cu";
+import { partnerRType } from "@/data/type/base/partner";
 import { newDatasalesOrderCUType, salesOrderCUType } from "@/data/type/sales/order";
 
 const QuillTextArea = dynamic(
@@ -36,7 +36,7 @@ const AddOrderContents: React.FC<Props> = ({
   
   useEffect(()=>{
     if(cs?.data.data?.length) {
-      setCsList(cs.data.data.map((cs:cuRType) => ({
+      setCsList(cs.data.data.map((cs:partnerRType) => ({
         value:cs.id,
         label:cs.prtNm
       })));

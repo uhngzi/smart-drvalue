@@ -1,18 +1,13 @@
+// 기초정보 - 부서, 팀
+
 export type deptRType = {
   id: string;
   deptNm: string;
   useYn: boolean;
-  teams: Array<{
-    id: string;
-    teamNm: string;
-    useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-  }>;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  teams?: teamRType;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type deptCUType = {
@@ -20,25 +15,33 @@ export type deptCUType = {
   useYn: boolean;
 }
 
+export const newDataDeptType = ():deptCUType => {
+  return {
+    deptNm: '',
+    useYn: true,
+  }
+}
+
 export type teamRType = {
   id: string;
-  dept: {
-    id: string;
-    deptNm: string;
-    useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-  },
+  dept?: deptRType;
   teamNm: string;
   useYn: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type teamCUType = {
   dept: { id: string; };
   teamNm: string;
   useYn: boolean;
+}
+
+export const newDataTeamType = ():teamCUType => {
+  return {
+    dept: { id: '' },
+    teamNm: '',
+    useYn: true,
+  }
 }

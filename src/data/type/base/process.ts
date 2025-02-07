@@ -1,8 +1,11 @@
+// 기초정보 - 공정그룹, 공정, 공정 공급처, 공정 공급처 가격
+
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
+import { partnerRType } from "./partner";
 
 export type processRType = {
   id: string;
-  processGroup: {
+  processGroup?: {
     id: string;
     prcGrpNm: string;
     useYn: boolean;
@@ -37,9 +40,9 @@ export type processGroupRType = {
   prcGrpNm: string;
   useYn: boolean;
   processes: Array<processRType>;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type processGroupCUType = {
@@ -56,42 +59,13 @@ export const newDataProcessGroupCUType = ():processGroupCUType => {
 
 export type processVendorRType = {
   id: string;
-  process: {
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-    id: string;
-    prcNm: string;
-    useYn: boolean;
-  },
-  vendor: {
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-    id: string;
-    prtTypeEm: PrtTypeEm;
-    prtNm: string;
-    prtRegCd: number | null;
-    prtSnm: string;
-    prtEngNm: string;
-    prtEngSnm: string;
-    prtRegNo: string;
-    prtCorpRegNo: string;
-    prtBizType: string;
-    prtBizCate: string;
-    prtAddr: string;
-    prtAddrDtl: string;
-    prtZip: string;
-    prtCeo: string;
-    prtTel: string;
-    prtFax: string;
-    prtEmail: string;
-  },
+  process: processRType;
+  vendor: partnerRType;
   processGroup: processGroupRType,
   useYn: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type processVendorCUType = {
@@ -112,38 +86,31 @@ export const newDataProcessVendorCUType = ():processVendorCUType => {
 
 export type processVendorPriceRType = {
   id: string;
-  process: {
-    id: string;
-    prcNm: string;
-    useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-  },
+  process: processRType;
   processGroup: processGroupRType;
   vendor: processVendorRType;
   priceNm: string;
   priceUnit: number;
-  modelTypeEm: ModelTypeEm | '';
-  layerEm: LayerEm | '';
-  thk: number;
-  matCd: string;
-  metCd: string;
-  wgtMin: number;
-  wgtMax: number;
-  cntMin: number;
-  cntMax: number;
-  pnlcntMin: number;
-  pnlcntMax: number;
-  holecntMin: number;
-  holecntMax: number;
-  m2Min: number;
-  m2Max: number;
+  modelTypeEm: ModelTypeEm | null;
+  layerEm: LayerEm | null;
+  thk?: number;
+  matCd?: string;
+  metCd?: string;
+  wgtMin?: number;
+  wgtMax?: number;
+  cntMin?: number;
+  cntMax?: number;
+  pnlcntMin?: number;
+  pnlcntMax?: number;
+  holecntMin?: number;
+  holecntMax?: number;
+  m2Min?: number;
+  m2Max?: number;
   useYn: boolean;
   appDt: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export type processVendorPriceCUType = {
@@ -152,21 +119,21 @@ export type processVendorPriceCUType = {
   vendor: { id: string; };
   priceNm: string;
   priceUnit: number;
-  modelTypeEm: ModelTypeEm | '';
-  layerEm: LayerEm | '';
-  thk: number;
-  pnlcntMin: number;
-  pnlcntMax: number;
-  holecntMin: number;
-  holecntMax: number;
-  m2Min: number;
-  m2Max: number;
-  matCd: string;
-  metCd: string;
-  wgtMin: number;
-  wgtMax: number;
-  cntMin: number;
-  cntMax: number;
+  modelTypeEm: ModelTypeEm | null;
+  layerEm: LayerEm | null;
+  thk?: number;
+  pnlcntMin?: number;
+  pnlcntMax?: number;
+  holecntMin?: number;
+  holecntMax?: number;
+  m2Min?: number;
+  m2Max?: number;
+  matCd?: string;
+  metCd?: string;
+  wgtMin?: number;
+  wgtMax?: number;
+  cntMin?: number;
+  cntMax?: number;
   appDt: Date;
   useYn: boolean;
 }
@@ -178,8 +145,8 @@ export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
     vendor: { id: '' },
     priceNm: '',
     priceUnit: 0,
-    modelTypeEm: '',
-    layerEm: '',
+    modelTypeEm: null,
+    layerEm: null,
     thk: 0,
     pnlcntMin: 0,
     pnlcntMax: 0,
@@ -200,37 +167,13 @@ export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
 
 export type processVendorPriceHistoryRType = {
   id: string;
-  processVendorPrice: {
-    id: string;
-    priceNm: string;
-    priceUnit: number;
-    modelTypeEm: ModelTypeEm | '';
-    layerEm: LayerEm | '';
-    thk: number;
-    matCd: string;
-    metCd: string;
-    wgtMin: number;
-    wgtMax: number;
-    cntMin: number;
-    cntMax: number;
-    pnlcntMin: number;
-    pnlcntMax: number;
-    holecntMin: number;
-    holecntMax: number;
-    m2Min: number;
-    m2Max: number;
-    useYn: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date;
-    appDt: Date;
-  },
+  processVendorPrice?: processVendorRType;
   priceBeUnit: number;
   priceUnit: number;
   useYn: boolean;
   appDt: Date;
   appBeDt: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
