@@ -12,27 +12,167 @@ import { NextRouter } from 'next/router';
 import { Checkbox } from 'antd';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
+import { HotGrade } from '../type/enum';
 
-export const sayangSampleWaitClmn = (
+export const sayangSampleWaitClmn1 = (
+  totalData: number,
   router:NextRouter,
 ): TableProps['columns'] => [
   {
-    title: 'No',
-    width: 50,
+    title: '대기',
+    width: 80,
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
     title: '관리No',
-    width: 130,
+    width: 120,
     dataIndex: 'no',
     key: 'no',
     align: 'center',
   },
   {
     title: '업체명/코드',
-    width: 130,
+    width: 120,
+    dataIndex: 'cuNm',
+    key: 'cuNm',
+    align: 'center',
+  },
+  {
+    title: 'Model',
+    width: 245,
+    dataIndex: 'modelNm',
+    key: 'modelNm',
+    align: 'center',
+  },
+  {
+    title: '필름번호',
+    width: 105,
+    dataIndex: 'rev',
+    key: 'rev',
+    align: 'center',
+  },
+  {
+    title: 'Rev',
+    width: 100,
+    dataIndex: 'rev',
+    key: 'rev',
+    align: 'center',
+  },
+  {
+    title: '긴급',
+    width:80,
+    dataIndex: 'hot',
+    key: 'hot',
+    align: 'center',
+    render: (value: HotGrade) => (
+      <div className="v-h-center">
+        {value === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : value === HotGrade.URGENT ? (
+          <FullChip label="긴급" state="pink" />
+        ) : (
+          <FullChip label="일반" />
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '구분',
+    width: 80,
+    dataIndex: 'state',
+    key: 'state',
+    align: 'center',
+    render: (value: number) => (
+      <div className="v-h-center">
+        {value === 3 ? (
+          <FullChip label="신규" />
+        ) : value === 2 ? (
+          <FullChip label="수정" state="yellow" />
+        ) : (
+          <FullChip label="반복" state="mint"/>
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'thic',
+    key: 'thic',
+    align: 'center',
+  },
+  {
+    title: '층',
+    width: 50,
+    dataIndex: 'layer',
+    key: 'layer',
+    align: 'center',
+  },
+  {
+    title: 'PCS',
+    width: 100,
+    dataIndex: 'pcs',
+    key: 'pcs',
+    align: 'center',
+  },
+  {
+    title: '납기일',
+    width: 150,
+    dataIndex: 'napgi',
+    key: 'napgi',
+    align: 'center',
+  },
+  {
+    title: '발주일',
+    width: 150,
+    dataIndex: 'order',
+    key: 'order',
+    align: 'center',
+  },
+  {
+    title: '사양등록',
+    width: 100,
+    dataIndex: 'id',
+    key: 'id',
+    align: 'center',
+    render: (value) => (
+      <div className="w-full h-full v-h-center">
+        <div 
+          className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer hover:bg-[#E9EDF5]"
+          onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
+        >
+          <p className="w-14 h-14"><Edit /></p>
+        </div>
+      </div>
+    )
+  },
+];
+
+export const sayangSampleWaitClmn = (
+  totalData: number,
+  router:NextRouter,
+): TableProps['columns'] => [
+  {
+    title: '대기',
+    width: 80,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
+  },
+  {
+    title: '관리No',
+    width: 120,
+    dataIndex: 'no',
+    key: 'no',
+    align: 'center',
+  },
+  {
+    title: '업체명/코드',
+    width: 120,
     dataIndex: 'cuNm',
     key: 'cuNm',
     align: 'center',
@@ -130,10 +270,10 @@ export const sayangSampleWaitClmn = (
     render: (value) => (
       <div className="w-full h-full v-h-center">
         <div 
-          className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer hover:bg-[#E9EDF5]"
+          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
         >
-          <p className="w-14 h-14"><Edit /></p>
+          <p className="w-18 h-18"><Edit /></p>
         </div>
       </div>
     )
@@ -458,7 +598,7 @@ export const sayangSampleWaitAddClmn = (
 ]
 
 export const sayangModelWaitClmn = (
-  router:NextRouter,
+  totalData: number,
   setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): TableProps['columns'] => [
   {
@@ -467,32 +607,33 @@ export const sayangModelWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
     title: '관리No',
     width: 120,
-    dataIndex: 'index',
-    key: 'index',
+    dataIndex: 'prdMngNo',
+    key: 'prdMngNo',
     align: 'center',
   },
   {
     title: '업체명/코드',
     width: 120,
-    dataIndex: 'cuNm',
-    key: 'cuNm',
+    dataIndex: 'prtNm',
+    key: 'prtNm',
     align: 'center',
-    render: (value, record) => (
+    render: (_, record) => (
       <div className="text-left">
-        {value}
+        {record?.partner?.prtNm}
         /
-        {record.cuCode}
+        {record?.partner?.prtRegCd}
       </div>
     )
   },
   {
     title: '고객발주(요구)명',
-    dataIndex: 'orderNm',
-    key: 'orderNm',
+    dataIndex: 'prdNm',
+    key: 'prdNm',
     align: 'center',
     render: (value) => (
       <div className="text-left">{value}</div>
@@ -522,38 +663,6 @@ export const sayangModelWaitClmn = (
         )}
       </div>
     ),
-  },
-  {
-    title: '긴급',
-    width: 80,
-    dataIndex: 'state',
-    key: 'state',
-    align: 'center',
-    render: (value: number) => (
-      <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="신규" />
-        ) : value === 2 ? (
-          <FullChip label="수정" state="yellow" />
-        ) : (
-          <FullChip label="반복" state="mint"/>
-        )}
-      </div>
-    ),
-  },
-  {
-    title: '두께',
-    width: 80,
-    dataIndex: 'thic',
-    key: 'thic',
-    align: 'center',
-  },
-  {
-    title: '층',
-    width: 50,
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
   },
   {
     title: '영업담당',
@@ -588,7 +697,6 @@ export const sayangModelWaitClmn = (
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
             setNewOpen(true);
-            // router.push(`/sayang/model/wait/form/${value}`);
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
