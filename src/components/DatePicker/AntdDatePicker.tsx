@@ -1,13 +1,14 @@
 import { componentsStylesType } from "@/data/type/componentStyles";
 import { DatePicker } from "antd";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import styled from "styled-components";
 
 import Calendar from "@/assets/svg/icons/s_calendar.svg";
 import { DownOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
 
 interface Props {
-  value: Date | null;
+  value?: any;
   onChange: (date:Date) => void;
   picker?: 'date' | 'month' | 'time' | 'year' | 'quarter' | 'week';
   format?: string;
@@ -19,6 +20,7 @@ interface Props {
   placeholder?: string;
   styles?: componentsStylesType;
   suffixIcon?: null | 'down' | 'cal';
+  defaultValue?: any;
 }
 
 const AntdDatePicker: React.FC<Props> = ({
@@ -34,6 +36,7 @@ const AntdDatePicker: React.FC<Props> = ({
   placeholder,
   styles,
   suffixIcon,
+  defaultValue,
 }) => {
   const datePresetsPre = [
     {label:'1일 전', value:dayjs().add(-1, 'day')},
@@ -64,7 +67,7 @@ const AntdDatePicker: React.FC<Props> = ({
       $br={styles?.br?styles.br:'6px'}
     >
       <DatePicker 
-        value={value}
+        value={dayjs(value).isValid() ? value : null}
         onChange={onChange}
         picker={picker||'date'}
         format={{format:format||'YYYY-MM-DD'}}
@@ -75,6 +78,7 @@ const AntdDatePicker: React.FC<Props> = ({
         presets={presets==='pre'?datePresetsPre:presets==='post'?datePresetsPost:[]}
         placeholder={placeholder}
         suffixIcon={suffixIcon==='down'?<DownOutlined />:suffixIcon==='cal'?<Calendar width="16" height="17"/>:null}
+        defaultValue={defaultValue}
       />
     </AntdDatePickerStyled>
   )
