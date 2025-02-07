@@ -98,29 +98,10 @@ export type salesOrderCUType = {
   empId: string;
   hotGrade: HotGrade | null;
   files?: string[];
-  products?: Array<{
-      customPartnerManagerId?: string;
-      currPrdInfo?: {
-        id: string;
-        name: string;
-      },
-      modelId?: string;
-      modelStatus: ModelStatus | null;
-      orderDt: Date;
-      orderNo: string;
-      orderTit: string;
-      prtOrderNo?: string;
-      orderPrdRemark?: string;
-      orderPrdCnt: number;
-      orderPrdUnitPrice: number;
-      orderPrdPrice: number;
-      orderPrdDueReqDt?: Date;
-      orderPrdDueDt?: Date;
-      orderPrdHotGrade: HotGrade;
-  }>
+  products?: salesOrderProcuctCUType[];
 }
 
-export const newDatasalesOrderCUType = ():salesOrderCUType => {
+export const newDataSalesOrderCUType = ():salesOrderCUType => {
   return {
     partnerId: '',
     partnerManagerId: '',
@@ -132,5 +113,43 @@ export const newDatasalesOrderCUType = ():salesOrderCUType => {
     hotGrade: null,
     files: [],
     products: [],
+  }
+}
+
+export type salesOrderProcuctCUType = {
+  customPartnerManagerId?: string;
+  currPrdInfo?: {
+    id: string;
+    name: string;
+  },
+  modelId?: string;
+  modelStatus: ModelStatus | null;
+  orderDt: Date | null;
+  orderNo: string;
+  orderTit: string;
+  prtOrderNo?: string;
+  orderPrdRemark?: string;
+  orderPrdCnt: number;
+  orderPrdUnitPrice: number;
+  orderPrdPrice: number;
+  orderPrdDueReqDt?: Date | null;
+  orderPrdDueDt?: Date | null;
+  orderPrdHotGrade: HotGrade | null;
+}
+
+export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
+  return {
+    modelStatus: null,
+    orderDt: null,
+    orderNo: '',
+    orderTit: '',
+    prtOrderNo: '',
+    orderPrdRemark: '',
+    orderPrdCnt: 0,
+    orderPrdUnitPrice: 0,
+    orderPrdPrice: 0,
+    orderPrdDueReqDt: null,
+    orderPrdDueDt: null,
+    orderPrdHotGrade: null,
   }
 }

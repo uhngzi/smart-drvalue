@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MenuProps } from "antd/lib";
 import { MoreOutlined } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Pagination, Radio, Steps } from "antd";
+import { Button, Divider, Dropdown, Pagination, Radio, Steps, Table } from "antd";
 import { getAPI } from "@/api/get";
 
 import AntdModal from "@/components/Modal/AntdModal";
@@ -23,7 +23,7 @@ import Edit from "@/assets/svg/icons/memo.svg";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
-import { newDatasalesOrderCUType, salesOrderCUType, salesOrderRType } from "@/data/type/sales/order";
+import { newDataSalesOrderCUType, newDataSalesOrderProductCUType, salesOrderCUType, salesOrderProcuctCUType, salesOrderRType } from "@/data/type/sales/order";
 import { salesUserOrderClmn } from "@/data/columns/Sales";
 import TitleSmall from "@/components/Text/TitleSmall";
 import AntdSelect from "@/components/Select/AntdSelect";
@@ -31,7 +31,7 @@ import { getClientCsAPI } from "@/api/cache/client";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
-import { HotGrade } from "@/data/type/enum";
+import { HotGrade, ModelStatus } from "@/data/type/enum";
 import { LabelIcon, LabelMedium, LabelThin } from "@/components/Text/Label";
 import TextArea from "antd/lib/input/TextArea";
 import AntdDragger from "@/components/Upload/AntdDragger";
@@ -40,6 +40,7 @@ import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import InputList from "@/components/List/InputList";
 import { patchAPI } from "@/api/patch";
+import dayjs from "dayjs";
 
 const items: MenuProps['items'] = [
   {
@@ -104,6 +105,8 @@ const SalesUserPage: React.FC & {
     {title:'고객 발주 등록'}, 
     {title:'고객 발주 모델 등록'}, 
   ]);
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
+  useEffect(()=>{console.log(newProducts)}, [newProducts]);
 
   const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
   const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
@@ -137,7 +140,41 @@ const SalesUserPage: React.FC & {
     }
   }
 
-  const [ formData, setFormData ] = useState<salesOrderCUType>(newDatasalesOrderCUType);
+  const handleProductDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    idx: number,
+    key?: string,
+  ) => {
+    let value = e;
+    if(type === "input" && typeof e !== "string") {
+      value = e.target.value;
+    }
+
+    if(key) {
+      setNewProducts((prev) =>
+        prev.map((item, i) =>
+          i === idx
+            ? { ...item, [name]: {
+              ...((item as any)[name] || {}), // 기존 객체 값 유지
+              [key]: value, // 새로운 key 값 업데이트
+            } }
+            : item
+        )
+      );
+    } else {
+      setNewProducts((prev) =>
+        prev.map((item, i) =>
+          i === idx
+            ? { ...item, [name]: value }
+            : item
+        )
+      );
+    }
+  }
+
+  const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
   const { me } = useUser();
   useEffect(()=>{
     setFormData({...formData, empId:me?.id??''});
@@ -175,6 +212,10 @@ const SalesUserPage: React.FC & {
     setFormData({ ...formData, files:fileIdList });
     console.log(fileList, fileIdList);
   }, [fileIdList]);
+
+  const handleNextStep = () => {
+    setStepCurrent(1);
+  }
 
   const handleSubmit = async () => {
     console.log(JSON.stringify(formData));
@@ -243,143 +284,226 @@ const SalesUserPage: React.FC & {
           current={stepCurrent}
           open={open}
           setOpen={setOpen}
-          width={1300}
-          contents={<>
-            <div className="w-[1188px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
-              <LabelMedium label="고객발주 등록"/>
-              <div className="w-full h-1 border-t-1"/>
-              <div className="w-full h-[421px] h-center gap-30">
-                <div className="flex flex-col w-[222px] h-full gap-24">
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="고객"/>
-                    <AntdSelect 
-                      options={csList}
-                      value={formData.partnerId}
-                      onChange={(e)=>{
-                        const value = e+'';
-                        setFormData({...formData, partnerId:value});
-                      }}
-                      styles={{ht:'36px'}}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="총 수주 금액"/>
-                    <AntdInput 
-                      value={formData.orderName}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setFormData({...formData, orderName:value});
-                      }}
-                      styles={{ht:'36px'}}
-                      type="number"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="발주일"/>
-                    <AntdDatePicker
-                      value={formData.orderDt}
-                      onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
-                      styles={{br:"2px",bc:"#D5D5D5"}}
-                      className="w-full h-36"
-                      suffixIcon={"cal"}
-                    />
-                  </div>
-                  {/* <div className="flex flex-col gap-8">
-                    <LabelThin label="납기요청일"/>
-                    <AntdDatePicker
-                      value={formData.orderRepDt}
-                      onChange={(value)=>setFormData((prev => ({ ...prev, orderRepDt:value })))}
-                      styles={{br:"2px",bc:"#D5D5D5"}}
-                      className="w-full h-36"
-                      suffixIcon={"cal"}
-                    />
-                  </div> */}
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="긴급상태"/>
-                    <AntdSelect 
-                      options={[
-                        {value:HotGrade.SUPER_URGENT,label:'초긴급'},
-                        {value:HotGrade.URGENT,label:'긴급'},
-                        {value:HotGrade.NORMAL,label:'일반'},
-                      ]}
-                      value={formData.hotGrade}
-                      onChange={(e)=>{
-                        const value = e+'' as HotGrade;
-                        setFormData({...formData, hotGrade:value});
-                      }}
-                      styles={{ht:'36px'}}
-                    />
-                  </div>
-                </div>
-                <div className="w-1 h-full border-r-1"/>
-                <div className="flex-1 h-full flex flex-col gap-24">
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="고객발주 메일 내용"/>
-                    <TextArea
-                      value={formData.orderTxt}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setFormData({...formData, orderTxt:value});
-                      }}
-                      className="rounded-2"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-8">
-                    <LabelThin label="첨부파일"/>
-                    <div className="w-full h-[150px]">
-                      <AntdDragger
-                        fileList={fileList}
-                        setFileList={setFileList}
-                        fileIdList={fileIdList}
-                        setFileIdList={setFileIdList}
-                        mult={true}
+          width={1800}
+          contents={
+          <div className="flex h-center gap-10">
+            <div style={{width:stepCurrent>0?700:'100%'}} className="overflow-x-auto">
+              <div className="w-[1188px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
+                <LabelMedium label="고객발주 등록"/>
+                <div className="w-full h-1 border-t-1"/>
+                <div className="w-full h-[421px] h-center gap-30">
+                  <div className="flex flex-col w-[222px] h-full gap-24">
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="고객"/>
+                      <AntdSelect 
+                        options={csList}
+                        value={formData.partnerId}
+                        onChange={(e)=>{
+                          const value = e+'';
+                          setFormData({...formData, partnerId:value});
+                        }}
+                        styles={{ht:'36px'}}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="총 수주 금액"/>
+                      <AntdInput 
+                        value={formData.orderName}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({...formData, orderName:value});
+                        }}
+                        styles={{ht:'36px'}}
+                        type="number"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="발주일"/>
+                      <AntdDatePicker
+                        value={formData.orderDt}
+                        onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
+                        styles={{br:"2px",bc:"#D5D5D5"}}
+                        className="w-full h-36"
+                        suffixIcon={"cal"}
+                      />
+                    </div>
+                    {/* <div className="flex flex-col gap-8">
+                      <LabelThin label="납기요청일"/>
+                      <AntdDatePicker
+                        value={formData.orderRepDt}
+                        onChange={(value)=>setFormData((prev => ({ ...prev, orderRepDt:value })))}
+                        styles={{br:"2px",bc:"#D5D5D5"}}
+                        className="w-full h-36"
+                        suffixIcon={"cal"}
+                      />
+                    </div> */}
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="긴급상태"/>
+                      <AntdSelect 
+                        options={[
+                          {value:HotGrade.SUPER_URGENT,label:'초긴급'},
+                          {value:HotGrade.URGENT,label:'긴급'},
+                          {value:HotGrade.NORMAL,label:'일반'},
+                        ]}
+                        value={formData.hotGrade}
+                        onChange={(e)=>{
+                          const value = e+'' as HotGrade;
+                          setFormData({...formData, hotGrade:value});
+                        }}
+                        styles={{ht:'36px'}}
                       />
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[1188px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
-              <LabelMedium label="담당자 정보"/>
-              <div className="w-full h-1 border-t-1"/>
-              {
-                csMngList.map((mng:partnerMngRType) => (
-                  <div className="w-full h-40 h-center gap-10" key={mng.id}>
-                    <p className="w-100 h-center gap-8">
-                      <Radio
-                        name="csMng"
-                        checked={formData.partnerManagerId === mng.id}
-                        onChange={() => setFormData({...formData, partnerManagerId:mng.id})}
-                      /> {mng.prtMngNm}
-                    </p>
-                    <div className="w-[200px] px-12">
-                      <LabelIcon label={mng.prtMngDeptNm} icon={<MessageOn />}/>
+                  <div className="w-1 h-full border-r-1"/>
+                  <div className="flex-1 h-full flex flex-col gap-24">
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="고객발주 메일 내용"/>
+                      <TextArea
+                        value={formData.orderTxt}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({...formData, orderTxt:value});
+                        }}
+                        className="rounded-2"
+                      />
                     </div>
-                    <div className="w-[200px] px-12">
-                      <LabelIcon label={mng.prtMngTel} icon={<Call />}/>
-                    </div>
-                    <div className="w-[200px] px-12">
-                      <LabelIcon label={mng.prtMngMobile} icon={<Mobile />}/>
-                    </div>
-                    <div className="flex-1 px-12">
-                      <LabelIcon label={mng.prtMngMobile} icon={<Mail />}/>
-                    </div>
-                    <div className="w-40 h-40 v-h-center">
-                      <p className="w-24 h-24"><Edit /></p>
+                    <div className="flex flex-col gap-8">
+                      <LabelThin label="첨부파일"/>
+                      <div className="w-full h-[150px]">
+                        <AntdDragger
+                          fileList={fileList}
+                          setFileList={setFileList}
+                          fileIdList={fileIdList}
+                          setFileIdList={setFileIdList}
+                          mult={true}
+                        />
+                      </div>
                     </div>
                   </div>
-                ))
-              }
-            </div>
-            <div className="w-full h-50 v-h-center">
-              <div 
-                className="w-100 h-40 cursor-pointer"
-                onClick={handleSubmit}
-              >
-                저장
+                </div>
+              </div>
+              <div className="w-[1188px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
+                <LabelMedium label="담당자 정보"/>
+                <div className="w-full h-1 border-t-1"/>
+                {
+                  csMngList.map((mng:partnerMngRType) => (
+                    <div className="w-full h-40 h-center gap-10" key={mng.id}>
+                      <p className="w-100 h-center gap-8">
+                        <Radio
+                          name="csMng"
+                          checked={formData.partnerManagerId === mng.id}
+                          onChange={() => setFormData({...formData, partnerManagerId:mng.id})}
+                        /> {mng.prtMngNm}
+                      </p>
+                      <div className="w-[200px] px-12">
+                        <LabelIcon label={mng.prtMngDeptNm} icon={<MessageOn />}/>
+                      </div>
+                      <div className="w-[200px] px-12">
+                        <LabelIcon label={mng.prtMngTel} icon={<Call />}/>
+                      </div>
+                      <div className="w-[200px] px-12">
+                        <LabelIcon label={mng.prtMngMobile} icon={<Mobile />}/>
+                      </div>
+                      <div className="flex-1 px-12">
+                        <LabelIcon label={mng.prtMngMobile} icon={<Mail />}/>
+                      </div>
+                      <div className="w-40 h-40 v-h-center">
+                        <p className="w-24 h-24"><Edit /></p>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+              <div className="w-full h-50 v-between-h-center">
+                <div 
+                  className="w-100 h-40 cursor-pointer"
+                  onClick={()=>{
+                    setOpen(false);
+                    setFormData(newDataSalesOrderCUType);
+                  }}
+                >
+                  취소
+                </div>
+                {
+                  stepCurrent < 1 ?
+                  <div 
+                    className="w-100 h-40 cursor-pointer"
+                    onClick={handleNextStep}
+                  >
+                    저장
+                  </div> : <></>
+                }
               </div>
             </div>
-          </>}
+            {
+              stepCurrent > 0 ?
+              <div className="flex-1 p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>발주명</th>
+                      <th>구분</th>
+                      <th>층</th>
+                      <th>두께</th>
+                      <th>수량</th>
+                      <th>납기일</th>
+                      <th>견적단가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      newProducts.map((product:salesOrderProcuctCUType, index:number) => (
+                        <tr key={index}>
+                          <td>
+                            <AntdInput />
+                            {/* ...발주명 : orderNm... (현재 API가 모델 바깥에 발주명이 있어서 product 안에 넣어줘야 됨...) */}
+                          </td>
+                          <td>
+                            <AntdSelect
+                              value={product.modelStatus}
+                              options={[
+                                {value:ModelStatus.NEW,label:'신규'},
+                                {value:ModelStatus.REPEAT,label:'반복'},
+                                {value:ModelStatus.MODIFY,label:'수정'},
+                              ]}
+                              onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
+                            />
+                          </td>
+                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'layer')}/></td>
+                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'thic')}/></td>
+                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
+                          <td>
+                            <AntdDatePicker 
+                              value={dayjs(product.orderDt)}
+                              onChange={(e)=>{
+                                const value = dayjs(e).format('YYYY-MM-DD');
+                                handleProductDataChange(value, 'orderDt', 'date', index)
+                              }}
+                            />
+                            {/* 이거 api에는 수주일인데 화면은 납기일임, 그리고 모델에 납기요청일 없음 */}
+                          </td>
+                          <td><AntdInput type="number" value={product.orderPrdPrice} onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
+                          <td
+                            onClick={()=>{
+                              setNewProducts((prev) => prev.filter((_, idx) => idx !== index));
+                            }}
+                          >삭제</td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+                <div
+                  onClick={()=>{
+                    setNewProducts([...newProducts, newDataSalesOrderProductCUType()]);
+                  }}
+                >
+                  모델 추가
+                </div>
+              </div>
+              :<></>
+            }
+          </div>}
         />
 
         <AntdDrawer
