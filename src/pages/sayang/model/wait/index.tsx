@@ -13,6 +13,7 @@ import { modelsRType } from "@/data/type/sayang/models";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import { salesOrderRType } from "@/data/type/sales/order";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -76,15 +77,16 @@ const SayangModelWaitPage: React.FC & {
     current: 1,
     size: 10,
   });
-  const [data, setData] = useState<modelsRType[]>([]);
+  const [data, setData] = useState<salesOrderRType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
     queryKey: ['SayangModelWaitPage'],
     queryFn: async () => {
       try {
+        // /api/serv/core-d1/v1/tenant/sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
-          url: 'models-match/jsxcrud/many'
+          url: 'sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only'
         },{
           limit: pagination.size,
           page: pagination.current,
