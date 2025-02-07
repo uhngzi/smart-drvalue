@@ -156,7 +156,7 @@ export const sayangSampleWaitClmn1 = (
 export const sayangSampleWaitClmn = (
   totalData: number,
   router:NextRouter,
-): TableProps['columns'] => [
+): CustomColumn[] => [
   {
     title: '대기',
     width: 80,
