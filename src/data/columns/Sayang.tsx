@@ -42,6 +42,7 @@ export const sayangSampleWaitClmn1 = (
   },
   {
     title: 'Model',
+    // minWidth: 245,
     width: 245,
     dataIndex: 'modelNm',
     key: 'modelNm',
@@ -141,10 +142,10 @@ export const sayangSampleWaitClmn1 = (
     render: (value) => (
       <div className="w-full h-full v-h-center">
         <div 
-          className="w-40 h-30 border-1 border-line bg-white v-h-center rounded-6 cursor-pointer hover:bg-[#E9EDF5]"
+          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
         >
-          <p className="w-14 h-14"><Edit /></p>
+          <p className="w-18 h-18"><Edit /></p>
         </div>
       </div>
     )
@@ -179,20 +180,21 @@ export const sayangSampleWaitClmn = (
   },
   {
     title: 'Model',
+    width: 350,
     dataIndex: 'modelNm',
     key: 'modelNm',
     align: 'center',
   },
   {
     title: 'Rev',
-    width: 80,
+    width: 100,
     dataIndex: 'rev',
     key: 'rev',
     align: 'center',
   },
   {
     title: '긴급',
-    width: 100,
+    width: 80,
     dataIndex: 'hot',
     key: 'hot',
     align: 'center',
@@ -210,7 +212,7 @@ export const sayangSampleWaitClmn = (
   },
   {
     title: '구분',
-    width: 100,
+    width: 80,
     dataIndex: 'state',
     key: 'state',
     align: 'center',
@@ -235,35 +237,35 @@ export const sayangSampleWaitClmn = (
   },
   {
     title: '층',
-    width: 80,
+    width: 50,
     dataIndex: 'layer',
     key: 'layer',
     align: 'center',
   },
   {
     title: 'PCS',
-    width: 120,
+    width: 100,
     dataIndex: 'pcs',
     key: 'pcs',
     align: 'center',
   },
   {
-    title: '납기',
-    width: 120,
+    title: '납기일',
+    width: 150,
     dataIndex: 'napgi',
     key: 'napgi',
     align: 'center',
   },
   {
-    title: '발주',
-    width: 120,
+    title: '발주일',
+    width: 150,
     dataIndex: 'order',
     key: 'order',
     align: 'center',
   },
   {
     title: '사양등록',
-    width: 120,
+    width: 100,
     dataIndex: 'id',
     key: 'id',
     align: 'center',
