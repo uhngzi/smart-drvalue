@@ -38,6 +38,8 @@ import AntdDragger from "@/components/Upload/AntdDragger";
 import { useUser } from "@/data/context/UserContext";
 import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import InputList from "@/components/List/InputList";
+import { patchAPI } from "@/api/patch";
 
 const items: MenuProps['items'] = [
   {
@@ -57,7 +59,8 @@ const SalesUserPage: React.FC & {
 } = () => {
   const [ open, setOpen ] = useState<boolean>(false);
   const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
-  const [ newOpen, setNewOpen ] = useState<boolean>(false);
+  const [ newPrtOpen, setNewPrtOpen ] = useState<boolean>(false);
+  const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -103,6 +106,36 @@ const SalesUserPage: React.FC & {
   ]);
 
   const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
+  const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
+
+  const handleDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    if(type === "input" && typeof e !== "string") {
+      const { value } = e.target;
+      setPartnerData(prev => ({
+        ...prev,
+        [name]: value,
+      } as partnerRType));
+    } else if(type === "select") {
+      if(key) {
+        setPartnerData(prev => ({
+          ...prev,
+          [name]: {
+            [key]: e.toString(),
+          },
+        } as partnerRType));
+      } else {
+        setPartnerData(prev => ({
+          ...prev,
+          [name]: e,
+        } as partnerRType));
+      }
+    }
+  }
 
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDatasalesOrderCUType);
   const { me } = useUser();
@@ -159,6 +192,19 @@ const SalesUserPage: React.FC & {
     }
   }
 
+  const handleSubmitPrtData = async () => {
+    console.log(JSON.stringify(partnerData));
+    const result = await patchAPI({
+      type: 'baseinfo',
+      utype: 'tenant/',
+      url: 'biz-partner',
+      jsx: 'jsxcrud'},
+      partnerData?.id ?? '0',
+      { ...partnerData, prtTypeEm: 'cs'}
+    );
+    console.log(result);
+  }
+
   return (
     <>
       <div 
@@ -179,7 +225,7 @@ const SalesUserPage: React.FC & {
       </div>
       <div className="flex flex-col gap-20" style={{borderTop:' 1px solid rgba(0,0,0,6%)'}}>
         <AntdTableEdit
-          columns={salesUserOrderClmn(totalData, setDrawerOpen, setPartnerData)}
+          columns={salesUserOrderClmn(totalData, setDrawerOpen, setPartnerData, setPartnerMngData)}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
         />
@@ -342,23 +388,80 @@ const SalesUserPage: React.FC & {
           maskClosable={false}
           mask={false}
         >
+          <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
           <div>
             거래처명 : {partnerData?.prtNm ?? '-'}<br/>
             식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
             축약명 : {partnerData?.prtSnm ?? '-'}<br/>
             영문명 : {partnerData?.prtEngNm ?? '-'}<br/>
             영문 축약 : {partnerData?.prtEngSnm ?? '-'}<br/>
-            사업자 : 
-            법인 : 
-            업태 : 
-            업종 : 
-            주소 : 
-            대표 : 
-            전화 : 
-            팩스 : 
-            이메일 : 
+            사업자 : {partnerData?.prtRegNo ?? '-'}<br/>
+            법인 : {partnerData?.prtCorpRegNo ?? '-'}<br/>
+            업태 : {partnerData?.prtBizType ?? '-'}<br/>
+            업종 : {partnerData?.prtBizCate ?? '-'}<br/>
+            주소 : {partnerData?.prtAddr ?? '-'}<br/>
+            주소세부 : {partnerData?.prtAddrDtl ?? '-'}<br/>
+            대표 : {partnerData?.prtCeo ?? '-'}<br/>
+            전화 : {partnerData?.prtTel ?? '-'}<br/>
+            팩스 : {partnerData?.prtFax ?? '-'}<br/>
+            이메일 : {partnerData?.prtEmail ?? '-'}<br/>
+          </div>
+          <div onClick={()=>{setNewPrtMngOpen(true);}}>수정</div>
+          <div>
+            담당자명 : {partnerMngData?.prtMngNm}<br/>
+            부서 : {partnerMngData?.prtMngDeptNm}<br/>
+            팀 : {partnerMngData?.prtMngTeamNm}<br/>
+            전화 : {partnerMngData?.prtMngTel}<br/>
+            휴대 : {partnerMngData?.prtMngMobile}<br/>
+            이메일 : {partnerMngData?.prtMngEmail}<br/>
+            팩스 : {partnerMngData?.prtMngFax}<br/>
           </div>
         </AntdDrawer>
+
+        <AntdModal
+          open={newPrtOpen}
+          setOpen={setNewPrtOpen}
+          width={760}
+          contents={
+            <>
+              <InputList
+                handleDataChange={handleDataChange}
+                labelWidth={100}
+                items={[
+                  {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input'},
+                  {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input'},
+                  {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input'},
+                  {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input'},
+                  {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input'},
+                  {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input'},
+                  {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input'},
+                  {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input'},
+                  {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input'},
+                  {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'input'},
+                  {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input'},
+                  {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input'},
+                  {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input'},
+                  {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input'},
+                  {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input'},
+                ]}
+              />
+              <div
+                onClick={handleSubmitPrtData}
+              >저장</div>
+            </>
+          }
+        />
+
+        <AntdModal
+          open={newPrtMngOpen}
+          setOpen={setNewPrtMngOpen}
+          width={760}
+          contents={
+            <>
+              
+            </>
+          }
+        />
       </div>
     </>
   )

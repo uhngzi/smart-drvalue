@@ -5,12 +5,13 @@ import Edit from '@/assets/svg/icons/memo.svg';
 import { HotGrade } from '../type/enum';
 import { salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
-import { partnerRType } from '../type/base/partner';
+import { partnerMngRType, partnerRType } from '../type/base/partner';
 
 export const salesUserOrderClmn = (
   totalData: number,
   setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -32,6 +33,7 @@ export const salesUserOrderClmn = (
         onClick={()=>{
           setDrawerOpen(true);
           setPartnerData(record.prtInfo.prt);
+          setPartnerMngData(record.prtInfo.mng);
         }}
       >
         {record.prtInfo.prt.prtNm}
