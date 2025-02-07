@@ -12,6 +12,7 @@ import { List } from "@/layouts/Body/List";
 import { modelsRType } from "@/data/type/sayang/models";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -111,7 +112,7 @@ const SayangModelWaitPage: React.FC & {
       />
       <List>
         { !dataLoading &&
-          <AntdTable
+          <AntdTableEdit
             columns={sayangModelWaitClmn(totalData, setNewOpen)}
             data={data}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}

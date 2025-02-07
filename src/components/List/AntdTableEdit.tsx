@@ -91,7 +91,7 @@ const EditableCell: React.FC<
 };
 
 // 컬럼 커스텀
-type CustomColumn = ColumnType<any>
+export type CustomColumn = ColumnType<any>
   & { editable?: boolean }                                  // 수정 가능 여부
   & { editType?: 'input' | 'select' | 'date' | 'toggle' }   // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
   & { req?: boolean }                                       // 수정 시 필수 여부
@@ -115,7 +115,7 @@ interface DataType {
 
 // 현재 컴포넌트의 Props
 interface Props {
-  columns: CustomColumn[];
+  columns: CustomColumn[] | (() => CustomColumn[]);
   data?: any[];
   styles?: {
     pd?: string;
@@ -228,8 +228,10 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
     return "children" in col;
   };
 
+  const resolvedColumns = typeof columns === "function" ? columns() : columns;
+
   // ColumnType만 onCell을 추가할 수 있도록 
-  const mergedColumns: ColumnsType<any> = (columns ?? []).map((col) => {
+  const mergedColumns: ColumnsType<any> = (resolvedColumns ?? []).map((col) => {
     if (isColumnGroup(col)) {
       return col; // 그룹 컬럼이면 그대로 반환
     }
@@ -244,14 +246,14 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
           // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
           // 날짜일 경우 format 변경
           if(value) {
-            if(typeof value === "number")
+            if(!Number.isNaN(value))
               return value;
             if(dayjs(value).isValid())
               return dayjs(value).format('YYYY-MM-DD');
             return value;
           } else {
             const v = get(record, column.dataIndex);
-            if(typeof value === "number")
+            if(!Number.isNaN(value))
               return v;
             if(dayjs(v).isValid())
               return dayjs(value).format('YYYY-MM-DD');

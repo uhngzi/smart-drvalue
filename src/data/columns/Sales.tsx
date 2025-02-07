@@ -4,12 +4,12 @@ import FullChip from '@/components/Chip/FullChip';
 import Edit from '@/assets/svg/icons/memo.svg';
 import { HotGrade } from '../type/enum';
 import { salesOrderRType } from '../type/sales/order';
+import { CustomColumn } from '@/components/List/AntdTableEdit';
 
 export const salesUserOrderClmn = (
   totalData: number,
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
-): TableProps['columns'] => [
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
+): CustomColumn[] => [
   {
     title: 'No',
     width: 50,
@@ -21,26 +21,16 @@ export const salesUserOrderClmn = (
   {
     title: '고객명',
     width: 250,
-    dataIndex: 'prtNm',
+    dataIndex: 'prtInfo.prt.prtNm',
     key: 'prtNm',
     align: 'center',
-    render: (value, record) => (
-      <div className="w-full h-full v-h-center">
-        {record.prtInfo.prt.prtNm}
-      </div>
-    )
   },
   {
     title: '고객코드',
     width: 120,
-    dataIndex: 'prtRegCd',
-    key: 'prtRegCd',
+    dataIndex: 'prtInfo.prt.prtRegCd',
+    key: 'prtInfo.prt.prtRegCd',
     align: 'center',
-    render: (value, record) => (
-      <div className="w-full h-full v-h-center">
-        {record.prtInfo.prt.prtRegCd}
-      </div>
-    )
   },
   {
     title: '발주명',
@@ -59,14 +49,9 @@ export const salesUserOrderClmn = (
   {
     title: '고객처 담당',
     width: 120,
-    dataIndex: 'prtMngNm',
-    key: 'prtMngNm',
+    dataIndex: 'prtInfo.mng.prtMngNm',
+    key: 'prtInfo.mng.prtMngNm',
     align: 'center',
-    render: (value, record) => (
-      <div className="w-full h-full v-h-center">
-        {record.prtInfo.mng.prtMngNm}
-      </div>
-    )
   },
   {
     title: '긴급',
@@ -89,14 +74,9 @@ export const salesUserOrderClmn = (
   {
     title: '영업담당',
     width: 120,
-    dataIndex: 'empNm',
+    dataIndex: 'emp.name',
     align: 'center',
-    key: 'empNm',
-    render: (value, record) => (
-      <div className="w-full h-full v-h-center">
-        {record.emp.name}
-      </div>
-    )
+    key: 'emp.name',
   },
   {
     title: '발주접수일',
@@ -123,7 +103,7 @@ export const salesUserOrderClmn = (
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            setNewOpen(true);
+            // setNewOpen(true);
           }}
         >
           <p className="w-18 h-18"><Edit /></p>

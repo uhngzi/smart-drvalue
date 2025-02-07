@@ -1,4 +1,5 @@
 import AntdTable from "@/components/List/AntdTable";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
 import TitleSmall from "@/components/Text/TitleSmall";
 import { sayangSampleWaitClmn, sayangSampleWaitClmn1 } from "@/data/columns/Sayang";
 import { List } from "@/layouts/Body/List";
@@ -82,7 +83,7 @@ const SayangSampleListPage: React.FC & {
       <div>
         <ListPagination pagination={{current:1,size:10}} totalData={4}/>
         <List>
-          <AntdTable
+          <AntdTableEdit
             columns={sayangSampleWaitClmn1(4, router)}
             data={data}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}

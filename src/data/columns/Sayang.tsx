@@ -13,11 +13,12 @@ import { Checkbox } from 'antd';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
 import { HotGrade } from '../type/enum';
+import { CustomColumn } from '@/components/List/AntdTableEdit';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
   router:NextRouter,
-): TableProps['columns'] => [
+): CustomColumn[] => [
   {
     title: '대기',
     width: 80,
@@ -602,7 +603,7 @@ export const sayangSampleWaitAddClmn = (
 export const sayangModelWaitClmn = (
   totalData: number,
   setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
-): TableProps['columns'] => [
+): CustomColumn[] => [
   {
     title: '대기',
     width: 80,

@@ -37,6 +37,7 @@ import TextArea from "antd/lib/input/TextArea";
 import AntdDragger from "@/components/Upload/AntdDragger";
 import { useUser } from "@/data/context/UserContext";
 import { postAPI } from "@/api/post";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
 
 const items: MenuProps['items'] = [
   {
@@ -175,8 +176,8 @@ const SalesUserPage: React.FC & {
         </Dropdown>
       </div>
       <div className="flex flex-col gap-20" style={{borderTop:' 1px solid rgba(0,0,0,6%)'}}>
-        <AntdTable
-          columns={salesUserOrderClmn(totalData, setOpen, setNewOpen)}
+        <AntdTableEdit
+          columns={salesUserOrderClmn(totalData, setDrawerOpen)}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
         />
@@ -340,7 +341,7 @@ const SalesUserPage: React.FC & {
           mask={false}
         >
           <div>
-
+            고객정보
           </div>
         </AntdDrawer>
       </div>
