@@ -9,7 +9,7 @@ const isBrowser = typeof window !== 'undefined';
 export const instanceRoot = axios.create({
   baseURL,
   headers: {
-    Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
+    // Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
   },
 });
 
@@ -32,7 +32,7 @@ instanceRoot.interceptors.request.use(
 export const instance = axios.create({
   baseURL,
   headers: {
-    Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
+    // Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
     'x-tenant-code': 'test',
   },
 });
