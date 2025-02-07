@@ -94,7 +94,7 @@ const SayangSampleListPage: React.FC & {
       <div>
         <ListPagination pagination={{current:1,size:10}} totalData={4}/>
         <List>
-          <AntdTable
+          <AntdTableEdit
             columns={sayangSampleWaitClmn(4, router)}
             data={data}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}

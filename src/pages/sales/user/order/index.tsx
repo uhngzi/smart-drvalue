@@ -102,6 +102,8 @@ const SalesUserPage: React.FC & {
     {title:'고객 발주 모델 등록'}, 
   ]);
 
+  const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
+
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDatasalesOrderCUType);
   const { me } = useUser();
   useEffect(()=>{
@@ -177,7 +179,7 @@ const SalesUserPage: React.FC & {
       </div>
       <div className="flex flex-col gap-20" style={{borderTop:' 1px solid rgba(0,0,0,6%)'}}>
         <AntdTableEdit
-          columns={salesUserOrderClmn(totalData, setDrawerOpen)}
+          columns={salesUserOrderClmn(totalData, setDrawerOpen, setPartnerData)}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
         />
@@ -341,7 +343,20 @@ const SalesUserPage: React.FC & {
           mask={false}
         >
           <div>
-            고객정보
+            거래처명 : {partnerData?.prtNm ?? '-'}<br/>
+            식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
+            축약명 : {partnerData?.prtSnm ?? '-'}<br/>
+            영문명 : {partnerData?.prtEngNm ?? '-'}<br/>
+            영문 축약 : {partnerData?.prtEngSnm ?? '-'}<br/>
+            사업자 : 
+            법인 : 
+            업태 : 
+            업종 : 
+            주소 : 
+            대표 : 
+            전화 : 
+            팩스 : 
+            이메일 : 
           </div>
         </AntdDrawer>
       </div>

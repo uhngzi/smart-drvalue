@@ -5,10 +5,12 @@ import Edit from '@/assets/svg/icons/memo.svg';
 import { HotGrade } from '../type/enum';
 import { salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
+import { partnerRType } from '../type/base/partner';
 
 export const salesUserOrderClmn = (
   totalData: number,
   setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -24,6 +26,17 @@ export const salesUserOrderClmn = (
     dataIndex: 'prtInfo.prt.prtNm',
     key: 'prtNm',
     align: 'center',
+    render: (_, record:salesOrderRType) => (
+      <div
+        className="w-full h-full v-h-center cursor-pointer"
+        onClick={()=>{
+          setDrawerOpen(true);
+          setPartnerData(record.prtInfo.prt);
+        }}
+      >
+        {record.prtInfo.prt.prtNm}
+      </div>
+    )
   },
   {
     title: '고객코드',
