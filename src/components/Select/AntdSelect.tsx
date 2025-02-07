@@ -13,6 +13,7 @@ interface Props {
   className?: string;
   styles?: componentsStylesType;
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -24,6 +25,7 @@ const AntdSelect : React.FC<Props> = ({
   styles,
   value,
   onChange,
+  onKeyDown,
 }) => {
 
   return (
@@ -42,6 +44,7 @@ const AntdSelect : React.FC<Props> = ({
         disabled={disabled}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
+        onKeyDown={onKeyDown}
       />
     </AndtSelectStyled>
   )

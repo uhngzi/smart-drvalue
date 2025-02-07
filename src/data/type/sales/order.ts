@@ -14,7 +14,7 @@ export type salesOrderRType = {
   orderTxt: string;
   isDiscard: boolean;
   hotGrade: HotGrade,
-  emp?: {
+  emp: {
     id: string;
     name: string;
     userId: string;
@@ -23,7 +23,7 @@ export type salesOrderRType = {
     updatedAt: Date | null;
     deletedAt: Date | null;
   },
-  products?: Array<{
+  products: Array<{
     id: string;
     currPrdInfo: string;
     glbStatus: {  // 현재 모델 상태

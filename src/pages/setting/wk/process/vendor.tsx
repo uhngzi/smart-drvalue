@@ -16,6 +16,11 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
+import CustomTree from "@/components/Tree/CustomTree";
+import { treeType } from "@/data/type/componentStyles";
+import CustomTreeView from "@/components/Tree/CustomTreeView";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import { CheckboxChangeEvent } from "antd";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -33,6 +38,40 @@ const WkProcessVendorListPage: React.FC & {
   };
 
   // --------- 필요 데이터 시작 ----------
+  const [ treeData, setTreeData ] = useState<treeType[]>([]);
+  const { data:queryTreeData } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      },{
+        limit: pagination.size,
+        page: pagination.current,
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data.data ?? []).map((group:processGroupRType) => ({
+          id: group.id,
+          label: group.prcGrpNm,
+          children: group.processes.map((process:processRType) => ({
+            id: process.id,
+            label: process.prcNm,
+          })),
+          open: true,
+        }));
+        setTreeData(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      console.log(result.data);
+      return result;
+    },
+  });
+
   const [ dataVendor, setDataVendor ] = useState<Array<partnerRType>>([]);
   const { data:queryDataVendor } = useQuery<
     apiGetResponseType, Error
@@ -112,7 +151,7 @@ const WkProcessVendorListPage: React.FC & {
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process', 'vendor', pagination.current],
+    queryKey: ['processVendor', pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -197,11 +236,88 @@ const WkProcessVendorListPage: React.FC & {
   }
   // ----------- 신규 데이터 끝 -----------
 
+  const handleCheck = (e: CheckboxChangeEvent) => {
+    console.log(e);
+  }
+
   return (
     <>
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
+        <div className="w-full flex gap-30">
+          <div className="p-20 w-[30%]">
+            <CustomTreeView
+              data={treeData}
+              childCheck={true}
+              onChange={handleCheck}
+            />
+          </div>
+          <div className="p-20 w-[70%]">
+            <AntdTableEdit
+              columns={[
+                {
+                  title: 'No',
+                  width: 50,
+                  dataIndex: 'no',
+                  align: 'center',
+                  render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
+                },
+                {
+                  title: '공정그룹명',
+                  dataIndex: 'processGroup.prcGrpNm',
+                  key: 'processGroup.prcGrpNm',
+                  align: 'center',
+                  editable: true,
+                  editType: 'select',
+                  selectOptions: dataGroup?.map((item:processGroupRType)=>({value:item.id,label:item.prcGrpNm})) ?? [],
+                  selectValue: 'processGroup.id',
+                  req: true,
+                },
+                {
+                  title: '공정명',
+                  dataIndex: 'process.prcNm',
+                  key: 'process.prcNm',
+                  align: 'center',
+                  editable: true,
+                  editType: 'select',
+                  selectOptions: dataProcess?.map((item:processRType)=>({value:item.id,label:item.prcNm})) ?? [],
+                  selectValue: 'process.id',
+                  req: true,
+                },
+                {
+                  title: '공급처명',
+                  dataIndex: 'vendor.prtNm',
+                  key: 'vendor.prtNm',
+                  align: 'center',
+                  editable: true,
+                  editType: 'select',
+                  selectOptions: dataVendor?.map((item:partnerRType)=>({value:item.id,label:item.prtNm})) ?? [],
+                  selectValue: 'vendor.id',
+                  req: true,
+                },
+                {
+                  title: '생성일',
+                  dataIndex: 'createdAt',
+                  key: 'createdAt',
+                  align: 'center',
+                  editable: true,
+                  editType: 'date',
+                },
+                {
+                  title: '사용여부',
+                  width: 130,
+                  dataIndex: 'useYn',
+                  key: 'useYn',
+                  align: 'center',
+                  editable: true,
+                  editType: 'toggle',
+                },
+              ]}
+              data={data}
+            />
+          </div>
+        </div>
         <div className="v-between-h-center p-20">
           <p>총 {totalData}건</p>
           <div
@@ -226,21 +342,21 @@ const WkProcessVendorListPage: React.FC & {
               dataIndex: 'processGroup',
               key: 'processGroup',
               align: 'center',
-              render: (item:processGroupRType) => item.prcGrpNm,
+              render: (item:processGroupRType) => item?.prcGrpNm,
             },
             {
               title: '공정명',
               dataIndex: 'process',
               key: 'process',
               align: 'center',
-              render: (item:processRType) => item.prcNm,
+              render: (item:processRType) => item?.prcNm,
             },
             {
               title: '공급처명',
               dataIndex: 'vendor',
               key: 'vendor',
               align: 'center',
-              render: (item:partnerRType) => item.prtNm,
+              render: (item:partnerRType) => item?.prtNm,
             },
             {
               title: '사용여부',
@@ -290,7 +406,7 @@ const WkProcessVendorListPage: React.FC & {
                 label: '공정',
                 type: 'select',
                 value: newData.process.id,
-                option: dataProcess?.filter((item:processRType)=>item.processGroup.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
+                option: dataProcess?.filter((item:processRType)=>item?.processGroup?.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
               },
               { 
                 name: 'vendor',

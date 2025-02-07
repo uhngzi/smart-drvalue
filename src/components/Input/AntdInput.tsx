@@ -9,6 +9,9 @@ interface Props {
   styles?: componentsStylesType;
   placeholder?: string;
   type?: string;
+  defaultValue?: string;
+  onPressEnter?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
 }
 
 const AntdInput: React.FC<Props> = ({
@@ -18,6 +21,9 @@ const AntdInput: React.FC<Props> = ({
   styles,
   placeholder,
   type,
+  defaultValue,
+  onPressEnter,
+  onKeyDown,
 }) => {
   return (
     <AntdInputStyled
@@ -33,6 +39,9 @@ const AntdInput: React.FC<Props> = ({
         className={`${className}`}
         placeholder={placeholder}
         type={type}
+        defaultValue={defaultValue}
+        onPressEnter={onPressEnter}
+        onKeyDown={onKeyDown}
       />
     </AntdInputStyled>
   )
