@@ -28,7 +28,7 @@ import { salesUserOrderClmn } from "@/data/columns/Sales";
 import TitleSmall from "@/components/Text/TitleSmall";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { getClientCsAPI } from "@/api/cache/client";
-import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import { HotGrade, ModelStatus } from "@/data/type/enum";
@@ -183,7 +183,7 @@ const SalesUserPage: React.FC & {
 
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
   const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
-  const { data:cs } = useQuery({
+  const { data:cs, refetch:csRefetch } = useQuery({
     queryKey: ["getClientCs"],
     queryFn: () => getClientCsAPI(),
   });
@@ -234,16 +234,38 @@ const SalesUserPage: React.FC & {
   }
 
   const handleSubmitPrtData = async () => {
-    console.log(JSON.stringify(partnerData));
-    const result = await patchAPI({
-      type: 'baseinfo',
-      utype: 'tenant/',
-      url: 'biz-partner',
-      jsx: 'jsxcrud'},
-      partnerData?.id ?? '0',
-      { ...partnerData, prtTypeEm: 'cs'}
-    );
-    console.log(result);
+    try {
+      const result = await patchAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner',
+        jsx: 'jsxcrud'},
+        partnerData?.id ?? '0',
+        { prtTypeEm: 'cs',
+          prtNm: partnerData?.prtNm,
+          prtRegCd: partnerData?.prtRegCd,
+          prtSnm: partnerData?.prtSnm,
+          prtEngNm: partnerData?.prtEngNm,
+          prtEngSnm: partnerData?.prtEngSnm,
+          prtRegNo: partnerData?.prtRegNo,
+          prtCorpRegNo: partnerData?.prtCorpRegNo,
+          prtBizType: partnerData?.prtBizType,
+          prtBizCate: partnerData?.prtBizCate,
+          prtAddr: partnerData?.prtAddr,
+          prtAddrDtl: partnerData?.prtAddrDtl,
+          prtCeo: partnerData?.prtCeo,
+          prtTel: partnerData?.prtTel,
+          prtFax: partnerData?.prtFax,
+          prtEmail: partnerData?.prtEmail } as partnerCUType
+      );
+      
+      if(result.resultCode === "OK_0000") {
+        refetch();
+        csRefetch();
+      }
+    } catch(e) {
+      console.log('catch error : ', e);
+    }
   }
 
   return (
