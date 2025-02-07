@@ -95,6 +95,12 @@ const SalesUserPage: React.FC & {
     // onClick: handleMenuClick,
   };
 
+  const [ stepCurrent, setStepCurrent ] = useState<number>(0);
+  const [ stepItems, setStepItems ] = useState<any[]>([
+    {title:'고객 발주 등록'}, 
+    {title:'고객 발주 모델 등록'}, 
+  ]);
+
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDatasalesOrderCUType);
   const { me } = useUser();
   useEffect(()=>{
@@ -184,17 +190,12 @@ const SalesUserPage: React.FC & {
         /> */}
 
         <AntdModalStep2
+          items={stepItems}
+          current={stepCurrent}
           open={open}
           setOpen={setOpen}
           width={1300}
           contents={<>
-            <Steps
-              current={1}
-              items={[
-                {title:'고객 발주 등록'}, 
-                {title:'고객 발주 모델 등록'}, 
-              ]}
-            />
             <div className="w-[1188px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
               <LabelMedium label="고객발주 등록"/>
               <div className="w-full h-1 border-t-1"/>
@@ -234,7 +235,7 @@ const SalesUserPage: React.FC & {
                       suffixIcon={"cal"}
                     />
                   </div>
-                  <div className="flex flex-col gap-8">
+                  {/* <div className="flex flex-col gap-8">
                     <LabelThin label="납기요청일"/>
                     <AntdDatePicker
                       value={formData.orderRepDt}
@@ -243,7 +244,7 @@ const SalesUserPage: React.FC & {
                       className="w-full h-36"
                       suffixIcon={"cal"}
                     />
-                  </div>
+                  </div> */}
                   <div className="flex flex-col gap-8">
                     <LabelThin label="긴급상태"/>
                     <AntdSelect 

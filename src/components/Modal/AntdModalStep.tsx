@@ -1,10 +1,12 @@
-import { Modal } from "antd";
+import { Modal, Steps } from "antd";
 import styled from "styled-components";
 
 import Close from "@/assets/svg/icons/s_close.svg";
 import { createStyles } from "antd-style";
 
 interface Props {
+  items: any[];
+  current: number;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title?: any;
@@ -16,6 +18,8 @@ interface Props {
 }
 
 export const AntdModalStep2: React.FC<Props> = ({
+  items,
+  current,
   open,
   setOpen,
   title,
@@ -71,6 +75,10 @@ export const AntdModalStep2: React.FC<Props> = ({
       centered
     >
       <div className="w-full h-80 shrink-0 px-30 v-between-h-center">
+        <Steps
+          current={current}
+          items={items}
+        />
         <p className="text-20 font-medium ">{title}</p>
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
