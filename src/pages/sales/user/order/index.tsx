@@ -461,7 +461,7 @@ const SalesUserPage: React.FC & {
                 }
               </div>
               <div className="flex w-full h-50 v-between-h-center">
-                <Button className="w-80 h-32 bg-point1 text-white rounded-6" style={{color:"#444444E0"}} onClick={() => {setOpen(false); setFormData(newDataSalesOrderCUType)}}><Close/>취소</Button>
+                <Button className="w-80 h-32 text-white rounded-6" style={{color:"#444444E0"}} onClick={() => {setOpen(false); setFormData(newDataSalesOrderCUType)}}><Close/>취소</Button>
                 {stepCurrent < 1 ? <Button className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}} onClick={handleNextStep}><Arrow />다음 단계</Button> : <></>}
               </div>
               
