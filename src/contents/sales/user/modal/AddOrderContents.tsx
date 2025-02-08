@@ -12,7 +12,7 @@ import { Divider } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { getClientCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
-import { newDatasalesOrderCUType, salesOrderCUType } from "@/data/type/sales/order";
+import { newDataSalesOrderCUType, salesOrderCUType } from "@/data/type/sales/order";
 
 const QuillTextArea = dynamic(
   () => import('@/components/TextArea/QuillTextArea'),
@@ -43,7 +43,7 @@ const AddOrderContents: React.FC<Props> = ({
     }
   }, [cs?.data.data]);
 
-  const [ formData, setFormData ] = useState<salesOrderCUType>(newDatasalesOrderCUType);
+  const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
   useEffect(()=>{console.log(formData)},[formData]);
 
   const [ fileList, setFileList ] = useState<any[]>([]);
