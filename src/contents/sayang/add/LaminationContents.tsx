@@ -13,6 +13,7 @@ import { laminationRType } from "@/data/type/base/lamination";
 import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
+import { LamDtlTypeEm } from "@/data/type/enum";
 
 interface Props {
 }
@@ -46,7 +47,7 @@ const LaminationContents: React.FC<Props> = ({
   const [lamination, setLamination] = useState<Array<laminationRType>>([
     {
       id: 'sample1',
-      lamDtlTypeEm: 'bs',
+      lamDtlTypeEm: LamDtlTypeEm.CF,
       matCd: 'HRC',
       matThk: 7628,
       copOut: '1',
@@ -60,7 +61,7 @@ const LaminationContents: React.FC<Props> = ({
     },
     {
       id: 'sample2',
-      lamDtlTypeEm: 'tc',
+      lamDtlTypeEm: LamDtlTypeEm.CF,
       matCd: 'HRC',
       matThk: 7628,
       copOut: '1',
@@ -74,7 +75,7 @@ const LaminationContents: React.FC<Props> = ({
     },
     {
       id: 'sample3',
-      lamDtlTypeEm: 'bs',
+      lamDtlTypeEm: LamDtlTypeEm.CF,
       matCd: 'HRC',
       matThk: 7628,
       copOut: '1',
@@ -241,8 +242,8 @@ const LaminationContents: React.FC<Props> = ({
                           </div>
                           <p className="w-full v-h-center">
                             {
-                              item.id.includes('sample') && item.lamDtlTypeEm === 'bs' ? '(BS) 7628HRC x 1' :
-                              item.id.includes('sample') && item.lamDtlTypeEm === 'tc' ? '(T/C) 1.00T 1/1oz' :
+                              item.id.includes('sample') && item.lamDtlTypeEm === LamDtlTypeEm.CF ? '(BS) 7628HRC x 1' :
+                              item.id.includes('sample') && item.lamDtlTypeEm === LamDtlTypeEm.CF ? '(T/C) 1.00T 1/1oz' :
                               '('+item.lamDtlTypeEm.toUpperCase()+') '+item.lamDtlThk+'T '+item.copOut+'/'+item.copIn
                             }
                           </p>
