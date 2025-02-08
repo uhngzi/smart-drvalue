@@ -1,5 +1,5 @@
 import { componentsStylesType } from "@/data/type/componentStyles";
-import { Input } from "antd"
+import { Input } from "antd";
 import styled from "styled-components";
 
 interface Props {
@@ -27,10 +27,10 @@ const AntdInput: React.FC<Props> = ({
 }) => {
   return (
     <AntdInputStyled
-      $ht={styles?.ht?styles.ht:'32px'}
-      $bg={styles?.bg?styles.bg:'none'}
-      $bw={styles?.bw?styles.bw:'1px'}
-      $bc={styles?.bc?styles.bc:'#D9D9D9'}
+      $ht={styles?.ht ? styles.ht : "32px"}
+      $bg={styles?.bg ? styles.bg : "none"}
+      $bw={styles?.bw ? styles.bw : "1px"}
+      $bc={styles?.bc ? styles.bc : "#D9D9D9"}
       className={`${className}`}
     >
       <Input
@@ -44,8 +44,8 @@ const AntdInput: React.FC<Props> = ({
         onKeyDown={onKeyDown}
       />
     </AntdInputStyled>
-  )
-}
+  );
+};
 
 const AntdInputStyled = styled.div<{
   $ht: string;
@@ -64,6 +64,6 @@ const AntdInputStyled = styled.div<{
     border-radius: 2px;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   }
-`
+`;
 
-export default AntdInput
+export default AntdInput;

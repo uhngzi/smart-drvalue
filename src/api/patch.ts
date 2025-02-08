@@ -7,16 +7,25 @@ export const patchAPI = async (
     utype?: 'root/' | 'tenant/',
     url: string,
     jsx: 'jsxcrud' | 'default',
+    etc?: boolean,
   },
   id: string,
   body?: any,
 ): Promise<apiPatchResponseType>  => {
   if(server.utype === 'tenant/') {
-    const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
-    console.log('PATCH RESPONSE : ', response);
-    
-    const { data, resultCode } = response.data;
-    return { data, resultCode, response };
+    if(server.etc) {
+      const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}`, body);
+      console.log('PATCH RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      return { data, resultCode, response };
+    } else {
+      const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
+      console.log('PATCH RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      return { data, resultCode, response };
+    }
   } else {
     const response = await instanceRoot.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
     console.log('PATCH RESPONSE : ', response);

@@ -1,79 +1,58 @@
-import Image from "next/image";
+import dayjs from "dayjs";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
+import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
-import { MenuProps } from "antd/lib";
-import { MoreOutlined } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Pagination, Radio, Steps, Table } from "antd";
 import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { getClientCsAPI } from "@/api/cache/client";
 
+import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+
+import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import { List } from "@/layouts/Body/List";
+import { ListPagination } from "@/layouts/Body/Pagination";
+
+import { 
+  newDataSalesOrderCUType, 
+  newDataSalesOrderProductCUType, 
+  salesOrderCUType, 
+  salesOrderDetailRType, 
+  salesOrderProcuctCUType, 
+  salesOrderProcuctReq, 
+  salesOrderProductRType, 
+  salesOrderReq, 
+  salesOrderRType 
+} from "@/data/type/sales/order";
+import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
+import { useUser } from "@/data/context/UserContext";
+import { 
+  partnerCUType, 
+  partnerMngRType, 
+  partnerRType 
+} from "@/data/type/base/partner";
+
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import InputList from "@/components/List/InputList";
 import AntdModal from "@/components/Modal/AntdModal";
-import AntdTable from "@/components/List/AntdTable";
 import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
-
-import Excel from "@/assets/png/excel.png"
-import Print from "@/assets/png/print.png"
-import SplusIcon from "@/assets/svg/icons/s_plus.svg";
-import MessageOn from "@/assets/svg/icons/s_inquiry.svg";
-import Call from "@/assets/svg/icons/s_call.svg";
-import Mobile from "@/assets/svg/icons/mobile.svg";
-import Mail from "@/assets/svg/icons/mail.svg";
-import Edit from "@/assets/svg/icons/memo.svg";
-import Close from "@/assets/svg/icons/s_close.svg";
-import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-
-import { newDataSalesOrderCUType, newDataSalesOrderProductCUType, salesOrderCUType, salesOrderProcuctCUType, salesOrderRType } from "@/data/type/sales/order";
-import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
-import TitleSmall from "@/components/Text/TitleSmall";
-import AntdSelect from "@/components/Select/AntdSelect";
-import { getClientCsAPI } from "@/api/cache/client";
-import { partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import AntdInput from "@/components/Input/AntdInput";
-import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
-import { HotGrade, ModelStatus } from "@/data/type/enum";
-import { LabelIcon, LabelMedium, LabelThin } from "@/components/Text/Label";
-import TextArea from "antd/lib/input/TextArea";
-import AntdDragger from "@/components/Upload/AntdDragger";
-import { useUser } from "@/data/context/UserContext";
-import { postAPI } from "@/api/post";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import InputList from "@/components/List/InputList";
-import { patchAPI } from "@/api/patch";
-import dayjs from "dayjs";
-
-const items: MenuProps['items'] = [
-  {
-    label: <span className="text-12">Excel</span>,
-    key: '1',
-    icon: <Image src={Excel} alt="Excel" width={16} height={16} />,
-  },
-  {
-    label: <span className="text-12">Print</span>,
-    key: '2',
-    icon: <Image src={Print} alt="Print" width={16} height={16} />,
-  },
-]
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
-  const [ open, setOpen ] = useState<boolean>(false);
-  const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
-  const [ newPrtOpen, setNewPrtOpen ] = useState<boolean>(false);
-  const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
-
+  // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
     current: 1,
     size: 10,
   });
-
-  const [textLength, setTextLength] = useState<number>(0);
-  
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
@@ -94,100 +73,20 @@ const SalesUserPage: React.FC & {
   });
 
   useEffect(()=>{
+    setDataLoading(true);
     if(!isLoading) {
-      // setData(queryData?.data.data ?? []);
-      // setTotalData(queryData?.data.total ?? 0);
+      setData(queryData?.data.data ?? []);
+      setTotalData(queryData?.data.total ?? 0);
+      setDataLoading(false);
     }
   }, [queryData]);
+  // ------------ 리스트 데이터 세팅 ------------ 끝
 
-  const menuProps = {
-    items,
-    // onClick: handleMenuClick,
-  };
-
-  const [ stepCurrent, setStepCurrent ] = useState<number>(0);
-  const [ stepItems, setStepItems ] = useState<any[]>([
-    {title:'고객 발주 등록'}, 
-    {title:'고객 발주 모델 등록'}, 
-  ]);
-  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
-
-  const [ orderModelList, setOrderModelList ] = useState<Array<{id: number}>>([{id: 1}]); // 고객 발주 모델 임시 변수
-  useEffect(()=>{console.log(newProducts)}, [newProducts]);
-
-  const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
-  const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
-
-  const handleDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-    key?: string,
-  ) => {
-    if(type === "input" && typeof e !== "string") {
-      const { value } = e.target;
-      setPartnerData(prev => ({
-        ...prev,
-        [name]: value,
-      } as partnerRType));
-    } else if(type === "select") {
-      if(key) {
-        setPartnerData(prev => ({
-          ...prev,
-          [name]: {
-            [key]: e.toString(),
-          },
-        } as partnerRType));
-      } else {
-        setPartnerData(prev => ({
-          ...prev,
-          [name]: e,
-        } as partnerRType));
-      }
-    }
-  }
-
-  const handleProductDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-    idx: number,
-    key?: string,
-  ) => {
-    let value = e;
-    if(type === "input" && typeof e !== "string") {
-      value = e.target.value;
-    }
-
-    if(key) {
-      setNewProducts((prev) =>
-        prev.map((item, i) =>
-          i === idx
-            ? { ...item, [name]: {
-              ...((item as any)[name] || {}), // 기존 객체 값 유지
-              [key]: value, // 새로운 key 값 업데이트
-            } }
-            : item
-        )
-      );
-    } else {
-      setNewProducts((prev) =>
-        prev.map((item, i) =>
-          i === idx
-            ? { ...item, [name]: value }
-            : item
-        )
-      );
-    }
-  }
-
-  const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
+  // ------------- 필요 데이터 세팅 ------------- 시작
+    // ME = EMP
   const { me } = useUser();
-  useEffect(()=>{
-    setFormData({...formData, empId:me?.id??''});
-  }, [me])
-  useEffect(()=>{console.log(formData, me);},[formData]);
 
+    // 거래처를 가져와 SELECT에 세팅 (type이 다름)
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
   const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
   const { data:cs, refetch:csRefetch } = useQuery({
@@ -195,6 +94,7 @@ const SalesUserPage: React.FC & {
     queryFn: () => getClientCsAPI(),
   });
   
+    // 거래처 변경 시 해당 거래처 담당자 리스트 세팅
   useEffect(()=>{
     if(cs?.data.data?.length) {
       setCsList(cs.data.data.map((cs:partnerRType) => ({
@@ -203,13 +103,92 @@ const SalesUserPage: React.FC & {
       })));
     }
   }, [cs?.data.data]);
+  // ------------- 필요 데이터 세팅 ------------- 끝
 
+  // --------------- 고객 발주  --------------- 시작
+    // 현 스탭 및 스탭 타이틀
+  const [ stepCurrent, setStepCurrent ] = useState<number>(0);
+  const stepItems = [{title:'고객 발주 등록'}, {title:'고객 발주 모델 등록'}];
+    // 모달창 닫기 눌렀을 때 실행 함수
+  function stepModalClose(){
+    if(stepCurrent === 0){
+      setOpen(false);
+      handleCloseOrder();
+    }else{
+      setStepCurrent(0);
+    }
+  }
+    // 고객 발주 모달창 OPEN
+  const [ open, setOpen ] = useState<boolean>(false);
+    // 결과 모달창을 위한 변수
+  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+  const [ resultType, setResultType ] = useState<AlertType>('info');
+  const [ resultMsg, setResultMsg ] = useState<string>('');
+  
+    // 발주 저장 변수
+  const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
+    // 모델 저장 변수
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([{...newDataSalesOrderProductCUType(), id:'new-1'}]);
+    // 수정 시 필요 변수
+  const [ edit, setEdit ] = useState<boolean>(false);
+  const [ detailId, setDetailId ] = useState<string>("");
+    // 수정 시 데이터 세팅
+  const fetchDetail = async () => {
+    const result = await getAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: `sales-order/detail/jsxcrud/one/${detailId}`
+    });
+
+    if(result.resultCode === "OK_0000") {
+      const data = result.data.data as salesOrderDetailRType;
+      setFormData({
+        id: data.id,
+        partnerId: data.prtInfo.prt.id,
+        partnerManagerId: data.prtInfo.mng.id,
+        orderName: data.orderNm,
+        orderDt: dayjs(data.orderDt, 'YYYY-MM-DD'),
+        orderRepDt: data.orderRepDt,
+        orderTxt: data.orderTxt,
+        totalOrderPrice: data.totalOrderPrice,
+        empId: data.emp.id,
+        hotGrade: data.hotGrade,
+        files: data.files.map((file) => { return file.storageId }),
+      });
+      setNewProducts(data.products.map((prd: salesOrderProductRType) => ({
+        id: prd.id,
+        currPrdInfo: JSON.parse(prd.currPrdInfo),
+        modelStatus: prd.modelStatus,
+        orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
+        orderNo: prd.orderNo,
+        orderTit: prd.orderTit,
+        prtOrderNo: prd.prtOrderNo,
+        orderPrdRemark: prd.orderPrdRemark,
+        orderPrdCnt: prd.orderPrdCnt,
+        orderPrdUnitPrice: prd.orderPrdUnitPrice,
+        orderPrdPrice: prd.orderPrdPrice,
+        orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
+        orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
+        orderPrdHotGrade: prd.orderPrdHotGrade,
+      })));
+      setStepCurrent(1);
+      setOpen(true);
+    }
+  }
+  useEffect(()=>{
+    if(edit && detailId !== "") {
+      fetchDetail();
+    }
+  }, [edit])
+
+    // 발주 내 거래처 변경 시 해당 담당자 리스트 세팅
   useEffect(()=>{
     if(formData.partnerId !== '' && cs?.data.data?.length) {
       const data = cs?.data.data as partnerRType[];
       const mng = data.find((cu:partnerRType) => cu.id === formData.partnerId)?.managers;
       setCsMngList(mng ?? []);
       if (mng && mng.length > 0) {
+        // 담당자가 있을 경우 첫번째 담당자 자동 세팅
         setFormData({...formData, partnerManagerId:mng[0].id});
       }else{
         setFormData({...formData, partnerManagerId:''});
@@ -217,34 +196,238 @@ const SalesUserPage: React.FC & {
     }
   }, [formData.partnerId])
 
+    // 발주 내 첨부파일
   const [ fileList, setFileList ] = useState<any[]>([]);
   const [ fileIdList, setFileIdList ] = useState<string[]>([]);
-
+    // 첨부파일 변경 시 FORM에 세팅
   useEffect(()=>{
     setFormData({ ...formData, files:fileIdList });
-    console.log(fileList, fileIdList);
   }, [fileIdList]);
 
-  const handleNextStep = () => {
-    setStepCurrent(1);
+  useEffect(()=>{
+    const totalPrice = newProducts.reduce((acc, product) => {
+      const productPrice = Number(product.orderPrdPrice);
+      const productCount = Number(product.orderPrdCnt);
+      return acc + productPrice * productCount;
+    }, 0);
+  
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      totalOrderPrice: totalPrice,
+    }));
+  }, [newProducts]);
+
+  const handleCloseOrder = () => {
+    //값 초기화
+    setCsMngList([]);
+    setStepCurrent(0);
+    setEdit(false);
+    setDetailId("");
+    setFormData(newDataSalesOrderCUType);
+    setNewProducts([newDataSalesOrderProductCUType()]);
   }
 
-  const handleSubmit = async () => {
-    console.log(JSON.stringify(formData));
+    // 신규 등록 시 실행 함수
+  const handleSubmitOrder = async () => {
+    const jsonData = {
+      ...formData,
+      orderName: newProducts.length > 0 ? newProducts[0].orderTit+'외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
+      orderRepDt: new Date(),
+      empId: me?.id,
+      products: newProducts.map((product:salesOrderProcuctCUType, index:number) => ({
+        customPartnerManagerId: formData.partnerManagerId,
+        currPrdInfo: product.currPrdInfo,
+        modelId: product.modelId,
+        modelStatus: product.modelStatus,
+        orderDt: formData.orderDt,
+        orderNo: index.toString(),
+        orderTit: product.orderTit,
+        prtOrderNo: product.prtOrderNo,
+        orderPrdRemark: product.orderPrdRemark,
+        orderPrdCnt: product.orderPrdCnt,
+        orderPrdUnitPrice: product.orderPrdUnitPrice,
+        orderPrdPrice: product.orderPrdPrice,
+        orderPrdDueReqDt: product.orderPrdDueReqDt,
+        orderPrdDueDt: product.orderPrdDueDt,
+        orderPrdHotGrade: formData.hotGrade,
+      }))
+    } as salesOrderCUType;
+    console.log(JSON.stringify(jsonData));
+
+    // 모델 내 필수 값 입력 체크
+    const prdVal = validReq(jsonData.products, salesOrderProcuctReq());
+    if(!prdVal.isValid) {
+      setResultMsg(prdVal.missingLabels+'은(는) 필수 입력입니다.');
+      setResultType("error");
+      setResultOpen(true);
+      return;
+    }
+
     const result = await postAPI({
       type: 'core-d1',
       utype: 'tenant/',
       url: 'sales-order',
       jsx: 'default'},
-      formData
+      jsonData
     );
 
     if(result.resultCode === 'OK_0000') {
       console.log('ok');
       refetch();
+      setOpen(false);
+      setResultType("success");
+      setResultMsg("고객 발주가 완료되었습니다.");
+      setResultOpen(true);
+      handleCloseOrder();
+    } else {
+      console.log(result);
+      setOpen(false);
+      setResultType("error");
+      setResultMsg("고객 발주가 실패하였습니다.");
+      setResultOpen(true);
+      handleCloseOrder();
     }
   }
 
+  const handleEditOrder = async () => {
+    const jsonData = {
+      order: {
+        id: formData.id,
+        partnerId: formData.partnerId,
+        partnerManagerId: formData.partnerManagerId,
+        orderName: newProducts.length > 0 ? newProducts[0].orderTit+' 외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
+        totalOrderPrice: formData.totalOrderPrice,
+        orderDt: formData.orderDt,
+        orderRepDt: formData.orderRepDt,
+        orderTxt: formData.orderTxt,
+        empId: me?.id,
+        hotGrade: formData.hotGrade,
+        files: formData.files,
+      },
+      products: {
+        create: newProducts.filter(f=>f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
+          currPrdInfo: prd.currPrdInfo,
+          modelId: prd.modelId,
+          modelStatus: prd.modelStatus,
+          orderDt: formData.orderDt,
+          orderNo: index.toString(),
+          orderTit: prd.orderTit,
+          prtOrderNo: prd.prtOrderNo,
+          orderPrdRemark: prd.orderPrdRemark,
+          orderPrdCnt: prd.orderPrdCnt,
+          orderPrdUnitPrice: prd.orderPrdUnitPrice,
+          orderPrdPrice: prd.orderPrdPrice,
+          orderPrdDueReqDt: prd.orderPrdDueReqDt,
+          orderPrdDueDt: prd.orderPrdDueDt,
+          orderPrdHotGrade: formData.hotGrade,
+        })),
+        update: newProducts.filter(f=>!f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
+          id: prd.id,
+          currPrdInfo: prd.currPrdInfo,
+          modelStatus: prd.modelStatus,
+          orderDt: formData.orderDt,
+          orderNo: index.toString(),
+          orderTit: prd.orderTit,
+          prtOrderNo: prd.prtOrderNo,
+          orderPrdRemark: prd.orderPrdRemark,
+          orderPrdCnt: prd.orderPrdCnt,
+          orderPrdUnitPrice: prd.orderPrdUnitPrice,
+          orderPrdPrice: prd.orderPrdPrice,
+          orderPrdDueReqDt: prd.orderPrdDueReqDt,
+          orderPrdDueDt: prd.orderPrdDueDt,
+          orderPrdHotGrade: formData.hotGrade,
+        }))
+      }
+    }
+    console.log(JSON.stringify(jsonData));
+
+    // 발주 내 필수 값 입력 체크
+    const ordVal = validReq(jsonData.order, salesOrderReq());
+    if(!ordVal.isValid) {
+      setResultMsg(ordVal.missingLabels+'은(는) 필수 입력입니다.');
+      setResultType("error");
+      setResultOpen(true);
+      return;
+    }
+
+    // 모델 내 필수 값 입력 체크
+    const prdVal = validReq(jsonData.products.update, salesOrderProcuctReq());
+    if(!prdVal.isValid) {
+      setResultMsg(prdVal.missingLabels+'은(는) 필수 입력입니다.');
+      setResultType("error");
+      setResultOpen(true);
+      return;
+    }
+
+    const result = await postAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: 'sales-order/default/multiple-save',
+      jsx: 'default',
+      etc: true },
+      jsonData
+    );
+
+    if(result.resultCode === 'OK_0000') {
+      console.log('ok');
+      refetch();
+      setOpen(false);
+      setResultType("success");
+      setResultMsg("고객 발주 수정이 완료되었습니다.");
+      setResultOpen(true);
+      handleCloseOrder();
+    } else {
+      console.log(result);
+      setOpen(false);
+      setResultType("error");
+      setResultMsg("고객 발주 수정이 실패하였습니다.");
+      setResultOpen(true);
+      handleCloseOrder();
+    }
+  }
+  // --------------- 고객 발주  --------------- 끝
+
+  // ---------------- 거래처  ---------------- 시작
+    // 리스트 내 거래처
+  const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+  const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
+  const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
+
+    // Drawer 내 수정 클릭 시 거래처 설정
+  const [ newPrtOpen, setNewPrtOpen ] = useState<boolean>(false);
+  const [ newPartnerData, setNewPartnerData ] = useState<partnerRType | null>(null);
+  // Drawer 내 수정 클릭 시 거래처 담당자 설정 모달 OPEN
+  const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
+  const [ newPartnerMngData, setNewPartnerMngData ] = useState<partnerMngRType | null>(null);
+  
+    // 거래처 설정 값 변경 시 실행 함수
+  const handlePrtDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    let value = e;
+    if(type === "input" && typeof e !== "string") {
+      value = e.target.value;
+    }
+
+    if(key) {
+      setNewPartnerData(prev => ({
+        ...prev,
+        [name]: {
+          [key]: e.toString(),
+        },
+      } as partnerRType));
+    } else {
+      setNewPartnerData(prev => ({
+        ...prev,
+        [name]: e,
+      } as partnerRType));
+    }
+  }
+
+    // 거래처 설정 저장 시 실행 함수
   const handleSubmitPrtData = async () => {
     try {
       const result = await patchAPI({
@@ -279,364 +462,207 @@ const SalesUserPage: React.FC & {
       console.log('catch error : ', e);
     }
   }
+  // ---------------- 거래처  ---------------- 끝
 
-  function stepModalClose(){
-    if(stepCurrent === 0){
-      setOpen(false);
-    }else{
-      setStepCurrent(0);
-    }
-  }
 
   return (
     <>
-      <div 
-        className="w-full h-50 flex h-center justify-end px-60 pt-10 absolute top-0"
+      <ListTitleBtn 
+        label="신규"
         onClick={()=>{setOpen(true)}}
-      >
-        <div className="w-80 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer flex gap-4 z-20">
-          <SplusIcon stroke="#FFF"className="w-16 h-16"/>
-          <span>신규</span>
-        </div>
-      </div>
-      <div className="flex w-full h-50 gap-20 justify-end items-center">
-        <span>총 {totalData}건</span>
-        <Pagination size="small" defaultCurrent={1} current={pagination.current} total={totalData} />
-        <Dropdown menu={menuProps} trigger={['click']} placement="bottomCenter" getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}>
-          <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
-        </Dropdown>
-      </div>
-      <div className="flex flex-col gap-20" style={{borderTop:' 1px solid rgba(0,0,0,6%)'}}>
+        icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
+      />
+
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+      />
+
+      <List>
         <AntdTableEdit
-          columns={salesUserOrderClmn(totalData, setDrawerOpen, setPartnerData, setPartnerMngData)}
+          columns={salesUserOrderClmn(
+            totalData,
+            setDrawerOpen,
+            setEdit,
+            setDetailId,
+            setPartnerData,
+            setPartnerMngData,
+          )}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
         />
-        
-        {/* <AntdModal
-          open={open}
-          setOpen={setOpen}
-          width={1288}
-          title={"고객발주 등록"}
-          contents={<AddOrderContents setOpen={setOpen} />}
-        /> */}
+      </List>
 
-        <AntdModalStep2
-          items={stepItems}
-          current={stepCurrent}
-          open={open}
-          setOpen={setOpen}
-          onClose={stepModalClose}
-          width={1300}
-          contents={
-          <div className="flex gap-10 h-full">
-            <div style={{width:stepCurrent>0?500:'100%'}} className="overflow-x-auto">
-              <div className={`w-[1240px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
-                <LabelMedium label="고객발주 등록"/>
-                <div className="w-full h-1 border-t-1"/>
-                <div className="w-full h-[421px] h-center gap-30">
-                  <div className="flex flex-col w-[222px] h-full gap-24">
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="고객"/>
-                      <AntdSelect 
-                        options={csList}
-                        value={formData.partnerId}
-                        onChange={(e)=>{
-                          const value = e+'';
-                          setFormData({...formData, partnerId:value});
-                        }}
-                        styles={{ht:'36px'}}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="총 수주 금액"/>
-                      <AntdInput 
-                        value={formData.orderName}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormData({...formData, orderName:value});
-                        }}
-                        styles={{ht:'36px'}}
-                        type="number"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="발주일"/>
-                      <AntdDatePicker
-                        value={formData.orderDt}
-                        onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
-                        styles={{br:"2px",bc:"#D5D5D5"}}
-                        className="w-full h-36"
-                        suffixIcon={"cal"}
-                      />
-                    </div>
-                    {/* <div className="flex flex-col gap-8">
-                      <LabelThin label="납기요청일"/>
-                      <AntdDatePicker
-                        value={formData.orderRepDt}
-                        onChange={(value)=>setFormData((prev => ({ ...prev, orderRepDt:value })))}
-                        styles={{br:"2px",bc:"#D5D5D5"}}
-                        className="w-full h-36"
-                        suffixIcon={"cal"}
-                      />
-                    </div> */}
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="긴급상태"/>
-                      <AntdSelect 
-                        options={[
-                          {value:HotGrade.SUPER_URGENT,label:'초긴급'},
-                          {value:HotGrade.URGENT,label:'긴급'},
-                          {value:HotGrade.NORMAL,label:'일반'},
-                        ]}
-                        value={formData.hotGrade}
-                        onChange={(e)=>{
-                          const value = e+'' as HotGrade;
-                          setFormData({...formData, hotGrade:value});
-                        }}
-                        styles={{ht:'36px'}}
-                      />
-                    </div>
-                  </div>
-                  <div className="w-1 h-full border-r-1"/>
-                  <div className="flex-1 h-full flex flex-col gap-24">
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="고객발주 메일 내용"/>
-                      <TextArea
-                        value={formData.orderTxt}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormData({...formData, orderTxt:value});
-                        }}
-                        className="rounded-2"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-8">
-                      <LabelThin label="첨부파일"/>
-                      <div className="w-full h-[150px]">
-                        <AntdDragger
-                          fileList={fileList}
-                          setFileList={setFileList}
-                          fileIdList={fileIdList}
-                          setFileIdList={setFileIdList}
-                          mult={true}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[1240px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
-                <div className="flex gap-10 h-center">
-                  <LabelMedium label="담당자 정보"/>
-                  <Button className="w-30 !h-24 v-h-center !p-0"><SplusIcon/></Button>
-                </div>
-                <div className="w-full h-1 border-t-1"/>
-                {
-                  csMngList.map((mng:partnerMngRType) => (
-                    <div className="w-full h-40 h-center gap-10" key={mng.id}>
-                      <p className="w-100 h-center gap-8">
-                        <Radio
-                          name="csMng"
-                          checked={formData.partnerManagerId === mng.id}
-                          onChange={() => setFormData({...formData, partnerManagerId:mng.id})}
-                        /> {mng.prtMngNm}
-                      </p>
-                      <div className="w-[200px] px-12">
-                        <LabelIcon label={mng.prtMngDeptNm} icon={<MessageOn />}/>
-                      </div>
-                      <div className="w-[200px] px-12">
-                        <LabelIcon label={mng.prtMngTel} icon={<Call />}/>
-                      </div>
-                      <div className="w-[200px] px-12">
-                        <LabelIcon label={mng.prtMngMobile} icon={<Mobile />}/>
-                      </div>
-                      <div className="flex-1 px-12">
-                        <LabelIcon label={mng.prtMngMobile} icon={<Mail />}/>
-                      </div>
-                      <div className="w-40 h-40 v-h-center">
-                        <p className="w-24 h-24"><Edit /></p>
-                      </div>
-                    </div>
-                  ))
+      <AntdModalStep2
+        open={open}
+        setOpen={setOpen}
+        items={stepItems}
+        current={stepCurrent}
+        onClose={stepModalClose}
+        width={1300}
+        contents={
+        <div className="flex gap-10 h-full">
+          <div style={{width:stepCurrent>0?500:'100%'}} className="overflow-x-auto">
+            <AddOrderContents
+              csList={csList}
+              csMngList={csMngList}
+              fileList={fileList}
+              fileIdList={fileIdList}
+              setFileList={setFileList}
+              setFileIdList={setFileIdList}
+              setOpen={setOpen}
+              formData={formData}
+              setFormData={setFormData}
+              stepCurrent={stepCurrent}
+              handleNextStep={()=>{
+                const orderVal = validReq(formData, salesOrderReq());
+                if(!orderVal.isValid) {
+                  setResultMsg(orderVal.missingLabels+'은(는) 필수 입력입니다.');
+                  setResultType("error");
+                  setResultOpen(true);
+                } else {
+                  setStepCurrent(1);
                 }
+              }}
+            />
+          </div>
+          {
+            // 모델 등록
+            stepCurrent > 0 ?
+            <div className="h-full flex flex-col">
+              <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
+                <AntdTableEdit
+                  create={true}
+                  columns={salesUserOrderModelClmn(newProducts, setNewProducts)}
+                  data={newProducts}
+                  setData={setNewProducts}
+                  styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+                />
+                <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
+                  onClick={() => {
+                    setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                      ...prev,
+                      {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
+                    ]);
+                  }}
+                >
+                <SplusIcon/>
+                <span>모델 추가하기</span>
+                </div>
               </div>
-              <div className="flex w-full h-50 v-between-h-center">
-                <Button className="w-80 h-32 bg-point1 text-white rounded-6" style={{color:"#444444E0"}} onClick={() => {setOpen(false); setFormData(newDataSalesOrderCUType)}}><Close/>취소</Button>
-                {stepCurrent < 1 ? <Button className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}} onClick={handleNextStep}><Arrow />다음 단계</Button> : <></>}
+              <div className="flex w-full h-50 justify-end h-center">
+                <Button
+                  className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                  onClick={()=>{
+                    if(edit && detailId !== "") {
+                      handleEditOrder();
+                    } else {
+                      handleSubmitOrder();
+                    }
+                  }}
+                >
+                  <Arrow /> { edit ? '모델수정' : '모델등록'}
+                </Button>
               </div>
-              
             </div>
-            {
-              stepCurrent > 0 ?
-              <div className="h-full flex flex-col">
-
-                <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
-                  <AntdTable
-                    columns={salesUserOrderModelClmn()}
-                    data={orderModelList}
-                    styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-                  />
-                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                      onClick={() => setOrderModelList((prev: Array<{id: number}>) => [...prev, {id: prev.length+1}])}
-                    >
-                    <SplusIcon/>
-                    <span>모델 추가하기</span>
-                    </div>
-                </div>
-                <div className="flex w-full h-50 justify-end h-center">
-                  <Button className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}} onClick={handleNextStep}><Arrow />다음 단계</Button>
-                </div>
-              </div>
-              // <div className="flex-1 p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
-              //   <table>
-              //     <thead>
-              //       <tr>
-              //         <th>발주명</th>
-              //         <th>구분</th>
-              //         <th>층</th>
-              //         <th>두께</th>
-              //         <th>수량</th>
-              //         <th>납기일</th>
-              //         <th>견적단가</th>
-              //       </tr>
-              //     </thead>
-              //     <tbody>
-              //       {
-              //         newProducts.map((product:salesOrderProcuctCUType, index:number) => (
-              //           <tr key={index}>
-              //             <td>
-              //               <AntdInput />
-              //               {/* ...발주명 : orderNm... (현재 API가 모델 바깥에 발주명이 있어서 product 안에 넣어줘야 됨...) */}
-              //             </td>
-              //             <td>
-              //               <AntdSelect
-              //                 value={product.modelStatus}
-              //                 options={[
-              //                   {value:ModelStatus.NEW,label:'신규'},
-              //                   {value:ModelStatus.REPEAT,label:'반복'},
-              //                   {value:ModelStatus.MODIFY,label:'수정'},
-              //                 ]}
-              //                 onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
-              //               />
-              //             </td>
-              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'layer')}/></td>
-              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'thic')}/></td>
-              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
-              //             <td>
-              //               <AntdDatePicker 
-              //                 value={dayjs(product.orderDt)}
-              //                 onChange={(e)=>{
-              //                   const value = dayjs(e).format('YYYY-MM-DD');
-              //                   handleProductDataChange(value, 'orderDt', 'date', index)
-              //                 }}
-              //               />
-              //               {/* 이거 api에는 수주일인데 화면은 납기일임, 그리고 모델에 납기요청일 없음 */}
-              //             </td>
-              //             <td><AntdInput type="number" value={product.orderPrdPrice} onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
-              //             <td
-              //               onClick={()=>{
-              //                 setNewProducts((prev) => prev.filter((_, idx) => idx !== index));
-              //               }}
-              //             >삭제</td>
-              //           </tr>
-              //         ))
-              //       }
-              //     </tbody>
-              //   </table>
-              //   <div
-              //     onClick={()=>{
-              //       setNewProducts([...newProducts, newDataSalesOrderProductCUType()]);
-              //     }}
-              //   >
-              //     모델 추가
-              //   </div>
-              // </div>
-              :<></>
-            }
-          </div>}
-        />
-
-        <AntdDrawer
-          open={drawerOpen}
-          close={()=>{setDrawerOpen(false)}}
-          maskClosable={false}
-          mask={false}
-        >
-          <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
-          <div>
-            거래처명 : {partnerData?.prtNm ?? '-'}<br/>
-            식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
-            축약명 : {partnerData?.prtSnm ?? '-'}<br/>
-            영문명 : {partnerData?.prtEngNm ?? '-'}<br/>
-            영문 축약 : {partnerData?.prtEngSnm ?? '-'}<br/>
-            사업자 : {partnerData?.prtRegNo ?? '-'}<br/>
-            법인 : {partnerData?.prtCorpRegNo ?? '-'}<br/>
-            업태 : {partnerData?.prtBizType ?? '-'}<br/>
-            업종 : {partnerData?.prtBizCate ?? '-'}<br/>
-            주소 : {partnerData?.prtAddr ?? '-'}<br/>
-            주소세부 : {partnerData?.prtAddrDtl ?? '-'}<br/>
-            대표 : {partnerData?.prtCeo ?? '-'}<br/>
-            전화 : {partnerData?.prtTel ?? '-'}<br/>
-            팩스 : {partnerData?.prtFax ?? '-'}<br/>
-            이메일 : {partnerData?.prtEmail ?? '-'}<br/>
-          </div>
-          <div onClick={()=>{setNewPrtMngOpen(true);}}>수정</div>
-          <div>
-            담당자명 : {partnerMngData?.prtMngNm}<br/>
-            부서 : {partnerMngData?.prtMngDeptNm}<br/>
-            팀 : {partnerMngData?.prtMngTeamNm}<br/>
-            전화 : {partnerMngData?.prtMngTel}<br/>
-            휴대 : {partnerMngData?.prtMngMobile}<br/>
-            이메일 : {partnerMngData?.prtMngEmail}<br/>
-            팩스 : {partnerMngData?.prtMngFax}<br/>
-          </div>
-        </AntdDrawer>
-
-        <AntdModal
-          open={newPrtOpen}
-          setOpen={setNewPrtOpen}
-          width={760}
-          contents={
-            <>
-              <InputList
-                handleDataChange={handleDataChange}
-                labelWidth={100}
-                items={[
-                  {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input'},
-                  {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input'},
-                  {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input'},
-                  {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input'},
-                  {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input'},
-                  {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input'},
-                  {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input'},
-                  {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input'},
-                  {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input'},
-                  {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'input'},
-                  {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input'},
-                  {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input'},
-                  {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input'},
-                  {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input'},
-                  {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input'},
-                ]}
-              />
-              <div
-                onClick={handleSubmitPrtData}
-              >저장</div>
-            </>
+            :<></>
           }
-        />
+        </div>}
+      />
 
-        <AntdModal
-          open={newPrtMngOpen}
-          setOpen={setNewPrtMngOpen}
-          width={760}
-          contents={
-            <>
-              
-            </>
-          }
-        />
-      </div>
+      <AntdDrawer
+        open={drawerOpen}
+        close={()=>{setDrawerOpen(false)}}
+        maskClosable={false}
+        mask={false}
+      >
+        <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
+        <div>
+          거래처명 : {partnerData?.prtNm ?? '-'}<br/>
+          식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
+          축약명 : {partnerData?.prtSnm ?? '-'}<br/>
+          영문명 : {partnerData?.prtEngNm ?? '-'}<br/>
+          영문 축약 : {partnerData?.prtEngSnm ?? '-'}<br/>
+          사업자 : {partnerData?.prtRegNo ?? '-'}<br/>
+          법인 : {partnerData?.prtCorpRegNo ?? '-'}<br/>
+          업태 : {partnerData?.prtBizType ?? '-'}<br/>
+          업종 : {partnerData?.prtBizCate ?? '-'}<br/>
+          주소 : {partnerData?.prtAddr ?? '-'}<br/>
+          주소세부 : {partnerData?.prtAddrDtl ?? '-'}<br/>
+          대표 : {partnerData?.prtCeo ?? '-'}<br/>
+          전화 : {partnerData?.prtTel ?? '-'}<br/>
+          팩스 : {partnerData?.prtFax ?? '-'}<br/>
+          이메일 : {partnerData?.prtEmail ?? '-'}<br/>
+        </div>
+        <div onClick={()=>{setNewPrtMngOpen(true);}}>수정</div>
+        <div>
+          담당자명 : {partnerMngData?.prtMngNm}<br/>
+          부서 : {partnerMngData?.prtMngDeptNm}<br/>
+          팀 : {partnerMngData?.prtMngTeamNm}<br/>
+          전화 : {partnerMngData?.prtMngTel}<br/>
+          휴대 : {partnerMngData?.prtMngMobile}<br/>
+          이메일 : {partnerMngData?.prtMngEmail}<br/>
+          팩스 : {partnerMngData?.prtMngFax}<br/>
+        </div>
+      </AntdDrawer>
+
+      <AntdModal
+        open={newPrtOpen}
+        setOpen={setNewPrtOpen}
+        width={760}
+        contents={
+          <>
+            <InputList
+              handleDataChange={handlePrtDataChange}
+              labelWidth={100}
+              items={[
+                {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input'},
+                {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input'},
+                {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input'},
+                {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input'},
+                {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input'},
+                {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input'},
+                {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input'},
+                {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input'},
+                {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input'},
+                {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'input'},
+                {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input'},
+                {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input'},
+                {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input'},
+                {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input'},
+                {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input'},
+              ]}
+            />
+            <div
+              onClick={handleSubmitPrtData}
+            >저장</div>
+          </>
+        }
+      />
+
+      <AntdModal
+        open={newPrtMngOpen}
+        setOpen={setNewPrtMngOpen}
+        width={760}
+        contents={
+          <>
+            
+          </>
+        }
+      />
+
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={resultType === "success" ? "고객 발주 성공" : "고객 발주 실패"}
+        contents={<div>{resultMsg}</div>}
+        type={resultType} 
+        onOk={()=>{
+          setResultOpen(false);
+        }}
+        hideCancel={true}
+        theme="main"
+      />
     </>
   )
 };

@@ -32,15 +32,24 @@ export const postAPI = async (
     utype?: 'root/' | 'tenant/',
     url: string,
     jsx: 'jsxcrud' | 'default',
+    etc?: boolean,
   },
   body?: any,
 ): Promise<apiPatchResponseType>  => {
   if(server.utype === 'tenant/') {
-    const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
-    console.log('POST RESPONSE : ', response);
-    
-    const { data, resultCode } = response.data;
-    return { data, resultCode, response };
+    if(server.etc) {
+      const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}`, body);
+      console.log('POST RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      return { data, resultCode, response };
+    } else {
+      const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
+      console.log('POST RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      return { data, resultCode, response };
+    }
   } else {
     const response = await instanceRoot.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
     console.log('POST RESPONSE : ', response);

@@ -3,18 +3,18 @@ import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
 import { HotGrade, ModelStatus } from '../type/enum';
-import { salesOrderRType } from '../type/sales/order';
+import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
-import AntdInput from '@/components/Input/AntdInput';
-import AntdDatePicker from '@/components/DatePicker/AntdDatePicker';
 
 import Trash from "@/assets/svg/icons/s_trash.svg";
-import AntdSelect from '@/components/Select/AntdSelect';
+import dayjs from 'dayjs';
 
 export const salesUserOrderClmn = (
   totalData: number,
   setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setEdit: React.Dispatch<React.SetStateAction<boolean>>,
+  setDetailId: React.Dispatch<React.SetStateAction<string>>,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
 ): CustomColumn[] => [
@@ -58,6 +58,7 @@ export const salesUserOrderClmn = (
     dataIndex: 'orderNm',
     key: 'orderNm',
     align: 'center',
+    cellAlign: 'left',
   },
   {
     title: '모델수',
@@ -65,6 +66,9 @@ export const salesUserOrderClmn = (
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',
+    render: (_:any, record:salesOrderRType) => {
+      return record.products.length;
+    }
   },
   {
     title: '고객처 담당',
@@ -118,12 +122,13 @@ export const salesUserOrderClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value) => (
+    render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            // setNewOpen(true);
+            setEdit(true);
+            setDetailId(record.id);
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
@@ -134,72 +139,70 @@ export const salesUserOrderClmn = (
 ];
 
 export const salesUserOrderModelClmn = (
-): TableProps['columns'] => [
+  newProducts: salesOrderProcuctCUType[],
+  setNewProducts: React.Dispatch<React.SetStateAction<salesOrderProcuctCUType[]>>,
+): CustomColumn[] => [
   {
     title: '발주 모델명',
     width: 220,
-    dataIndex: 'modelNm',
-    key: 'modelNm',
+    dataIndex: 'orderTit',
+    key: 'orderTit',
     align: 'center',
-    render: (value, record) => (<AntdInput />)
+    editable: true,
   },
   {
     title: '구분',
     width: 85,
-    dataIndex: 'modelCd',
-    key: 'modelCd',
+    dataIndex: 'modelStatusLabel',
+    key: 'modelStatusLabel',
     align: 'center',
-    render: (value, record) => (
-      <AntdSelect
-        // value={product.modelStatus}
-        options={[
-          {value:ModelStatus.NEW,label:'신규'},
-          {value:ModelStatus.REPEAT,label:'반복'},
-          {value:ModelStatus.MODIFY,label:'수정'},
-        ]}
-        // onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
-      />
-    )
+    editType: 'select',
+    selectOptions: [
+      {value:ModelStatus.NEW,label:'신규'},
+      {value:ModelStatus.REPEAT,label:'반복'},
+      {value:ModelStatus.MODIFY,label:'수정'},
+    ],
+    selectValue: 'modelStatus',
   },
   {
     title: '층',
     width: 75,
-    dataIndex: 'modelCd',
-    key: 'modelCd',
+    dataIndex: 'currPrdInfo.layer',
+    key: 'currPrdInfo.layer',
     align: 'center',
-    render: (value, record) => (<AntdInput />)
+    inputType: 'number',
   },
   {
     title: '두께',
     width: 75,
-    dataIndex: 'modelSpec',
-    key: 'modelSpec',
+    dataIndex: 'currPrdInfo.thic',
+    key: 'currPrdInfo.thic',
     align: 'center',
-    render: (value, record) => (<AntdInput />)
+    inputType: 'number',
   },
   {
     title: '수량',
     width: 75,
-    dataIndex: 'modelColor',
-    key: 'modelColor',
+    dataIndex: 'orderPrdCnt',
+    key: 'orderPrdCnt',
     align: 'center',
-    render: (value, record) => (<AntdInput />)
+    inputType: 'number',
   },
   {
     title: '납기일',
     width: 150,
-    dataIndex: 'modelCnt',
-    key: 'modelCnt',
+    dataIndex: 'orderPrdDueDt',
+    key: 'orderPrdDueDt',
     align: 'center',
-    render: (value, record) => (<AntdDatePicker  value={null} onChange={() => false} styles={{br:"2px",bc:"#D9D9D9"}} suffixIcon={"cal"}/>)
+    editType: 'date',
   },
   {
     title: '견적단가',
     width: 120,
-    dataIndex: 'modelPrice',
-    key: 'modelPrice',
+    dataIndex: 'orderPrdPrice',
+    key: 'orderPrdPrice',
     align: 'center',
-    render: (value, record) => (<AntdInput />)
+    inputType: 'number',
   },
   {
     title: '',
@@ -207,6 +210,16 @@ export const salesUserOrderModelClmn = (
     dataIndex: 'modelAmount',
     key: 'modelAmount',
     align: 'center',
-    render: (value, record) => (<div className='w-24 h-24 v-h-center cursor-pointer'><Trash/></div>)
+    editType: 'none',
+    render: (_, record) => (
+      <div
+        className='w-24 h-24 v-h-center cursor-pointer'
+        onClick={()=>{
+          setNewProducts(newProducts.filter((f:salesOrderProcuctCUType)=>f.id !== record.id));
+        }}
+      >
+        <Trash/>
+      </div>
+    )
   },
 ];

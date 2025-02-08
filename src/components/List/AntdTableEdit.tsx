@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import styled from "styled-components";
 import { get, set } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { ConfigProvider, Table, Form, DatePicker, Switch } from "antd";
 import { ColumnGroupType, ColumnsType, ColumnType } from "antd/es/table";
 
@@ -10,16 +10,18 @@ import AntdInput from "../Input/AntdInput";
 
 // 셀 수정을 위한 Props (컴포넌트 내 onCell에서 적용됨)
 interface EditableCellProps {
-  editing: boolean;                                   // 수정 모드
-  dataIndex: string;                                  // 객채 내 key 값
-  title: string;                                      // 컬럼명
-  children: React.ReactNode;                          // 내부 내용
-  record: any;                                        // 행의 값
-  value: string;                                      // 내부 내용 (string)
-  req?: boolean;                                      // 컬럼의 필수 여부   ** 현재 필수 체크 없음
-  editType?: 'select' | 'input' | 'date' | 'toggle';  // 셀의 타입
-  selectOptions: any[];                               // 셀의 타입이 SELECT일 경우의 SELECT 옵션
-  selectValue: any;                                   // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
+  cellAlign: 'center' | 'right' | 'left';                     // 셀의 위치
+  editing: boolean;                                           // 수정 모드
+  dataIndex: string;                                          // 객채 내 key 값
+  title: string;                                              // 컬럼명
+  children?: React.ReactNode;                                 // 내부 내용
+  record: any;                                                // 행의 값
+  value: string;                                              // 내부 내용 (string)
+  req?: boolean;                                              // 컬럼의 필수 여부   ** 현재 필수 체크 없음
+  editType?: 'select' | 'input' | 'date' | 'toggle' | 'none'; // 셀의 타입
+  inputType?: 'string' | 'number',                            // 셀의 타입이 INPUT일 경우 INPUT의 타입
+  selectOptions: any[];                                       // 셀의 타입이 SELECT일 경우의 SELECT 옵션
+  selectValue: any;                                           // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
 }
 
 // 셀 수정 Node
@@ -27,6 +29,7 @@ const EditableCell: React.FC<
   EditableCellProps
   & { onFieldChange: (value: any, label?: string) => void }
 > = ({
+  cellAlign = 'center',
   editing,
   dataIndex,
   title,
@@ -35,13 +38,14 @@ const EditableCell: React.FC<
   value,
   editType,
   req,
+  inputType,
   selectOptions,
   selectValue,
   onFieldChange,
   ...restProps
 }) => {
   return (
-    <td {...restProps}>
+    <td {...restProps} style={{textAlign:cellAlign}}>
       {editing ? (
         <>{
           editType === "date" ?
@@ -75,12 +79,21 @@ const EditableCell: React.FC<
               }}
             />
           :
+          editType === "none" ? (
+            children
+          ):
             <AntdInput 
-              defaultValue={value}
+              value={value}
               onChange={(e)=>{
-                const value = e.target.value;
+                let value = e.target.value;
+                if(inputType==="number") {
+                  if(Number(value) < 0) {
+                    value = "0";
+                  }
+                }
                 onFieldChange(value);
               }}
+              type={inputType}
             />
         }</>
       ) : (
@@ -92,11 +105,13 @@ const EditableCell: React.FC<
 
 // 컬럼 커스텀
 export type CustomColumn = ColumnType<any>
-  & { editable?: boolean }                                  // 수정 가능 여부
-  & { editType?: 'input' | 'select' | 'date' | 'toggle' }   // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
-  & { req?: boolean }                                       // 수정 시 필수 여부
-  & { selectOptions?: any[] }                               // 셀의 타입이 SELECT일 경우의 SELECT 옵션
-  & { selectValue?: any };                                  // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
+  & { cellAlign?: 'center' | 'left' | 'right' }                       // 셀의 위치
+  & { editable?: boolean }                                            // 수정 가능 여부
+  & { editType?: 'input' | 'select' | 'date' | 'toggle' | 'none' }    // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
+  & { req?: boolean }                                                 // 수정 시 필수 여부
+  & { inputType?: 'string' | 'number' }                               // 셀의 타입이 INPUT일 경우의 INPUT의 TYPE
+  & { selectOptions?: any[] }                                         // 셀의 타입이 SELECT일 경우의 SELECT 옵션
+  & { selectValue?: any };                                            // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
 
 // 테이블 테마 스타일
 const AntdTableTheme = {
@@ -117,6 +132,7 @@ interface DataType {
 interface Props {
   columns: CustomColumn[] | (() => CustomColumn[]);
   data?: any[];
+  setData?: React.Dispatch<SetStateAction<any[]>>;
   styles?: {
     pd?: string;
     round?: string;
@@ -135,10 +151,19 @@ interface Props {
     rowSelection?: "radio" | "checkbox";
     split?: "none";
   };
+  create?: boolean;
 }
 
 // 컴포넌트
-const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tableProps }) => {
+const AntdTableEdit: React.FC<Props> = ({ 
+  columns, 
+  data, 
+  setData,
+  styles, 
+  className, 
+  tableProps, 
+  create,   //create가 true일 때는 생성 모드 (무조건 입력창 있어야 함)
+}) => {
   const [form] = Form.useForm();
 
   // 데이터
@@ -149,25 +174,36 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
 
   // 데이터가 load 됐을 때 각각 값 넣어줌
   useEffect(()=>{
-    setDataSource((data ?? []).map((item: any, index: number) => ({
+    const updatedDataSource = (data ?? []).map((item: any, index: number) => ({
       ...item,
       key: item.key ?? index.toString(),
-    })));
-    setRealDataSource((data ?? []).map((item: any, index: number) => ({
-      ...item,
-      key: item.key ?? index.toString(),
-    })));
+    }));
+
+    setDataSource(updatedDataSource);
+    setRealDataSource(updatedDataSource);
+
+    // id가 "new"를 포함하는 레코드의 key를 edit 모드로 설정
+    if (!create) {
+      const newRecord = updatedDataSource.find((item: any) =>
+        typeof item.id === "string" && item.id.includes("new")
+      );
+      
+      if (newRecord) {
+        setEditingKey(newRecord.key);
+        form.setFieldsValue({ ...newRecord });
+      }
+    }
   }, [data]);
 
   // 값 수정될 경우 (더블 클릭 시) - editingKey에 행의 key 값을 넣어줌
-  const isEditing = (record: DataType) => record.key === editingKey;
+  const isEditing = (record: DataType) => create || record.key === editingKey;
 
   // 값 수정 시 실행되는 함수
   const handleFieldChange = (
     key: React.Key, 
     dataIndex: string, 
     value: any, 
-    editType?: 'select' | 'input' | 'date' | 'toggle', 
+    editType?: 'select' | 'input' | 'date' | 'toggle' | 'none', 
     selectKey?: string,   //SELECT의 value 값을 변경하기 위해 가져옴
     label?: string        //SELECT의 라벨 값을 직접 변경해줌
   ) => {
@@ -185,6 +221,10 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
         set(newData[index], dataIndex, value);
       }
       setDataSource(newData);
+      // 생성 모드일 때는 값 자동 저장
+      if(create && setData) {
+        setData(newData);
+      }
     }
   };
 
@@ -195,7 +235,7 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
   };
 
   const handleSave = async () => {
-    if (editingKey !== "") {
+    if (!create && editingKey !== "") {
       await save(editingKey);
     }
   };  
@@ -211,6 +251,7 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
         setDataSource(newData);
         setRealDataSource(newData);
         setEditingKey("");
+        setData?.(newData);
       }
     } catch (err) {
       console.log("Validation Failed:", err);
@@ -219,8 +260,10 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
 
   // 값 이전으로 복구
   const cancel = () => {
-    setEditingKey("");
-    setDataSource(realDataSource);
+    if (!create) {
+      setEditingKey("");
+      setDataSource(realDataSource);
+    }
   };
 
   // Column이 그룹인지 확인하는 타입 가드 함수
@@ -238,67 +281,103 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
   
     const column = col as CustomColumn; // 일반 컬럼으로 변환
   
-    // 수정 모드가 아닐 때
-    if (!column.editable) {
+    // 생성 모드 시
+    if(create) {
       return {
-        render: (value: any, record: any) => {
-          // 객체 안에 객체 값이 있을 때(ex. vendor.prtNm)는 value로 못 가져오므로 구분해서 실행
-          // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
-          // 날짜일 경우 format 변경
+        onCell: (record: DataType) => ({
+          cellAlign: column.cellAlign,
+          title: typeof column.title === "string" ? column.title : undefined,
+          dataIndex: column.dataIndex,
+          editing: isEditing(record) ? "true" : undefined,
+          value: get(record, column.dataIndex),
+          editType: column.editType,
+          record: record,
+          req: column.req,
+          inputType: column.inputType,
+          selectOptions: column.selectOptions,
+          selectValue: get(record, column.selectValue),
+          // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
+          onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+        }),
+        ...column,
+      };
+    } else {
+      // 수정 모드가 아닐 때
+      if (!column.editable) {
+        return {
+          render: (value: any, record: any) => {
+            // 객체 안에 객체 값이 있을 때(ex. vendor.prtNm)는 value로 못 가져오므로 구분해서 실행
+            // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
+            // 날짜일 경우 format 변경
+            if(value) {
+              if(!Number.isNaN(value))
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {value}
+                </div>;
+              if(dayjs(value).isValid())
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {dayjs(value).format('YYYY-MM-DD')}
+                </div>;
+              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                {value}
+              </div>;
+            } else {
+              const v = get(record, column.dataIndex);
+              if(!Number.isNaN(value))
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {v}
+                </div>;
+              if(dayjs(v).isValid())
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {dayjs(value).format('YYYY-MM-DD')}
+                </div>;
+              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                {v}
+              </div>;
+            }
+          },
+          // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
+          ...column
+        };
+      }
+    
+      // 수정 모드일 때
+      return {
+        render: (value: any,record: any) => {
           if(value) {
-            if(!Number.isNaN(value))
+            if(typeof value === "number")
               return value;
             if(dayjs(value).isValid())
               return dayjs(value).format('YYYY-MM-DD');
             return value;
           } else {
             const v = get(record, column.dataIndex);
-            if(!Number.isNaN(value))
+            if(typeof value === "number")
               return v;
             if(dayjs(v).isValid())
               return dayjs(value).format('YYYY-MM-DD');
             return v;
           }
         },
-        // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
-        ...column
+        ...column,
+        // 수정 모드에 필요한 변수 및 함수들 (EditableCellProps, EditableCell)
+        onCell: (record: DataType) => ({
+          cellAlign: column.cellAlign,
+          title: typeof column.title === "string" ? column.title : undefined,
+          dataIndex: column.dataIndex,
+          editing: isEditing(record) ? "true" : undefined,
+          value: get(record, column.dataIndex),
+          editType: column.editType,
+          record: record,
+          req: column.req,
+          inputType: column.inputType,
+          selectOptions: column.selectOptions,
+          selectValue: get(record, column.selectValue),
+          // 값 변경 시 실행되는 함수   ** 값 저장 아님
+          onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+        }),
       };
     }
-  
-    // 수정 모드일 때
-    return {
-      render: (value: any,record: any) => {
-        if(value) {
-          if(typeof value === "number")
-            return value;
-          if(dayjs(value).isValid())
-            return dayjs(value).format('YYYY-MM-DD');
-          return value;
-        } else {
-          const v = get(record, column.dataIndex);
-          if(typeof value === "number")
-            return v;
-          if(dayjs(v).isValid())
-            return dayjs(value).format('YYYY-MM-DD');
-          return v;
-        }
-      },
-      ...column,
-      // 수정 모드에 필요한 변수 및 함수들 (EditableCellProps, EditableCell)
-      onCell: (record: DataType) => ({
-        title: typeof column.title === "string" ? column.title : undefined,
-        dataIndex: column.dataIndex,
-        editing: isEditing(record) ? "true" : undefined,
-        value: get(record, column.dataIndex),
-        editType: column.editType,
-        record: record,
-        req: column.req,
-        selectOptions: column.selectOptions,
-        selectValue: get(record, column.selectValue),
-        // 값 변경 시 실행되는 함수   ** 값 저장 아님
-        onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
-      }),
-    };
   });
   
   return (
@@ -336,16 +415,18 @@ const AntdTableEdit: React.FC<Props> = ({ columns, data, styles, className, tabl
             onRow={(record) => ({
               onDoubleClick: () => {
                 // 더블 클릭 시 편집 모드 진입 (edit true일 때)
-                if (editingKey === "") {
+                if (!create && editingKey === "") {
                   edit(record);
                 }
               },
               onKeyDown: (e) => {
-                //ESC 누르면 원래대로 돌아오고 Enter를 누르면 저장됨
-                if(e.key === "Escape")
-                  cancel();
-                else if(e.key === "Enter")
-                  handleSave();
+                if(!create) {
+                  //ESC 누르면 원래대로 돌아오고 Enter를 누르면 저장됨
+                  if(e.key === "Escape")
+                    cancel();
+                  else if(e.key === "Enter")
+                    handleSave();
+                }
               },
             })}
           />
