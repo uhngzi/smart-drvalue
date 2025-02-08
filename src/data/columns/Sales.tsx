@@ -2,10 +2,15 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
-import { HotGrade } from '../type/enum';
+import { HotGrade, ModelStatus } from '../type/enum';
 import { salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
+import AntdInput from '@/components/Input/AntdInput';
+import AntdDatePicker from '@/components/DatePicker/AntdDatePicker';
+
+import Trash from "@/assets/svg/icons/s_trash.svg";
+import AntdSelect from '@/components/Select/AntdSelect';
 
 export const salesUserOrderClmn = (
   totalData: number,
@@ -125,5 +130,83 @@ export const salesUserOrderClmn = (
         </div>
       </div>
     )
+  },
+];
+
+export const salesUserOrderModelClmn = (
+): TableProps['columns'] => [
+  {
+    title: '발주 모델명',
+    width: 220,
+    dataIndex: 'modelNm',
+    key: 'modelNm',
+    align: 'center',
+    render: (value, record) => (<AntdInput />)
+  },
+  {
+    title: '구분',
+    width: 85,
+    dataIndex: 'modelCd',
+    key: 'modelCd',
+    align: 'center',
+    render: (value, record) => (
+      <AntdSelect
+        // value={product.modelStatus}
+        options={[
+          {value:ModelStatus.NEW,label:'신규'},
+          {value:ModelStatus.REPEAT,label:'반복'},
+          {value:ModelStatus.MODIFY,label:'수정'},
+        ]}
+        // onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
+      />
+    )
+  },
+  {
+    title: '층',
+    width: 75,
+    dataIndex: 'modelCd',
+    key: 'modelCd',
+    align: 'center',
+    render: (value, record) => (<AntdInput />)
+  },
+  {
+    title: '두께',
+    width: 75,
+    dataIndex: 'modelSpec',
+    key: 'modelSpec',
+    align: 'center',
+    render: (value, record) => (<AntdInput />)
+  },
+  {
+    title: '수량',
+    width: 75,
+    dataIndex: 'modelColor',
+    key: 'modelColor',
+    align: 'center',
+    render: (value, record) => (<AntdInput />)
+  },
+  {
+    title: '납기일',
+    width: 150,
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
+    align: 'center',
+    render: (value, record) => (<AntdDatePicker  value={null} onChange={() => false} styles={{br:"2px",bc:"#D9D9D9"}} suffixIcon={"cal"}/>)
+  },
+  {
+    title: '견적단가',
+    width: 120,
+    dataIndex: 'modelPrice',
+    key: 'modelPrice',
+    align: 'center',
+    render: (value, record) => (<AntdInput />)
+  },
+  {
+    title: '',
+    width: 40,
+    dataIndex: 'modelAmount',
+    key: 'modelAmount',
+    align: 'center',
+    render: (value, record) => (<div className='w-24 h-24 v-h-center cursor-pointer'><Trash/></div>)
   },
 ];

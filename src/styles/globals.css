@@ -56,3 +56,7 @@ body {
 .ant-modal-wrap {
   z-index: 1000 !important;
 }
+
+.ant-drawer-content-wrapper {
+  box-shadow: none !important;
+}

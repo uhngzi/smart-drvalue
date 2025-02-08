@@ -13,6 +13,8 @@ interface Props {
   contents?: any;
   footer?: any;
   width?: number;
+  isInnerDrawer?: boolean;
+  drawerContents?: any;
   onClose?: () => void;
   full?: boolean;
 }
@@ -26,6 +28,8 @@ export const AntdModalStep2: React.FC<Props> = ({
   contents,
   footer,
   width,
+  isInnerDrawer,
+  drawerContents,
   onClose,
   full,
 }) => {
@@ -74,21 +78,25 @@ export const AntdModalStep2: React.FC<Props> = ({
       footer={footer||null}
       centered
     >
-      <div className="w-full h-80 shrink-0 px-30 v-between-h-center">
-        <Steps
-          current={current}
-          items={items}
-        />
-        <p className="text-20 font-medium ">{title}</p>
-        <p 
-          className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
-          onClick={onClose || (()=>setOpen(false))}
-        >
-          <Close />
-        </p>
-      </div>
-      <div className="w-full flex-1 px-20 pb-20 overflow-y-auto">
-        {contents}
+      <div className="relative" style={{height: full ? '100%' : '90vh'}}>
+
+        <div className="w-full h-80 shrink-0 gap-10 px-30 v-between-h-center">
+          <Steps
+            current={current}
+            items={items}
+          />
+          <p className="text-20 font-medium ">{title}</p>
+          <p 
+            className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+            onClick={onClose || (()=>setOpen(false))}
+          >
+            <Close />
+          </p>
+        </div>
+        <div className="w-full flex-1 px-20 pb-20" style={{ height: 'calc(100% - 80px)' }}>
+          {contents}
+        </div>
+      {!!isInnerDrawer && (<>{drawerContents}</>)}
       </div>
     </Modal>
   )

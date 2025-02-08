@@ -3,7 +3,7 @@ import { DatePicker } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import styled from "styled-components";
 
-import Calendar from "@/assets/svg/icons/s_calendar.svg";
+import Calendar from "@/assets/svg/icons/newcalendar.svg";
 import { DownOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 
@@ -77,8 +77,7 @@ const AntdDatePicker: React.FC<Props> = ({
         disabled={disabled}
         presets={presets==='pre'?datePresetsPre:presets==='post'?datePresetsPost:[]}
         placeholder={placeholder}
-        suffixIcon={suffixIcon==='down'?<DownOutlined />:suffixIcon==='cal'?<Calendar width="16" height="17"/>:null}
-        defaultValue={defaultValue}
+        suffixIcon={suffixIcon==='down'?<DownOutlined />:suffixIcon==='cal'?<Calendar/>:null}
       />
     </AntdDatePickerStyled>
   )

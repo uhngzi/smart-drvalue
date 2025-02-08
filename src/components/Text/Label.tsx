@@ -25,7 +25,7 @@ export const LabelIcon:React.FC<Props> = ({
 }) => {
   return (
     <div className="text-[rgba(0, 0, 0, 0.85)] h-center gap-4">
-      <p className="w-16 h-16">{icon}</p>
+      <p className="w-16 h-16 h-center justify-center">{icon}</p>
       {label}
     </div>
   )

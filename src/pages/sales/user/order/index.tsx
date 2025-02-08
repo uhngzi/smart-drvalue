@@ -20,11 +20,13 @@ import Call from "@/assets/svg/icons/s_call.svg";
 import Mobile from "@/assets/svg/icons/mobile.svg";
 import Mail from "@/assets/svg/icons/mail.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import { newDataSalesOrderCUType, newDataSalesOrderProductCUType, salesOrderCUType, salesOrderProcuctCUType, salesOrderRType } from "@/data/type/sales/order";
-import { salesUserOrderClmn } from "@/data/columns/Sales";
+import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
 import TitleSmall from "@/components/Text/TitleSmall";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { getClientCsAPI } from "@/api/cache/client";
@@ -69,6 +71,9 @@ const SalesUserPage: React.FC & {
     current: 1,
     size: 10,
   });
+
+  const [textLength, setTextLength] = useState<number>(0);
+  
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
@@ -90,8 +95,8 @@ const SalesUserPage: React.FC & {
 
   useEffect(()=>{
     if(!isLoading) {
-      setData(queryData?.data.data ?? []);
-      setTotalData(queryData?.data.total ?? 0);
+      // setData(queryData?.data.data ?? []);
+      // setTotalData(queryData?.data.total ?? 0);
     }
   }, [queryData]);
 
@@ -106,6 +111,8 @@ const SalesUserPage: React.FC & {
     {title:'고객 발주 모델 등록'}, 
   ]);
   const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
+
+  const [ orderModelList, setOrderModelList ] = useState<Array<{id: number}>>([{id: 1}]); // 고객 발주 모델 임시 변수
   useEffect(()=>{console.log(newProducts)}, [newProducts]);
 
   const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
@@ -202,6 +209,11 @@ const SalesUserPage: React.FC & {
       const data = cs?.data.data as partnerRType[];
       const mng = data.find((cu:partnerRType) => cu.id === formData.partnerId)?.managers;
       setCsMngList(mng ?? []);
+      if (mng && mng.length > 0) {
+        setFormData({...formData, partnerManagerId:mng[0].id});
+      }else{
+        setFormData({...formData, partnerManagerId:''});
+      }
     }
   }, [formData.partnerId])
 
@@ -268,6 +280,14 @@ const SalesUserPage: React.FC & {
     }
   }
 
+  function stepModalClose(){
+    if(stepCurrent === 0){
+      setOpen(false);
+    }else{
+      setStepCurrent(0);
+    }
+  }
+
   return (
     <>
       <div 
@@ -306,11 +326,12 @@ const SalesUserPage: React.FC & {
           current={stepCurrent}
           open={open}
           setOpen={setOpen}
-          width={1800}
+          onClose={stepModalClose}
+          width={1300}
           contents={
-          <div className="flex h-center gap-10">
-            <div style={{width:stepCurrent>0?700:'100%'}} className="overflow-x-auto">
-              <div className="w-[1188px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
+          <div className="flex gap-10 h-full">
+            <div style={{width:stepCurrent>0?500:'100%'}} className="overflow-x-auto">
+              <div className={`w-[1240px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
                 <LabelMedium label="고객발주 등록"/>
                 <div className="w-full h-1 border-t-1"/>
                 <div className="w-full h-[421px] h-center gap-30">
@@ -404,8 +425,11 @@ const SalesUserPage: React.FC & {
                   </div>
                 </div>
               </div>
-              <div className="w-[1188px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
-                <LabelMedium label="담당자 정보"/>
+              <div className="w-[1240px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
+                <div className="flex gap-10 h-center">
+                  <LabelMedium label="담당자 정보"/>
+                  <Button className="w-30 !h-24 v-h-center !p-0"><SplusIcon/></Button>
+                </div>
                 <div className="w-full h-1 border-t-1"/>
                 {
                   csMngList.map((mng:partnerMngRType) => (
@@ -436,93 +460,97 @@ const SalesUserPage: React.FC & {
                   ))
                 }
               </div>
-              <div className="w-full h-50 v-between-h-center">
-                <div 
-                  className="w-100 h-40 cursor-pointer"
-                  onClick={()=>{
-                    setOpen(false);
-                    setFormData(newDataSalesOrderCUType);
-                  }}
-                >
-                  취소
-                </div>
-                {
-                  stepCurrent < 1 ?
-                  <div 
-                    className="w-100 h-40 cursor-pointer"
-                    onClick={handleNextStep}
-                  >
-                    저장
-                  </div> : <></>
-                }
+              <div className="flex w-full h-50 v-between-h-center">
+                <Button className="w-80 h-32 bg-point1 text-white rounded-6" style={{color:"#444444E0"}} onClick={() => {setOpen(false); setFormData(newDataSalesOrderCUType)}}><Close/>취소</Button>
+                {stepCurrent < 1 ? <Button className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}} onClick={handleNextStep}><Arrow />다음 단계</Button> : <></>}
               </div>
+              
             </div>
             {
               stepCurrent > 0 ?
-              <div className="flex-1 p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>발주명</th>
-                      <th>구분</th>
-                      <th>층</th>
-                      <th>두께</th>
-                      <th>수량</th>
-                      <th>납기일</th>
-                      <th>견적단가</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      newProducts.map((product:salesOrderProcuctCUType, index:number) => (
-                        <tr key={index}>
-                          <td>
-                            <AntdInput />
-                            {/* ...발주명 : orderNm... (현재 API가 모델 바깥에 발주명이 있어서 product 안에 넣어줘야 됨...) */}
-                          </td>
-                          <td>
-                            <AntdSelect
-                              value={product.modelStatus}
-                              options={[
-                                {value:ModelStatus.NEW,label:'신규'},
-                                {value:ModelStatus.REPEAT,label:'반복'},
-                                {value:ModelStatus.MODIFY,label:'수정'},
-                              ]}
-                              onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
-                            />
-                          </td>
-                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'layer')}/></td>
-                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'thic')}/></td>
-                          <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
-                          <td>
-                            <AntdDatePicker 
-                              value={dayjs(product.orderDt)}
-                              onChange={(e)=>{
-                                const value = dayjs(e).format('YYYY-MM-DD');
-                                handleProductDataChange(value, 'orderDt', 'date', index)
-                              }}
-                            />
-                            {/* 이거 api에는 수주일인데 화면은 납기일임, 그리고 모델에 납기요청일 없음 */}
-                          </td>
-                          <td><AntdInput type="number" value={product.orderPrdPrice} onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
-                          <td
-                            onClick={()=>{
-                              setNewProducts((prev) => prev.filter((_, idx) => idx !== index));
-                            }}
-                          >삭제</td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-                <div
-                  onClick={()=>{
-                    setNewProducts([...newProducts, newDataSalesOrderProductCUType()]);
-                  }}
-                >
-                  모델 추가
+              <div className="h-full flex flex-col">
+
+                <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
+                  <AntdTable
+                    columns={salesUserOrderModelClmn()}
+                    data={orderModelList}
+                    styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+                  />
+                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
+                      onClick={() => setOrderModelList((prev: Array<{id: number}>) => [...prev, {id: prev.length+1}])}
+                    >
+                    <SplusIcon/>
+                    <span>모델 추가하기</span>
+                    </div>
+                </div>
+                <div className="flex w-full h-50 justify-end h-center">
+                  <Button className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}} onClick={handleNextStep}><Arrow />다음 단계</Button>
                 </div>
               </div>
+              // <div className="flex-1 p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
+              //   <table>
+              //     <thead>
+              //       <tr>
+              //         <th>발주명</th>
+              //         <th>구분</th>
+              //         <th>층</th>
+              //         <th>두께</th>
+              //         <th>수량</th>
+              //         <th>납기일</th>
+              //         <th>견적단가</th>
+              //       </tr>
+              //     </thead>
+              //     <tbody>
+              //       {
+              //         newProducts.map((product:salesOrderProcuctCUType, index:number) => (
+              //           <tr key={index}>
+              //             <td>
+              //               <AntdInput />
+              //               {/* ...발주명 : orderNm... (현재 API가 모델 바깥에 발주명이 있어서 product 안에 넣어줘야 됨...) */}
+              //             </td>
+              //             <td>
+              //               <AntdSelect
+              //                 value={product.modelStatus}
+              //                 options={[
+              //                   {value:ModelStatus.NEW,label:'신규'},
+              //                   {value:ModelStatus.REPEAT,label:'반복'},
+              //                   {value:ModelStatus.MODIFY,label:'수정'},
+              //                 ]}
+              //                 onChange={(e)=>handleProductDataChange(e, 'modelStatus', 'select', index)}
+              //               />
+              //             </td>
+              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'layer')}/></td>
+              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'thic')}/></td>
+              //             <td><AntdInput type="number" onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
+              //             <td>
+              //               <AntdDatePicker 
+              //                 value={dayjs(product.orderDt)}
+              //                 onChange={(e)=>{
+              //                   const value = dayjs(e).format('YYYY-MM-DD');
+              //                   handleProductDataChange(value, 'orderDt', 'date', index)
+              //                 }}
+              //               />
+              //               {/* 이거 api에는 수주일인데 화면은 납기일임, 그리고 모델에 납기요청일 없음 */}
+              //             </td>
+              //             <td><AntdInput type="number" value={product.orderPrdPrice} onChange={(e)=>handleProductDataChange(e, 'currPrdInfo', 'input', index, 'amount')}/></td>
+              //             <td
+              //               onClick={()=>{
+              //                 setNewProducts((prev) => prev.filter((_, idx) => idx !== index));
+              //               }}
+              //             >삭제</td>
+              //           </tr>
+              //         ))
+              //       }
+              //     </tbody>
+              //   </table>
+              //   <div
+              //     onClick={()=>{
+              //       setNewProducts([...newProducts, newDataSalesOrderProductCUType()]);
+              //     }}
+              //   >
+              //     모델 추가
+              //   </div>
+              // </div>
               :<></>
             }
           </div>}

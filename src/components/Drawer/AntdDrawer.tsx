@@ -1,5 +1,5 @@
 import { Drawer } from "antd"
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface Props {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ interface Props {
   width?: number;
   maskClosable?: boolean;
   mask?: boolean;
+  style?: React.CSSProperties;
 }
 
 const AntdDrawer: React.FC<Props> = ({
@@ -19,6 +20,7 @@ const AntdDrawer: React.FC<Props> = ({
   width = 510,
   maskClosable = true,
   mask = true,
+  style,
 }) => {
   return (
     <AntdDrawerStyled
@@ -29,6 +31,9 @@ const AntdDrawer: React.FC<Props> = ({
       width={width}
       maskClosable={maskClosable}
       mask={mask}
+      getContainer={false}
+      style={style}
+      className="tet"
     >
       {children}
     </AntdDrawerStyled>
@@ -38,8 +43,19 @@ const AntdDrawer: React.FC<Props> = ({
 const AntdDrawerStyled = styled(Drawer)<{
 
 }>`
+  box-shadow: ${({ style }) =>
+    style?.boxShadow ||
+    `-6px 0 16px 0 rgba(0, 0, 0, 0.08),
+     -3px 0 6px -4px rgba(0, 0, 0, 0.12), 
+     -9px 0 28px 8px rgba(0, 0, 0, 0.05)`};
+
   .ant-drawer-body {
-    padding:0
+    padding:0;
+    ${({ style }) =>
+      style &&
+      css`
+        background-color: ${style.backgroundColor};
+      `}
   }
 `
 
