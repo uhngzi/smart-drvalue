@@ -96,7 +96,7 @@ const SayangSampleAddPage: React.FC & {
             <AntdTable
               columns={sayangSampleWaitAddClmn()}
               data={data}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px'}}
+              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
               tableProps={{split:'none'}}
             />
           </div>

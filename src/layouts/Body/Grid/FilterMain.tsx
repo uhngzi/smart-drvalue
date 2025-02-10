@@ -24,23 +24,25 @@ const FilterMain: React.FC<Props> = ({
   btn,
 }) => {
   return (
-    <div className="w-full flex flex-col gap-40">
-        <FilterTab
-          title={filterTitle}
-          filter={filter}
-          setFilter={setFilter}
-          filterButton={filterBtn}
-          
-          titleEtc={titleEtc}
-          contents={filterContents}
-        />
+    <div className="flex flex-col gap-40">
+      <div className="w-full ">
+          <FilterTab
+            title={filterTitle}
+            filter={filter}
+            setFilter={setFilter}
+            filterButton={filterBtn}
+            
+            titleEtc={titleEtc}
+            contents={filterContents}
+          />
 
+      </div>
       <div className="w-full bg-white p-30 rounded-14 gap-64 min-w-[1600px] w-full">
         {main}
       </div>
-
       {btn}
     </div>
+
   )
 }
 

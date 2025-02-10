@@ -316,35 +316,35 @@ export const sayangSampleWaitAddClmn = (
     children: [
       {
         title:'업체명/코드',
-        width: 90,
+        width: 80,
         dataIndex: 'user',
         key:'user',
         align: 'center',
         render: (value:any, record:any) => (
           <>
-            <div className="h-[50%] w-[100%] v-h-center">{record.no}</div>
-            <div className="h-[50%] w-[100%] v-h-center">{record.cuNm+'-'+record.cuCode}</div>
+            <div className="h-[50%] w-[100%] v-h-center !text-12">{record.no}</div>
+            <div className="h-[50%] w-[100%] v-h-center !text-12">{record.cuNm+'-'+record.cuCode}</div>
           </>
         )
       },
     ]
   },
   {
-    title: '모델',
+    title: 'MODEL',
     dataIndex: 'modelNm',
     key: 'modelNm',
     align: 'center',
     children: [
       {
         title:'Rev',
-        width: 160,
+        width: 150,
         dataIndex: 'rev',
         key:'rev',
         align: 'center',
         render: (value:any, record:any) => (
           <>
-            <div className="h-[50%] w-[100%] h-center break-words text-left">{record.modelNm}</div>
-            <div className="h-[50%] w-[100%] h-center">{value}</div>
+            <div className="h-[50%] w-[100%] h-center break-words text-left !text-12">{record.modelNm}</div>
+            <div className="h-[50%] w-[100%] h-center !text-12">{value}</div>
           </>
         )
       },
@@ -358,14 +358,14 @@ export const sayangSampleWaitAddClmn = (
     children: [
       {
         title:'두께(T)',
-        width: 65,
+        width: 55,
         dataIndex: 'thic_layer',
         key:'thic_layer',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'10'}]} /></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'1.6'}]} /></div>
+            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'10'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'1.6'}]} styles={{fs:'12px'}}/></div>
           </div>
         )
       },
@@ -373,26 +373,26 @@ export const sayangSampleWaitAddClmn = (
   },
   {
     title: '동박두께',
-    width: 75,
+    width: 65,
     dataIndex: 'dongback',
     key: 'dongback',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3 gap-5"}><AntdInputFill className="w-[60px!important]"/>외</div>
-        <div className={divClass+"gap-5"}><AntdInputFill className="w-[60px!important]"/>내</div>
+        <div className={divClass+"mb-3 gap-5 !text-12"}><AntdInputFill className="w-[48px!important] !text-12"/>외</div>
+        <div className={divClass+"gap-5 !text-12"}><AntdInputFill className="w-[48px!important] !text-12"/>내</div>
       </div>
     )
   },
   {
     title: '도금(㎛)',
-    width: 60,
+    width: 50,
     dataIndex: 'dogeum',
     key: 'dogeum',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdInputFill /></div>
+        <div className={divClass}><AntdInputFill className='!text-12'/></div>
       </div>
     )
   },
@@ -404,22 +404,22 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3 gap-5"}><AntdSelectFill options={[{value:1,label:'Ni'}]} className="w-[60px!important]"/><AntdInputFill className="w-[60px!important]"/></div>
-        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'Au'}]} className="w-[60px!important]"/><AntdInputFill className="w-[60px!important]"/></div>
+        <div className={divClass+"mb-3 gap-5"}><AntdSelectFill options={[{value:1,label:'Ni'}]} styles={{pd:"0", fs:'12px'}} className="w-[43px!important]"/><AntdInputFill className="w-[50px!important]"/></div>
+        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{pd:"0", fs:'12px'}} className="w-[43px!important]"/><AntdInputFill className="w-[50px!important]"/></div>
       </div>
     )
   },
   {
     title: 'UL/위치',
-    width:135,
+    width:15,
     dataIndex: 'ul',
     key: 'ul',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3"}><AntdInputFill /></div>
-        <div className={divClass+"mb-3"}><AntdInputFill /></div>
-        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'M/K'}]} className="w-[60px!important]"/><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} className="w-[60px!important]"/></div>
+        <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
+        <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
+        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'M/K'}]} className="w-[60px!important]" styles={{pd:"0",fs:'12px'}}/><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} className="w-[60px!important]" styles={{pd:"0",fs:'12px'}}/></div>
       </div>
     )
   },
@@ -431,13 +431,13 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} styles={{fs:'12px'}}/></div>
       </div>
     )
   },
   {
     title: 'PSR색상',
-    width:130,
+    width:120,
     dataIndex: 'psr',
     key: 'psr',
     align: 'center',
@@ -450,8 +450,8 @@ export const sayangSampleWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
-            <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
+            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
           </div>
         )
       }
@@ -459,19 +459,19 @@ export const sayangSampleWaitAddClmn = (
   },
   {
     title: 'M/K',
-    width:90,
+    width:80,
     dataIndex: 'mk',
     key: 'mk',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} styles={{fs:'12px'}}/></div>
       </div>
     )
   },
   {
     title: 'M/K색상',
-    width:130,
+    width:120,
     dataIndex: 'mkC',
     key: 'mkC',
     align: 'center',
@@ -484,8 +484,8 @@ export const sayangSampleWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
-            <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
+            <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
           </div>
         )
       }
@@ -493,43 +493,43 @@ export const sayangSampleWaitAddClmn = (
   },
   {
     title: '특수인쇄',
-    width:70,
+    width:50,
     dataIndex: 'tPrint',
     key: 'tPrint',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+        <div className={divClass}><AntdInputFill className='!text-12' /></div>
       </div>
     )
   },
   {
     title: '표면처리',
-    width:115,
+    width:104,
     dataIndex: 'surf',
     key: 'surf',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} styles={{fs:'12px'}}/></div>
       </div>
     )
   },
   {
     title: '외형가공',
-    width:130,
+    width:118,
     dataIndex: 'out',
     key: 'out',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+        <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} styles={{fs:'12px'}}/></div>
       </div>
     )
   },
   {
     title: 'PCS SIZE',
-    width:60,
+    width:50,
     dataIndex: 'pcs',
     key: 'pcs',
     align: 'center',
@@ -542,8 +542,8 @@ export const sayangSampleWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"mb-3"}><AntdInputFill /></div>
-            <div className={divClass}><AntdInputFill /></div>
+            <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
+            <div className={divClass}><AntdInputFill className='!text-12'/></div>
           </div>
         )
       },
@@ -551,7 +551,7 @@ export const sayangSampleWaitAddClmn = (
   },
   {
     title: 'KIT SIZE',
-    width:60,
+    width:50,
     dataIndex: 'kit',
     key: 'kit',
     align: 'center',
@@ -564,8 +564,8 @@ export const sayangSampleWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"mb-3"}><AntdInputFill /></div>
-            <div className={divClass}><AntdInputFill /></div>
+            <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
+            <div className={divClass}><AntdInputFill className='!text-12'/></div>
           </div>
         )
       },
@@ -573,14 +573,14 @@ export const sayangSampleWaitAddClmn = (
   },
   {
     title: '연조',
-    width:90,
+    width:55,
     dataIndex: 'ar',
     key: 'ar',
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
-        <div className={divClass+"gap-10"}><AntdInputFill className="w-[50px!important]"/>연조</div>
+        <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
+        <div className={divClass+"gap-3 !text-12"}><AntdInputFill className="w-[30px!important] !text-12"/>연조</div>
       </div>
     )
   },
@@ -592,10 +592,10 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value, record) => (
       <>
-        <div className={divClass+"mb-3"}><p className="text-left w-37">LINE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
-        <div className={divClass+"mb-3"}><p className="text-left w-37">SPACE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
-        <div className={divClass+"mb-3"}><p className="text-left w-37">DR</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
-        <div className={divClass}><p className="text-left w-37">PAD</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
+        <div className={divClass+"mb-3"}><p className="text-left w-37 !text-12">LINE</p><AntdInputFill className="w-[45px!important] !text-12" /><p className="w-12 !text-12">㎜</p></div>
+        <div className={divClass+"mb-3"}><p className="text-left w-37 !text-12">SPACE</p><AntdInputFill className="w-[45px!important] !text-12" /><p className="w-12 !text-12">㎜</p></div>
+        <div className={divClass+"mb-3"}><p className="text-left w-37 !text-12">DR</p><AntdInputFill className="w-[45px!important] !text-12" /><p className="w-12 !text-12">￠</p></div>
+        <div className={divClass}><p className="text-left w-37 !text-12">PAD</p><AntdInputFill className="w-[45px!important] !text-12" /><p className="w-12 !text-12">￠</p></div>
       </>
     )
   },

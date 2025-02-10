@@ -21,12 +21,12 @@ const DefaultFilter: React.FC<Props> = ({
         items={[
           {
             label: '작성일',
-            className: 'w-[196px]',
+            className: 'w-[200px]',
             content: 
             <AntdDatePicker 
               value={filter.writeDt}
               onChange={(value)=>setFilter((prev => ({ ...prev, writeDt:value })))}
-              className="w-100"
+              className="w-120"
               suffixIcon={'down'}
               styles={{bw:'0',bg:'none'}}
               placeholder=""
@@ -35,16 +35,16 @@ const DefaultFilter: React.FC<Props> = ({
           {
             label:'작성자',
             className:'w-[120px]',
-            content:<p className="w-40"></p>
+            content:<p className="w-40">홍길동</p>
           },
           {
             label:'승인일',
-            className:'w-[196px]',
+            className:'w-[200px]',
             content:
             <AntdDatePicker 
               value={filter.approveDt} 
               onChange={(value)=>setFilter((prev => ({ ...prev, approveDt:value })))} 
-              className="w-100" 
+              className="w-120" 
               suffixIcon={'down'}
               styles={{bw:'0',bg:'none'}} 
               placeholder=""
@@ -53,16 +53,16 @@ const DefaultFilter: React.FC<Props> = ({
           {
             label:'승인자',
             className:'w-[120px]',
-            content:<p className="w-40"></p>
+            content:<p className="w-40">홍길동</p>
           },
           {
             label:'확정일',
-            className:'w-[196px]',
+            className:'w-[200px]',
             content:
             <AntdDatePicker 
               value={filter.confirmDt} 
               onChange={(value)=>setFilter((prev => ({ ...prev, confirmDt:value })))} 
-              className="w-100" 
+              className="w-120" 
               suffixIcon={'down'}
               styles={{bw:'0',bg:'none'}} 
               placeholder=""
@@ -70,12 +70,13 @@ const DefaultFilter: React.FC<Props> = ({
           },
           {
             label:'확정자(예정)',
-            className:'w-[164px]',
+            className:'w-[175px]',
             content:
             <AntdInput 
-              value={filter.confirmPer} 
+              // value={filter.confirmPer} 
+              value={"홍길동"}
               onChange={(e)=> setFilter((prev => ({ ...prev, confirmPer: e.target.value})))} 
-              className="w-[40px!important]" 
+              className="w-[60px!important]" 
               styles={{bw:'0'}}
             />
           },
