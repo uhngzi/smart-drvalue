@@ -75,6 +75,7 @@ const InputList: React.FC<Props> = ({
                   onChange={(e:Date)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
                   className={item.className+" "+(width??"w-full")}
                   styles={{...item.styles, ht:height, bc:'#D9D9D9', bw:'1px', br: '0px'}}
+                  suffixIcon="cal"
                 />
                 :
                 <>{item.other}</>

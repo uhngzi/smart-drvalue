@@ -10,6 +10,8 @@ import SearchIcon from "@/assets/svg/icons/s_search.svg";
 import Hint from "@/assets/svg/icons/hint.svg";
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
+import Copy from "@/assets/svg/icons/copy.svg";
+import TopRightArrow from "@/assets/svg/icons/t-r-arrow-black.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 import ModelContents from "./ModelContents";
@@ -25,11 +27,11 @@ import AntdTable from "@/components/List/AntdTable";
 
 const items: MenuProps['items'] = [
   {
-    label: <>복사하여 새로 등록</>,
+    label: <div className="flex h-center gap-5"><Copy/>복사하여 새로 등록</div>,
     key: 0,
   },
   {
-    label: <>그대로 등록</>,
+    label: <div className="flex h-center gap-5"><TopRightArrow/>그대로 등록</div>,
     key: 1,
   },
 ]
@@ -350,7 +352,7 @@ const AddModal: React.FC<Props> = ({
                       </div>
                       <div className="min-h-46 h-center gap-5 text-point1 border-b-1 border-line">
                         <p className="w-20 h-20"><Hint /></p>
-                        <p>기존 사양 모델 등록에 매칭됩니다.</p>
+                        <p>기존 사양 모델 등록에 매칭됩니d다.</p>
                       </div>
                     </div>
                     <div className="flex min-w-[982px]">
@@ -507,8 +509,8 @@ const AddModal: React.FC<Props> = ({
                       key: 'layer',
                       align: 'center',
                       render: (value, record) => (
-                        <div className="w-full h-full">
-                          {value} / {record.thic}
+                        <div className="w-full h-full h-center justify-center">
+                          <span>{value} / {record.thic}</span>
                         </div>
                       )
                     },

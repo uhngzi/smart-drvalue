@@ -9,6 +9,7 @@ interface Props {
   width?: number;
   maskClosable?: boolean;
   mask?: boolean;
+  getContainer?: boolean;
   style?: React.CSSProperties;
 }
 
@@ -20,6 +21,7 @@ const AntdDrawer: React.FC<Props> = ({
   width = 510,
   maskClosable = true,
   mask = true,
+  getContainer = true,
   style,
 }) => {
   return (
@@ -31,7 +33,7 @@ const AntdDrawer: React.FC<Props> = ({
       width={width}
       maskClosable={maskClosable}
       mask={mask}
-      getContainer={false}
+      getContainer={getContainer ? (typeof window !== 'undefined' ? () => document.body : undefined) : false}
       style={style}
       className="tet"
     >

@@ -66,8 +66,10 @@ const SayangModelWaitPage: React.FC & {
       <List>
         { !dataLoading &&
           <AntdTableEdit
-            columns={sayangModelWaitClmn(totalData, setNewOpen)}
-            data={data}
+            columns={sayangModelWaitClmn(totalData, router)}
+            // 디자인 확인 위한 임시 하드코딩 데이터 추가
+            data={[{id:"test-1", prdNm:"임시 하드코딩 데이터"}]}
+            // data={data}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
           />
         }
