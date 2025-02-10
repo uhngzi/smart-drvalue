@@ -103,6 +103,10 @@ const SayangModelWaitPage: React.FC & {
       setTotalData(queryData?.data.total ?? 0);
       setDataLoading(false);
     }
+    else{
+      setTotalData(1)
+      setDataLoading(false);
+    }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
