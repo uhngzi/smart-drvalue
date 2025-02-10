@@ -27,6 +27,11 @@ import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { sayangModelWaitAddClmn, sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
+import { useRouter } from "next/router";
+import { modelsMatchRType } from "@/data/type/sayang/models";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import { ModelStatus } from "@/data/type/enum";
 
 const items: MenuProps['items'] = [
   {
@@ -42,6 +47,40 @@ const items: MenuProps['items'] = [
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const router = useRouter();
+  const { id:orderId } = router.query;
+  console.log(orderId);
+
+  // ------------ 리스트 데이터 세팅 ------------ 시작
+  const [dataLoading, setDataLoading] = useState<boolean>(true);
+  const [data, setData] = useState<modelsMatchRType[]>([]);
+  const { data:queryData, isLoading, refetch } = useQuery({
+    queryKey: ['SayangModelWaitPage'],
+    queryFn: async () => {
+      try {
+        return getAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: `models-match/jsxcrud/many/by-order-id/${orderId}`
+        });
+      } catch (e) {
+        return;
+      }
+    }
+  });
+  useEffect(()=>{
+    setDataLoading(true);
+    if(!isLoading && queryData?.resultCode === "OK_0000") {
+      const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType, index:number) => ({
+        ...d,
+        index: (queryData?.data?.data?.length ?? 0) - index,
+      }))
+      setData(arr);
+      setDataLoading(false);
+    }
+  }, [queryData]);
+  // ------------ 리스트 데이터 세팅 ------------ 끝
+
   const [filter, setFilter] = useState<filterType>({
     writeDt: null,
     writer: '',
@@ -56,40 +95,40 @@ const SayangModelAddPage: React.FC & {
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   
-  const [data, setData] = useState([
-    {
-      id:4,
-      modelNm: '모델4',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:3,
-      modelNm: '모델3',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:2,
-      modelNm: '모델2',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:1,
-      modelNm: '모델1',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-  ]);
+  // const [data, setData] = useState([
+  //   {
+  //     id:4,
+  //     modelNm: '모델4',
+  //     rev: 'RevNO',
+  //     layer: 1,
+  //     thic: 1.6,
+  //     dongback: 1,
+  //   },
+  //   {
+  //     id:3,
+  //     modelNm: '모델3',
+  //     rev: 'RevNO',
+  //     layer: 1,
+  //     thic: 1.6,
+  //     dongback: 1,
+  //   },
+  //   {
+  //     id:2,
+  //     modelNm: '모델2',
+  //     rev: 'RevNO',
+  //     layer: 1,
+  //     thic: 1.6,
+  //     dongback: 1,
+  //   },
+  //   {
+  //     id:1,
+  //     modelNm: '모델1',
+  //     rev: 'RevNO',
+  //     layer: 1,
+  //     thic: 1.6,
+  //     dongback: 1,
+  //   },
+  // ]);
   const [filterModel, setFilterModel] = useState([
     {
       id:4,
@@ -126,7 +165,7 @@ const SayangModelAddPage: React.FC & {
   ])
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
-    setFilterModel(data.filter((f:any) => f.modelNm.includes(searchModel)));
+    // setFilterModel(data.filter((f:any) => f.modelNm.includes(searchModel)));
   }, [searchModel])
 
   const [model, setModel] = useState<Array<modelSampleDataType>>([]);
@@ -169,20 +208,32 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:model.length > 0?"2050px":"1022px"}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        {data.map((model:any) => (
+        {data.map((model:modelsMatchRType) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">발주명 </p>
-                <AntdInput className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}} />
-                <AntdSelect options={[{value:1,label:'신규'},{value:2,label:'?'}]} className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+                <AntdInput 
+                  className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}}
+                  value={model.orderModel?.order.orderNm}
+                />
+                <AntdSelect
+                  options={[
+                    {value:ModelStatus.NEW,label:'신규'},
+                    {value:ModelStatus.REPEAT,label:'반복'},
+                    {value:ModelStatus.MODIFY,label:'수정'},
+                  ]}
+                  value={model.orderModel?.modelStatus}
+                  className="w-[54px!important]"
+                  styles={{ht:'36px', bw:'0px', pd:'0'}}
+                />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">모델명 </p>
-                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
+                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} value={model.orderModel?.orderTit}/>
                 <p className="h-center justify-end">관리번호 </p>
-                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
+                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} value={model.orderModel?.orderNo}/>
                 <p className="h-center justify-end">원판 </p>
                 <AntdSelect options={[{value:1,label:'1220 x 1020(J)'},{value:2,label:'?'}]} className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
                 <p className="h-center justify-end">제조사 </p>

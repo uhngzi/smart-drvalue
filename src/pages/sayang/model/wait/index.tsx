@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-
-import { sayangModelWaitClmn } from "@/data/columns/Sayang";
-
-import AntdTable from "@/components/List/AntdTable";
-import AddModal from "@/contents/sayang/model/add/AddModal";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import { List } from "@/layouts/Body/List";
-import { modelsRType } from "@/data/type/sayang/models";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
+
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import { ListPagination } from "@/layouts/Body/Pagination";
+import { List } from "@/layouts/Body/List";
+
 import { salesOrderRType } from "@/data/type/sales/order";
+import { sayangModelWaitClmn } from "@/data/columns/Sayang";
+
+import AntdTableEdit from "@/components/List/AntdTableEdit";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-
-  const [newOpen, setNewOpen] = useState<boolean>(false);
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -68,16 +63,17 @@ const SayangModelWaitPage: React.FC & {
           <AntdTableEdit
             columns={sayangModelWaitClmn(totalData, router)}
             // 디자인 확인 위한 임시 하드코딩 데이터 추가
-            data={[{id:"test-1", prdNm:"임시 하드코딩 데이터"}]}
-            // data={data}
+            // data={[{id:"test-1", prdNm:"임시 하드코딩 데이터"}]}
+            data={data}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
           />
         }
       </List>
-      <AddModal
+      {/* <AddModal
         open={newOpen}
         setOpen={setNewOpen}
-      />
+        orderId={orderId}
+      /> */}
     </>
   );
 };

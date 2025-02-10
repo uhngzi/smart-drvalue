@@ -19,13 +19,13 @@ export type apiAuthResponseType = {
 export type apiPatchResponseType = {
   data: {
     data: any;
-    status: number;
-    resultCode: string;
     message: string;
-    path: string;
-    timestamp: Date;
-    requestUser: any;
+    status?: number;
+    resultCode?: string;
+    path?: string;
+    timestamp?: Date;
+    requestUser?: any;
   }
-  resultCode: string;
-  response: any;
+  resultCode?: string;
+  response?: any;
 }

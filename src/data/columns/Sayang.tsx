@@ -15,6 +15,7 @@ import AntdInputFill from '@/components/Input/AntdInputFill';
 import { HotGrade } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { salesOrderRType } from '../type/sales/order';
+import { modelsMatchRType } from '../type/sayang/models';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
@@ -604,7 +605,6 @@ export const sayangSampleWaitAddClmn = (
 export const sayangModelWaitClmn = (
   totalData: number,
   router:NextRouter,
-  // setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -617,21 +617,21 @@ export const sayangModelWaitClmn = (
   {
     title: '관리No',
     width: 120,
-    dataIndex: 'prdMngNo',
-    key: 'prdMngNo',
+    dataIndex: 'orderNo',
+    key: 'orderNo',
     align: 'center',
   },
   {
     title: '업체명/코드',
     width: 120,
-    dataIndex: 'prtNm',
-    key: 'prtNm',
+    dataIndex: 'prtInfo.prtNm',
+    key: 'prtInfo.prtNm',
     align: 'center',
     render: (_, record:salesOrderRType) => (
       <div className="text-left">
-        {record.prtInfo.prt.prtNm}
+        {record.prtInfo?.prt?.prtNm}
         /
-        {record.prtInfo.prt.prtRegCd}
+        {record.prtInfo?.prt?.prtRegCd}
       </div>
     )
   },
@@ -701,7 +701,8 @@ export const sayangModelWaitClmn = (
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            router.push(`/sayang/model/wait/form/${value}`)
+            router.push(`/sayang/model/wait/form/${value}`);
+            // setOrder
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
@@ -720,9 +721,9 @@ export const sayangModelWaitAddClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value:any, record: any) => (
+    render: (value: any, record: any) => (
       <>
-        <div className="h-[50%] w-[100%] v-h-center "><p className="w-24 h-24 bg-back rounded-6 v-h-center ">{value}</p></div>
+        <div className="h-[50%] w-[100%] v-h-center "><p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p></div>
         <div className="h-[50%] w-[100%] v-h-center">
           <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer" onClick={()=>deleteModel(value)}>
             <p className="w-16 h-16"><Trash /></p>

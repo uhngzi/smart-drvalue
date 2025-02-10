@@ -24,6 +24,7 @@ import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import InputList from "@/components/List/InputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
+import { useRouter } from "next/router";
 
 const items: MenuProps['items'] = [
   {
@@ -143,12 +144,17 @@ export const newModelSampleData = (id:number) => {
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  orderId: string;
 }
 
 const AddModal: React.FC<Props> = ({
   open,
   setOpen,
+  orderId,
 }) => {
+  const router = useRouter();
+  const { id } = router.query;
+  console.log(id);
   const [ full, setFull ] = useState<boolean>(false);
   
   const useStyle = createStyles(({ }) => ({

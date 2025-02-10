@@ -1,3 +1,5 @@
+import { get } from "lodash";
+
 export const validReq = (
   data: any | any[],
   requiredFields: { field: string; label: string }[]
@@ -13,7 +15,8 @@ export const validReq = (
     data.forEach((item, index) => {
       const itemMissingFields: { field: string; label: string }[] = [];
       requiredFields.forEach(({ field, label }) => {
-        if (item[field] === undefined || item[field] === null || item[field] === '') {
+        const value = get(item, field); // 중첩된 필드를 안전하게 접근
+        if (value === undefined || value === null || value === '') {
           itemMissingFields.push({ field, label });
         }
       });
@@ -34,7 +37,8 @@ export const validReq = (
   // 단일 객체 처리
   const missingFields: { field: string; label: string }[] = [];
   requiredFields.forEach(({ field, label }) => {
-    if (data[field] === undefined || data[field] === null || data[field] === '') {
+    const value = get(data, field); // 중첩된 필드를 안전하게 접근
+    if (value === undefined || value === null || value === '') {
       missingFields.push({ field, label });
     }
   });

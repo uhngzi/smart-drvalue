@@ -38,23 +38,41 @@ export const postAPI = async (
 ): Promise<apiPatchResponseType>  => {
   if(server.utype === 'tenant/') {
     if(server.etc) {
-      const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}`, body);
-      console.log('POST RESPONSE : ', response);
-      
-      const { data, resultCode } = response.data;
-      return { data, resultCode, response };
+      try {
+        const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}`, body);
+        console.log('POST RESPONSE : ', response);
+        
+        const { data, resultCode } = response.data;
+        console.log(data, resultCode, response);
+        return { data, resultCode, response };
+      } catch (e) {
+        console.log(e);
+        return { data: { data: null, message: '포스트 중 에러' } };
+      }
     } else {
-      const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
-      console.log('POST RESPONSE : ', response);
-      
-      const { data, resultCode } = response.data;
-      return { data, resultCode, response };
+      try {
+        const response = await instance.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
+        console.log('POST RESPONSE : ', response);
+        
+        const { data, resultCode } = response.data;
+        console.log(data, resultCode, response);
+        return { data, resultCode, response };
+      } catch (e) {
+        console.log(e);
+        return { data: { data: null, message: '포스트 중 에러' } };
+      }
     }
   } else {
-    const response = await instanceRoot.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
-    console.log('POST RESPONSE : ', response);
-    
-    const { data, resultCode } = response.data;
-    return { data, resultCode, response };
+      try {
+        const response = await instanceRoot.post(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/create`, body);
+      console.log('POST RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      console.log(data, resultCode, response);
+      return { data, resultCode, response };
+    } catch (e) {
+      console.log(e);
+      return { data: { data: null, message: '포스트 중 에러' } };
+    }
   }
 }

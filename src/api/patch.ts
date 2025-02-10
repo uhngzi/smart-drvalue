@@ -14,23 +14,41 @@ export const patchAPI = async (
 ): Promise<apiPatchResponseType>  => {
   if(server.utype === 'tenant/') {
     if(server.etc) {
-      const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}`, body);
-      console.log('PATCH RESPONSE : ', response);
-      
-      const { data, resultCode } = response.data;
-      return { data, resultCode, response };
+      try {
+        const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}`, body);
+        console.log('PATCH RESPONSE : ', response);
+        
+        const { data, resultCode } = response.data;
+        console.log(data, resultCode, response);
+        return { data, resultCode, response };
+      } catch (e) {
+        console.log(e);
+        return { data: { data: null, message: '패치 중 에러' } };
+      }
     } else {
-      const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
-      console.log('PATCH RESPONSE : ', response);
-      
-      const { data, resultCode } = response.data;
-      return { data, resultCode, response };
+      try {
+        const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
+        console.log('PATCH RESPONSE : ', response);
+        
+        const { data, resultCode } = response.data;
+        console.log(data, resultCode, response);
+        return { data, resultCode, response };
+      } catch (e) {
+        console.log(e);
+        return { data: { data: null, message: '패치 중 에러' } };
+      }
     }
   } else {
-    const response = await instanceRoot.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
-    console.log('PATCH RESPONSE : ', response);
-    
-    const { data, resultCode } = response.data;
-    return { data, resultCode, response };
+    try {
+      const response = await instanceRoot.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
+      console.log('PATCH RESPONSE : ', response);
+      
+      const { data, resultCode } = response.data;
+      console.log(data, resultCode, response);
+      return { data, resultCode, response };
+    } catch (e) {
+      console.log(e);
+      return { data: { data: null, message: '패치 중 에러' } };
+    }
   }
 }

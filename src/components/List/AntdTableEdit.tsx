@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
 import styled from "styled-components";
 import { get, set } from "lodash";
-import React, { SetStateAction, useEffect, useState } from "react";
-import { ConfigProvider, Table, Form, DatePicker, Switch } from "antd";
+import React, { Key, SetStateAction, useEffect, useState } from "react";
+import { ConfigProvider, Table, Form, DatePicker, Switch, Modal } from "antd";
 import { ColumnGroupType, ColumnsType, ColumnType } from "antd/es/table";
 
 import AntdSelect from "../Select/AntdSelect";
 import AntdInput from "../Input/AntdInput";
+import AntdAlertModal, { AlertType } from "../Modal/AntdAlertModal";
 
 // 셀 수정을 위한 Props (컴포넌트 내 onCell에서 적용됨)
 interface EditableCellProps {
@@ -152,6 +153,9 @@ interface Props {
     split?: "none";
   };
   create?: boolean;
+  setEditIndex?: React.Dispatch<SetStateAction<number>>;
+  selectedRowKey?: string | number | null;
+  setSelectedRowKey?: React.Dispatch<SetStateAction<string | number | null>>;
 }
 
 // 컴포넌트
@@ -162,7 +166,10 @@ const AntdTableEdit: React.FC<Props> = ({
   styles, 
   className, 
   tableProps, 
-  create,   //create가 true일 때는 생성 모드 (무조건 입력창 있어야 함)
+  create,       //create가 true일 때는 생성 모드 (무조건 입력창 있어야 함)
+  setEditIndex, // 수정 모드일 경우 수정된 CELL INDEX
+  selectedRowKey,
+  setSelectedRowKey,
 }) => {
   const [form] = Form.useForm();
 
@@ -252,6 +259,7 @@ const AntdTableEdit: React.FC<Props> = ({
         setRealDataSource(newData);
         setEditingKey("");
         setData?.(newData);
+        setEditIndex?.(index);
       }
     } catch (err) {
       console.log("Validation Failed:", err);
@@ -380,6 +388,13 @@ const AntdTableEdit: React.FC<Props> = ({
     }
   });
   
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [resultCode, setResultCode] = useState<'esc' | ''>('');
+
+  const handleRowClick = (record: DataType) => {
+    setSelectedRowKey?.(record.id); // 클릭된 행의 key를 저장
+  };
+  
   return (
     <AntdTableStyled
       className={className}
@@ -422,16 +437,44 @@ const AntdTableEdit: React.FC<Props> = ({
               onKeyDown: (e) => {
                 if(!create) {
                   //ESC 누르면 원래대로 돌아오고 Enter를 누르면 저장됨
-                  if(e.key === "Escape")
-                    cancel();
+                  if(e.key === "Escape"){
+                    setResultCode('esc');
+                    setAlertOpen(true);
+                  }
                   else if(e.key === "Enter")
                     handleSave();
                 }
               },
+              onClick: () => handleRowClick(record), // 행 클릭 이벤트
             })}
+            rowClassName={(record) =>
+              record.id === selectedRowKey ? "selected-row" : ""
+            } // 선택된 행에 클래스 추가
           />
         </Form>
       </ConfigProvider>
+
+      <AntdAlertModal
+        open={alertOpen}
+        setOpen={setAlertOpen}
+        title={resultCode === "esc" ? "취소하시겠습니까?" : "고객 발주 실패"}
+        contents={<div>{
+          resultCode === 'esc'?
+          '취소 시 입력하신 정보가 전부 사라집니다. 그래도 취소하시겠습니까?'
+          :
+          ''
+        }</div>}
+        type={resultCode === 'esc' ? 'warning' : 'info'} 
+        onCancle={resultCode === 'esc' ? ()=>{
+          setAlertOpen(false);
+        } : ()=>{}}
+        onOk={resultCode === 'esc' ? ()=>{
+          cancel();
+          setAlertOpen(false);
+        } :()=>{}}
+        okText={resultCode === 'esc' ? '네' : '확인'}
+        cancelText={resultCode === 'esc' ? '아니오' : '취소'}
+      />
     </AntdTableStyled>
   );
 };
@@ -543,6 +586,10 @@ const AntdTableStyled = styled.div<{
       border-bottom: 1px solid #0000000F;;
       border-left: ${({ $line }) => $line};
     }
+  }
+
+  & .selected-row {
+    background: #F5F6FA;
   }
 `;
 

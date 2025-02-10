@@ -1,10 +1,12 @@
 // 메인 - 모델, 모델 매칭
 
-import { boardRType } from "../base/board";
+import { Dayjs } from "dayjs";
+import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
 import { partnerMngRType, partnerRType } from "../base/partner";
-import { HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from "../enum";
+import { HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
 
+// 모델 읽기 타입
 export type modelsRType = {
   id: string;
   partner: partnerRType;
@@ -16,7 +18,7 @@ export type modelsRType = {
   layerEm: LayerEm;
   modelTypeEm: ModelTypeEm;
   thk: number;
-  board: boardRType;
+  board: boardType;
   mnfNm: string;
   material: commonCodeRType;
   surface: commonCodeRType;
@@ -61,6 +63,7 @@ export type modelsRType = {
   deletedAt: Date | null;
 }
 
+// 모델 생성, 수정 타입
 export type modelsCUType = {
   inactiveYn: boolean;
   partner: { id: string; };
@@ -112,6 +115,7 @@ export type modelsCUType = {
   pinCnt: number;
 }
 
+// 사양 내 모델 초기값 생성
 export const newDataModelsType = ():modelsCUType => {
   return {
     inactiveYn: false,
@@ -162,16 +166,24 @@ export const newDataModelsType = ():modelsCUType => {
   }
 }
 
-export type modelsMatchRType = 
-{
+// 사양 내 모델 매칭 읽기 타입
+export type modelsMatchRType = {
+  index?: number;
   id: string;
-  model: { id: string; };
+  model?: { id: string; };
   glbStatus?: {
     id: string;
     salesOrderStatus: SalesOrderStatus;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    salesOrderStatusChangeJson: {
+      date: Date | Dayjs | null,
+      content: string;
+      isApproved: boolean;
+    }[];
+    specStatus: SpecStatus;
+    relation: string[];
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
   orderModel?: {
     id: string;
@@ -180,23 +192,27 @@ export type modelsMatchRType =
       id: string;
       prt: partnerRType;
       mng: partnerMngRType;
-      createdAt: Date | null;
-      updatedAt: Date | null;
-      deletedAt: Date | null;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
     },
     order: {
       id: string;
       isDiscard: boolean;
       orderNm: string;
-      orderDt: Date | null;
-      orderRepDt: Date | null;
+      orderDt: Date | Dayjs | null;
+      orderRepDt: Date | Dayjs | null;
       orderTxt: string;
+      totalOrderPrice: number;
       hotGrade: HotGrade;
-      createdAt: Date | null;
-      updatedAt: Date | null;
-      deletedAt: Date | null;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
     },
-    model: { id: string; };
+    model: {
+      id: string;
+      prdMngNo: string;
+    },
     modelStatus: ModelStatus;
     orderNo: string;
     orderTit: string;
@@ -205,14 +221,65 @@ export type modelsMatchRType =
     orderPrdCnt: number;
     orderPrdUnitPrice: number;
     orderPrdPrice: number;
-    orderPrdDueReqDt: Date | null;
-    orderPrdDueDt: Date | null;
+    orderPrdDueReqDt: Date | Dayjs | null;
+    orderPrdDueDt: Date | Dayjs | null;
     orderPrdHotGrade: HotGrade;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  // id: string;
+  // model: { id: string; };
+  // glbStatus?: {
+  //   id: string;
+  //   salesOrderStatus: SalesOrderStatus;
+  //   createdAt: Date | null;
+  //   updatedAt: Date | null;
+  //   deletedAt: Date | null;
+  // },
+  // orderModel?: {
+  //   id: string;
+  //   currPrdInfo: {},
+  //   prtInfo: {
+  //     id: string;
+  //     prt: partnerRType;
+  //     mng: partnerMngRType;
+  //     createdAt: Date | null;
+  //     updatedAt: Date | null;
+  //     deletedAt: Date | null;
+  //   },
+  //   order: {
+  //     id: string;
+  //     isDiscard: boolean;
+  //     orderNm: string;
+  //     orderDt: Date | null;
+  //     orderRepDt: Date | null;
+  //     orderTxt: string;
+  //     hotGrade: HotGrade;
+  //     createdAt: Date | null;
+  //     updatedAt: Date | null;
+  //     deletedAt: Date | null;
+  //   },
+  //   model: { id: string; };
+  //   modelStatus: ModelStatus;
+  //   orderNo: string;
+  //   orderTit: string;
+  //   prtOrderNo: string;
+  //   orderPrdRemark: string;
+  //   orderPrdCnt: number;
+  //   orderPrdUnitPrice: number;
+  //   orderPrdPrice: number;
+  //   orderPrdDueReqDt: Date | null;
+  //   orderPrdDueDt: Date | null;
+  //   orderPrdHotGrade: HotGrade;
+  //   createdAt: Date | null;
+  //   updatedAt: Date | null;
+  //   deletedAt: Date | null;
+  // },
+  // createdAt: Date | null;
+  // updatedAt: Date | null;
+  // deletedAt: Date | null;
 }
