@@ -352,7 +352,7 @@ const AddModal: React.FC<Props> = ({
                       </div>
                       <div className="min-h-46 h-center gap-5 text-point1 border-b-1 border-line">
                         <p className="w-20 h-20"><Hint /></p>
-                        <p>기존 사양 모델 등록에 매칭됩니다.</p>
+                        <p>기존 사양 모델 등록에 매칭됩니d다.</p>
                       </div>
                     </div>
                     <div className="flex min-w-[982px]">

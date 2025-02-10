@@ -602,7 +602,8 @@ export const sayangSampleWaitAddClmn = (
 
 export const sayangModelWaitClmn = (
   totalData: number,
-  setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  router:NextRouter,
+  // setNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -699,7 +700,7 @@ export const sayangModelWaitClmn = (
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            setNewOpen(true);
+            router.push(`/sayang/model/wait/form/${value}`)
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
@@ -707,4 +708,466 @@ export const sayangModelWaitClmn = (
       </div>
     )
   },
+]
+
+export const sayangModelWaitAddClmn = (
+  deleteModel: (id: number) => void,
+): TableProps['columns'] => [
+  {
+    title: 'No',
+    width: 30,
+    dataIndex: 'id',
+    key: 'id',
+    align: 'center',
+    render: (value:any, record: any) => (
+      <>
+        <div className="h-[50%] w-[100%] v-h-center "><p className="w-24 h-24 bg-back rounded-6 v-h-center ">{value}</p></div>
+        <div className="h-[50%] w-[100%] v-h-center">
+          <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer" onClick={()=>deleteModel(value)}>
+            <p className="w-16 h-16"><Trash /></p>
+          </div>
+        </div>
+      </>
+    ),
+  },
+  {
+    title: 'Rev',
+    dataIndex: 'rev',
+    width: 80,
+    key: 'rev',
+    align: 'center',
+    children: [
+      {
+        title:'납품단위',
+        width: 80,
+        dataIndex: 'user',
+        key:'user',
+        align: 'center',
+        render: (value:any, record:any) => (
+            <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill value={record.rev} className='!text-12'/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'1.6'}]} styles={{fs:'12px'}}/></div>
+            </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '층',
+    dataIndex: 'layer',
+    key: 'layer',
+    align: 'center',
+    children: [
+      {
+        title:'두께(T)',
+        width: 65,
+        dataIndex: 'thic_layer',
+        key:'thic_layer',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'10'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdInputFill value={record.thic} className='!text-12'/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: '동박두께',
+    width: 75,
+    dataIndex: 'dongback',
+    key: 'dongback',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 75,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+"gap-5"}><AntdInputFill className="w-[48px!important] !text-12" value={record.dongback}/>외</div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="w-[48px!important] !text-12" value={record.dongback}/>내</div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '도금(㎛)',
+    width: 60,
+    dataIndex: 'dogeum',
+    key: 'dogeum',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 60,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px!important] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px!important] !text-12"/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '특수도금(㎛)',
+    width:110,
+    dataIndex: 'tDogeum',
+    key: 'tDogeum',
+    align: 'center',
+    children: [
+      {
+        title:'Ni Au',
+        width: 90,
+        dataIndex: 'tDogeum',
+        key:'tDogeum',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+"gap-5"}><AntdInputFill className="w-[50px!important] !text-12"/><AntdInputFill className="w-[50px!important] !text-12"/></div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="w-[50px!important] !text-12"/><AntdInputFill className="w-[50px!important] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+    
+  },
+  // {
+  //   title: 'UL/위치',
+  //   width:135,
+  //   dataIndex: 'ul',
+  //   key: 'ul',
+  //   align: 'center',
+  //   render: (value, record) => (
+  //     <div className={divTopClass}>
+  //       <div className={divClass+"mb-3"}><AntdInputFill /></div>
+  //       <div className={divClass+"mb-3"}><AntdInputFill /></div>
+  //       <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'M/K'}]} className="w-[60px!important]"/><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} className="w-[60px!important]"/></div>
+  //     </div>
+  //   )
+  // },
+  {
+    title: 'S/M',
+    width:125,
+    dataIndex: 'sm',
+    key: 'sm',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'M/K',
+    width:125,
+    dataIndex: 'mk',
+    key: 'mk',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  // {
+  //   title: 'PSR색상',
+  //   width:130,
+  //   dataIndex: 'psr',
+  //   key: 'psr',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'Ink',
+  //       width:130,
+  //       dataIndex: 'psrInk_color',
+  //       key: 'psrInk_color',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
+  //           <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
+  // {
+  //   title: 'M/K',
+  //   width:90,
+  //   dataIndex: 'mk',
+  //   key: 'mk',
+  //   align: 'center',
+  //   render: (value, record) => (
+  //     <div className={divTopClass}>
+  //       <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
+  //     </div>
+  //   )
+  // },
+  // {
+  //   title: 'M/K색상',
+  //   width:130,
+  //   dataIndex: 'mkC',
+  //   key: 'mkC',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'Ink',
+  //       width:130,
+  //       dataIndex: 'mkInk_color',
+  //       key: 'mkInk_color',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
+  //           <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
+  {
+    title: '특수인쇄',
+    width:125,
+    dataIndex: 'tPrint',
+    key: 'tPrint',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '외형가공',
+    width:90,
+    dataIndex: 'out',
+    key: 'out',
+    align: 'center',
+    children: [
+      {
+        title:'브이컷',
+        width:90,
+        dataIndex: 'vcut',
+        key: 'vcut',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdSelectFill className='w-[90px]' options={[{value:1,label:'ROUTER'}]}  styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill className='w-[90px]' options={[{value:1,label:'유'},{value:2,label:'무'}]} defaultValue={2} styles={{fs:'12px'}}/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '도면번호',
+    width:100,
+    dataIndex: 'doNum',
+    key: 'doNum',
+    align: 'center',
+    children: [
+      {
+        title:'필름번호',
+        width:100,
+        dataIndex: 'filmNo',
+        key: 'filmNo',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className='w-[100px] !text-12'/></div>
+            <div className={divClass+""}><AntdInputFill className='w-[100px] !text-12'/></div>
+          </div>
+        )
+      }
+    ]
+  },
+  
+  {
+    title: 'PCS',
+    width:50,
+    dataIndex: 'pcs',
+    key: 'pcs',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'pcsSize_xy',
+        key: 'pcsSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'KIT',
+    width:50,
+    dataIndex: 'kit',
+    key: 'kit',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'kitSize_xy',
+        key: 'kitSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'PNL',
+    width:50,
+    dataIndex: 'pnl',
+    key: 'pnl',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'pnlSize_xy',
+        key: 'pnlSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: '연조KIT',
+    width:60,
+    dataIndex: 'arkit',
+    key: 'arkit',
+    align: 'center',
+    children:[
+      {
+        title: '연조PNL',
+        width:60,
+        dataIndex: 'arpnl',
+        key: 'arpnl',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'KIT/PCS',
+    width:50,
+    dataIndex: 'kitpcs',
+    key: 'kitpcs',
+    align: 'center',
+    children:[
+      {
+        title: 'PNL/KIT',
+        width:50,
+        dataIndex: 'pnlkit',
+        key: 'pnlkit',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'STH/PNL',
+    width:50,
+    dataIndex: 'sthpnl',
+    key: 'sthpnl',
+    align: 'center',
+    children:[
+      {
+        title: 'STH/PCS',
+        width:50,
+        dataIndex: 'sthpcs',
+        key: 'sthpcs',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+          </div>
+        )
+      },
+    ]
+  },
+  // {
+  //   title: 'SPEC',
+  //   width:110,
+  //   dataIndex: 'spec',
+  //   key: 'spec',
+  //   align: 'center',
+  //   render: (value, record) => (
+  //     <>
+  //       <div className={divClass+"mb-3"}><p className="text-left w-37">LINE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
+  //       <div className={divClass+"mb-3"}><p className="text-left w-37">SPACE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
+  //       <div className={divClass+"mb-3"}><p className="text-left w-37">DR</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
+  //       <div className={divClass}><p className="text-left w-37">PAD</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
+  //     </>
+  //   )
+  // },
 ]

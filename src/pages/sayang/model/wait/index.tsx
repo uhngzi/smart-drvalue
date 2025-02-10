@@ -115,7 +115,7 @@ const SayangModelWaitPage: React.FC & {
       <List>
         { !dataLoading &&
           <AntdTableEdit
-            columns={sayangModelWaitClmn(totalData, setNewOpen)}
+            columns={sayangModelWaitClmn(totalData, router)}
             data={data}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
           />

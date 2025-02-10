@@ -28,7 +28,7 @@ const AntdSelectFill : React.FC<Props> = ({
       $bg={styles?.bg?styles.bg:'#F9F9FB'}
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
-      $fs={styles?.fs?styles.fs:'#D5D5D5'}
+      $fs={styles?.fs?styles.fs:'14px'}
     >
       <Select
         className={`w-full rounded-0 ${className}`}
@@ -65,6 +65,7 @@ const AndtSelectStyled = styled.div<{
     background: ${({ $bg }) => $bg} !important;
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
+    font-size: ${({ $fs }) => $fs} !important;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   }
 `

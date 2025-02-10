@@ -2,7 +2,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import FilterRightTab from "@/layouts/Body/Grid/FilterRightTab";
 import BorderButton from "@/components/Button/BorderButton";
 import EditButtonSmall from "@/components/Button/EditButtonSmall";
-import ModelContents from "@/contents/sayang/model/add/ModelContents";
+import NewModelContents from "@/contents/sayang/model/add/NewModelContents";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import InputList from "@/components/List/InputList";
@@ -18,11 +18,15 @@ import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import { useEffect, useState } from "react";
-import { Dropdown, Space } from "antd";
+import { Button, Dropdown, Space } from "antd";
 import type { MenuProps } from 'antd';
 import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model/add/AddModal";
+import PopRegLayout from "@/layouts/Main/PopRegLayout";
+import AntdSelect from "@/components/Select/AntdSelect";
+import { sayangModelWaitAddClmn, sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
 
 const items: MenuProps['items'] = [
   {
@@ -54,16 +58,8 @@ const SayangModelAddPage: React.FC & {
   
   const [data, setData] = useState([
     {
-      id:1,
-      modelNm: '모델1',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:2,
-      modelNm: '모델2',
+      id:4,
+      modelNm: '모델4',
       rev: 'RevNO',
       layer: 1,
       thic: 1.6,
@@ -78,8 +74,16 @@ const SayangModelAddPage: React.FC & {
       dongback: 1,
     },
     {
-      id:4,
-      modelNm: '모델4',
+      id:2,
+      modelNm: '모델2',
+      rev: 'RevNO',
+      layer: 1,
+      thic: 1.6,
+      dongback: 1,
+    },
+    {
+      id:1,
+      modelNm: '모델1',
       rev: 'RevNO',
       layer: 1,
       thic: 1.6,
@@ -88,16 +92,8 @@ const SayangModelAddPage: React.FC & {
   ]);
   const [filterModel, setFilterModel] = useState([
     {
-      id:1,
-      modelNm: '모델1',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:2,
-      modelNm: '모델2',
+      id:4,
+      modelNm: '모델4',
       rev: 'RevNO',
       layer: 1,
       thic: 1.6,
@@ -112,8 +108,16 @@ const SayangModelAddPage: React.FC & {
       dongback: 1,
     },
     {
-      id:4,
-      modelNm: '모델4',
+      id:2,
+      modelNm: '모델2',
+      rev: 'RevNO',
+      layer: 1,
+      thic: 1.6,
+      dongback: 1,
+    },
+    {
+      id:1,
+      modelNm: '모델1',
       rev: 'RevNO',
       layer: 1,
       thic: 1.6,
@@ -152,10 +156,130 @@ const SayangModelAddPage: React.FC & {
       console.log(value);
     }
   }
+
+  //임시 함수
+  function deleteModel(idx: number) {
+    setData(data.filter((f:any) => f.id !== idx));
+  }
   
   return (
     <>
-      <FilterRightTab
+      <div 
+        className="gap-20 flex"
+        style={{minWidth:model.length > 0?"2050px":"1022px"}}
+      >
+        <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
+        {data.map((model:any) => (
+          <div className="flex flex-col gap-16">
+            <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
+              <div className="h-full h-center gap-10 p-10">
+                <p className="h-center justify-end">발주명 </p>
+                <AntdInput className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}} />
+                <AntdSelect options={[{value:1,label:'신규'},{value:2,label:'?'}]} className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+              </div>
+              <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
+              <div className="h-full h-center gap-10 p-10">
+                <p className="h-center justify-end">모델명 </p>
+                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
+                <p className="h-center justify-end">관리번호 </p>
+                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
+                <p className="h-center justify-end">원판 </p>
+                <AntdSelect options={[{value:1,label:'1220 x 1020(J)'},{value:2,label:'?'}]} className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+                <p className="h-center justify-end">제조사 </p>
+                <AntdInput className="w-[120px!important]" styles={{ht:'32px'}} />
+                <p className="h-center justify-end">재질 </p>
+                <AntdSelect options={[{value:1,label:'FR-4(DS-7402)'},{value:2,label:'?'}]} className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+              </div>
+              <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
+              <div className="h-full h-center gap-10 p-10">
+                <p className="h-center justify-end">납기 </p>
+                <p className="h-center justify-end">2024-09-23</p>
+              </div>
+            </div>
+            <div className="flex flex-col ">
+              <AntdTable
+                key={model.id}
+                columns={sayangModelWaitAddClmn(deleteModel)}
+                data={[model]}
+                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+                tableProps={{split:'none'}}
+                />
+            </div>
+            <div className="w-full h-32 flex justify-end gap-5">
+            <FullOkButtonSmall click={()=>{}} label="확정저장" />
+              <Button variant="outlined" color="primary">임시저장</Button>
+            </div>
+            {/* <div className="min-h-46 h-center gap-5 text-point1 border-b-1 border-line">
+              <p className="w-20 h-20"><Hint /></p>
+              <p>기존 사양 모델 등록에 매칭됩니다.</p>
+              </div> */}
+          </div>
+        ))}
+          {/* <div className="flex min-w-[982px]">
+            <NewModelContents item={modelNew} handleInputChange={handleInputChange} type={'one'}/>
+          </div> */}
+          
+          {/* <div className="w-full h-center justify-end">
+            <FullOkButtonSmall
+              click={()=>{
+                setModel(((prev) => [...prev, modelNew]));
+                setModelNew(newModelSampleData(model.length+1));
+              }}
+              label="저장"
+            />
+          </div> */}
+        </div>
+        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 192px)'}} key="contents-tab">
+          <div 
+            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+            onClick={()=>{
+              setSelectTabDrawer(1);
+              setDrawerOpen(true)
+            }}
+          >
+            <p className="w-20 h-20"><User /></p>
+          </div>
+          <div 
+            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+            onClick={()=>{
+              setSelectTabDrawer(2);
+              setDrawerOpen(true);
+            }}
+          >
+            <p className="w-20 h-20"><Category /></p>
+          </div>
+        </div>
+        {model.length > 0 ?
+        <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 mr-20 flex flex-col h-full gap-17 bg-back2">
+          <div className="h-95 flex flex-col gap-17">
+            <div className="w-full min-h-32 v-between-h-center">
+              <p className="text-16 font-semibold">모델등록중</p>
+              <EditButtonSmall label="수정" click={()=>{}} />
+            </div>
+            <TabSmall
+              items={model.map(i=>({
+                key:i.id,
+                text:i.modelNm
+              }))}
+              selectKey={selectTab}
+              setSelectKey={setSelectTab}
+            />
+          </div>
+          <div className="flex min-w-[982px]">
+            <NewModelContents item={model[selectTab]} handleInputChange={handleInputChange} type={'mult'}/>
+          </div>
+          <div className="w-full h-center justify-end">
+            <FullOkButtonSmall
+              click={()=>{}}
+              label="저장"
+            />
+          </div>
+        </div>
+        
+        :
+        <></>}
+      </div>
+      {/* <FilterRightTab
         filter={filter}
         setFilter={setFilter}
         filterTitle={"모델 등록"}
@@ -250,7 +374,9 @@ const SayangModelAddPage: React.FC & {
             <p className="w-20 h-20"><Category /></p>
           </div>
         </>}
-      />
+      /> */}
+
+      
 
       <AntdDrawer
         open={drawerOpen}
@@ -379,13 +505,11 @@ const SayangModelAddPage: React.FC & {
 }
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout 
+  <PopRegLayout 
     menuTitle="모델 등록 및 현황"
-    menu={[
-      {text:'모델 등록 대기', link:'/sayang/model/wait'},
-      {text:'모델 등록 현황', link:'/sayang/model/situation'},
-    ]}
-  >{page}</MainPageLayout>
+    subTitle="모델등록"
+    menu={[]}
+  >{page}</PopRegLayout>
 )
 
 export default SayangModelAddPage;

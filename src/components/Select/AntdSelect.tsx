@@ -34,6 +34,7 @@ const AntdSelect : React.FC<Props> = ({
       $bg={styles?.bg?styles.bg:'none'}
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D9D9D9'}
+      $pd={styles?.pd?styles.pd:'0 11px'}
     >
       <Select
         value={value}
@@ -55,6 +56,7 @@ const AndtSelectStyled = styled.div<{
   $bg: string;
   $bw: string;
   $bc: string;
+  $pd: string;
 }>`
   width: fit-content;
   display: contents;
@@ -69,6 +71,7 @@ const AndtSelectStyled = styled.div<{
     background: ${({ $bg }) => $bg} !important;
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
+    padding: ${({ $pd }) => $pd} !important;
     border-radius: 2px;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   }

@@ -21,6 +21,7 @@ interface Props {
     th_bg?: string;
     th_pd?: string;
     th_fw?: string;
+    th_fs?: string;
     td_ht?: string;
     td_bg?: string;
     td_pd?: string;
@@ -46,6 +47,7 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
       $tdBackground={styles?.td_bg?styles.td_bg:'none'}
       $tdTextAlign={styles?.td_al?styles.td_al:'left'}
       $thFontWeight={styles?.th_fw?styles.th_fw:'500'}
+      $thFontSize={styles?.th_fs?styles.th_fs:'14px'}
       $round={styles?.round||'14px'}
       $line={styles?.line==='n'?'0':'1px solid #0000000F'}
     >
@@ -76,6 +78,7 @@ const AntdTableStyled = styled.div<{
   $thHeight: string;
   $thPadding: string;
   $thFontWeight: string;
+  $thFontSize: string;
   $tdBackground: string;
   $tdHeight: string;
   $tdTextAlign: string;
@@ -96,7 +99,12 @@ const AntdTableStyled = styled.div<{
 
   .ant-table-thead { 
     background-color: ${({ $thBackground }) => $thBackground};
-
+    & > tr:first-child>th {
+      padding-top: 10px;
+    }
+    & > tr:last-child>th {
+      padding-bottom: 10px;
+    }
     .req { color: #1814F3 !important; }
 
     & .ant-table-cell {
@@ -106,7 +114,7 @@ const AntdTableStyled = styled.div<{
       text-align: center;
 
       font-weight: ${({ $thFontWeight }) => $thFontWeight};
-      font-size: 14px;
+      font-size: ${({ $thFontSize }) => $thFontSize};
       color: #444444;
 
       background-color: transparent;

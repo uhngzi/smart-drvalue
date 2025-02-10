@@ -10,6 +10,7 @@ interface Props {
   placeholder?: string;
   type?: string;
   defaultValue?: string;
+  readonly?: boolean;
   onPressEnter?: () => void;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
 }
@@ -22,6 +23,7 @@ const AntdInput: React.FC<Props> = ({
   placeholder,
   type,
   defaultValue,
+  readonly = false,
   onPressEnter,
   onKeyDown,
 }) => {
@@ -42,6 +44,7 @@ const AntdInput: React.FC<Props> = ({
         defaultValue={defaultValue}
         onPressEnter={onPressEnter}
         onKeyDown={onKeyDown}
+        readOnly={readonly}
       />
     </AntdInputStyled>
   );

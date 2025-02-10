@@ -33,7 +33,7 @@ const AntdDrawer: React.FC<Props> = ({
       width={width}
       maskClosable={maskClosable}
       mask={mask}
-      getContainer={getContainer ? document.body : false}
+      getContainer={getContainer ? (typeof window !== 'undefined' ? () => document.body : undefined) : false}
       style={style}
       className="tet"
     >
