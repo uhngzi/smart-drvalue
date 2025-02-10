@@ -14,6 +14,7 @@ import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
 import { HotGrade } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
+import { salesOrderRType } from '../type/sales/order';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
@@ -626,18 +627,18 @@ export const sayangModelWaitClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
-    render: (_, record) => (
+    render: (_, record:salesOrderRType) => (
       <div className="text-left">
-        {record?.partner?.prtNm}
+        {record.prtInfo.prt.prtNm}
         /
-        {record?.partner?.prtRegCd}
+        {record.prtInfo.prt.prtRegCd}
       </div>
     )
   },
   {
     title: '고객발주(요구)명',
-    dataIndex: 'prdNm',
-    key: 'prdNm',
+    dataIndex: 'orderNm',
+    key: 'orderNm',
     align: 'center',
     render: (value) => (
       <div className="text-left">{value}</div>
@@ -646,24 +647,24 @@ export const sayangModelWaitClmn = (
   {
     title: '업체담당',
     width: 100,
-    dataIndex: 'mngNm',
-    key: 'mngNm',
+    dataIndex: 'prtInfo.mng.prtMngNm',
+    key: 'prtInfo.mng.prtMngNm',
     align: 'center',
   },
   {
     title: '긴급',
     width: 80,
-    dataIndex: 'hot',
-    key: 'hot',
+    dataIndex: 'hotGrade',
+    key: 'hotGrade',
     align: 'center',
-    render: (value: number) => (
+    render: (value: HotGrade) => (
       <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="일반" />
-        ) : value === 2 ? (
+        {value === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : value === HotGrade.URGENT ? (
           <FullChip label="긴급" state="pink" />
         ) : (
-          <FullChip label="초긴급" state="purple"/>
+          <FullChip label="일반" />
         )}
       </div>
     ),
@@ -671,22 +672,22 @@ export const sayangModelWaitClmn = (
   {
     title: '영업담당',
     width: 100,
-    dataIndex: 'salesNm',
-    key: 'salesNm',
+    dataIndex: 'emp.name',
+    key: 'emp.name',
     align: 'center',
   },
   {
     title: '발주(요구)접수일',
     width: 150,
-    dataIndex: 'orderDt',
-    key: 'orderDt',
+    dataIndex: 'orderRepDt',
+    key: 'orderRepDt',
     align: 'center',
   },
   {
     title: '발주일',
     width: 150,
-    dataIndex: 'submitDt',
-    key: 'submitDt',
+    dataIndex: 'orderDt',
+    key: 'orderDt',
     align: 'center',
   },
   {

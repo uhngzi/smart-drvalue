@@ -20,54 +20,6 @@ const SayangModelWaitPage: React.FC & {
 } = () => {
   const router = useRouter();
 
-  // const [data, setData] = useState([
-  //   {
-  //     id:3,
-  //     index:3,
-  //     cuNm:'GPN',
-  //     cuCode:'900',
-  //     orderNm:'SWEDF 모델 재생산 100PCS',
-  //     mngNm:'홍길동',
-  //     hot:1,
-  //     state:3,
-  //     thic:1.6,
-  //     layer:4,
-  //     salesNm:'김영업',
-  //     orderDt:'2025-01-06',
-  //     submitDt:'2025-01-06',
-  //   },
-  //   {
-  //     id:2,
-  //     index:2,
-  //     cuNm:'GPN',
-  //     cuCode:'900',
-  //     orderNm:'SWEDF 모델 재생산 100PCS',
-  //     mngNm:'홍길동',
-  //     hot:2,
-  //     state:2,
-  //     thic:1.6,
-  //     layer:4,
-  //     salesNm:'김영업',
-  //     orderDt:'2025-01-06',
-  //     submitDt:'2025-01-06',
-  //   },
-  //   {
-  //     id:1,
-  //     index:1,
-  //     cuNm:'GPN',
-  //     cuCode:'900',
-  //     orderNm:'SWEDF 모델 재생산 100PCS',
-  //     mngNm:'홍길동',
-  //     hot:3,
-  //     state:1,
-  //     thic:1.6,
-  //     layer:4,
-  //     salesNm:'김영업',
-  //     orderDt:'2025-01-06',
-  //     submitDt:'2025-01-06',
-  //   },
-  // ])
-  
   const [newOpen, setNewOpen] = useState<boolean>(false);
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
@@ -82,7 +34,6 @@ const SayangModelWaitPage: React.FC & {
     queryKey: ['SayangModelWaitPage'],
     queryFn: async () => {
       try {
-        // /api/serv/core-d1/v1/tenant/sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
