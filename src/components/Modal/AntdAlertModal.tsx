@@ -19,6 +19,8 @@ interface Props {
   hideCancel?: boolean;
   type?: AlertType;
   theme?: 'main' | 'base';
+  okText?: string;
+  cancelText?: string;
 }
 
 const iconMap = {
@@ -46,7 +48,9 @@ const AntdAlertModal: React.FC<Props> = ({
   onCancle,
   hideCancel = false,
   type,
-  theme = 'main'
+  theme = 'main',
+  okText = '확인',
+  cancelText = '취소',
 }) => {
   const IconComponent = type ? iconMap[type].icon : null;
 
@@ -65,6 +69,8 @@ const AntdAlertModal: React.FC<Props> = ({
       onOk={onOk || (() => setOpen(false))}
       onCancel={onCancle || (() => setOpen(false))}
       cancelButtonProps={{ style: { display: hideCancel ? 'none' : 'inline-block' } }}
+      okText={okText}
+      cancelText={cancelText}
     >
       {contents}
     </CustomModal>

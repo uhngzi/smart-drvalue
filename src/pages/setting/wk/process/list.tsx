@@ -6,18 +6,15 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { newDataProcessCUType, newDataProcessGroupCUType, processCUType, processGroupCUType, processGroupRType, processRType } from "@/data/type/base/process";
+import { newDataProcessGroupCUType, processGroupCUType, processGroupRType, processRType } from "@/data/type/base/process";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
-import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AddContents from "@/contents/base/wk/process/group/AddContents";
-import AntdPagination from "@/components/Pagination/AntdPagination";
 import CustomTree from "@/components/Tree/CustomTree";
 import { patchAPI } from "@/api/patch";
-import { message, notification } from "antd";
 import useToast from "@/utils/useToast";
 import { treeType } from "@/data/type/componentStyles";
 

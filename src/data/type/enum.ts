@@ -65,3 +65,11 @@ export enum OffdayTypeEm {
   SPECIAL = 'special',
   OTHER = 'other' 
 }
+
+export enum SpecStatus {
+  NONE = 'none',
+  WAITING = 'spec_reg_waiting',
+  REGISTERING = 'spec_reg_registering',
+  COMPLETED = 'spec_reg_completed',
+  DISCARDED = 'spec_reg_discarded'
+}

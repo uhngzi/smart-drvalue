@@ -4,6 +4,7 @@ import { Dayjs } from "dayjs";
 import { partnerMngRType, partnerRType } from "../base/partner";
 import { HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus } from "../enum";
 
+// 고객발주 읽기 타입
 export type salesOrderRType = {
   id: string;
   createdAt: Date | null;
@@ -104,6 +105,7 @@ export type salesOrderDetailRType = {
   }
 }
 
+// 고객발주 생성, 수정 타입
 export type salesOrderCUType = {
   id?: string;
   partnerId?: string;
@@ -119,6 +121,7 @@ export type salesOrderCUType = {
   products?: salesOrderProcuctCUType[];
 }
 
+// 고객발주 초기값 생성
 export const newDataSalesOrderCUType = ():salesOrderCUType => {
   return {
     partnerId: '',
@@ -135,6 +138,7 @@ export const newDataSalesOrderCUType = ():salesOrderCUType => {
   }
 }
 
+// 고객발주 필수값 필드
 export const salesOrderReq = () => {
   return [
     { field: 'partnerId', label: '고객' },
@@ -149,6 +153,7 @@ export const salesOrderReq = () => {
   ]
 }
 
+// 고객발주 내 모델 읽기 타입
 export type salesOrderProductRType = {
   id: string;
   currPrdInfo: string;
@@ -177,6 +182,7 @@ export type salesOrderProductRType = {
   model?: any;
 }
 
+// 고객발주 내 모델 생성, 수정 타입
 export type salesOrderProcuctCUType = {
   id?: string;
   customPartnerManagerId?: string;
@@ -196,6 +202,7 @@ export type salesOrderProcuctCUType = {
   orderPrdHotGrade: HotGrade | null;
 }
 
+// 고객발주 내 모델 초기값 생성
 export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
   return {
     modelStatus: null,
@@ -213,15 +220,16 @@ export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
   }
 }
 
+// 고객발주 내 모델 필수값 필드
 export const salesOrderProcuctReq = () => {
   return [
     { field : 'modelStatus', label: '모델 구분' },
-    // { field : 'orderDt', label: '수주일' },
-    // { field : 'orderNo', label: '수주 번호' },
     { field : 'orderTit', label: '발주 모델명' },
     { field : 'orderPrdCnt', label: '모델 수량' },
-    // { field : 'orderPrdUnitPrice', label: '모델 기준 단가' },
     { field : 'orderPrdPrice', label: '모델 수주 금액' },
+    // { field : 'orderDt', label: '수주일' },
+    // { field : 'orderNo', label: '수주 번호' },
+    // { field : 'orderPrdUnitPrice', label: '모델 기준 단가' },
     // { field : 'orderPrdHotGrade', label: '모델 긴급도' },
   ]
 }

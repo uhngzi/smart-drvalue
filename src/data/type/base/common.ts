@@ -1,37 +1,38 @@
 // 기초정보 - 공통코드 그룹, 공통코드
 
-export type commonCodeGroupRType = {
-  id: string;
+export type commonCodeGroupType = {
+  id?: string;
   cdGrpNm: string;
   cdGrpDesc: string;
   useYn: boolean;
   dept?: {
     id: string;
-    deptNm: string;
-    useYn: boolean;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    deptNm?: string;
+    useYn?: boolean;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+    deletedAt?: Date | null;
   },
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  deletedAt?: Date | null;
 }
 
-export type commonCodeGroupCUType = {
-  cdGrpNm: string;
-  cdGrpDesc?: string;
-  dept: { id: string; };
-  useYn: boolean;
-}
-
-export const newDataCommonCodeGroupType = ():commonCodeGroupCUType => {
+export const newDataCommonCodeGroupType = ():commonCodeGroupType => {
   return {
     cdGrpNm: '',
     cdGrpDesc: '',
     dept: { id: '' },
     useYn: true,
   }
+}
+
+export const commonCodeGrpReq = () => {
+  return [
+    { field: 'cdGrpNm', label: '그룹명' },
+    { field: 'dept.id', label: '관리부서' },
+    { field: 'useYn', label: '사용여부' },
+  ]
 }
 
 export type commonCodeRType = {
@@ -62,23 +63,28 @@ export type commonCodeRType = {
 }
 
 export type commonCodeCUType = {
-  productLinesGroup: {
-    id: string;
-  },
-  process: {
-    id: string;
-  },
-  prcWkRemark?: string;
+  id?: string;
+  codeGroup: { id: string; };
+  cdNm: string;
+  cdDesc?: string;
+  useYn: boolean;
 }
 
 export const newDataCommonCode = ():commonCodeCUType => {
   return {
-    productLinesGroup: {
+    codeGroup: {
       id: '',
     },
-    process: {
-      id: '',
-    },
-    prcWkRemark: '',
+    cdNm: '',
+    cdDesc: '',
+    useYn: true,
   }
+}
+
+export const commonCodeReq = () => {
+  return [
+    { field: 'codeGroup.id', label: '그룹' },
+    { field: 'cdNm', label: '코드명' },
+    { field: 'useYn', label: '사용여부' },
+  ]
 }

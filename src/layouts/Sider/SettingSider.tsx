@@ -172,6 +172,19 @@ const SettingSider: React.FC<Props> = ({ }) => {
         },
       ]
     },
+    {
+      key: 'comm',
+      title:'',
+      label: '공통 코드',
+      icon: <p className={iconClassNm}><Company /></p>,
+      children: [
+        {
+          key: 'comm/list',
+          title: 'comm/list',
+          label: '공통 코드 관리',
+        },
+      ]
+    },
   ]
 
   const getOpenKeys = (path: string) => {
