@@ -128,7 +128,9 @@ const SalesUserPage: React.FC & {
     // 발주 저장 변수
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
     // 모델 저장 변수
-  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([{...newDataSalesOrderProductCUType(), id:'new-1'}]);
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([
+    // {...newDataSalesOrderProductCUType(), id:'new-1'}
+  ]);
     // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
   const [ detailId, setDetailId ] = useState<string>("");
