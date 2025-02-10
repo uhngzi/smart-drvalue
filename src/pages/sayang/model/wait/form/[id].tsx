@@ -170,7 +170,7 @@ const SayangModelAddPage: React.FC & {
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
         {data.map((model:any) => (
-          <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">발주명 </p>
@@ -198,7 +198,6 @@ const SayangModelAddPage: React.FC & {
             </div>
             <div className="flex flex-col ">
               <AntdTable
-                key={model.id}
                 columns={sayangModelWaitAddClmn(deleteModel)}
                 data={[model]}
                 styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
