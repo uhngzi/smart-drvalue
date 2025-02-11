@@ -37,11 +37,11 @@ export const salesUserOrderClmn = (
         className="w-full h-full v-h-center cursor-pointer"
         onClick={()=>{
           openPrtDrawer();
-          setPartnerData(record.prtInfo.prt);
-          setPartnerMngData(record.prtInfo.mng);
+          setPartnerData(record?.prtInfo?.prt);
+          setPartnerMngData(record?.prtInfo?.mng);
         }}
       >
-        {record.prtInfo.prt.prtNm}
+        {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },
@@ -67,7 +67,7 @@ export const salesUserOrderClmn = (
     key: 'modelCnt',
     align: 'center',
     render: (_:any, record:salesOrderRType) => {
-      return record.products.length;
+      return record?.products?.length;
     }
   },
   {
@@ -128,7 +128,7 @@ export const salesUserOrderClmn = (
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
             setEdit(true);
-            setDetailId(record.id);
+            setDetailId(record?.id);
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
@@ -215,7 +215,7 @@ export const salesUserOrderModelClmn = (
       <div
         className='w-24 h-24 v-h-center cursor-pointer'
         onClick={()=>{
-          setNewProducts(newProducts.filter((f:salesOrderProcuctCUType)=>f.id !== record.id));
+          setNewProducts(newProducts.filter((f:salesOrderProcuctCUType)=>f.id !== record?.id));
         }}
       >
         <Trash/>

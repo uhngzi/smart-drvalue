@@ -84,6 +84,10 @@ const SalesUserPage: React.FC & {
       setTotalData(queryData?.data.total ?? 0);
       setDataLoading(false);
     }
+    else{
+      setTotalData(1)
+      setDataLoading(false);
+    }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
@@ -529,7 +533,7 @@ const SalesUserPage: React.FC & {
             setPartnerData,
             setPartnerMngData,
           )}
-          data={data}
+          data={[{prtInfo:{prt:{prtNm:'임시 하드코딩 데이터'}}}]}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
         />
       </List>

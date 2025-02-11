@@ -629,9 +629,9 @@ export const sayangModelWaitClmn = (
     align: 'center',
     render: (_, record:salesOrderRType) => (
       <div className="text-left">
-        {record.prtInfo.prt.prtNm}
+        {record.prtInfo?.prt.prtNm}
         /
-        {record.prtInfo.prt.prtRegCd}
+        {record.prtInfo?.prt.prtRegCd}
       </div>
     )
   },
@@ -746,7 +746,7 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value:any, record:any) => (
             <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill value={record.rev} className='!text-12'/></div>
+            <div className={divClass}><AntdInputFill value={record?.rev} className='!text-12'/></div>
             <div className={divClass}><AntdSelectFill options={[{value:1,label:'1.6'}]} styles={{fs:'12px'}}/></div>
             </div>
         )
