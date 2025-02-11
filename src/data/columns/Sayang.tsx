@@ -12,10 +12,10 @@ import { NextRouter } from 'next/router';
 import { Checkbox } from 'antd';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
-import { HotGrade } from '../type/enum';
+import { generateFloorOptions, HotGrade } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { salesOrderRType } from '../type/sales/order';
-import { modelsMatchRType } from '../type/sayang/models';
+import { modelsMatchRType, modelsType, orderModelType } from '../type/sayang/models';
 import { selectType } from '../type/componentStyles';
 
 export const sayangSampleWaitClmn1 = (
@@ -727,6 +727,7 @@ export const sayangModelWaitAddClmn = (
   mkTypeSelectList: selectType[],
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
+  handleModelDataChange: (id:string, name:string, value:any) => void,
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -764,8 +765,21 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value:any, record:any) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill value={record.rev} className='!text-12'/></div>
-            <div className={divClass}><AntdSelectFill options={unitSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.prdRevNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.prdRevNo', e.target.value)}
+                className='!text-12'
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={unitSelectList}
+                value={record.tempPrdInfo?.unit?.id}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.unit.id', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
           </div>
         )
       }
@@ -785,8 +799,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'10'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdInputFill value={record.thic} className='!text-12'/></div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={generateFloorOptions()}
+                value={record.tempPrdInfo?.layerEm}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.layerEm', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.thk}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.thk', e.target.value)}
+                className='!text-12'
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -807,8 +835,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12" value={record.dongback}/>외</div>
-            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12" value={record.dongback}/>내</div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.tempPrdInfo?.copOut}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.copOut', e.target.value)}
+                className="!text-12" 
+                type="number"
+              /> 외
+            </div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.tempPrdInfo?.copIn}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.copIn', e.target.value)}
+                className="!text-12" 
+                type="number"
+                />내
+            </div>
           </div>
         )
       }
@@ -829,8 +871,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pltThk}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pltThk', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.tempPrdInfo?.pltAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pltAlph', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       }
@@ -851,28 +907,40 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12"/><AntdInputFill className="!text-12"/></div>
-            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12"/><AntdInputFill className="!text-12"/></div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.tempPrdInfo?.spPltNi}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltNi', e.target.value)}
+                type="number"
+                className="!text-12"
+              />
+              <AntdInputFill 
+                value={record.tempPrdInfo?.spPltNiAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltNiAlph', e.target.value)}
+                type="number"
+                className="!text-12"
+              />
+            </div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.tempPrdInfo?.spPltAu}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltAu', e.target.value)}
+                type="number"
+                className="!text-12"
+              />
+              <AntdInputFill 
+                value={record.tempPrdInfo?.spPltAuAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltAuAlph', e.target.value)}
+                type="number"
+                className="!text-12"
+              />
+            </div>
           </div>
         )
       },
     ]
     
   },
-  // {
-  //   title: 'UL/위치',
-  //   width:135,
-  //   dataIndex: 'ul',
-  //   key: 'ul',
-  //   align: 'center',
-  //   render: (value, record) => (
-  //     <div className={divTopClass}>
-  //       <div className={divClass+"mb-3"}><AntdInputFill /></div>
-  //       <div className={divClass+"mb-3"}><AntdInputFill /></div>
-  //       <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'M/K'}]} className="w-[60px!important]"/><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} className="w-[60px!important]"/></div>
-  //     </div>
-  //   )
-  // },
   {
     title: 'S/M',
     width:125,
@@ -888,9 +956,30 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={smPrintSelectList} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={smColorSelectList} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={smTypeSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smPrintSelectList} 
+                value={record.tempPrdInfo?.smPrint}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smPrint', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smColorSelectList} 
+                value={record.tempPrdInfo?.smColor}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smColor', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smTypeSelectList} 
+                value={record.tempPrdInfo?.smType}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
           </div>
         )
       }
@@ -911,70 +1000,35 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={mkPrintSelectList} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={mkColorSelectList} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={mkTypeSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkPrintSelectList}
+                value={record.tempPrdInfo?.mkPrint}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkPrint', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkColorSelectList}
+                value={record.tempPrdInfo?.mkColor}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkColor', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkTypeSelectList}
+                value={record.tempPrdInfo?.mkType}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
           </div>
         )
       }
     ]
   },
-  // {
-  //   title: 'PSR색상',
-  //   width:130,
-  //   dataIndex: 'psr',
-  //   key: 'psr',
-  //   align: 'center',
-  //   children: [
-  //     {
-  //       title:'Ink',
-  //       width:130,
-  //       dataIndex: 'psrInk_color',
-  //       key: 'psrInk_color',
-  //       align: 'center',
-  //       render: (value, record) => (
-  //         <div className={divTopClass}>
-  //           <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
-  //           <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
-  //         </div>
-  //       )
-  //     }
-  //   ]
-  // },
-  // {
-  //   title: 'M/K',
-  //   width:90,
-  //   dataIndex: 'mk',
-  //   key: 'mk',
-  //   align: 'center',
-  //   render: (value, record) => (
-  //     <div className={divTopClass}>
-  //       <div className={divClass}><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} /></div>
-  //     </div>
-  //   )
-  // },
-  // {
-  //   title: 'M/K색상',
-  //   width:130,
-  //   dataIndex: 'mkC',
-  //   key: 'mkC',
-  //   align: 'center',
-  //   children: [
-  //     {
-  //       title:'Ink',
-  //       width:130,
-  //       dataIndex: 'mkInk_color',
-  //       key: 'mkInk_color',
-  //       align: 'center',
-  //       render: (value, record) => (
-  //         <div className={divTopClass}>
-  //           <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Ni'}]} /></div>
-  //           <div className={divClass+""}><AntdSelectFill options={[{value:1,label:'Au'}]} /></div>
-  //         </div>
-  //       )
-  //     }
-  //   ]
-  // },
   {
     title: '특수인쇄',
     width:125,
@@ -990,8 +1044,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={spPrintSelectList}
+                value={record.tempPrdInfo?.spPrint}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPrint', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={spTypeSelectList}
+                value={record.tempPrdInfo?.spType}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
           </div>
         )
       }
@@ -1012,8 +1080,24 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill className='w-[90px]' options={[{value:1,label:'ROUTER'}]}  styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill className='w-[90px]' options={[{value:1,label:'유'},{value:2,label:'무'}]} defaultValue={2} styles={{fs:'12px'}}/></div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={outSelectList} 
+                value={record.tempPrdInfo?.aprType}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.aprType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={vcutSelectList}
+                value={record.tempPrdInfo?.vcutType}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.vcutType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
           </div>
         )
       }
@@ -1034,8 +1118,20 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className='w-[100px] !text-12'/></div>
-            <div className={divClass+""}><AntdInputFill className='w-[100px] !text-12'/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.fpNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.fpNo', e.target.value)}
+                className='w-[100px] !text-12'
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                // value={record.tempPrdInfo?.}
+                // onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.', e.target.value)}
+                className='w-[100px] !text-12'
+              />
+            </div>
           </div>
         )
       }
@@ -1057,8 +1153,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pcsL}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pcsL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pcsW}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pcsW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -1079,8 +1189,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.kitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.kitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -1101,8 +1225,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -1117,14 +1255,40 @@ export const sayangModelWaitAddClmn = (
     children:[
       {
         title: '연조PNL',
-        width:55,
+        width:100,
         dataIndex: 'arpnl',
         key: 'arpnl',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.ykitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ykitL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+              <AntdInputFill
+                value={record.tempPrdInfo?.ykitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ykitW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.ypnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ypnlL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+              <AntdInputFill
+                value={record.tempPrdInfo?.ypnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ypnlW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -1145,8 +1309,22 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.kitPcs}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitPcs', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pnlKit}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlKit', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
@@ -1167,26 +1345,33 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
-            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.sthPnl}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.sthPnl', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.sthPcs}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.sthPcs', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.tempPrdInfo?.pinCnt}
+                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pinCnt', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
           </div>
         )
       },
     ]
   },
-  // {
-  //   title: 'SPEC',
-  //   width:110,
-  //   dataIndex: 'spec',
-  //   key: 'spec',
-  //   align: 'center',
-  //   render: (value, record) => (
-  //     <>
-  //       <div className={divClass+"mb-3"}><p className="text-left w-37">LINE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
-  //       <div className={divClass+"mb-3"}><p className="text-left w-37">SPACE</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">㎜</p></div>
-  //       <div className={divClass+"mb-3"}><p className="text-left w-37">DR</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
-  //       <div className={divClass}><p className="text-left w-37">PAD</p><AntdInputFill className="w-[45px!important]" /><p className="w-12 text-12">￠</p></div>
-  //     </>
-  //   )
-  // },
 ]

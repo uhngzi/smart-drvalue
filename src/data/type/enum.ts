@@ -1,3 +1,5 @@
+import { selectType } from "./componentStyles";
+
 export enum HotGrade {
   SUPER_URGENT = "super_urgent",
   URGENT = "urgent",
@@ -32,6 +34,17 @@ export enum LayerEm {
   L18 = "L18",
   L19 = "L19",
   L20 = "L20"
+}
+
+export function generateFloorOptions(): selectType[] {
+  const floors = Array.from({ length: 20 }, (_, index) => {
+    const floorNumber = index + 1;
+    return {
+      value: `L${floorNumber}`,
+      label: `${floorNumber}층`,
+    };
+  });
+  return floors;
 }
 
 export enum ModelTypeEm {

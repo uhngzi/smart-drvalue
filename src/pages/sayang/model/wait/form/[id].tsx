@@ -33,10 +33,14 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import dayjs from 'dayjs';
 import AddDrawer from '@/contents/sayang/model/add/AddDrawer';
+import { postAPI } from '@/api/post';
+import useToast from '@/utils/useToast';
+import { patchAPI } from '@/api/patch';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const { showToast, ToastContainer } = useToast();
   const router = useRouter();
   const { id:orderId } = router.query;
   
@@ -64,7 +68,6 @@ const SayangModelAddPage: React.FC & {
     queryKey: ['sales-order/product/jsxcrud/many/by-order-idx', orderId],
     queryFn: async () => {
       try {
-        //api/serv/core-d1/v1/tenant/sales-order/product/jsxcrud/many/by-order-idx/{orderIdx}
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
@@ -81,9 +84,9 @@ const SayangModelAddPage: React.FC & {
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const arr = (queryData?.data.data ?? []).map((d:orderModelType, index:number) => ({
         ...d,
+        tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",  // 임시 저장된 값 파싱해서 가져오기
         index: (queryData?.data?.data?.length ?? 0) - index,
       }));
-
       setData(arr);
       setDataLoading(false);
     }
@@ -97,6 +100,7 @@ const SayangModelAddPage: React.FC & {
 
   const [model, setModel] = useState<Array<modelSampleDataType>>([]);
   const [modelNew, setModelNew] = useState<modelSampleDataType>(newModelSampleData(model.length));
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     name: string,
@@ -109,6 +113,7 @@ const SayangModelAddPage: React.FC & {
 
     }
   };
+
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
@@ -123,9 +128,186 @@ const SayangModelAddPage: React.FC & {
     }
   }
 
-  //임시 함수
+  // 임시 함수
   function deleteModel(idx: number) {
     setData(data.filter((f:any) => f.id !== idx));
+  }
+
+  // 테이블에서 값 변경했을 때 실행되는 함수
+  const handleModelDataChange = (
+    id: string,
+    name: string,
+    value: any
+  ) => {
+    // 데이터를 복사
+    const updatedData = data.map((item) => {
+      if (item.id === id) {
+        const keys = name.split("."); // ['model', 'a']
+        const updatedItem = { ...item };
+  
+        // 마지막 키를 제외한 객체 탐색
+        const lastKey = keys.pop()!;
+        let targetObject: any = updatedItem;
+  
+        keys.forEach((key) => {
+          // 중간 키가 없거나 null인 경우 초기화
+          if (!targetObject[key] || typeof targetObject[key] !== "object") {
+            targetObject[key] = {};
+          }
+          targetObject = targetObject[key];
+        });
+  
+        // 최종 키에 새 값 할당
+        targetObject[lastKey] = value;
+  
+        return updatedItem;
+      }
+      return item; // 다른 데이터는 그대로 유지
+    });
+  
+    setData(updatedData); // 상태 업데이트
+  }; 
+
+  // 임시저장 시 실행되는 함수
+  const handleSumbitTemp = async (id:string) => {
+    try {
+      const tempData = data.find((d:orderModelType) => d.id === id);
+
+      const result = await patchAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'sales-order/product',
+        jsx: 'jsxcrud'
+      },
+      id,
+      {
+        currPrdInfo: tempData?.currPrdInfo,
+        tempPrdInfo: {
+          ...tempData?.tempPrdInfo,
+          partner: tempData?.prtInfo?.prt?.id,
+          prdNm: tempData?.model?.prdNm,
+          mnfNm: tempData?.model?.mnfNm,
+        },
+        partnerId: tempData?.prtInfo?.prt?.id,
+        partnerManagerId: tempData?.prtInfo?.mng?.id,
+        order: { id: tempData?.order?.id },
+        model: { id: tempData?.model?.id },
+        modelStatus: tempData?.modelStatus,
+        orderDt: tempData?.orderDt,
+        orderTit: tempData?.orderTit,
+        prtOrderNo: tempData?.prtOrderNo,
+        orderPrdRemark: tempData?.orderPrdRemark,
+        orderPrdCnt: tempData?.orderPrdCnt,
+        orderPrdUnitPrice: tempData?.orderPrdUnitPrice,
+        orderPrdPrice: tempData?.orderPrdPrice,
+        orderPrdDueReqDt: tempData?.orderPrdDueReqDt,
+        orderPrdDueDt: tempData?.orderPrdDueDt,
+        orderPrdHotGrade: tempData?.orderPrdHotGrade
+      });
+  
+      if(result.resultCode === 'OK_0000') {
+        showToast("임시저장 완료", "success");
+    
+        refetch();
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch (e) {
+      console.log('CATCH ERROR : ', e);
+    }
+  }
+
+  // 확정저장 시 실행되는 함수
+  const handleSubmit = async (id:string) => {
+    // 기존에 있는 모델이 아닐 경우 새로 생성
+    // models/jsxcrud/create
+    const tempData = data.find((d:orderModelType) => d.id === id);
+    console.log(tempData);
+    
+    const resultPost = await postAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: 'models',
+      jsx: 'jsxcrud'
+    },
+    {
+      inactiveYn: false,
+      partner: { id: tempData?.prtInfo?.prt?.id },
+      prdNm: tempData?.model?.prdNm,
+      modelTypeEm: tempData?.model?.modelTypeEm ?? "sample",
+      thk: 1.6,
+      board: { id: tempData?.model?.board.id },
+      mnfNm: tempData?.model?.mnfNm,
+      fpNo: "",
+      vcutYn: true,
+      prdRevNo: tempData?.tempPrdInfo?.prdRevNo,
+      layerEm: tempData?.tempPrdInfo?.layerEm,
+      copOut: tempData?.tempPrdInfo?.copOut,
+      copIn: tempData?.tempPrdInfo?.copOut,
+      material: { id: tempData?.tempPrdInfo?.material },
+      surface: { id: tempData?.tempPrdInfo?.surface },
+      smPrint: { id: tempData?.tempPrdInfo?.smPrint },
+      smColor: { id: tempData?.tempPrdInfo?.smColor },
+      smType: { id: tempData?.tempPrdInfo?.smType },
+      mkPrint: { id: tempData?.tempPrdInfo?.mkPrint },
+      mkColor: { id: tempData?.tempPrdInfo?.mkColor },
+      mkType: { id: tempData?.tempPrdInfo?.mkType },
+      spPrint: { id: tempData?.tempPrdInfo?.spPrint },
+      spType: { id: tempData?.tempPrdInfo?.spType },
+      aprType: { id: tempData?.tempPrdInfo?.aprType },
+      vcutType: { id: tempData?.tempPrdInfo?.vcutType },
+      unit: { id: tempData?.tempPrdInfo?.unit },
+      pcsW: tempData?.tempPrdInfo?.pcsW,
+      pcsL: tempData?.tempPrdInfo?.pcsL,
+      kitW: tempData?.tempPrdInfo?.kitW,
+      kitL: tempData?.tempPrdInfo?.kitL,
+      pnlW: tempData?.tempPrdInfo?.pnlW,
+      pnlL: tempData?.tempPrdInfo?.pnlL,
+      ykitW: tempData?.tempPrdInfo?.ykitW,
+      ykitL: tempData?.tempPrdInfo?.ykitL,
+      ypnlW: tempData?.tempPrdInfo?.ypnlW,
+      ypnlL: tempData?.tempPrdInfo?.ypnlL,
+      kitPcs: tempData?.tempPrdInfo?.kitPcs,
+      pnlKit: tempData?.tempPrdInfo?.pnlKit,
+      sthPnl: tempData?.tempPrdInfo?.sthPnl,
+      sthPcs: tempData?.tempPrdInfo?.sthPcs,
+      pltThk: tempData?.tempPrdInfo?.pltThk,
+      pltAlph: tempData?.tempPrdInfo?.pltAlph,
+      spPltNi: tempData?.tempPrdInfo?.spPltNi,
+      spPltNiAlph: tempData?.tempPrdInfo?.spPltNiAlph,
+      spPltAu: tempData?.tempPrdInfo?.spPltAu,
+      spPltAuAlph: tempData?.tempPrdInfo?.spPltAuAlph,
+      pinCnt: tempData?.tempPrdInfo?.pinCnt,
+    });
+
+    if(resultPost.resultCode === 'OK_0000') {
+      // 모델 생성 후 모델 ID를 고객 발주에 넣어줌
+      const modelId = resultPost.data?.entity?.id;
+
+      const resultPatch = await patchAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'sales-order/product',
+        jsx: 'jsxcrud'
+      },
+      id,
+      {...tempData, model: { id: modelId }} as orderModelType)
+
+      if(resultPatch.resultCode === 'OK_0000') {
+        showToast("확정저장 완료", "success");
+    
+        refetch();
+      } else {
+        const msg = resultPatch?.response?.data?.message;
+        showToast(msg, "error");
+        console.log(msg);
+      }
+    } else {
+      const msg = resultPost?.response?.data?.message;
+      showToast(msg, "error");
+      console.log(msg);
+    }
   }
 
   return (
@@ -135,7 +317,7 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:model.length > 0?"2050px":"1022px"}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        {data.map((model:orderModelType) => (
+        {data.map((model:orderModelType, index:number) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
@@ -164,23 +346,27 @@ const SayangModelAddPage: React.FC & {
                 <p className="h-center justify-end">모델명 </p>
                 <AntdInput
                   className="w-[180px!important]" styles={{ht:'32px'}}
-                  value={model.orderTit}
+                  value={model.model?.prdNm}
+                  onChange={(e)=>handleModelDataChange(model.id, 'model.prdNm', e.target.value)}
                 />
                 <p className="h-center justify-end">원판 </p>
                 <AntdSelect
                   options={boardSelectList}
                   value={model.model?.board?.id}
+                  onChange={(e)=>handleModelDataChange(model.id, 'model.board.id', e)}
                   className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
                 />
                 <p className="h-center justify-end">제조사 </p>
                 <AntdInput 
                   value={model.model?.mnfNm}
+                  onChange={(e)=>handleModelDataChange(model.id, 'model.mnfNm', e.target.value)}
                   className="w-[120px!important]" styles={{ht:'32px'}}
                 />
                 <p className="h-center justify-end">재질 </p>
                 <AntdSelect
                   options={metarialSelectList}
                   value={model.model?.material?.id}
+                  onChange={(e)=>handleModelDataChange(model.id, 'model.material.id', e)}
                   className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
                 />
               </div>
@@ -209,6 +395,7 @@ const SayangModelAddPage: React.FC & {
                   mkTypeSelectList,
                   spPrintSelectList,
                   spTypeSelectList,
+                  handleModelDataChange,
                 )}
                 data={[model]}
                 styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
@@ -216,8 +403,17 @@ const SayangModelAddPage: React.FC & {
                 />
             </div>
             <div className="w-full h-32 flex justify-end gap-5">
-            <FullOkButtonSmall click={()=>{}} label="확정저장" />
-              <Button variant="outlined" color="primary">임시저장</Button>
+              <FullOkButtonSmall
+                click={()=>{
+                  handleSubmit(model.id);
+                }}
+                label="확정저장"
+              />
+              <Button variant="outlined" color="primary"
+                onClick={()=>{
+                  handleSumbitTemp(model.id);
+                }}
+              >임시저장</Button>
             </div>
           </div>
         ))}
@@ -513,6 +709,7 @@ const SayangModelAddPage: React.FC & {
           }
         </div>
       </AntdDrawer> */}
+      <ToastContainer />
     </>
   )
 }

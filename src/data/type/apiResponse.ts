@@ -25,6 +25,7 @@ export type apiPatchResponseType = {
     path?: string;
     timestamp?: Date;
     requestUser?: any;
+    entity?: any;
   }
   resultCode?: string;
   response?: any;

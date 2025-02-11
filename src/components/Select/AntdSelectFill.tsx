@@ -11,6 +11,8 @@ interface Props {
   loading?: boolean;
   className?: string;
   styles?: componentsStylesType;
+  value?: any;
+  onChange?: React.ChangeEventHandler<HTMLSelectElement>;
 }
 
 const AntdSelectFill : React.FC<Props> = ({ 
@@ -20,6 +22,8 @@ const AntdSelectFill : React.FC<Props> = ({
   loading, 
   className,
   styles,
+  value,
+  onChange,
 }) => {
 
   return (
@@ -32,6 +36,8 @@ const AntdSelectFill : React.FC<Props> = ({
       $pd={styles?.pd?styles.pd:'0 11px'}
     >
       <Select
+        value={value}
+        onChange={onChange}
         className={`w-full rounded-0 ${className}`}
         options={options}
         defaultValue={defaultValue}

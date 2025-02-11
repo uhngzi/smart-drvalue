@@ -91,7 +91,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/e7bd6d53-8398-43f2-a970-6a55607fc373'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/재질'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -119,7 +119,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/40aa5cce-d07d-4014-bc47-d1413cd0a17a'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/표면처리'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -147,7 +147,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/270c79ea-da3e-420a-9fc1-b1a4bf24d11d'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/단위'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -175,7 +175,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/44584dfd-9efb-4755-bc99-7ff15030b014'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/VCUT형태'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -203,7 +203,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/5fd0a413-d1be-45b1-a0bf-12b12404fdbc'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/외형가공형태'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -231,7 +231,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/19ce3430-717d-49e7-b12e-28ffe3795532'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/SM인쇄'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -259,7 +259,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/c442dea4-2698-4d03-a530-4f65a7f201a6'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/SM색상'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -287,7 +287,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/dba38485-1225-44a8-a78b-1d07bd74447a'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/SM종류'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -315,7 +315,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/2a05aade-4a37-474a-8d15-e520f855cc11'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/MK인쇄'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -343,7 +343,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/2a05aade-4a37-474a-8d15-e520f855cc11'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/MK색상'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -362,7 +362,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   // ----------- MK색상 ----------- 끝
 
-  // ----------- MK색상 ----------- 시작
+  // ----------- MK종류 ----------- 시작
   const [mkTypeSelectList, setMkTypeSelectList] = useState<selectType[]>([]);
   const [mkType, setMkType] = useState<commonCodeRType[]>([]);
   const { refetch:refetchMkType } = useQuery<apiGetResponseType, Error>({
@@ -371,7 +371,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/9d71f1d3-206c-460d-baed-4f056c50d8a0'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/MK종류'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -388,7 +388,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return result;
     },
   });
-  // ----------- MK색상 ----------- 끝
+  // ------------ MK종류 ----------- 끝
 
   // ----------- 특수인쇄 ---------- 시작
   const [spPrintSelectList, setSpPrintSelectList] = useState<selectType[]>([]);
@@ -399,7 +399,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/8fd8a5dc-e144-4b43-8c28-f795561cf793'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/특수인쇄'
       });
 
       if (result.resultCode === "OK_0000") {
@@ -427,7 +427,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'common-code/jsxcrud/many/by-cd-grp-idx/d021b48d-7dfa-494a-b906-2a767cad1182'
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/특수인쇄종류'
       });
 
       if (result.resultCode === "OK_0000") {

@@ -8,6 +8,7 @@ interface Props {
   className?: string;
   styles?: componentsStylesType;
   placeholder?: string;
+  type?: string;
 }
 
 const AntdInputFill: React.FC<Props> = ({
@@ -16,7 +17,24 @@ const AntdInputFill: React.FC<Props> = ({
   className,
   styles,
   placeholder,
+  type,
 }) => {
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { value } = e.target;
+
+    // 숫자 타입일 때 0 이하 입력 제한
+    if (type === "number") {
+      const numericValue = parseFloat(value);
+      if (numericValue < 0 || isNaN(numericValue)) {
+        return; // 0 이하 값 무시
+      }
+    }
+
+    // 전달받은 onChange 핸들러 실행
+    onChange?.(e);
+  };
+
+
   return (
     <AntdInputStyled
       $ht={styles?.ht?styles.ht:'30px'}
@@ -27,9 +45,10 @@ const AntdInputFill: React.FC<Props> = ({
     >
       <Input
         value={value}
-        onChange={onChange}
+        onChange={handleInputChange}
         className={`${className}`}
         placeholder={placeholder}
+        type={type}
       />
     </AntdInputStyled>
   )
