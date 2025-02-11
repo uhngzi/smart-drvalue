@@ -19,6 +19,9 @@ import Category from "@/assets/svg/icons/category.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Call from "@/assets/svg/icons/s_call.svg";
+import Mobile from "@/assets/svg/icons/mobile.svg";
+import Mail from "@/assets/svg/icons/mail.svg";
 
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Space } from "antd";
@@ -27,6 +30,9 @@ import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { sayangModelWaitAddClmn, sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
+import CardList from "@/components/List/CardList";
+import { MOCK } from "@/utils/Mock";
+import { LabelIcon } from "@/components/Text/Label";
 
 const items: MenuProps['items'] = [
   {
@@ -50,7 +56,7 @@ const SayangModelAddPage: React.FC & {
     confirmDt: null,
     confirmPer: '',
   });
-
+  const MockItem = MOCK.modelOrderInfo
   const [selectTab, setSelectTab] = useState<number>(1);
   const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
@@ -379,6 +385,7 @@ const SayangModelAddPage: React.FC & {
 
       <AntdDrawer
         open={drawerOpen}
+        width={610}
         close={()=>{setDrawerOpen(false)}}
       >
         <div className="w-full h-full px-20 py-30 flex flex-col gap-20">
@@ -392,34 +399,61 @@ const SayangModelAddPage: React.FC & {
           />
           { selectTabDrawer === 1 ?
             <>
-              <InputList
-                labelWidth={150}
-                gap={24}
-                items={[
-                  {name:'1',label:'고객명(고객코드)', type:'input'},
-                  {name:'2',label:'고객발주(고객요구)명', type:'input'},
-                  {name:'3',label:'고객 담당자명', type:'input'},
-                  {name:'4',label:'전화번호', type:'input'},
-                  {name:'5',label:'이메일', type:'input'},
-                  {name:'6',label:'영업담당자명', type:'input'},
-                  {name:'7',label:'접수일', type:'date'},
-                  {name:'8',label:'발주(요청)일', type:'date'},
-                ]}
-                handleDataChange={handleDataChange}
-              />
-              <div className="w-full h-36 gap-5 flex mt-4">
-                <p 
-                  className="ml-10 h-center justify-end text-14"
-                  style={{width:150}}
-                >고객요구내용 :</p>
-                <div
-                  style={{width:'calc(100% - 150px)'}}
-                >
-                  <textarea
-                    className="border-1 border-line outline-none w-full min-h-55"
-                  />
+              <CardList items={MockItem} title="" btnLabel="" btnClick={()=>{}} />
+              <CardList items={[]} title="" btnLabel="" btnClick={()=>{}}>
+                <div className="flex flex-col gap-10">
+                  <div className="w-full text-16 font-medium" >담당자 정보</div>
+                  <div className="w-full" style={{borderBottom:'1px solid #d9d9d9'}}/>
+                  <p className="">홍길동(사업관리부)</p>
+                  <div className="w-full h-40 h-center gap-10">
+                    <div className="w-[200px]">
+                      <LabelIcon label="031-123-1234" icon={<Call />}/>
+                    </div>
+                    <div className="w-[200px]">
+                      <LabelIcon label="010-1234-5678" icon={<Mobile />}/>
+                    </div>
+                    <div className="flex-1">
+                      <LabelIcon label="test@gmail.com" icon={<Mail />}/>
+                    </div>
+                  </div>
+
                 </div>
-              </div>
+              </CardList>
+              <CardList items={[]} title="" btnLabel="" btnClick={()=>{}}>
+                <div className="flex flex-col gap-10">
+                  <div className="w-full text-16 font-medium" >등록된 고객발주 모델</div>
+                  <div className="w-full" style={{borderBottom:'1px solid #d9d9d9'}}/>
+                  <table>
+                    <colgroup>
+                      <col style={{width:'auto'}}/>
+                      <col style={{width:'5%'}}/>
+                      <col style={{width:'10%'}}/>
+                      <col style={{width:'10%'}}/>
+                      <col style={{width:'20%'}}/>
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th className="text-left font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>발주 모델명</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>층</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>두께</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>수량</th>
+                        <th className="text-left font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>납기일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {MOCK.regOrderModel.map((m, idx) => (
+                        <tr key={idx}>
+                          <td className="py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.name}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.layer}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.thic}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.cnt}</td>
+                          <td className="py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.dueDt}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardList>
             </>
             :
             <div className="flex flex-col gap-20">

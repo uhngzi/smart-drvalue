@@ -35,7 +35,6 @@ const AntdDrawer: React.FC<Props> = ({
       mask={mask}
       getContainer={getContainer ? (typeof window !== 'undefined' ? () => document.body : undefined) : false}
       style={style}
-      className="tet"
     >
       {children}
     </AntdDrawerStyled>

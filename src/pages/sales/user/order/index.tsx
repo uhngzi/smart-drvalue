@@ -10,6 +10,9 @@ import { getClientCsAPI } from "@/api/cache/client";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
+import Edit from "@/assets/svg/icons/memo.svg";
+import Plus from "@/assets/svg/icons/s_plus.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -42,6 +45,8 @@ import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
+import CardList from "@/components/List/CardList";
+import { MOCK } from "@/utils/Mock";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -392,6 +397,8 @@ const SalesUserPage: React.FC & {
   // ---------------- 거래처  ---------------- 시작
     // 리스트 내 거래처
   const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+  const [ drawerPrtItems, setDrawerPrtItems ] = useState<Array<any>>([]);
+  const [ drawerMngItems, setDrawerMngItems ] = useState<Array<any>>([]);
   const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
   const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
 
@@ -466,6 +473,38 @@ const SalesUserPage: React.FC & {
   }
   // ---------------- 거래처  ---------------- 끝
 
+  function openPrtDrawer(){
+    console.log(partnerData)
+    // const prtItems = [
+    //   { label: '거래처명', value: partnerData?.prtNm ?? '-', type: 'full' },
+    //   { label: '거래처 식별코드', value: partnerData?.prtRegCd ?? '-', type: 'half' },
+    //   { label: '거래처 축약명', value: partnerData?.prtSnm ?? '-', type: 'half' },
+    //   { label: '거래처 영문명', value: partnerData?.prtEngNm ?? '-', type: 'half' },
+    //   { label: '거래처 영문 축약명', value: partnerData?.prtEngSnm ?? '-', type: 'half' },
+    //   { label: '사업자등록번호', value: partnerData?.prtRegNo ?? '-', type: 'half' },
+    //   { label: '법인등록번호', value: partnerData?.prtCorpRegNo ?? '-', type: 'half' },
+    //   { label: '업태', value: partnerData?.prtBizType ?? '-', type: 'half' },
+    //   { label: '업종', value: partnerData?.prtBizCate ?? '-', type: 'half' },
+    //   { label: '주소', value: `${partnerData?.prtAddr ?? '-'} ${partnerData?.prtAddrDtl ?? '-'}`, type: 'full' },
+    //   { label: '대표자명', value: partnerData?.prtCeo ?? '-', type: 'half' },
+    //   { label: '전화번호', value: partnerData?.prtTel ?? '-', type: 'half' },
+    //   { label: '팩스번호', value: partnerData?.prtFax ?? '-', type: 'half' },
+    //   { label: '이메일', value: partnerData?.prtEmail ?? '-', type: 'half' },
+      
+    // ];
+    // const mngItems = [
+    //   { label: '담당자명', value: partnerMngData?.prtMngNm ?? '-', type: 'full' },
+    //   { label: '부서명', value: partnerMngData?.prtMngDeptNm ?? '-', type: 'half' },
+    //   { label: '팀명', value: partnerMngData?.prtMngTeamNm ?? '-', type: 'half' },
+    //   { label: '전화번호', value: partnerMngData?.prtMngTel ?? '-', type: 'half' },
+    //   { label: '휴대번호', value: partnerMngData?.prtMngMobile ?? '-', type: 'half' },
+    //   { label: '팩스번호', value: partnerMngData?.prtMngFax ?? '-', type: 'half' },
+    //   { label: '이메일', value: partnerMngData?.prtMngEmail ?? '-', type: 'half' },
+    // ]
+    setDrawerPrtItems(MOCK.prtItems);
+    setDrawerMngItems(MOCK.mngItems);
+    setDrawerOpen(true);
+  }
 
   return (
     <>
@@ -484,7 +523,7 @@ const SalesUserPage: React.FC & {
         <AntdTableEdit
           columns={salesUserOrderClmn(
             totalData,
-            setDrawerOpen,
+            openPrtDrawer,
             setEdit,
             setDetailId,
             setPartnerData,
@@ -575,10 +614,20 @@ const SalesUserPage: React.FC & {
       <AntdDrawer
         open={drawerOpen}
         close={()=>{setDrawerOpen(false)}}
+        width={600}
         maskClosable={false}
         mask={false}
       >
-        <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
+        <div className="flex flex-col gap-15 p-20 !pr-5">
+          <div className="flex w-full justify-end cursor-pointer" onClick={() => setDrawerOpen(false)}><Close/></div>
+          <CardList title="고객정보" 
+            btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Edit/></span> 고객 정보 수정</div>} 
+            items={drawerPrtItems} btnClick={() => alert('hi')}/>
+          <CardList title="담당자정보" 
+            btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Plus/></span> 담당자 추가</div>} 
+            items={drawerMngItems} btnClick={() => alert('hi')}/>
+        </div>
+        {/* <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
         <div>
           거래처명 : {partnerData?.prtNm ?? '-'}<br/>
           식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
@@ -605,7 +654,7 @@ const SalesUserPage: React.FC & {
           휴대 : {partnerMngData?.prtMngMobile}<br/>
           이메일 : {partnerMngData?.prtMngEmail}<br/>
           팩스 : {partnerMngData?.prtMngFax}<br/>
-        </div>
+        </div> */}
       </AntdDrawer>
 
       <AntdModal
