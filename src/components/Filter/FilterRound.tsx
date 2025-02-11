@@ -30,16 +30,16 @@ const FilterRound: React.FC<Props> = ({
 const FilterRoundStyled = styled.div<{
 }>`
   display: flex;
-  height: 60px;
+  height: 32px;
   align-itmes: center;
   min-width: 997px;
 
   .rows {
     display: flex;
     align-items: center;
-    height: 60px;
-    border-radius: 14px;
-    border: 1px solid #D5D5D5;
+    height: 32px;
+    border-radius: 8px;
+    /* border: 1px solid #D5D5D5; */
     background-color: #F9F9FB;
 
     & .items {

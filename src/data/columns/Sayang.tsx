@@ -379,8 +379,8 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3 gap-5 !text-12"}><AntdInputFill className="w-[48px!important] !text-12"/>외</div>
-        <div className={divClass+"gap-5 !text-12"}><AntdInputFill className="w-[48px!important] !text-12"/>내</div>
+        <div className={divClass+"mb-3 gap-5 !text-12"}><AntdInputFill className="!text-12"/>외</div>
+        <div className={divClass+"gap-5 !text-12"}><AntdInputFill className="!text-12"/>내</div>
       </div>
     )
   },
@@ -404,8 +404,8 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value, record) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3 gap-5"}><AntdSelectFill options={[{value:1,label:'Ni'}]} styles={{pd:"0", fs:'12px'}} className="w-[43px!important]"/><AntdInputFill className="w-[50px!important]"/></div>
-        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{pd:"0", fs:'12px'}} className="w-[43px!important]"/><AntdInputFill className="w-[50px!important]"/></div>
+        <div className={divClass+"mb-3 gap-5"}><AntdSelectFill options={[{value:1,label:'Ni'}]} styles={{pd:"0", fs:'12px'}} /><AntdInputFill /></div>
+        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{pd:"0", fs:'12px'}} /><AntdInputFill /></div>
       </div>
     )
   },
@@ -789,8 +789,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}><AntdInputFill className="w-[48px!important] !text-12" value={record.dongback}/>외</div>
-            <div className={divClass+"gap-5"}><AntdInputFill className="w-[48px!important] !text-12" value={record.dongback}/>내</div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12" value={record.dongback}/>외</div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12" value={record.dongback}/>내</div>
           </div>
         )
       }
@@ -811,8 +811,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px!important] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px!important] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       }
@@ -833,8 +833,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}><AntdInputFill className="w-[50px!important] !text-12"/><AntdInputFill className="w-[50px!important] !text-12"/></div>
-            <div className={divClass+"gap-5"}><AntdInputFill className="w-[50px!important] !text-12"/><AntdInputFill className="w-[50px!important] !text-12"/></div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12"/><AntdInputFill className="!text-12"/></div>
+            <div className={divClass+"gap-5"}><AntdInputFill className="!text-12"/><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },

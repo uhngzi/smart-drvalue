@@ -30,7 +30,7 @@ const AntdInput: React.FC<Props> = ({
   return (
     <AntdInputStyled
       $ht={styles?.ht ? styles.ht : "32px"}
-      $bg={styles?.bg ? styles.bg : "none"}
+      $bg={styles?.bg ? styles.bg : "white"}
       $bw={styles?.bw ? styles.bw : "1px"}
       $bc={styles?.bc ? styles.bc : "#D9D9D9"}
       className={`${className}`}

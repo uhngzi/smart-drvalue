@@ -57,6 +57,7 @@ const SayangModelAddPage: React.FC & {
     confirmPer: '',
   });
   const [selectTab, setSelectTab] = useState<number>(1);
+  const [selectModel, setSelectModel] = useState<number>(0);
   const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -162,11 +163,16 @@ const SayangModelAddPage: React.FC & {
     }
   }
 
+  function onSelect(selectedKey: number) {
+    setSelectModel(selectedKey);
+  }
+
   //임시 함수
   function deleteModel(idx: number) {
     setData(data.filter((f:any) => f.id !== idx));
   }
   
+
   return (
     <>
       <div 
@@ -175,9 +181,11 @@ const SayangModelAddPage: React.FC & {
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 112px)'}}>
         {data.map((model:any) => (
-          <div className="flex flex-col gap-16" key={model.id}>
-            <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
+          <div className="flex flex-col gap-16" key={model.id}  onClick={()=>onSelect(model.id)}>
+            <div className={`w-full min-h-32 h-center border-1 border-line rounded-14 ${model.id === selectModel ? "bg-[#DFE9FF]" : ""}`}>
               <div className="h-full h-center gap-10 p-10">
+                <p className="h-center justify-end">관리번호 </p>
+                <AntdInput className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}} />
                 <p className="h-center justify-end">발주명 </p>
                 <AntdInput className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}} />
                 <AntdSelect options={[{value:1,label:'신규'},{value:2,label:'?'}]} className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
@@ -186,14 +194,12 @@ const SayangModelAddPage: React.FC & {
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">모델명 </p>
                 <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
-                <p className="h-center justify-end">관리번호 </p>
-                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} />
                 <p className="h-center justify-end">원판 </p>
                 <AntdSelect options={[{value:1,label:'1220 x 1020(J)'},{value:2,label:'?'}]} className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
                 <p className="h-center justify-end">제조사 </p>
                 <AntdInput className="w-[120px!important]" styles={{ht:'32px'}} />
                 <p className="h-center justify-end">재질 </p>
-                <AntdSelect options={[{value:1,label:'FR-4(DS-7402)'},{value:2,label:'?'}]} className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+                <AntdSelect options={[{value:1,label:'FR-4(DS-7402)'},{value:2,label:'?'}]} className="w-[155px!important]" styles={{ht:'36px', bg:'white', pd:'0'}}/>
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
               <div className="h-full h-center gap-10 p-10">
@@ -201,7 +207,7 @@ const SayangModelAddPage: React.FC & {
                 <p className="h-center justify-end">2024-09-23</p>
               </div>
             </div>
-            <div className="flex flex-col ">
+            <div className="flex flex-col " onClick={()=>onSelect(model.id)}>
               <AntdTable
                 columns={sayangModelWaitAddClmn(deleteModel)}
                 data={[model]}
@@ -233,7 +239,7 @@ const SayangModelAddPage: React.FC & {
             />
           </div> */}
         </div>
-        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 112px)'}} key="contents-tab">
+        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 112px)', marginRight:'-20px'}} key="contents-tab">
           <div 
             className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
             onClick={()=>{
@@ -384,7 +390,7 @@ const SayangModelAddPage: React.FC & {
 
       <AntdDrawer
         open={drawerOpen}
-        width={610}
+        width={643}
         close={()=>{setDrawerOpen(false)}}
       >
         <div className="w-full h-full px-20 py-30 flex flex-col gap-20">
@@ -425,28 +431,31 @@ const SayangModelAddPage: React.FC & {
                   <table>
                     <colgroup>
                       <col style={{width:'auto'}}/>
+                      <col style={{width:'auto'}}/>
                       <col style={{width:'5%'}}/>
+                      <col style={{width:'7%'}}/>
                       <col style={{width:'10%'}}/>
-                      <col style={{width:'10%'}}/>
-                      <col style={{width:'20%'}}/>
+                      <col style={{width:'17%'}}/>
                     </colgroup>
                     <thead>
                       <tr>
-                        <th className="text-left font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>발주 모델명</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>발주 모델명</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>관리번호</th>
                         <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>층</th>
                         <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>두께</th>
                         <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>수량</th>
-                        <th className="text-left font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>납기일</th>
+                        <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>납기일</th>
                       </tr>
                     </thead>
                     <tbody>
                       {MOCK.regOrderModel.map((m, idx) => (
                         <tr key={idx}>
-                          <td className="py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.name}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.name}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.odno}</td>
                           <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.layer}</td>
                           <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.thic}</td>
                           <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.cnt}</td>
-                          <td className="py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.dueDt}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.dueDt}</td>
                         </tr>
                       ))}
                     </tbody>

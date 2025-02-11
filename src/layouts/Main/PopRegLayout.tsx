@@ -68,7 +68,7 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
             <Close />
           </p>
         </div>
-        <div className="w-full overflow-auto px-20 pb-20">
+        <div className="w-full overflow-auto pl-20 pb-20">
           {children}
         </div>
       </div>

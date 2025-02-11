@@ -31,9 +31,9 @@ const MOCK = {
         {label: '발주내용', value: '비케이전자 이런 모델 발주합니다', widthType: 'full'},
     ],
     regOrderModel: [
-        {name: "모델명", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
-        {name: "모델명", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
-        {name: "모델명", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
+        {name: "모델명",odno:"GPN_ERP_TEST_0000", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
+        {name: "모델명",odno:"GPN_ERP_TEST_0000", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
+        {name: "모델명",odno:"GPN_ERP_TEST_0000", layer:"5", thic:"1.6", cnt:"100", dueDt:"2025-07-31"},
     ]
 }
 

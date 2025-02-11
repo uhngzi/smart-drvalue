@@ -16,9 +16,9 @@ const ArrayContents: React.FC<Props> = ({
         icon={<ArrayIcon />}
       />
 
-      <div className="w-full h-[310px] flex flex-col gap-30">
-        <div className="w-full h-[111px] border-1 border-line flex">
-          <div className="w-[130px] h-[110px] border-r-1 border-line">
+      <div className="w-full h-[310px] flex flex-col gap-30 items-center">
+        <div className="h-[111px] border-1 border-line flex">
+          <div className="flex-grow-[1] h-[110px] border-r-1 border-line">
             <div className="h-55 flex">
               <div className="w-60 text-12 bg-back v-h-center p-5">{'① 배열'}</div>
               <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
@@ -28,11 +28,11 @@ const ArrayContents: React.FC<Props> = ({
               <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
             </div>
           </div>
-          <div className="w-[271px] h-[110px]">
-            <div className="h-74 h-center">
-              <p className="w-60 h-full bg-back v-h-center p-5">원판</p>
-              <div className="w-[209px] h-full">
-                <div className="w-[209px] h-37 v-between-h-center p-5">
+          <div className="flex-grow-[2] h-[110px]">
+            <div className="h-74 h-center flex">
+              <p className="w-65 h-full bg-back v-h-center p-5">원판</p>
+              <div className="flex-grow-[35] h-full">
+                <div className="h-37 v-between-h-center p-5">
                   <p>{'NY-2140 (난야)'}</p>
                   <p>FR-1</p>
                 </div>
@@ -42,12 +42,12 @@ const ArrayContents: React.FC<Props> = ({
               </div>
             </div>
             <div className="h-36 border-t-1 border-line flex">
-              <p className="w-60 bg-back v-h-center p-5">임피던스</p>
-              <div className="w-73 h-full v-h-center">
+              <p className="w-65 bg-back v-h-center p-5">임피던스</p>
+              <div className="flex-grow-[12] h-full v-h-center">
                 <AntdSelect options={[{value:1,label:'유'},{value:1,label:'무'}]} styles={{bw:'0'}} />
               </div>
-              <p className="w-60 bg-back v-h-center p-5">쿠폰</p>
-              <div className="w-73 h-full v-h-center">
+              <p className="w-65 bg-back v-h-center p-5">쿠폰</p>
+              <div className="flex-grow-[12] h-full v-h-center">
                 <AntdSelect options={[{value:1,label:'유'},{value:1,label:'무'}]} styles={{bw:'0'}} />
               </div>
             </div>

@@ -9,7 +9,7 @@ const CutSizeContents: React.FC<Props> = ({
 
 }) => {
   return (
-    <div className="flex flex-col gap-20">
+    <div className="w-full flex flex-col gap-20">
       <TitleIcon 
         title="재단 사이즈"
         icon={<Cut />}
