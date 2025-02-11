@@ -44,11 +44,11 @@ const ArrayContents: React.FC<Props> = ({
             <div className="h-36 border-t-1 border-line flex">
               <p className="w-65 bg-back v-h-center p-5">임피던스</p>
               <div className="flex-grow-[12] h-full v-h-center">
-                <AntdSelect options={[{value:1,label:'유'},{value:1,label:'무'}]} styles={{bw:'0'}} />
+                <AntdSelect options={[{value:1,label:'유'},{value:2,label:'무'}]} styles={{bw:'0',pd:'0'}} />
               </div>
               <p className="w-65 bg-back v-h-center p-5">쿠폰</p>
               <div className="flex-grow-[12] h-full v-h-center">
-                <AntdSelect options={[{value:1,label:'유'},{value:1,label:'무'}]} styles={{bw:'0'}} />
+                <AntdSelect options={[{value:1,label:'유'},{value:2,label:'무'}]} styles={{bw:'0',pd:'0'}} />
               </div>
             </div>
           </div>

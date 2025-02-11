@@ -1039,8 +1039,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
@@ -1061,8 +1061,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
@@ -1083,8 +1083,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
@@ -1092,21 +1092,21 @@ export const sayangModelWaitAddClmn = (
   },
   {
     title: '연조KIT',
-    width:60,
+    width:55,
     dataIndex: 'arkit',
     key: 'arkit',
     align: 'center',
     children:[
       {
         title: '연조PNL',
-        width:60,
+        width:55,
         dataIndex: 'arpnl',
         key: 'arpnl',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
@@ -1127,8 +1127,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
@@ -1149,8 +1149,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
-            <div className={divClass}><AntdInputFill className="w-[50px] !text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
+            <div className={divClass}><AntdInputFill className="!text-12"/></div>
           </div>
         )
       },
