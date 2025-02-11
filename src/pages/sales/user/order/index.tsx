@@ -6,9 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
-import { getClientCsAPI } from "@/api/cache/client";
+import { getPrtCsAPI } from "@/api/cache/client";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import Back from "@/assets/svg/icons/back.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
@@ -91,7 +92,7 @@ const SalesUserPage: React.FC & {
   const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
   const { data:cs, refetch:csRefetch } = useQuery({
     queryKey: ["getClientCs"],
-    queryFn: () => getClientCsAPI(),
+    queryFn: () => getPrtCsAPI(),
   });
   
     // 거래처 변경 시 해당 거래처 담당자 리스트 세팅
@@ -111,12 +112,8 @@ const SalesUserPage: React.FC & {
   const stepItems = [{title:'고객 발주 등록'}, {title:'고객 발주 모델 등록'}];
     // 모달창 닫기 눌렀을 때 실행 함수
   function stepModalClose(){
-    if(stepCurrent === 0){
-      setOpen(false);
-      handleCloseOrder();
-    }else{
-      setStepCurrent(0);
-    }
+    setOpen(false);
+    handleCloseOrder();
   }
     // 고객 발주 모달창 OPEN
   const [ open, setOpen ] = useState<boolean>(false);
@@ -162,7 +159,7 @@ const SalesUserPage: React.FC & {
         currPrdInfo: JSON.parse(prd.currPrdInfo),
         modelStatus: prd.modelStatus,
         orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
-        orderNo: prd.orderNo,
+        // orderNo: prd.orderNo,
         orderTit: prd.orderTit,
         prtOrderNo: prd.prtOrderNo,
         orderPrdRemark: prd.orderPrdRemark,
@@ -178,6 +175,7 @@ const SalesUserPage: React.FC & {
     }
   }
   useEffect(()=>{
+    console.log(edit);
     if(edit && detailId !== "") {
       fetchDetail();
     }
@@ -242,7 +240,7 @@ const SalesUserPage: React.FC & {
         modelId: product.modelId,
         modelStatus: product.modelStatus,
         orderDt: formData.orderDt,
-        orderNo: index.toString(),
+        // orderNo: index.toString(),
         orderTit: product.orderTit,
         prtOrderNo: product.prtOrderNo,
         orderPrdRemark: product.orderPrdRemark,
@@ -312,7 +310,7 @@ const SalesUserPage: React.FC & {
           modelId: prd.modelId,
           modelStatus: prd.modelStatus,
           orderDt: formData.orderDt,
-          orderNo: index.toString(),
+          // orderNo: index.toString(),
           orderTit: prd.orderTit,
           prtOrderNo: prd.prtOrderNo,
           orderPrdRemark: prd.orderPrdRemark,
@@ -328,7 +326,7 @@ const SalesUserPage: React.FC & {
           currPrdInfo: prd.currPrdInfo,
           modelStatus: prd.modelStatus,
           orderDt: formData.orderDt,
-          orderNo: index.toString(),
+          // orderNo: index.toString(),
           orderTit: prd.orderTit,
           prtOrderNo: prd.prtOrderNo,
           orderPrdRemark: prd.orderPrdRemark,
@@ -516,6 +514,7 @@ const SalesUserPage: React.FC & {
               formData={formData}
               setFormData={setFormData}
               stepCurrent={stepCurrent}
+              setEdit={setEdit}
               handleNextStep={()=>{
                 const orderVal = validReq(formData, salesOrderReq());
                 if(!orderVal.isValid) {
@@ -526,6 +525,7 @@ const SalesUserPage: React.FC & {
                   setStepCurrent(1);
                 }
               }}
+              handleEditOrder={handleEditOrder}
             />
           </div>
           {
@@ -552,7 +552,15 @@ const SalesUserPage: React.FC & {
                 <span>모델 추가하기</span>
                 </div>
               </div>
-              <div className="flex w-full h-50 justify-end h-center">
+              <div className="flex w-full h-50 v-between-h-center">
+                <Button
+                  className="w-109 h-32 rounded-6"
+                  onClick={()=>{
+                    setStepCurrent(0);
+                  }}
+                >
+                  <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
+                </Button>
                 <Button
                   className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                   onClick={()=>{

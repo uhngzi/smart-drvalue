@@ -207,7 +207,7 @@ export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
   return {
     modelStatus: null,
     orderDt: null,
-    orderNo: '',
+    // orderNo: '',
     orderTit: '',
     prtOrderNo: '',
     orderPrdRemark: '',

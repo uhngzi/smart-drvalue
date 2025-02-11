@@ -1,6 +1,10 @@
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import FilterRightTab from "@/layouts/Body/Grid/FilterRightTab";
-import BorderButton from "@/components/Button/BorderButton";
+import type { MenuProps } from 'antd';
+import { useEffect, useState } from "react";
+import { Button, Dropdown, Space } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { getAPI } from "@/api/get";
+
 import EditButtonSmall from "@/components/Button/EditButtonSmall";
 import NewModelContents from "@/contents/sayang/model/add/NewModelContents";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
@@ -8,9 +12,17 @@ import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import InputList from "@/components/List/InputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
-
-import { filterType } from "@/data/type/filter";
+import AntdSelect from "@/components/Select/AntdSelect";
 import { TabSmall } from "@/components/Tab/Tabs";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+
+import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model/add/AddModal";
+import PopRegLayout from "@/layouts/Main/PopRegLayout";
+
+import { ModelStatus } from "@/data/type/enum";
+import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
+import { modelsMatchRType, modelsType, orderModelType } from "@/data/type/sayang/models";
+import { useBase } from '@/data/context/BaseContext';
 
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
 import Hint from "@/assets/svg/icons/hint.svg";
@@ -19,154 +31,69 @@ import Category from "@/assets/svg/icons/category.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-
-import { useEffect, useState } from "react";
-import { Button, Dropdown, Space } from "antd";
-import type { MenuProps } from 'antd';
-import { modelSampleDataType, newModelSampleData } from "@/contents/sayang/model/add/AddModal";
-import PopRegLayout from "@/layouts/Main/PopRegLayout";
-import AntdSelect from "@/components/Select/AntdSelect";
-import { sayangModelWaitAddClmn, sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
-import { useRouter } from "next/router";
-import { modelsMatchRType } from "@/data/type/sayang/models";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import { ModelStatus } from "@/data/type/enum";
-
-const items: MenuProps['items'] = [
-  {
-    label: <>복사하여 새로 등록</>,
-    key: 0,
-  },
-  {
-    label: <>그대로 등록</>,
-    key: 1,
-  },
-]
+import dayjs from 'dayjs';
+import AddDrawer from '@/contents/sayang/model/add/AddDrawer';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { id:orderId } = router.query;
-  console.log(orderId);
-
+  
+  const { 
+    boardSelectList,
+    metarialSelectList,
+    surfaceSelectList,
+    unitSelectList,
+    vcutSelectList,
+    outSelectList,
+    smPrintSelectList,
+    smColorSelectList,
+    smTypeSelectList,
+    mkPrintSelectList,
+    mkColorSelectList,
+    mkTypeSelectList,
+    spPrintSelectList,
+    spTypeSelectList,
+  } = useBase();
+  
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
-  const [data, setData] = useState<modelsMatchRType[]>([]);
+  const [data, setData] = useState<orderModelType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['SayangModelWaitPage'],
+    queryKey: ['sales-order/product/jsxcrud/many/by-order-idx', orderId],
     queryFn: async () => {
       try {
+        //api/serv/core-d1/v1/tenant/sales-order/product/jsxcrud/many/by-order-idx/{orderIdx}
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
-          url: `models-match/jsxcrud/many/by-order-id/${orderId}`
+          url: `sales-order/product/jsxcrud/many/by-order-idx/${orderId}`
         });
       } catch (e) {
         return;
       }
-    }
+    },
+    enabled: !!orderId,
   });
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType, index:number) => ({
+      const arr = (queryData?.data.data ?? []).map((d:orderModelType, index:number) => ({
         ...d,
         index: (queryData?.data?.data?.length ?? 0) - index,
-      }))
+      }));
+
       setData(arr);
       setDataLoading(false);
     }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
-  const [filter, setFilter] = useState<filterType>({
-    writeDt: null,
-    writer: '',
-    approveDt: null,
-    approver: '',
-    confirmDt: null,
-    confirmPer: '',
-  });
-
   const [selectTab, setSelectTab] = useState<number>(1);
   const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  
-  // const [data, setData] = useState([
-  //   {
-  //     id:4,
-  //     modelNm: '모델4',
-  //     rev: 'RevNO',
-  //     layer: 1,
-  //     thic: 1.6,
-  //     dongback: 1,
-  //   },
-  //   {
-  //     id:3,
-  //     modelNm: '모델3',
-  //     rev: 'RevNO',
-  //     layer: 1,
-  //     thic: 1.6,
-  //     dongback: 1,
-  //   },
-  //   {
-  //     id:2,
-  //     modelNm: '모델2',
-  //     rev: 'RevNO',
-  //     layer: 1,
-  //     thic: 1.6,
-  //     dongback: 1,
-  //   },
-  //   {
-  //     id:1,
-  //     modelNm: '모델1',
-  //     rev: 'RevNO',
-  //     layer: 1,
-  //     thic: 1.6,
-  //     dongback: 1,
-  //   },
-  // ]);
-  const [filterModel, setFilterModel] = useState([
-    {
-      id:4,
-      modelNm: '모델4',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:3,
-      modelNm: '모델3',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:2,
-      modelNm: '모델2',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-    {
-      id:1,
-      modelNm: '모델1',
-      rev: 'RevNO',
-      layer: 1,
-      thic: 1.6,
-      dongback: 1,
-    },
-  ])
-  const [searchModel, setSearchModel] = useState<string>('');
-  useEffect(()=>{
-    // setFilterModel(data.filter((f:any) => f.modelNm.includes(searchModel)));
-  }, [searchModel])
 
   const [model, setModel] = useState<Array<modelSampleDataType>>([]);
   const [modelNew, setModelNew] = useState<modelSampleDataType>(newModelSampleData(model.length));
@@ -200,7 +127,7 @@ const SayangModelAddPage: React.FC & {
   function deleteModel(idx: number) {
     setData(data.filter((f:any) => f.id !== idx));
   }
-  
+
   return (
     <>
       <div 
@@ -208,14 +135,19 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:model.length > 0?"2050px":"1022px"}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        {data.map((model:modelsMatchRType) => (
+        {data.map((model:orderModelType) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
-                <p className="h-center justify-end">발주명 </p>
+                <p className="h-center justify-end">발주명</p>
                 <AntdInput 
+                  value={model.order?.orderNm}
                   className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}}
-                  value={model.orderModel?.order.orderNm}
+                />
+                <p className="h-center justify-end">관리번호 </p>
+                <AntdInput 
+                  value={model.prtOrderNo}
+                  className="w-[180px!important]" styles={{ht:'32px', bg:'#F5F5F5'}} readonly={true}
                 />
                 <AntdSelect
                   options={[
@@ -223,33 +155,61 @@ const SayangModelAddPage: React.FC & {
                     {value:ModelStatus.REPEAT,label:'반복'},
                     {value:ModelStatus.MODIFY,label:'수정'},
                   ]}
-                  value={model.orderModel?.modelStatus}
-                  className="w-[54px!important]"
-                  styles={{ht:'36px', bw:'0px', pd:'0'}}
+                  value={model.modelStatus}
+                  className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
                 />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">모델명 </p>
-                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} value={model.orderModel?.orderTit}/>
-                <p className="h-center justify-end">관리번호 </p>
-                <AntdInput className="w-[180px!important]" styles={{ht:'32px'}} value={model.orderModel?.orderNo}/>
+                <AntdInput
+                  className="w-[180px!important]" styles={{ht:'32px'}}
+                  value={model.orderTit}
+                />
                 <p className="h-center justify-end">원판 </p>
-                <AntdSelect options={[{value:1,label:'1220 x 1020(J)'},{value:2,label:'?'}]} className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+                <AntdSelect
+                  options={boardSelectList}
+                  value={model.model?.board?.id}
+                  className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+                />
                 <p className="h-center justify-end">제조사 </p>
-                <AntdInput className="w-[120px!important]" styles={{ht:'32px'}} />
+                <AntdInput 
+                  value={model.model?.mnfNm}
+                  className="w-[120px!important]" styles={{ht:'32px'}}
+                />
                 <p className="h-center justify-end">재질 </p>
-                <AntdSelect options={[{value:1,label:'FR-4(DS-7402)'},{value:2,label:'?'}]} className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}/>
+                <AntdSelect
+                  options={metarialSelectList}
+                  value={model.model?.material?.id}
+                  className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+                />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">납기 </p>
-                <p className="h-center justify-end">2024-09-23</p>
+                <p className="h-center justify-end">{
+                  model.orderPrdDueDt ?
+                  dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null
+                }</p>
               </div>
             </div>
             <div className="flex flex-col ">
               <AntdTable
-                columns={sayangModelWaitAddClmn(deleteModel)}
+                columns={sayangModelWaitAddClmn(
+                  deleteModel,
+                  surfaceSelectList,
+                  unitSelectList,
+                  vcutSelectList,
+                  outSelectList,
+                  smPrintSelectList,
+                  smColorSelectList,
+                  smTypeSelectList,
+                  mkPrintSelectList,
+                  mkColorSelectList,
+                  mkTypeSelectList,
+                  spPrintSelectList,
+                  spTypeSelectList,
+                )}
                 data={[model]}
                 styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
                 tableProps={{split:'none'}}
@@ -259,10 +219,6 @@ const SayangModelAddPage: React.FC & {
             <FullOkButtonSmall click={()=>{}} label="확정저장" />
               <Button variant="outlined" color="primary">임시저장</Button>
             </div>
-            {/* <div className="min-h-46 h-center gap-5 text-point1 border-b-1 border-line">
-              <p className="w-20 h-20"><Hint /></p>
-              <p>기존 사양 모델 등록에 매칭됩니다.</p>
-              </div> */}
           </div>
         ))}
           {/* <div className="flex min-w-[982px]">
@@ -329,6 +285,16 @@ const SayangModelAddPage: React.FC & {
         :
         <></>}
       </div>
+
+      <AddDrawer
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        handleDataChange={handleDataChange}
+        selectTabDrawer={selectTabDrawer}
+        setSelectTabDrawer={setSelectTabDrawer}
+      />
+
+
       {/* <FilterRightTab
         filter={filter}
         setFilter={setFilter}
@@ -426,9 +392,7 @@ const SayangModelAddPage: React.FC & {
         </>}
       /> */}
 
-      
-
-      <AntdDrawer
+      {/* <AntdDrawer
         open={drawerOpen}
         close={()=>{setDrawerOpen(false)}}
       >
@@ -484,36 +448,41 @@ const SayangModelAddPage: React.FC & {
                 </div>
               </div>
               <div>
-                <AntdTable
+                <AntdTableEdit
                   columns={[
                     {
                       title: '모델명',
-                      dataIndex: 'modelNm',
-                      key: 'modelNm',
+                      dataIndex: 'prdNm',
+                      key: 'prdNm',
                       align: 'center',
                     },
                     {
                       title: 'Rev No',
-                      dataIndex: 'rev',
-                      key: 'rev',
+                      dataIndex: 'prdRevNo',
+                      key: 'prdRevNo',
                       align: 'center',
                     },
                     {
                       title: '층/두께',
-                      dataIndex: 'layer',
-                      key: 'layer',
+                      dataIndex: 'thk',
+                      key: 'thk',
                       align: 'center',
-                      render: (value, record) => (
-                        <div className="w-full h-full">
-                          {value} / {record.thic}
+                      render: (value, record:modelsRType) => (
+                        <div className="w-full h-full v-h-center">
+                          {record.layerEm} / {value}
                         </div>
                       )
                     },
                     {
                       title: '동박두께',
-                      dataIndex: 'dongback',
-                      key: 'dongback',
+                      dataIndex: 'copOut',
+                      key: 'copOut',
                       align: 'center',
+                      render: (value, record:modelsRType) => (
+                        <div className="w-full h-full v-h-center">
+                          {value+'외'} / {record.copIn+'내'}
+                        </div>
+                      )
                     },
                     {
                       title: '',
@@ -532,24 +501,18 @@ const SayangModelAddPage: React.FC & {
                               </div>
                             </Space>
                           </a>
-                          {/* <div 
-                            className="w-full h-full v-h-center cursor-pointer"
-                            onClick={()=>{}}
-                          >
-                            <p className="w-12 h-12 v-h-center"><Edit /></p>
-                          </div> */}
                         </Dropdown>
                       )
                     },
                   ]}
-                  data={filterModel}
+                  data={modelData}
                   styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
                 />
               </div>
             </div>
           }
         </div>
-      </AntdDrawer>
+      </AntdDrawer> */}
     </>
   )
 }

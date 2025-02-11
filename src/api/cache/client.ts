@@ -1,6 +1,21 @@
 import { getAPI } from "@/api/get";
 
-export const getClientCsAPI = async (
+export const getPrtAPI = async (
+  pagination?:{size:number, current:number},
+) => {
+  const result = await getAPI({
+    type: 'baseinfo', 
+    utype: 'tenant/',
+    url: 'biz-partner/jsxcrud/many'
+  },{
+    limit: pagination?.size || 0,
+    page: pagination?.current || 0,
+  });
+
+  return result;
+};
+
+export const getPrtCsAPI = async (
   pagination?:{size:number, current:number},
 ) => {
   const result = await getAPI({
@@ -18,7 +33,7 @@ export const getClientCsAPI = async (
   return result;
 };
 
-export const getClientVndrAPI = async (
+export const getPrtVndrAPI = async (
   pagination?:{size:number, current:number},
 ) => {
   const result = await getAPI({
@@ -36,7 +51,7 @@ export const getClientVndrAPI = async (
   return result;
 };
 
-export const getClientSupAPI = async (
+export const getPrtSupAPI = async (
   pagination?:{size:number, current:number},
 ) => {
   const result = await getAPI({
