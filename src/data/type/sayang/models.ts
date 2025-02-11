@@ -4,63 +4,127 @@ import { Dayjs } from "dayjs";
 import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
 import { partnerMngRType, partnerRType } from "../base/partner";
-import { HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
+import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
+
+export type orderModelType = {
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  id?: string;
+  currPrdInfo?: string;
+  tempPrdInfo?: string;
+  modelStatus?: ModelStatus;
+  orderDt?: string;
+  orderNo?: string;
+  orderTit?: string;
+  prtOrderNo?: string;
+  orderPrdRemark?: string;
+  orderPrdCnt?: number;
+  orderPrdUnitPrice?: number;
+  orderPrdPrice?: number;
+  orderPrdDueReqDt?: Date | Dayjs | null;
+  orderPrdDueDt?: Date | Dayjs | null;
+  orderPrdHotGrade?: HotGrade;
+  glbStatus?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    salesOrderStatus?: SalesOrderStatus;
+    salesOrderStatusChangeJson?: string;
+    specStatus?: SpecStatus;
+    anyStatus?: AnyStatus;
+    relation?: string;
+  },
+  prtInfo?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    prt?: partnerRType;
+    mng?: partnerMngRType;
+  },
+  order?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    orderNm?: string;
+    orderDt?: Date | Dayjs | null;
+    orderRepDt?: Date | Dayjs | null;
+    orderTxt?: string;
+    totalOrderPrice?: number;
+    hotGrade?: HotGrade;
+    isDiscard?: boolean;
+    emp?: {
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+      id?: string;
+      name?: string;
+      userId?: string;
+      status?: string;
+      lastLoginAt?: Date | Dayjs | null;
+    }
+  },
+  model?: modelsType | null;
+}
 
 // 모델 읽기 타입
-export type modelsRType = {
-  id: string;
-  partner: partnerRType;
-  usedYn: boolean;
-  inactiveYn: boolean;
-  prdNm: string;
-  prdRevNo: string;
-  prdMngNo: string;
-  layerEm: LayerEm;
-  modelTypeEm: ModelTypeEm;
-  thk: number;
-  board: boardType;
-  mnfNm: string;
-  material: commonCodeRType;
-  surface: commonCodeRType;
-  copOut: number;
-  copIn: number;
-  smPrint: commonCodeRType;
-  smColor: commonCodeRType;
-  smType: commonCodeRType;
-  mkPrint: commonCodeRType;
-  mkColor: commonCodeRType;
-  mkType: commonCodeRType;
-  spPrint: commonCodeRType;
-  spType: commonCodeRType;
-  aprType: commonCodeRType;
-  vcutYn: false,
-  vcutType: commonCodeRType;
-  fpNo: string;
-  unit: commonCodeRType;
-  pcsW: number;
-  pcsL: number;
-  kitW: number;
-  kitL: number;
-  pnlW: number;
-  pnlL: number;
-  ykitW: number;
-  ykitL: number;
-  ypnlW: number;
-  ypnlL: number;
-  kitPcs: number;
-  pnlKit: number;
-  sthPnl: number;
-  sthPcs: number;
-  pltThk: number;
-  pltAlph: number;
-  spPltNi: number;
-  spPltNiAlph: number;
-  spPltAu: number;
-  spPltAuAlph: number;
-  pinCnt: number;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+export type modelsType = {
+  id?: string;
+  partner?: partnerRType;
+  usedYn?: boolean;
+  inactiveYn?: boolean;
+  prdNm?: string;
+  prdRevNo?: string;
+  prdMngNo?: string;
+  layerEm?: LayerEm;
+  modelTypeEm?: ModelTypeEm;
+  thk?: number;
+  board?: boardType;
+  mnfNm?: string;
+  material?: commonCodeRType;
+  surface?: commonCodeRType;
+  copOut?: number;
+  copIn?: number;
+  smPrint?: commonCodeRType;
+  smColor?: commonCodeRType;
+  smType?: commonCodeRType;
+  mkPrint?: commonCodeRType;
+  mkColor?: commonCodeRType;
+  mkType?: commonCodeRType;
+  spPrint?: commonCodeRType;
+  spType?: commonCodeRType;
+  aprType?: commonCodeRType;
+  vcutYn?: false,
+  vcutType?: commonCodeRType;
+  fpNo?: string;
+  unit?: commonCodeRType;
+  pcsW?: number;
+  pcsL?: number;
+  kitW?: number;
+  kitL?: number;
+  pnlW?: number;
+  pnlL?: number;
+  ykitW?: number;
+  ykitL?: number;
+  ypnlW?: number;
+  ypnlL?: number;
+  kitPcs?: number;
+  pnlKit?: number;
+  sthPnl?: number;
+  sthPcs?: number;
+  pltThk?: number;
+  pltAlph?: number;
+  spPltNi?: number;
+  spPltNiAlph?: number;
+  spPltAu?: number;
+  spPltAuAlph?: number;
+  pinCnt?: number;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 // 모델 생성, 수정 타입

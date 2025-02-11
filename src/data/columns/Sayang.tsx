@@ -16,6 +16,7 @@ import { HotGrade } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { salesOrderRType } from '../type/sales/order';
 import { modelsMatchRType } from '../type/sayang/models';
+import { selectType } from '../type/componentStyles';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
@@ -614,13 +615,13 @@ export const sayangModelWaitClmn = (
     align: 'center',
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
-  {
-    title: '관리No',
-    width: 120,
-    dataIndex: 'orderNo',
-    key: 'orderNo',
-    align: 'center',
-  },
+  // {
+  //   title: '관리No',
+  //   width: 120,
+  //   dataIndex: 'orderNo',
+  //   key: 'orderNo',
+  //   align: 'center',
+  // },
   {
     title: '업체명/코드',
     width: 120,
@@ -714,6 +715,18 @@ export const sayangModelWaitClmn = (
 
 export const sayangModelWaitAddClmn = (
   deleteModel: (id: number) => void,
+  surfaceSelectList: selectType[],
+  unitSelectList: selectType[],
+  vcutSelectList: selectType[],
+  outSelectList: selectType[],
+  smPrintSelectList: selectType[],
+  smColorSelectList: selectType[],
+  smTypeSelectList: selectType[],
+  mkPrintSelectList: selectType[],
+  mkColorSelectList: selectType[],
+  mkTypeSelectList: selectType[],
+  spPrintSelectList: selectType[],
+  spTypeSelectList: selectType[],
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -723,9 +736,13 @@ export const sayangModelWaitAddClmn = (
     align: 'center',
     render: (value: any, record: any) => (
       <>
-        <div className="h-[50%] w-[100%] v-h-center "><p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p></div>
+        <div className="h-[50%] w-[100%] v-h-center ">
+          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
+        </div>
         <div className="h-[50%] w-[100%] v-h-center">
-          <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer" onClick={()=>deleteModel(value)}>
+          <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
+            onClick={()=>deleteModel(value)}
+          >
             <p className="w-16 h-16"><Trash /></p>
           </div>
         </div>
@@ -746,10 +763,10 @@ export const sayangModelWaitAddClmn = (
         key:'user',
         align: 'center',
         render: (value:any, record:any) => (
-            <div className={divTopClass}>
-            <div className={divClass}><AntdInputFill value={record?.rev} className='!text-12'/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'1.6'}]} styles={{fs:'12px'}}/></div>
-            </div>
+          <div className={divTopClass}>
+            <div className={divClass}><AntdInputFill value={record.rev} className='!text-12'/></div>
+            <div className={divClass}><AntdSelectFill options={unitSelectList} styles={{fs:'12px'}}/></div>
+          </div>
         )
       }
     ]
@@ -871,9 +888,9 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={smPrintSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={smColorSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={smTypeSelectList} styles={{fs:'12px'}}/></div>
           </div>
         )
       }
@@ -894,9 +911,9 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'녹색(무광)'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
-            <div className={divClass}><AntdSelectFill options={[{value:1,label:'PSR-400(HMF)'}]} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={mkPrintSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={mkColorSelectList} styles={{fs:'12px'}}/></div>
+            <div className={divClass}><AntdSelectFill options={mkTypeSelectList} styles={{fs:'12px'}}/></div>
           </div>
         )
       }

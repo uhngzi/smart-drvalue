@@ -73,3 +73,11 @@ export enum SpecStatus {
   COMPLETED = 'spec_reg_completed',
   DISCARDED = 'spec_reg_discarded'
 }
+
+export enum AnyStatus {
+  NONE = 'none',
+  WAITING = 'any_reg_waiting',
+  REGISTERING = 'any_reg_registering',
+  COMPLETED = 'any_reg_completed',
+  DISCARDED = 'any_reg_discarded'
+}

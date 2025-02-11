@@ -60,6 +60,9 @@ const SayangModelWaitPage: React.FC & {
         pagination={pagination}
       />
       <List>
+        {
+          dataLoading && <>Loading...</>
+        }
         { !dataLoading &&
           <AntdTableEdit
             columns={sayangModelWaitClmn(totalData, router)}

@@ -151,6 +151,14 @@ export const salesUserOrderModelClmn = (
     editable: true,
   },
   {
+    title: '고객측 관리번호',
+    width: 220,
+    dataIndex: 'prtOrderNo',
+    key: 'prtOrderNo',
+    align: 'center',
+    editable: true,
+  },
+  {
     title: '구분',
     width: 85,
     dataIndex: 'modelStatusLabel',

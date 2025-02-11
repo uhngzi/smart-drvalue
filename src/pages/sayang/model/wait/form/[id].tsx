@@ -21,7 +21,7 @@ import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { ModelStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
-import { modelsMatchRType, modelsType,  } from "@/data/type/sayang/models";
+import { modelsMatchRType, modelsType, orderModelType,  } from "@/data/type/sayang/models";
 import { useBase } from '@/data/context/BaseContext';
 
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
@@ -519,9 +519,10 @@ const SayangModelAddPage: React.FC & {
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
   <PopRegLayout 
-    menuTitle="모델 등록 및 현황"
-    subTitle="모델등록"
-    menu={[]}
+    title="모델 등록"
+    // menuTitle="모델 등록 및 현황"
+    // subTitle="모델등록"
+    // menu={[]}
   >{page}</PopRegLayout>
 )
 
