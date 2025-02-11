@@ -56,7 +56,6 @@ const SayangModelAddPage: React.FC & {
     confirmDt: null,
     confirmPer: '',
   });
-  const MockItem = MOCK.modelOrderInfo
   const [selectTab, setSelectTab] = useState<number>(1);
   const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
@@ -174,7 +173,7 @@ const SayangModelAddPage: React.FC & {
         className="gap-20 flex"
         style={{minWidth:model.length > 0?"2050px":"1022px"}}
       >
-        <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
+        <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 112px)'}}>
         {data.map((model:any) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
@@ -234,7 +233,7 @@ const SayangModelAddPage: React.FC & {
             />
           </div> */}
         </div>
-        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 192px)'}} key="contents-tab">
+        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 112px)'}} key="contents-tab">
           <div 
             className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
             onClick={()=>{
@@ -399,7 +398,7 @@ const SayangModelAddPage: React.FC & {
           />
           { selectTabDrawer === 1 ?
             <>
-              <CardList items={MockItem} title="" btnLabel="" btnClick={()=>{}} />
+              <CardList items={MOCK.modelOrderInfo} title="" btnLabel="" btnClick={()=>{}} />
               <CardList items={[]} title="" btnLabel="" btnClick={()=>{}}>
                 <div className="flex flex-col gap-10">
                   <div className="w-full text-16 font-medium" >담당자 정보</div>
@@ -539,9 +538,7 @@ const SayangModelAddPage: React.FC & {
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
   <PopRegLayout 
-    menuTitle="모델 등록 및 현황"
-    subTitle="모델등록"
-    menu={[]}
+    title="모델등록"
   >{page}</PopRegLayout>
 )
 

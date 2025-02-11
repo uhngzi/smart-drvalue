@@ -22,6 +22,8 @@ import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
 
 import AntdModal from "@/components/Modal/AntdModal";
 import ProcessSelection from "@/contents/sayang/sample/wait/ProcessSelection";
+import DefaultFilter from "@/components/Filter/DeafultFilter";
+import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -55,7 +57,32 @@ const SayangSampleAddPage: React.FC & {
 
   return (
     <>
-      <FilterMain
+    <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+      <DefaultFilter filter={filter} setFilter={setFilter} />
+      <div>
+        <AntdTable
+          columns={sayangSampleWaitAddClmn()}
+          data={data}
+          styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+          tableProps={{split:'none'}}
+        />
+      </div>
+    </div>
+    <div className="flex justify-between gap-10">
+      <div className="min-w-[300px]">
+        <LaminationContents />
+      </div>
+      <div className="min-w-[550px]">
+        <MessageContents />
+      </div>
+      <div className="min-w-[400px]">
+        <ArrayContents />
+      </div>
+      <div className="min-w-[300px]">
+        <CutSizeContents />
+      </div>
+    </div>
+      {/* <FilterMain
         filter={filter}
         setFilter={setFilter}
         filterTitle="사양 및 생산의뢰 등록"
@@ -125,7 +152,7 @@ const SayangSampleAddPage: React.FC & {
             <FullSubButton label="임시저장" click={()=>{}}/>
           </div>
         }
-      />
+      /> */}
       <AntdModal
         open={open}
         setOpen={setOpen}
@@ -138,13 +165,9 @@ const SayangSampleAddPage: React.FC & {
 }
 
 SayangSampleAddPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout 
-    menuTitle="샘플-사양등록및현황"
-    menu={[
-      {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
-      {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/situation'},
-    ]}
-  >{page}</MainPageLayout>
+  <PopRegLayout 
+    title="사양등록"
+  >{page}</PopRegLayout>
 );
 
 export default SayangSampleAddPage;
