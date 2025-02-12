@@ -1,5 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
-import { Dropdown, MenuProps, Space } from "antd";
+import { Dropdown, MenuProps, Radio, Space } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import dayjs from "dayjs";
@@ -11,7 +11,7 @@ import CardList from "@/components/List/CardList";
 import { TabSmall } from "@/components/Tab/Tabs";
 import { LabelIcon } from "@/components/Text/Label";
 
-import { modelsType } from "@/data/type/sayang/models";
+import { modelsType, orderModelType } from "@/data/type/sayang/models";
 import { salesOrderDetailRType } from "@/data/type/sales/order";
 
 import Edit from "@/assets/svg/icons/edit.svg";
@@ -19,7 +19,10 @@ import SearchIcon from "@/assets/svg/icons/s_search.svg";
 import Call from "@/assets/svg/icons/s_call.svg";
 import Mobile from "@/assets/svg/icons/mobile.svg";
 import Mail from "@/assets/svg/icons/mail.svg";
-
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import styled from "styled-components";
+import FullChip from "@/components/Chip/FullChip";
+import { HotGrade } from "@/data/type/enum";
 
 interface Props {
   orderId: string | string[] | undefined;
@@ -27,6 +30,9 @@ interface Props {
   setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
   selectTabDrawer: number;
   setSelectTabDrawer: React.Dispatch<SetStateAction<number>>;
+  products: orderModelType[];
+  setProducts: React.Dispatch<SetStateAction<orderModelType[]>>;
+  setNewFlag: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const AddDrawer:React.FC<Props> = ({
@@ -35,15 +41,28 @@ const AddDrawer:React.FC<Props> = ({
   setDrawerOpen,
   selectTabDrawer,
   setSelectTabDrawer,
+  products,
+  setProducts,
+  setNewFlag,
 }) => {
-  const items: MenuProps['items'] = [
+  const items = (record: any): MenuProps['items'] => [
     {
       label: <>복사하여 새로 등록</>,
       key: 0,
+      onClick:()=>{
+        setAlertOpen(true);
+        setSelectKey(0);
+        setSelectRecord(record);
+      },
     },
     {
       label: <>그대로 등록</>,
       key: 1,
+      onClick:()=>{
+        setAlertOpen(true);
+        setSelectKey(0);
+        setSelectRecord(record);
+      }
     },
   ]
   
@@ -102,6 +121,28 @@ const AddDrawer:React.FC<Props> = ({
   useEffect(()=>{
     setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
   }, [searchModel]);
+  
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [selectKey, setSelectKey] = useState<number | null>(null);
+  const [selectId, setSelectId] = useState<string | null>(null);
+  const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
+  const handleSelectMenu = () => {
+    if(selectKey===0) setNewFlag(true);   // 복사하여 새로 등록
+    else              setNewFlag(false);  // 그대로 등록
+      
+    if(selectRecord !== null) {
+      const newData = [...products];
+      const index = newData.findIndex((item) => selectId === item.id);
+      if (index > -1) {
+        newData[index] = { ...newData[index], model:{ ...selectRecord }, editModel: { ...selectRecord } };
+        console.log(selectRecord);
+        console.log(newData[index]);
+        setProducts(newData);
+      }
+      setAlertOpen(false);
+      setDrawerOpen(false);
+    }
+  }
 
   return (
     <>
@@ -126,7 +167,20 @@ const AddDrawer:React.FC<Props> = ({
                 items={[
                   {label: '거래처명/거래처코드', value: orderData?.prtInfo?.prt?.prtNm+'/'+orderData?.prtInfo?.prt?.prtRegCd, widthType: 'half'},
                   {label: '발주일', value: dayjs(orderData?.orderDt).format('YYYY-MM-DD'), widthType: 'half'},
-                  {label: '고객발주명', value: orderData?.orderNm, widthType: 'full'},
+                  {
+                    label: '고객발주명', 
+                    value:<div className="w-full h-full h-center gap-5">
+                      { orderData?.hotGrade === HotGrade.SUPER_URGENT ? (
+                        <FullChip label="초긴급" state="purple"/>
+                      ) : orderData?.hotGrade === HotGrade.URGENT ? (
+                        <FullChip label="긴급" state="pink" />
+                      ) : (
+                        <FullChip label="일반" />
+                      )}
+                      {orderData?.orderNm}
+                    </div>,
+                    widthType: 'full'
+                  },
                   {label: '발주내용', value: orderData?.orderTxt, widthType: 'full'},
                 ]}
                 title="" btnLabel="" btnClick={()=>{}}
@@ -244,7 +298,7 @@ const AddDrawer:React.FC<Props> = ({
                         key: 'id',
                         align: 'center',
                         render: (value, record) => (
-                          <Dropdown trigger={['click']} menu={{ items }}>
+                          <Dropdown trigger={['click']} menu={{ items:items(record) }}>
                             <a onClick={(e) => e.preventDefault()}>
                               <Space>
                                 <div 
@@ -267,8 +321,43 @@ const AddDrawer:React.FC<Props> = ({
           }
         </div>
       </AntdDrawer>
+
+      <AntdAlertModal
+        open={alertOpen}
+        setOpen={setAlertOpen}
+        title={"등록할 모델의 관리번호 선택"}
+        contents={<div>
+          <CustomRadioGroup size="large" className="flex gap-20">
+          {
+            products.map((p) => (
+              <Radio.Button
+                key={p.id}
+                value={p.id}
+                onClick={(e)=>{setSelectId(p.id)}}
+                className="!rounded-20 [border-inline-start-width:1px]"
+              >{p.prtOrderNo}</Radio.Button>
+            ))
+          }
+          </CustomRadioGroup>
+        </div>}
+        type={'info'} 
+        onCancle={()=>{
+          setAlertOpen(false);
+        }}
+        onOk={()=>{
+          handleSelectMenu();
+        }}
+        okText={'완료'}
+        cancelText={'취소'}
+      />
     </>
   )
 }
+
+const CustomRadioGroup = styled(Radio.Group)`
+  .ant-radio-button-wrapper::before {
+    display: none !important;
+  }
+`;
 
 export default AddDrawer;
