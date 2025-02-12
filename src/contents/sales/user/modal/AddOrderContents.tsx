@@ -13,13 +13,15 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import { SetStateAction } from "react";
 import { LabelIcon, LabelMedium, LabelThin } from "@/components/Text/Label";
-import { newDataSalesOrderCUType, salesOrderCUType } from "@/data/type/sales/order";
+import { newDataSalesOrderCUType, salesOrderCUType, salesOrderReq } from "@/data/type/sales/order";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import { HotGrade } from "@/data/type/enum";
 import TextArea from "antd/lib/input/TextArea";
-import { Button, Radio } from "antd";
+import { Button, Empty, Radio } from "antd";
 import { partnerMngRType } from "@/data/type/base/partner";
 import dayjs from "dayjs";
+import useToast from "@/utils/useToast";
+import { validReq } from "@/utils/valid";
 
 interface Props {
   csList: Array<{value:any,label:string}>;
@@ -32,9 +34,10 @@ interface Props {
   setFileIdList: React.Dispatch<SetStateAction<string[]>>;
   csMngList: partnerMngRType[];
   stepCurrent: number;
-  handleNextStep: () => void;
+  setStepCurrent: React.Dispatch<SetStateAction<number>>;
   setEdit: React.Dispatch<SetStateAction<boolean>>;
   handleEditOrder: () => void;
+  setNewPrtMngOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const AddOrderContents: React.FC<Props> = ({
@@ -48,10 +51,12 @@ const AddOrderContents: React.FC<Props> = ({
   setFileIdList,
   csMngList,
   stepCurrent,
-  handleNextStep,
+  setStepCurrent,
   setEdit,
   handleEditOrder,
+  setNewPrtMngOpen,
 }) => {
+  const { showToast, ToastContainer } = useToast();
   return (
     <>
       <div className={`w-[1240px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
@@ -152,9 +157,18 @@ const AddOrderContents: React.FC<Props> = ({
       <div className="w-[1240px] min-h-[200px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
         <div className="flex gap-10 h-center">
           <LabelMedium label="담당자 정보"/>
-          <Button className="w-30 !h-24 v-h-center !p-0"><SplusIcon/></Button>
+          <Button className="w-30 !h-24 v-h-center !p-0"
+            onClick={()=>{
+              if(!formData.partnerId) {
+                showToast("거래처를 선택해주세요.", "error");
+                return;
+              }
+              setNewPrtMngOpen(true);
+            }}
+          ><SplusIcon/></Button>
         </div>
         <div className="w-full h-1 border-t-1"/>
+        { csMngList.length < 1 && <Empty /> }
         {
           csMngList.map((mng:partnerMngRType) => (
             <div className="w-full h-40 h-center gap-10" key={mng.id}>
@@ -200,7 +214,14 @@ const AddOrderContents: React.FC<Props> = ({
           <Button 
             className="w-109 h-32 bg-point1 text-white rounded-6"
             style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-            onClick={handleNextStep}
+            onClick={()=>{
+              const orderVal = validReq(formData, salesOrderReq());
+              if(!orderVal.isValid) {
+                showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "error");
+              } else {
+                setStepCurrent(1);
+              }
+            }}
           >
             <Arrow />다음 단계
           </Button> :
@@ -213,6 +234,7 @@ const AddOrderContents: React.FC<Props> = ({
           </Button>
           }
       </div>
+      <ToastContainer />
     </>
   )
 }

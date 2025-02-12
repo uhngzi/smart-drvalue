@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Button } from "antd";
-import { useEffect, useState } from "react";
+import { isValidElement, useEffect, useState } from "react";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
@@ -36,23 +36,24 @@ import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sale
 import { useUser } from "@/data/context/UserContext";
 import { 
   partnerCUType, 
+  partnerMngCUType, 
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
+import { HotGrade } from "@/data/type/enum";
+
+import useToast from "@/utils/useToast";
+import { inputTel } from "@/utils/formatPhoneNumber";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import InputList from "@/components/List/InputList";
-import AntdModal from "@/components/Modal/AntdModal";
 import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
-import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import CardList from "@/components/List/CardList";
-import { MOCK } from "@/utils/Mock";
 import CardInputList from "@/components/List/CardInputList";
 import AntdEditModal from "@/components/Modal/AntdEditModal";
-import { HotGrade } from "@/data/type/enum";
-import useToast from "@/utils/useToast";
+import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
+import { isValidEmail } from "@/utils/formatEmail";
+import { inputFax } from "@/utils/formatFax";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -424,13 +425,27 @@ const SalesUserPage: React.FC & {
         { label: '이메일', value: partnerMngData?.prtMngEmail ?? '-', widthType: 'half' },
       ]);
       setNewPartnerData(partnerData);
-      setNewPartnerMngData(partnerMngData);
       setDrawerOpen(true);
     }
   }, [partnerData, partnerMngData]);
+    // 드로워 닫힐 때 값 초기화
+  useEffect(()=>{
+    if(!drawerOpen) {
+      setPartnerData(null);
+      setPartnerMngData(null);
+      setNewPartnerData(null);
+    }
+    if(!newPrtMngOpen) {
+      setPartnerMngData(null);
+      setNewPartnerMngData(null);
+      console.log(newPartnerMngData);
+    }
+  }, [drawerOpen, newPrtMngOpen]);
+  useEffect(()=>{console.log(newPartnerMngData)},[newPartnerMngData]);
 
     // 거래처 설정 값 변경 시 실행 함수
   const handlePrtDataChange = (
+    dataType: 'prt' | 'mng',
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
     type: 'input' | 'select' | 'date' | 'other',
@@ -441,60 +456,118 @@ const SalesUserPage: React.FC & {
       value = e.target.value;
     }
 
+    // 전화번호 형식인 필드들은 자동 하이픈 처리
+    if(name.toLowerCase().includes("tel") || name.toLowerCase().includes("mobile")) {
+      value = inputTel(value.toString());
+    } else if (name.toLowerCase().includes("fax")) {
+      value = inputFax(value.toString());
+    }
+
     if(key) {
-      setNewPartnerData(prev => ({
-        ...prev,
-        [name]: {
-          [key]: value,
-        },
-      } as partnerRType));
+      if(dataType === "prt")
+        setNewPartnerData(prev => ({
+          ...prev,
+          [name]: {
+            [key]: value,
+          },
+        } as partnerRType));
+      else
+        setNewPartnerMngData(prev => ({
+          ...prev,
+          [name]: {
+            [key]: value,
+          },
+        } as partnerMngRType));
     } else {
-      setNewPartnerData(prev => ({
-        ...prev,
-        [name]: value,
-      } as partnerRType));
+      if(dataType === "prt")
+        setNewPartnerData(prev => ({
+          ...prev,
+          [name]: value,
+        } as partnerRType));
+      else
+        setNewPartnerMngData(prev => ({
+          ...prev,
+          [name]: value,
+        } as partnerMngRType));
     }
   }
+  useEffect(()=>{
+    console.log(newPartnerMngData)
+  },[newPartnerMngData]);
 
     // 거래처 설정 저장 시 실행 함수
-  const handleSubmitPrtData = async (type:'prt' | 'mng') => {
+  const handleSubmitPrtData = async () => {
     try {
-      if(type === 'prt') {
-        const result = await patchAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'biz-partner',
-          jsx: 'jsxcrud'},
-          partnerData?.id ?? '0',
-          { prtTypeEm: 'cs',
-            prtNm: newPartnerData?.prtNm,
-            prtRegCd: newPartnerData?.prtRegCd,
-            prtSnm: newPartnerData?.prtSnm,
-            prtEngNm: newPartnerData?.prtEngNm,
-            prtEngSnm: newPartnerData?.prtEngSnm,
-            prtRegNo: newPartnerData?.prtRegNo,
-            prtCorpRegNo: newPartnerData?.prtCorpRegNo,
-            prtBizType: newPartnerData?.prtBizType,
-            prtBizCate: newPartnerData?.prtBizCate,
-            prtAddr: newPartnerData?.prtAddr,
-            prtAddrDtl: newPartnerData?.prtAddrDtl,
-            prtCeo: newPartnerData?.prtCeo,
-            prtTel: newPartnerData?.prtTel,
-            prtFax: newPartnerData?.prtFax,
-            prtEmail: newPartnerData?.prtEmail } as partnerCUType
-        );
-        
-        setDrawerOpen(false);
-        setNewPrtOpen(false);
-        if(result.resultCode === "OK_0000") {
-          refetch();
-          csRefetch();
+      const result = await patchAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner',
+        jsx: 'jsxcrud'},
+        partnerData?.id ?? '0',
+        { prtTypeEm: 'cs',
+          prtNm: newPartnerData?.prtNm,
+          prtRegCd: newPartnerData?.prtRegCd,
+          prtSnm: newPartnerData?.prtSnm,
+          prtEngNm: newPartnerData?.prtEngNm,
+          prtEngSnm: newPartnerData?.prtEngSnm,
+          prtRegNo: newPartnerData?.prtRegNo,
+          prtCorpRegNo: newPartnerData?.prtCorpRegNo,
+          prtBizType: newPartnerData?.prtBizType,
+          prtBizCate: newPartnerData?.prtBizCate,
+          prtAddr: newPartnerData?.prtAddr,
+          prtAddrDtl: newPartnerData?.prtAddrDtl,
+          prtCeo: newPartnerData?.prtCeo,
+          prtTel: newPartnerData?.prtTel,
+          prtFax: newPartnerData?.prtFax,
+          prtEmail: newPartnerData?.prtEmail } as partnerCUType
+      );
+      
+      setDrawerOpen(false);
+      setNewPrtOpen(false);
+      if(result.resultCode === "OK_0000") {
+        refetch();
+        csRefetch();
 
-          showToast("고객 정보가 성공적으로 수정되었습니다.", "success");
-        } else {
-          const msg = result?.response?.data?.message;
-          showToast(msg, "error");
-        }
+        showToast("고객 정보가 성공적으로 수정되었습니다.", "success");
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch(e) {
+      console.log('catch error : ', e);
+    }
+  }
+    // 담당자 추가 시 실행 함수
+  const handleSubmitPrtMngData = async () => {
+    try {
+      const result = await postAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner-mng',
+        jsx: 'jsxcrud'},
+        { 
+          partner: { id: partnerData?.id ?? formData.partnerId },
+          prtMngNm: newPartnerMngData?.prtMngNm,
+          prtMngDeptNm: newPartnerMngData?.prtMngDeptNm,
+          prtMngTeamNm: newPartnerMngData?.prtMngTeamNm,
+          prtMngTel: newPartnerMngData?.prtMngTel,
+          prtMngMobile: newPartnerMngData?.prtMngMobile,
+          prtMngFax: newPartnerMngData?.prtMngFax,
+          prtMngEmail: newPartnerMngData?.prtMngEmail, } as partnerMngCUType
+      );
+      
+      setDrawerOpen(false);
+      setNewPrtMngOpen(false);
+      setNewPartnerData(null);
+      if(result.resultCode === "OK_0000") {
+        csRefetch();
+        const csMng = result.data.entity as partnerMngRType;
+        setCsMngList([...csMngList, {...csMng} ]);
+
+        showToast("담당자가 성공적으로 추가되었습니다.", "success");
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
       }
     } catch(e) {
       console.log('catch error : ', e);
@@ -528,6 +601,7 @@ const SalesUserPage: React.FC & {
           )}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          loading={dataLoading}
         />
       </List>
 
@@ -552,16 +626,10 @@ const SalesUserPage: React.FC & {
               formData={formData}
               setFormData={setFormData}
               stepCurrent={stepCurrent}
+              setStepCurrent={setStepCurrent}
               setEdit={setEdit}
-              handleNextStep={()=>{
-                const orderVal = validReq(formData, salesOrderReq());
-                if(!orderVal.isValid) {
-                  showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "success");
-                } else {
-                  setStepCurrent(1);
-                }
-              }}
               handleEditOrder={handleEditOrder}
+              setNewPrtMngOpen={setNewPrtMngOpen}
             />
           </div>
           {
@@ -641,7 +709,7 @@ const SalesUserPage: React.FC & {
         contents={<>
           <CardInputList title="고객정보 수정" 
             btnLabel={
-              <Button type="primary" size="large" onClick={()=>handleSubmitPrtData('prt')} 
+              <Button type="primary" size="large" onClick={handleSubmitPrtData} 
                 className="w-full flex h-center gap-8 !h-full" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
@@ -649,23 +717,23 @@ const SalesUserPage: React.FC & {
               </Button>
             }
             items={[
-              {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input', widthType:'full'},
-              {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input', widthType:'half'},
-              {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input', widthType:'half'},
-              {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input', widthType:'half'},
-              {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input', widthType:'half'},
-              {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input', widthType:'half'},
-              {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input', widthType:'half'},
-              {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input', widthType:'half'},
-              {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input', widthType:'half'},
-              {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'btnInput', widthType:'full'},
-              {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input', widthType:'full'},
-              {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input', widthType:'half'},
-              {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input', widthType:'half'},
-              {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input', widthType:'half'},
-              {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input', widthType:'full'},
+              {value:newPartnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtAddr,name:'prtAddr',label:'주소', type:'btnInput', widthType:'full'},
+              {value:newPartnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input', widthType:'full'},
+              {value:newPartnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtTel,name:'prtTel',label:'전화', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtFax,name:'prtFax',label:'팩스', type:'input', widthType:'half'},
+              {value:newPartnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input', widthType:'half'},
             ]}
-            handleDataChange={handlePrtDataChange}
+            handleDataChange={(e, name, type)=>handlePrtDataChange('prt', e, name, type)}
           />
         </>}
       />
@@ -677,7 +745,7 @@ const SalesUserPage: React.FC & {
         contents={<>
           <CardInputList title="담당자 추가" 
             btnLabel={
-              <Button type="primary" size="large" onClick={()=>handleSubmitPrtData('mng')} 
+              <Button type="primary" size="large" onClick={handleSubmitPrtMngData}
                 className="w-full flex h-center gap-8 !h-full" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
@@ -685,15 +753,15 @@ const SalesUserPage: React.FC & {
               </Button>
             }
             items={[
-              {value:partnerMngData?.prtMngNm, name:'prtNm',label:'담당자명', type:'input', widthType:'full'},
-              {value:partnerMngData?.prtMngDeptNm, name:'prtDeptNm',label:'부서명', type:'input', widthType:'half'},
-              {value:partnerMngData?.prtMngTeamNm, name:'prtTeamNm',label:'팀명', type:'input', widthType:'half'},
-              {value:partnerMngData?.prtMngTel, name:'prtTel',label:'전화번호', type:'input', widthType:'half'},
-              {value:partnerMngData?.prtMngMobile, name:'prtMobile',label:'휴대번호', type:'input', widthType:'half'},
-              {value:partnerMngData?.prtMngFax, name:'prtFax',label:'팩스번호', type:'input', widthType:'half'},
-              {value:partnerMngData?.prtMngEmail, name:'prtEmail',label:'이메일', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngNm, name:'prtMngNm',label:'담당자명', type:'input', widthType:'full'},
+              {value:newPartnerMngData?.prtMngDeptNm, name:'prtMngDeptNm',label:'부서명', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngTeamNm, name:'prtMngTeamNm',label:'팀명', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngTel, name:'prtMngTel',label:'전화번호', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngMobile, name:'prtMngMobile',label:'휴대번호', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngFax, name:'prtMngFax',label:'팩스번호', type:'input', widthType:'half'},
+              {value:newPartnerMngData?.prtMngEmail, name:'prtMngEmail',label:'이메일', type:'input', widthType:'half'},
             ]}
-            handleDataChange={handlePrtDataChange}
+            handleDataChange={(e, name, type)=>handlePrtDataChange('mng', e, name, type)}
           />
         </>}
       />
