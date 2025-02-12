@@ -43,15 +43,15 @@ body {
 
 /* antd 모달 관련 스타일 */
 .ant-modal-root {
-  z-index: 1000 !important;
+  z-index: 1000;
 }
 
 .ant-modal-mask {
-  z-index: 1000 !important;
+  z-index: 1000;
 }
 
 .ant-modal-wrap {
-  z-index: 1000 !important;
+  z-index: 1000;
 }
 
 .ant-drawer-content-wrapper {

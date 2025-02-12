@@ -69,6 +69,7 @@ const AntdEditModal: React.FC<Props> = ({
       destroyOnClose={false}
       width={full ? '100%' : width}
       footer={footer||null}
+      zIndex={1999}
       centered
     >
       <div className="w-full flex-1 px-20 pb-20 overflow-y-auto relative">
