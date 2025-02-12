@@ -20,7 +20,7 @@ import { selectType } from '../type/componentStyles';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
-  router:NextRouter,
+  sayangPopOpen: (value:String) => void,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -147,7 +147,7 @@ export const sayangSampleWaitClmn1 = (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
+          onClick={() => sayangPopOpen(value)}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>
@@ -158,7 +158,7 @@ export const sayangSampleWaitClmn1 = (
 
 export const sayangSampleWaitClmn = (
   totalData: number,
-  router:NextRouter,
+  sayangPopOpen: (value:String) => void,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -277,7 +277,7 @@ export const sayangSampleWaitClmn = (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{router.push(`/sayang/sample/wait/form/${value}`)}}
+          onClick={()=>sayangPopOpen(value)}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>

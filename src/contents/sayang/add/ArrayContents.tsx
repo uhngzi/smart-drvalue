@@ -17,13 +17,13 @@ const ArrayContents: React.FC<Props> = ({
       />
 
       <div className="w-full h-[310px] flex flex-col gap-30 items-center">
-        <div className="h-[111px] border-1 border-line flex">
+        <div className="h-[111px] border-1 border-line flex w-full">
           <div className="flex-grow-[1] h-[110px] border-r-1 border-line">
             <div className="h-55 flex">
               <div className="w-60 text-12 bg-back v-h-center p-5">{'① 배열'}</div>
               <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
             </div>
-            <div className="h-55 border-t-1 border-line flex">
+            <div className="h-55 border-t-1 border-b-1 border-line flex">
               <div className="w-60 text-12 bg-back v-h-center p-5">{'② 배열'}</div>
               <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
             </div>
@@ -41,7 +41,7 @@ const ArrayContents: React.FC<Props> = ({
                 </div>
               </div>
             </div>
-            <div className="h-36 border-t-1 border-line flex">
+            <div className="h-36 border-t-1 border-b-1 border-line flex">
               <p className="w-65 bg-back v-h-center p-5">임피던스</p>
               <div className="flex-grow-[12] h-full v-h-center">
                 <AntdSelect options={[{value:1,label:'유'},{value:2,label:'무'}]} styles={{bw:'0',pd:'0'}} />

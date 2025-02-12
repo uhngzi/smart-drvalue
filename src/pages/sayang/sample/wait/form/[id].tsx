@@ -79,7 +79,7 @@ const SayangSampleAddPage: React.FC & {
         <div className="min-w-[300px]">
           <LaminationContents />
         </div>
-        <div className="flex gap-40">
+        <div className="w-full flex gap-40">
           <div className="min-w-[550px] flex-grow-[44]">
             <MessageContents />
           </div>

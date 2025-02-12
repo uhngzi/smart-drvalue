@@ -4,10 +4,11 @@ import AntdSelectRound from "@/components/Select/AntdSelectRound";
 import TitleIcon from "@/components/Text/TitleIcon";
 import { useEffect, useState } from "react";
 
+import Memo from '@/assets/svg/icons/memo.svg';
 import Edit from "@/assets/svg/icons/edit.svg";
 import Check from "@/assets/svg/icons/s_check.svg";
 import Back from "@/assets/svg/icons/back.svg";
-import { Dropdown, DropdownProps, message } from "antd";
+import { Button, Dropdown, DropdownProps, message } from "antd";
 import { MenuProps } from "antd/lib";
 import { laminationRType } from "@/data/type/base/lamination";
 import { useQuery } from "@tanstack/react-query";
@@ -133,26 +134,19 @@ const LaminationContents: React.FC<Props> = ({
   return (
     <div className="flex flex-col gap-20">
       <div className="v-between-h-center">
-        <div
-          className="cursor-pointer"
-          onClick={()=>setOpen(true)}
-        >
-          <TitleIcon 
-            title="적층구조"
-            icon={<MessageOn />}
-          />
-        </div>
-        <div className="w-[50%] v-h-center h-24 rounded-6 border-[0.6px] borer-line bg-back text-14">
-          코드 : 040000A
-        </div>
+        <TitleIcon title="적층구조" icon={<MessageOn />}/>
+      </div>
+      <div className="w-full flex v-between-h-center h-24 text-14">
+        <span>코드 : 040000A</span>
+        <Button size="small" onClick={()=>setOpen(true)}><span className="w-16 h-16"><Memo/></span>선택</Button>
       </div>
 
       <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
-        <div className="bg-[#CEE4B3] h-20 v-h-center border-1 border-line">Hoz</div>
-        <div className="bg-back h-20 v-h-center border-1 border-line">(BS) 7628HRC x 1</div>
-        <div className="bg-[#7551E920] h-20 v-h-center border-1 border-line">(T/C) 1.00T 1/1oz</div>
-        <div className="bg-back h-20 v-h-center border-1 border-line">(BS) 7628HRC x 1</div>
-        <div className="bg-[#CEE4B3] h-20 v-h-center border-1 border-line">Hoz</div>
+        <div className="bg-[#CEE4B3] h-26 v-h-center border-1 border-line">Hoz</div>
+        <div className="bg-back h-26 v-h-center border-1 border-line">(BS) 7628HRC x 1</div>
+        <div className="bg-[#7551E920] h-26 v-h-center border-1 border-line">(T/C) 1.00T 1/1oz</div>
+        <div className="bg-back h-26 v-h-center border-1 border-line">(BS) 7628HRC x 1</div>
+        <div className="bg-[#CEE4B3] h-26 v-h-center border-1 border-line">Hoz</div>
       </div>
 
       <AntdModal
