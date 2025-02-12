@@ -154,7 +154,7 @@ const ClientCuListPage: React.FC & {
               title: 'No',
               width: 50,
               dataIndex: 'no',
-              render: (_: any, __: any, index: number) => data.length - index, // 역순 번호 매기기
+              render: (_: any, __: any, index: number) => data.length - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
               align: 'center',
             },
             {

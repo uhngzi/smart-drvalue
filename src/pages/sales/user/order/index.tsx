@@ -66,10 +66,11 @@ const SalesUserPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
+  useEffect(()=>{console.log(pagination)},[pagination]);
 
   const [ data, setData ] = useState<Array<salesOrderRType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['salesUserPage'],
+    queryKey: ['salesUserPage', pagination],
     queryFn: async () => {
       return getAPI({
         type: 'core-d1',
@@ -522,6 +523,7 @@ const SalesUserPage: React.FC & {
       <ListPagination
         pagination={pagination}
         totalData={totalData}
+        onChange={handlePageChange}
       />
 
       <List>
@@ -533,6 +535,7 @@ const SalesUserPage: React.FC & {
             setDetailId,
             setPartnerData,
             setPartnerMngData,
+            pagination,
           )}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}

@@ -261,7 +261,7 @@ const WkProcessVendorListPage: React.FC & {
                   width: 50,
                   dataIndex: 'no',
                   align: 'center',
-                  render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
+                  render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
                 },
                 {
                   title: '공정그룹명',
@@ -334,7 +334,7 @@ const WkProcessVendorListPage: React.FC & {
               title: 'No',
               width: 50,
               dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
+              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
               align: 'center',
             },
             {

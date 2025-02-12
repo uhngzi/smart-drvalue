@@ -24,6 +24,9 @@ const SayangModelWaitPage: React.FC & {
     current: 1,
     size: 10,
   });
+  const handlePageChange = (page: number) => {
+    setPagination({ ...pagination, current: page });
+  };
   const [data, setData] = useState<salesOrderRType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
     queryKey: ['SayangModelWaitPage'],
@@ -58,6 +61,7 @@ const SayangModelWaitPage: React.FC & {
       <ListPagination 
         totalData={totalData} 
         pagination={pagination}
+        onChange={handlePageChange}
       />
       <List>
         {
@@ -65,17 +69,12 @@ const SayangModelWaitPage: React.FC & {
         }
         { !dataLoading &&
           <AntdTableEdit
-            columns={sayangModelWaitClmn(totalData, router)}
+            columns={sayangModelWaitClmn(totalData, router, pagination)}
             data={data}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
           />
         }
       </List>
-      {/* <AddModal
-        open={newOpen}
-        setOpen={setNewOpen}
-        orderId={orderId}
-      /> */}
     </>
   );
 };

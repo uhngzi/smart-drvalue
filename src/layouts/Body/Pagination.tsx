@@ -14,6 +14,7 @@ interface Props {
     size: number;
   }
   handleMenuClick?: () => void;
+  onChange?: (page: number) => void;
 }
 
 const items: MenuProps['items'] = [
@@ -33,6 +34,7 @@ export const ListPagination: React.FC<Props> = ({
   totalData,
   pagination,
   handleMenuClick,
+  onChange,
 }) => {
   const menuProps = {
     items,
@@ -42,7 +44,16 @@ export const ListPagination: React.FC<Props> = ({
   return (
     <div className="flex w-full h-50 gap-20 justify-end items-center">
       <span>총 {totalData}건</span>
-      <Pagination size="small" defaultCurrent={1} current={pagination.current} total={totalData} />
+      <Pagination 
+        size="small"
+        defaultCurrent={1}
+        current={pagination.current}
+        total={totalData}
+        onChange={(page: number) => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          onChange?.(page);
+        }}
+      />
       <Dropdown menu={menuProps} trigger={['click']} placement="bottomCenter" getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}>
         <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
       </Dropdown>

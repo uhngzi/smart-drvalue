@@ -17,6 +17,7 @@ export const salesUserOrderClmn = (
   setDetailId: React.Dispatch<React.SetStateAction<string>>,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
+  pagination: {current: number, size: number},
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -24,7 +25,7 @@ export const salesUserOrderClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
     title: '고객명',
