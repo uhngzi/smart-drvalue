@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "antd";
 
 import Bag from "@/assets/svg/icons/bag.svg";
+import Hint from "@/assets/svg/icons/s_excalm.svg";
 
 import { HtmlContext } from "next/dist/server/route-modules/pages/vendored/contexts/entrypoints";
 import AntdInput from "../Input/AntdInput";
+import { isValidEmail } from "@/utils/formatEmail";
+import { isValidTel } from "@/utils/formatPhoneNumber";
 
 interface Item {
   name: string;
@@ -12,6 +15,8 @@ interface Item {
   value: any;
   type: string;
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열
+  erorr?: boolean;
+  errorMsg?: string;
 }
 
 interface CardInputListProps {
@@ -23,7 +28,9 @@ interface CardInputListProps {
   children?: React.ReactNode;
 }
 
-const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, btnClick, handleDataChange, children}) => {
+const CardInputList: React.FC<CardInputListProps> = ({
+  items, title, btnLabel, btnClick, handleDataChange, children
+}) => {
   return (
     <div className="p-10 flex flex-col gap-10">
       {/* 제목 영역 */}
@@ -52,9 +59,25 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, b
               >
                 <p className="pb-8">{item.label}</p>
                 <AntdInput 
-                  defaultValue={item.value ?? ''}
+                  value={item.value ?? undefined}
                   onChange={(e)=>handleDataChange(e, item.name, 'input')}
                 />
+                { // 이메일 형식 체크
+                  item.name.toLowerCase().includes("email") && !isValidEmail(item?.value.toString()) ?
+                  <div className="h-center gap-3 text-[red]">
+                    <p className="w-15 h-15"><Hint/></p>
+                    올바르지 않은 이메일입니다.
+                  </div> :
+                  // 전화번호 형식 체크
+                  (item.name.toLowerCase().includes("tel") ||
+                    item.name.toLowerCase().includes("mobile")) &&
+                    !isValidTel(item?.value.toString()) ? 
+                    <div className="h-center gap-3 text-[red]">
+                      <p className="w-15 h-15"><Hint/></p>
+                      올바르지 않은 전화번호입니다.
+                    </div> :
+                    <></>
+                }
               </div>
             ))}
           </div>
