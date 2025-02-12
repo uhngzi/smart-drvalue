@@ -23,7 +23,9 @@
   ::-webkit-scrollbar-thumb {border-radius:50px; background:#c2c2c2;}
   ::-webkit-scrollbar-thumb:hover {background:#404040;}
 }
-
+body.no-width{
+  min-width: unset !important;
+}
 body {
   min-width: 1920px;
   

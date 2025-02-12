@@ -15,6 +15,7 @@ import Close from "@/assets/svg/icons/s_close.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
 import Plus from "@/assets/svg/icons/s_plus.svg";
 import TrArrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Bag from "@/assets/svg/icons/bag.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -708,6 +709,7 @@ const SalesUserPage: React.FC & {
         width={760}
         contents={<>
           <CardInputList title="고객정보 수정" 
+            titleIcon={<Bag/>}
             btnLabel={
               <Button type="primary" size="large" onClick={handleSubmitPrtData} 
                 className="w-full flex h-center gap-8 !h-full" 
@@ -744,6 +746,7 @@ const SalesUserPage: React.FC & {
         width={760}
         contents={<>
           <CardInputList title="담당자 추가" 
+            titleIcon={<Bag/>}
             btnLabel={
               <Button type="primary" size="large" onClick={handleSubmitPrtMngData}
                 className="w-full flex h-center gap-8 !h-full" 
