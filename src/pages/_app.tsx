@@ -13,6 +13,7 @@ import { UserProvider } from '@/data/context/UserContext';
 import { BaseProvider } from '@/data/context/BaseContext';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { ModelProvider } from '@/data/context/ModelContext';
 
 type AppPropsWithLayout = AppProps & {
   Component: {
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <QueryClientProvider client={client}>
       <UserProvider>
       <BaseProvider>
+      <ModelProvider>
       <ConfigProvider 
         locale={ko_KR}
         theme={{
@@ -50,6 +52,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           </StyledComponentsRegistry>
         </AntdApp>
       </ConfigProvider>
+      </ModelProvider>
       </BaseProvider>
       </UserProvider>
     </QueryClientProvider>

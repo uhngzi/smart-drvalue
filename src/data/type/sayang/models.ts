@@ -71,62 +71,6 @@ export type orderModelType = {
   editModel?: any;  // 프론트 내에서 모델 값 저장을 위해 추가
 }
 
-// AddDrawer.tsx에서 발생하는 오류로 인해 임시 생성해놓은 타입
-export type modelsRType = {
-  id: string;
-  partner: partnerRType;
-  usedYn: boolean;
-  inactiveYn: boolean;
-  prdNm: string;
-  prdRevNo: string;
-  prdMngNo: string;
-  layerEm: LayerEm;
-  modelTypeEm: ModelTypeEm;
-  thk: number;
-  board: boardType;
-  mnfNm: string;
-  material: commonCodeRType;
-  surface: commonCodeRType;
-  copOut: number;
-  copIn: number;
-  smPrint: commonCodeRType;
-  smColor: commonCodeRType;
-  smType: commonCodeRType;
-  mkPrint: commonCodeRType;
-  mkColor: commonCodeRType;
-  mkType: commonCodeRType;
-  spPrint: commonCodeRType;
-  spType: commonCodeRType;
-  aprType: commonCodeRType;
-  vcutYn: false,
-  vcutType: commonCodeRType;
-  fpNo: string;
-  unit: commonCodeRType;
-  pcsW: number;
-  pcsL: number;
-  kitW: number;
-  kitL: number;
-  pnlW: number;
-  pnlL: number;
-  ykitW: number;
-  ykitL: number;
-  ypnlW: number;
-  ypnlL: number;
-  kitPcs: number;
-  pnlKit: number;
-  sthPnl: number;
-  sthPcs: number;
-  pltThk: number;
-  pltAlph: number;
-  spPltNi: number;
-  spPltNiAlph: number;
-  spPltAu: number;
-  spPltAuAlph: number;
-  pinCnt: number;
-  createdAt?: Date | Dayjs | null;
-  updatedAt?: Date | Dayjs | null;
-  deletedAt?: Date | Dayjs | null;
-}
 export type modelsType = {
   id: string;
   partner: partnerRType;
@@ -290,7 +234,7 @@ export const newDataModelsType = ():modelsCUType => {
 export type modelsMatchRType = {
   index?: number;
   id: string;
-  model?: { id: string; };
+  model?: modelsType;
   glbStatus?: {
     id: string;
     salesOrderStatus: SalesOrderStatus;

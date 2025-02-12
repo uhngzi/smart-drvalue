@@ -12,7 +12,7 @@ import { NextRouter } from 'next/router';
 import { Checkbox } from 'antd';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
-import { generateFloorOptions, HotGrade, ModelTypeEm } from '../type/enum';
+import { generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { salesOrderRType } from '../type/sales/order';
 import { modelsMatchRType, modelsType, orderModelType } from '../type/sayang/models';
@@ -184,8 +184,8 @@ export const sayangSampleWaitClmn = (
   {
     title: '업체명/코드',
     width: 120,
-    dataIndex: 'cuNm',
-    key: 'cuNm',
+    dataIndex: 'prtNm',
+    key: 'prtNm',
     align: 'center',
     render: (_, record:modelsMatchRType) => (
       <div className="text-left cursor-pointer"
@@ -203,31 +203,32 @@ export const sayangSampleWaitClmn = (
   {
     title: '모델명',
     width: 350,
-    dataIndex: 'modelNm',
-    key: 'modelNm',
+    dataIndex: 'model.prdNm',
+    key: 'model.prdNm',
     align: 'center',
+    cellAlign: 'left',
   },
   {
     title: 'Rev',
     width: 100,
-    dataIndex: 'rev',
-    key: 'rev',
+    dataIndex: 'model.prdRevNo',
+    key: 'model.prdRevNo',
     align: 'center',
   },
   {
     title: '긴급',
     width: 80,
-    dataIndex: 'hot',
-    key: 'hot',
+    dataIndex: 'orderModel.orderPrdHotGrade',
+    key: 'orderModel.orderPrdHotGrade',
     align: 'center',
-    render: (value: number) => (
+    render: (value, record:modelsMatchRType) => (
       <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="일반" />
-        ) : value === 2 ? (
+        {record.orderModel?.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : record.orderModel?.orderPrdHotGrade === HotGrade.URGENT ? (
           <FullChip label="긴급" state="pink" />
         ) : (
-          <FullChip label="초긴급" state="purple"/>
+          <FullChip label="일반" />
         )}
       </div>
     ),
@@ -235,14 +236,14 @@ export const sayangSampleWaitClmn = (
   {
     title: '구분',
     width: 80,
-    dataIndex: 'state',
-    key: 'state',
+    dataIndex: 'orderModel.modelStatus',
+    key: 'orderModel.modelStatus',
     align: 'center',
-    render: (value: number) => (
+    render: (value, record:modelsMatchRType) => (
       <div className="v-h-center">
-        {value === 3 ? (
+        {record.orderModel?.modelStatus === ModelStatus.NEW ? (
           <FullChip label="신규" />
-        ) : value === 2 ? (
+        ) : record.orderModel?.modelStatus === ModelStatus.MODIFY ? (
           <FullChip label="수정" state="yellow" />
         ) : (
           <FullChip label="반복" state="mint"/>
@@ -253,36 +254,42 @@ export const sayangSampleWaitClmn = (
   {
     title: '두께',
     width: 80,
-    dataIndex: 'thic',
-    key: 'thic',
+    dataIndex: 'model.thk',
+    key: 'model.thk',
     align: 'center',
   },
   {
     title: '층',
     width: 50,
-    dataIndex: 'layer',
-    key: 'layer',
+    dataIndex: 'model.layerEm',
+    key: 'model.layerEm',
     align: 'center',
+    render: (value, record:modelsMatchRType) => {
+      return record.model?.layerEm?.replace("L", "");
+    }
   },
   {
     title: 'PCS',
     width: 100,
-    dataIndex: 'pcs',
-    key: 'pcs',
+    dataIndex: 'model.pcsW',
+    key: 'model.pcsW',
     align: 'center',
+    render: (_, record:modelsMatchRType) => {
+      return record.model?.pcsL+'/'+record.model?.pcsW;
+    }
   },
   {
     title: '납기일',
     width: 150,
-    dataIndex: 'napgi',
-    key: 'napgi',
+    dataIndex: 'orderModel.orderPrdDueDt',
+    key: 'orderModel.orderPrdDueDt',
     align: 'center',
   },
   {
     title: '발주일',
     width: 150,
-    dataIndex: 'order',
-    key: 'order',
+    dataIndex: 'orderModel.order.orderDt',
+    key: 'orderModel.order.orderDt',
     align: 'center',
   },
   {

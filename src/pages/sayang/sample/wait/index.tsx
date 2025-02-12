@@ -1,31 +1,36 @@
-import AntdTable from "@/components/List/AntdTable";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import AntdModal from "@/components/Modal/AntdModal";
-import { LabelIcon } from "@/components/Text/Label";
-import TitleSmall from "@/components/Text/TitleSmall";
-import { sayangSampleWaitClmn, sayangSampleWaitClmn1 } from "@/data/columns/Sayang";
-import { List } from "@/layouts/Body/List";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import styled from "styled-components";
 import { Button, Radio } from "antd";
+import { getAPI } from "@/api/get";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
-import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
+
+import { List } from "@/layouts/Body/List";
+import { ListPagination } from "@/layouts/Body/Pagination";
 
 import Info from "@/assets/svg/icons/s_grayInfo.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 import { useQuery } from "@tanstack/react-query";
+
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { getAPI } from "@/api/get";
+import { useModels } from "@/data/context/ModelContext";
 import { modelsMatchRType } from "@/data/type/sayang/models";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { sayangSampleWaitClmn, sayangSampleWaitClmn1 } from "@/data/columns/Sayang";
+
 import PrtDrawer from "@/contents/partner/PrtDrawer";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import AntdModal from "@/components/Modal/AntdModal";
+import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
+import { LabelIcon } from "@/components/Text/Label";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { models, modelsLoading } = useModels();
+  
   const [data, setData] = useState([
     {
       id:4,
@@ -110,7 +115,7 @@ const SayangSampleListPage: React.FC & {
   const [waitDataLoading, setWaitDataLoading] = useState<boolean>(true);
   const [waitTotalData, setWaitTotalData] = useState<number>(0);
   const [waitData, setWaitData] = useState<modelsMatchRType[]>([]);
-  const { data:queryData, refetch } = useQuery<
+  const { data:queryData, isLoading:waitLoading } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting', paginationWait],
@@ -126,26 +131,68 @@ const SayangSampleListPage: React.FC & {
         page:paginationWait.current,
       });
 
-      if (result.resultCode === 'OK_0000') {
-        console.log(result.data.data);
-        setWaitData(result.data.data ?? []);
-        setWaitTotalData(result.data.total ?? 0);
-      } else {
-        console.log('error:', result.response);
-      }
-
       setWaitDataLoading(false);
-      console.log(result.data);
       return result;
     },
   });
+  useEffect(()=>{
+    if(!waitLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
+        const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType) => ({
+          ...d,
+          model: models.find(f=>f.id === d.model?.id),
+        }))
+        console.log(models, arr);
+        setWaitData(arr);
+        setWaitTotalData(queryData?.data.total ?? 0);
+    }
+  }, [queryData, models]);
+
+  const [paginationIng, setPaginationIng] = useState({
+    current: 1,
+    size: 3,
+  });
+  const handlePageIngChange = (page: number) => {
+    setPaginationIng({ ...paginationIng, current: page });
+  };
+  const [ingDataLoading, setIngDataLoading] = useState<boolean>(true);
+  const [ingTotalData, setIngTotalData] = useState<number>(0);
+  const [ingData, setIngData] = useState<modelsMatchRType[]>([]);
+  const { data:queryIngData, isLoading:ingLoading } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_completed', paginationIng],
+    queryFn: async () => {
+      setIngDataLoading(true);
+      setIngData([]);
+      const result = await getAPI({
+        type: 'core-d1', 
+        utype: 'tenant/',
+        url: 'models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_completed'
+      },{
+        limit:paginationIng.size,
+        page:paginationIng.current,
+      });
+      setIngDataLoading(false);
+      return result;
+    },
+  });
+  useEffect(()=>{
+    if(!ingLoading && !modelsLoading && queryIngData?.resultCode === 'OK_0000') {
+        const arr = (queryIngData?.data.data ?? []).map((d:modelsMatchRType) => ({
+          ...d,
+          model: models.find(f=>f.id === d.model?.id),
+        }))
+        setIngData(arr);
+        setIngTotalData(queryIngData?.data.total ?? 0);
+    }
+  }, [queryIngData, models]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
-    // 리스트 내 거래처
+  // 리스트 내 거래처
   const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
   const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
   const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
-    // 드로워 닫힐 때 값 초기화
+  // 드로워 닫힐 때 값 초기화
   useEffect(()=>{
     if(!drawerOpen) {
       setPartnerData(null);
@@ -156,12 +203,17 @@ const SayangSampleListPage: React.FC & {
   return (
     <div className="flex flex-col gap-20">
       <div>
-        <ListPagination pagination={{current:1,size:10}} totalData={4}/>
+        <ListPagination 
+          pagination={paginationIng}
+          totalData={ingTotalData}
+          onChange={handlePageIngChange}
+        />
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn1(4, sayangPopOpen)}
-            data={data}
+            columns={sayangSampleWaitClmn(ingTotalData, sayangPopOpen, setPartnerData, setPartnerMngData, paginationIng)}
+            data={ingData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            loading={ingDataLoading}
           />
         </List>
       </div>
@@ -236,7 +288,7 @@ const CustomRadioGroup = styled(Radio.Group)`
 `;
 
 SayangSampleListPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout 
+  <MainPageLayout
     menuTitle="샘플-사양등록및현황"
     menu={[
       {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
