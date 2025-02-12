@@ -4,6 +4,7 @@ import { get, set } from "lodash";
 import React, { Key, SetStateAction, useEffect, useState } from "react";
 import { ConfigProvider, Table, Form, DatePicker, Switch, Modal } from "antd";
 import { ColumnGroupType, ColumnsType, ColumnType } from "antd/es/table";
+import koKR from "antd/locale/ko_KR";
 
 import AntdSelect from "../Select/AntdSelect";
 import AntdInput from "../Input/AntdInput";
@@ -50,15 +51,23 @@ const EditableCell: React.FC<
       {editing ? (
         <>{
           editType === "date" ?
-            <DatePicker
-              defaultValue={value ? dayjs(value) : null}
-              onChange={(date)=>{
-                if(date) {
-                  onFieldChange(dayjs(date).toDate());
-                }
-              }}
-              style={{borderRadius:'2px', height:32}}
-            />
+            <ConfigProvider locale={koKR}>
+              <DatePicker
+                defaultValue={value ? dayjs(value) : null}
+                onChange={(date)=>{
+                  if(date) {
+                    onFieldChange(dayjs(date).toDate() || new Date());
+                  }
+                }}
+                onOpenChange={(open) => {
+                  console.log(open, value);
+                  if (open && !value) {
+                    onFieldChange(new Date());
+                  }
+                }}
+                style={{borderRadius:'2px', height:32}}
+              />
+            </ConfigProvider>
           :
           editType === "select" ?
             <AntdSelect

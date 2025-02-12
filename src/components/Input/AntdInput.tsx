@@ -1,5 +1,6 @@
 import { componentsStylesType } from "@/data/type/componentStyles";
-import { Input } from "antd";
+import { Input, InputRef } from "antd";
+import { forwardRef } from "react";
 import styled from "styled-components";
 
 interface Props {
@@ -15,18 +16,21 @@ interface Props {
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
 }
 
-const AntdInput: React.FC<Props> = ({
-  value,
-  onChange,
-  className,
-  styles,
-  placeholder,
-  type,
-  defaultValue,
-  readonly = false,
-  onPressEnter,
-  onKeyDown,
-}) => {
+const AntdInput = forwardRef<InputRef, Props>((
+  { 
+    value,
+    onChange,
+    className,
+    styles,
+    placeholder,
+    type,
+    defaultValue,
+    readonly,
+    onPressEnter,
+    onKeyDown,
+  },
+  ref
+) => {
   return (
     <AntdInputStyled
       $ht={styles?.ht ? styles.ht : "32px"}
@@ -45,10 +49,11 @@ const AntdInput: React.FC<Props> = ({
         onPressEnter={onPressEnter}
         onKeyDown={onKeyDown}
         readOnly={readonly}
+        ref={ref}
       />
     </AntdInputStyled>
   );
-};
+});
 
 const AntdInputStyled = styled.div<{
   $ht: string;
