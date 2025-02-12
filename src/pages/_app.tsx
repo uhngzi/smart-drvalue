@@ -11,6 +11,8 @@ import ko_KR from 'antd/locale/ko_KR';
 import { client } from '@/api/lib/reactQuery';
 import { UserProvider } from '@/data/context/UserContext';
 import { BaseProvider } from '@/data/context/BaseContext';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 type AppPropsWithLayout = AppProps & {
   Component: {
@@ -19,6 +21,12 @@ type AppPropsWithLayout = AppProps & {
 };
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const { pathname } = useRouter();
+  useEffect(() => {
+    if(pathname.startsWith('/setting')){
+      document.body.classList.add('no-width')
+    }
+  },[pathname]);
   return (
     <QueryClientProvider client={client}>
       <UserProvider>

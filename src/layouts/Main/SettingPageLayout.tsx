@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { TabLarge } from "@/components/Tab/Tabs";
 import SettingSider from "../Sider/SettingSider";
+import SettingContents from "../Body/SettingContents";
 
 interface Props {
   children : React.ReactNode;
@@ -37,12 +38,12 @@ const SettingPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
           <SettingSider />
         </div>
 
-        <div className='flex flex-col' 
+        <div className='flex flex-col bg-white' 
           style={{
             width:`calc(100% - ${width}px)`
           }}
         >
-          <div className="w-full h-[100vh] bg-back overflow-auto">
+          <div className="w-full h-[100vh] overflow-auto">
             {menu && (
               <div className="w-full h-80 h-center px-15">
                 <TabLarge
@@ -51,7 +52,7 @@ const SettingPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
                 />
               </div>
             )}
-            <Contents>{children}</Contents>
+            <SettingContents>{children}</SettingContents>
           </div>
         </div>
       </div>
