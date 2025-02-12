@@ -243,7 +243,7 @@ const SalesUserPage: React.FC & {
       ...formData,
       hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
       orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-      orderName: newProducts.length > 0 ? newProducts[0].orderTit+'외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
+      orderName: formData.orderName,
       orderRepDt: new Date(),
       empId: me?.id,
       products: newProducts.map((product:salesOrderProcuctCUType, index:number) => ({
@@ -307,7 +307,7 @@ const SalesUserPage: React.FC & {
         id: formData.id,
         partnerId: formData.partnerId,
         partnerManagerId: formData.partnerManagerId,
-        orderName: newProducts.length > 0 ? newProducts[0].orderTit+' 외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
+        orderName: formData.orderName,
         totalOrderPrice: formData.totalOrderPrice,
         orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
         orderRepDt: formData.orderRepDt,

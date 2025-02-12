@@ -113,6 +113,17 @@ const AddOrderContents: React.FC<Props> = ({
           <div className="w-1 h-full border-r-1"/>
           <div className="flex-1 h-full flex flex-col gap-24">
             <div className="flex flex-col gap-8">
+              <LabelThin label="고객발주명"/>
+              <AntdInput
+                value={formData.orderName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData({...formData, orderName:value});
+                }}
+                styles={{ht:'36px'}}
+              />
+            </div>
+            <div className="flex flex-col gap-8">
               <LabelThin label="고객발주 메일 내용"/>
               <TextArea
                 value={formData.orderTxt}

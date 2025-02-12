@@ -299,7 +299,7 @@ const SayangModelAddPage: React.FC & {
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">발주명</p>
                 <AntdInput 
-                  value={model.order?.orderNm}
+                  value={model.orderTit}
                   className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}}
                 />
                 <p className="h-center justify-end">관리번호 </p>
