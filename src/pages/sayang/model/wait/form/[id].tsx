@@ -93,26 +93,8 @@ const SayangModelAddPage: React.FC & {
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
-  const [selectTab, setSelectTab] = useState<number>(1);
-  const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
-
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-
-  const [model, setModel] = useState<Array<modelSampleDataType>>([]);
-  const [modelNew, setModelNew] = useState<modelSampleDataType>(newModelSampleData(model.length));
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    name: string,
-    type: 'one' | 'mult',
-  ) => {
-    const { value } = e.target;
-    if(type === 'one')
-      setModelNew((prev:modelSampleDataType) => ({ ...prev, [name]: value }));
-    else {
-
-    }
-  };
+  const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -221,7 +203,6 @@ const SayangModelAddPage: React.FC & {
   // 확정저장 시 실행되는 함수
   const handleSubmit = async (id:string) => {
     // 기존에 있는 모델이 아닐 경우 새로 생성
-    // models/jsxcrud/create
     const tempData = data.find((d:orderModelType) => d.id === id);
     console.log(tempData);
     
@@ -314,7 +295,7 @@ const SayangModelAddPage: React.FC & {
     <>
       <div 
         className="gap-20 flex"
-        style={{minWidth:model.length > 0?"2050px":"1022px"}}
+        style={{minWidth:1600}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
         {data.map((model:orderModelType, index:number) => (
@@ -417,19 +398,6 @@ const SayangModelAddPage: React.FC & {
             </div>
           </div>
         ))}
-          {/* <div className="flex min-w-[982px]">
-            <NewModelContents item={modelNew} handleInputChange={handleInputChange} type={'one'}/>
-          </div> */}
-          
-          {/* <div className="w-full h-center justify-end">
-            <FullOkButtonSmall
-              click={()=>{
-                setModel(((prev) => [...prev, modelNew]));
-                setModelNew(newModelSampleData(model.length+1));
-              }}
-              label="저장"
-            />
-          </div> */}
         </div>
         <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 192px)'}} key="contents-tab">
           <div 
@@ -451,35 +419,6 @@ const SayangModelAddPage: React.FC & {
             <p className="w-20 h-20"><Category /></p>
           </div>
         </div>
-        {model.length > 0 ?
-        <div className="w-[1022px] h-[915px] border-1 border-line rounded-14 p-20 mr-20 flex flex-col h-full gap-17 bg-back2">
-          <div className="h-95 flex flex-col gap-17">
-            <div className="w-full min-h-32 v-between-h-center">
-              <p className="text-16 font-semibold">모델등록중</p>
-              <EditButtonSmall label="수정" click={()=>{}} />
-            </div>
-            <TabSmall
-              items={model.map(i=>({
-                key:i.id,
-                text:i.modelNm
-              }))}
-              selectKey={selectTab}
-              setSelectKey={setSelectTab}
-            />
-          </div>
-          <div className="flex min-w-[982px]">
-            <NewModelContents item={model[selectTab]} handleInputChange={handleInputChange} type={'mult'}/>
-          </div>
-          <div className="w-full h-center justify-end">
-            <FullOkButtonSmall
-              click={()=>{}}
-              label="저장"
-            />
-          </div>
-        </div>
-        
-        :
-        <></>}
       </div>
 
       <AddDrawer

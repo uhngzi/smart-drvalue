@@ -7,7 +7,7 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import InputList from "@/components/List/InputList";
 import { TabSmall } from "@/components/Tab/Tabs";
 
-import { modelsRType } from "@/data/type/sayang/models";
+import { modelsType } from "@/data/type/sayang/models";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
@@ -54,7 +54,7 @@ const AddDrawer:React.FC<Props> = ({
   ]
 
   const [modelDataLoading, setModelDataLoading] = useState<boolean>(true);
-  const [modelData, setModelData] = useState<modelsRType[]>([]);
+  const [modelData, setModelData] = useState<modelsType[]>([]);
   const { data:modelQueryData, isLoading:modelQueryLoading, refetch:modelQueryRefetch } = useQuery({
     queryKey: ['models/jsxcrud/many'],
     queryFn: async () =>{
@@ -81,7 +81,7 @@ const AddDrawer:React.FC<Props> = ({
 
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
-    setModelData(modelData.filter((f:modelsRType) => f.prdNm.includes(searchModel)));
+    setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
   }, [searchModel]);
 
   return (
@@ -193,7 +193,7 @@ const AddDrawer:React.FC<Props> = ({
                         dataIndex: 'thk',
                         key: 'thk',
                         align: 'center',
-                        render: (value, record:modelsRType) => (
+                        render: (value, record:modelsType) => (
                           <div className="w-full h-full v-h-center">
                             {record.layerEm} / {value}
                           </div>
@@ -204,7 +204,7 @@ const AddDrawer:React.FC<Props> = ({
                         dataIndex: 'copOut',
                         key: 'copOut',
                         align: 'center',
-                        render: (value, record:modelsRType) => (
+                        render: (value, record:modelsType) => (
                           <div className="w-full h-full v-h-center">
                             {value+'외'} / {record.copIn+'내'}
                           </div>
