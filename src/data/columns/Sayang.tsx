@@ -162,6 +162,8 @@ export const sayangSampleWaitClmn1 = (
 export const sayangSampleWaitClmn = (
   totalData: number,
   sayangPopOpen: (value:String) => void,
+  setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
   pagination?: {current: number, size: number},
 ): CustomColumn[] => [
   {
@@ -185,9 +187,21 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'cuNm',
     key: 'cuNm',
     align: 'center',
+    render: (_, record:modelsMatchRType) => (
+      <div className="text-left cursor-pointer"
+        onClick={()=>{
+          setPartnerData(record.orderModel?.prtInfo.prt ?? null);
+          setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
+        }}
+      >
+        {record.orderModel?.prtInfo.prt.prtNm}
+        /
+        {record.orderModel?.prtInfo.prt.prtRegCd}
+      </div>
+    )
   },
   {
-    title: 'Model',
+    title: '모델명',
     width: 350,
     dataIndex: 'modelNm',
     key: 'modelNm',

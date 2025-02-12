@@ -9,12 +9,18 @@ import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { Button, Radio } from "antd";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 
 import Info from "@/assets/svg/icons/s_grayInfo.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
+import { useQuery } from "@tanstack/react-query";
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { getAPI } from "@/api/get";
+import { modelsMatchRType } from "@/data/type/sayang/models";
+import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import PrtDrawer from "@/contents/partner/PrtDrawer";
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -93,6 +99,60 @@ const SayangSampleListPage: React.FC & {
     setSayangRegOpen(true);
   }
 
+  // ------------ 리스트 데이터 세팅 ------------ 시작
+  const [paginationWait, setPaginationWait] = useState({
+    current: 1,
+    size: 10,
+  });
+  const handlePageWaitChange = (page: number) => {
+    setPaginationWait({ ...paginationWait, current: page });
+  };
+  const [waitDataLoading, setWaitDataLoading] = useState<boolean>(true);
+  const [waitTotalData, setWaitTotalData] = useState<number>(0);
+  const [waitData, setWaitData] = useState<modelsMatchRType[]>([]);
+  const { data:queryData, refetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting', paginationWait],
+    queryFn: async () => {
+      setWaitDataLoading(true);
+      setWaitData([]);
+      const result = await getAPI({
+        type: 'core-d1', 
+        utype: 'tenant/',
+        url: 'models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting'
+      },{
+        limit:paginationWait.size,
+        page:paginationWait.current,
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data.data);
+        setWaitData(result.data.data ?? []);
+        setWaitTotalData(result.data.total ?? 0);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      setWaitDataLoading(false);
+      console.log(result.data);
+      return result;
+    },
+  });
+  // ------------ 리스트 데이터 세팅 ------------ 끝
+
+    // 리스트 내 거래처
+  const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+  const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
+  const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
+    // 드로워 닫힐 때 값 초기화
+  useEffect(()=>{
+    if(!drawerOpen) {
+      setPartnerData(null);
+      setPartnerMngData(null);
+    }
+  }, [drawerOpen]);
+
   return (
     <div className="flex flex-col gap-20">
       <div>
@@ -107,12 +167,17 @@ const SayangSampleListPage: React.FC & {
       </div>
       <div className="w-full h-1 border-b-1 border-line"></div>
       <div>
-        <ListPagination pagination={{current:1,size:10}} totalData={4}/>
+        <ListPagination
+          pagination={paginationWait}
+          totalData={waitTotalData}
+          onChange={handlePageWaitChange}
+        />
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(4, sayangPopOpen)}
-            data={data}
+            columns={sayangSampleWaitClmn(waitTotalData, sayangPopOpen, setPartnerData, setPartnerMngData, paginationWait)}
+            data={waitData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            loading={waitDataLoading}
           />
         </List>
       </div>
@@ -152,6 +217,14 @@ const SayangSampleListPage: React.FC & {
           </div>}
         />
         {/* ()=>{router.push(`/sayang/sample/wait/form/${value}`)} */}
+
+      <PrtDrawer
+        open={drawerOpen}
+        setOpen={setDrawerOpen}
+        partnerId={partnerData?.id ?? ''}
+        partnerData={partnerData}
+        partnerMngData={partnerMngData}
+      />
     </div>
   )
 }
