@@ -1,13 +1,18 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Dropdown, MenuProps, Space } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import dayjs from "dayjs";
 
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import InputList from "@/components/List/InputList";
+import CardList from "@/components/List/CardList";
 import { TabSmall } from "@/components/Tab/Tabs";
+import { LabelIcon } from "@/components/Text/Label";
 
 import { modelsType } from "@/data/type/sayang/models";
+import { salesOrderDetailRType } from "@/data/type/sales/order";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
@@ -15,33 +20,22 @@ import Call from "@/assets/svg/icons/s_call.svg";
 import Mobile from "@/assets/svg/icons/mobile.svg";
 import Mail from "@/assets/svg/icons/mail.svg";
 
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import CardList from "@/components/List/CardList";
-import { LabelIcon } from "@/components/Text/Label";
-import { MOCK } from "@/utils/Mock";
 
 interface Props {
+  orderId: string | string[] | undefined;
   drawerOpen: boolean;
   setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
   selectTabDrawer: number;
   setSelectTabDrawer: React.Dispatch<SetStateAction<number>>;
-  handleDataChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-    key?: string,
-  ) => void;
 }
 
 const AddDrawer:React.FC<Props> = ({
+  orderId,
   drawerOpen,
   setDrawerOpen,
   selectTabDrawer,
   setSelectTabDrawer,
-  handleDataChange,
 }) => {
-  
   const items: MenuProps['items'] = [
     {
       label: <>복사하여 새로 등록</>,
@@ -52,6 +46,32 @@ const AddDrawer:React.FC<Props> = ({
       key: 1,
     },
   ]
+  
+  const [orderDataLoading, setOrderDataLoading] = useState<boolean>(true);
+  const [orderData, setOrderData] = useState<salesOrderDetailRType | null>(null);
+  const { data:orderQueryData, isLoading:orderQueryLoading, refetch:orderQueryRefetch } = useQuery({
+    queryKey: ['sales-order/detail/jsxcrud/one'],
+    queryFn: async () =>{
+      try {
+        return getAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: `sales-order/detail/jsxcrud/one/${orderId}`,
+        });
+      } catch (e) {
+        console.log('models/jsxcrud/many Error : ', e);
+        return;
+      }
+    }
+  });
+  useEffect(()=>{
+    setOrderDataLoading(true);
+    if(!orderQueryLoading && orderQueryData?.resultCode === "OK_0000") {
+      console.log('order : ', orderQueryData.data.data);
+      setOrderData(orderQueryData?.data.data ?? null);
+      setOrderDataLoading(false);
+    }
+  }, [orderQueryData]);
 
   const [modelDataLoading, setModelDataLoading] = useState<boolean>(true);
   const [modelData, setModelData] = useState<modelsType[]>([]);
@@ -70,7 +90,6 @@ const AddDrawer:React.FC<Props> = ({
       }
     }
   });
-
   useEffect(()=>{
     setModelDataLoading(true);
     if(!modelQueryLoading && modelQueryData?.resultCode === "OK_0000") {
@@ -101,22 +120,31 @@ const AddDrawer:React.FC<Props> = ({
             setSelectKey={setSelectTabDrawer}
           />
           { selectTabDrawer === 1 ?
+            !orderDataLoading &&
             <>
-              <CardList items={MOCK.modelOrderInfo} title="" btnLabel="" btnClick={()=>{}} />
+              <CardList 
+                items={[
+                  {label: '거래처명/거래처코드', value: orderData?.prtInfo?.prt?.prtNm+'/'+orderData?.prtInfo?.prt?.prtRegCd, widthType: 'half'},
+                  {label: '발주일', value: dayjs(orderData?.orderDt).format('YYYY-MM-DD'), widthType: 'half'},
+                  {label: '고객발주명', value: orderData?.orderNm, widthType: 'full'},
+                  {label: '발주내용', value: orderData?.orderTxt, widthType: 'full'},
+                ]}
+                title="" btnLabel="" btnClick={()=>{}}
+              />
               <CardList items={[]} title="" btnLabel="" btnClick={()=>{}}>
                 <div className="flex flex-col gap-10">
                   <div className="w-full text-16 font-medium" >담당자 정보</div>
                   <div className="w-full" style={{borderBottom:'1px solid #d9d9d9'}}/>
-                  <p className="">홍길동(사업관리부)</p>
+                  <p className="">{orderData?.prtInfo.mng.prtMngNm}</p>
                   <div className="w-full h-40 h-center gap-10">
                     <div className="w-[200px]">
-                      <LabelIcon label="031-123-1234" icon={<Call />}/>
+                      <LabelIcon label={orderData?.prtInfo.mng.prtMngTel ?? ''} icon={<Call />}/>
                     </div>
                     <div className="w-[200px]">
-                      <LabelIcon label="010-1234-5678" icon={<Mobile />}/>
+                      <LabelIcon label={orderData?.prtInfo.mng.prtMngMobile ?? ''} icon={<Mobile />}/>
                     </div>
                     <div className="flex-1">
-                      <LabelIcon label="test@gmail.com" icon={<Mail />}/>
+                      <LabelIcon label={orderData?.prtInfo.mng.prtMngEmail ?? ''} icon={<Mail />}/>
                     </div>
                   </div>
 
@@ -129,7 +157,7 @@ const AddDrawer:React.FC<Props> = ({
                   <table>
                     <colgroup>
                       <col style={{width:'auto'}}/>
-                      <col style={{width:'5%'}}/>
+                      <col style={{width:'auto'}}/>
                       <col style={{width:'7%'}}/>
                       <col style={{width:'10%'}}/>
                       <col style={{width:'10%'}}/>
@@ -146,14 +174,14 @@ const AddDrawer:React.FC<Props> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {MOCK.regOrderModel.map((m, idx) => (
+                      {(orderData?.products ?? []).map((m, idx) => (
                         <tr key={idx}>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.name}</td>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.odno}</td>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.layer}</td>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.thic}</td>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.cnt}</td>
-                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.dueDt}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderTit}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.prtOrderNo}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{JSON.parse(m.currPrdInfo)?.layer}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{JSON.parse(m.currPrdInfo)?.thic}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderPrdCnt}</td>
+                          <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderPrdDueDt ? dayjs(m.orderPrdDueDt).format('YYYY-MM-DD') : null}</td>
                         </tr>
                       ))}
                     </tbody>

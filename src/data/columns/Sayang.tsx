@@ -12,7 +12,7 @@ import { NextRouter } from 'next/router';
 import { Checkbox } from 'antd';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
-import { generateFloorOptions, HotGrade } from '../type/enum';
+import { generateFloorOptions, HotGrade, ModelTypeEm } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { salesOrderRType } from '../type/sales/order';
 import { modelsMatchRType, modelsType, orderModelType } from '../type/sayang/models';
@@ -767,16 +767,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.prdRevNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.prdRevNo', e.target.value)}
+                defaultValue={record.model?.prdRevNo ?? record.tempPrdInfo?.prdRevNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.prdRevNo', e.target.value)}
                 className='!text-12'
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill
                 options={unitSelectList}
-                value={record.tempPrdInfo?.unit?.id}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.unit.id', e)}
+                defaultValue={record.model?.unit ?? record.tempPrdInfo?.unit ?? unitSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.unit', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -802,15 +802,15 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={generateFloorOptions()}
-                value={record.tempPrdInfo?.layerEm}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.layerEm', e)}
+                defaultValue={record.model?.layerEm ?? record.tempPrdInfo?.layerEm ?? "L1"}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.layerEm', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.thk}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.thk', e.target.value)}
+                value={record.editModel?.thk ?? record.model?.thk ?? record.tempPrdInfo?.thk}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.thk', e.target.value)}
                 className='!text-12'
                 type="number"
               />
@@ -837,16 +837,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.tempPrdInfo?.copOut}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.copOut', e.target.value)}
+                value={record.editModel?.copOut ?? record.model?.copOut ?? record.tempPrdInfo?.copOut}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.copOut', e.target.value)}
                 className="!text-12" 
                 type="number"
               /> 외
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.tempPrdInfo?.copIn}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.copIn', e.target.value)}
+                value={record.editModel?.copIn ?? record.model?.copIn ?? record.tempPrdInfo?.copIn}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.copIn', e.target.value)}
                 className="!text-12" 
                 type="number"
                 />내
@@ -873,16 +873,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pltThk}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pltThk', e.target.value)}
+                value={record.editModel?.pltThk ?? record.model?.pltThk ?? record.tempPrdInfo?.pltThk}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pltThk', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill 
-                value={record.tempPrdInfo?.pltAlph}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pltAlph', e.target.value)}
+                value={record.editModel?.pltAlph ?? record.model?.pltAlph ?? record.tempPrdInfo?.pltAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pltAlph', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -909,28 +909,28 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.tempPrdInfo?.spPltNi}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltNi', e.target.value)}
+                value={record.editModel?.spPltNi ?? record.model?.spPltNi ?? record.tempPrdInfo?.spPltNi}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNi', e.target.value)}
                 type="number"
                 className="!text-12"
               />
               <AntdInputFill 
-                value={record.tempPrdInfo?.spPltNiAlph}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltNiAlph', e.target.value)}
+                value={record.editModel?.spPltNiAlph ?? record.model?.spPltNiAlph ?? record.tempPrdInfo?.spPltNiAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNiAlph', e.target.value)}
                 type="number"
                 className="!text-12"
               />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.tempPrdInfo?.spPltAu}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltAu', e.target.value)}
+                value={record.editModel?.spPltAu ?? record.model?.spPltAu ?? record.tempPrdInfo?.spPltAu}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAu', e.target.value)}
                 type="number"
                 className="!text-12"
               />
               <AntdInputFill 
-                value={record.tempPrdInfo?.spPltAuAlph}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPltAuAlph', e.target.value)}
+                value={record.editModel?.spPltAuAlph ?? record.model?.spPltAuAlph ?? record.tempPrdInfo?.spPltAuAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAuAlph', e.target.value)}
                 type="number"
                 className="!text-12"
               />
@@ -959,24 +959,24 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={smPrintSelectList} 
-                value={record.tempPrdInfo?.smPrint}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smPrint', e)}
+                defaultValue={record.model?.smPrint ?? record.tempPrdInfo?.smPrint ?? smPrintSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.smPrint', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill 
                 options={smColorSelectList} 
-                value={record.tempPrdInfo?.smColor}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smColor', e)}
+                defaultValue={record.model?.smColor ?? record.tempPrdInfo?.smColor ?? smColorSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.smColor', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill 
                 options={smTypeSelectList} 
-                value={record.tempPrdInfo?.smType}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.smType', e)}
+                defaultValue={record.model?.smType ?? record.tempPrdInfo?.smType ?? smTypeSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.smType', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -1003,24 +1003,24 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={mkPrintSelectList}
-                value={record.tempPrdInfo?.mkPrint}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkPrint', e)}
+                defaultValue={record.model?.mkPrint ?? record.tempPrdInfo?.mkPrint ?? mkPrintSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkPrint', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill
                 options={mkColorSelectList}
-                value={record.tempPrdInfo?.mkColor}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkColor', e)}
+                defaultValue={record.model?.mkColor ?? record.tempPrdInfo?.mkColor ?? mkColorSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkColor', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill
                 options={mkTypeSelectList}
-                value={record.tempPrdInfo?.mkType}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.mkType', e)}
+                defaultValue={record.model?.mkType ?? record.tempPrdInfo?.mkType ?? mkTypeSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkType', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -1047,16 +1047,24 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={spPrintSelectList}
-                value={record.tempPrdInfo?.spPrint}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spPrint', e)}
+                defaultValue={record.model?.spPrint ?? record.tempPrdInfo?.spPrint}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdSelectFill 
                 options={spTypeSelectList}
-                value={record.tempPrdInfo?.spType}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.spType', e)}
+                defaultValue={record.model?.spType ?? record.tempPrdInfo?.spType}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
+                defaultValue={record.model?.modelTypeEm ?? record.tempPrdInfo?.modelTypeEm ?? "sample"}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.modelTypeEm', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -1084,8 +1092,17 @@ export const sayangModelWaitAddClmn = (
               <AntdSelectFill 
                 className='w-[90px]'
                 options={outSelectList} 
-                value={record.tempPrdInfo?.aprType}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.aprType', e)}
+                defaultValue={record.model?.aprType ?? record.tempPrdInfo?.aprType ?? outSelectList[0]}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.aprType', e)}
+                styles={{fs:'12px'}}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={[{value:false,label:'무'},{value:true,label:'유'}]}
+                defaultValue={record.model?.vcutYn ?? record.tempPrdInfo?.vcutYn ?? false}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutYn', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -1093,8 +1110,8 @@ export const sayangModelWaitAddClmn = (
               <AntdSelectFill 
                 className='w-[90px]'
                 options={vcutSelectList}
-                value={record.tempPrdInfo?.vcutType}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.vcutType', e)}
+                defaultValue={record.model?.vcutType ?? record.tempPrdInfo?.vcutType}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutType', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -1120,15 +1137,15 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.fpNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.fpNo', e.target.value)}
+                defaultValue={record.model?.drgNo ?? record.tempPrdInfo?.drgNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.drgNo', e.target.value)}
                 className='w-[100px] !text-12'
-              />
+                />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                // value={record.tempPrdInfo?.}
-                // onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.', e.target.value)}
+                defaultValue={record.model?.fpNo ?? record.tempPrdInfo?.fpNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.fpNo', e.target.value)}
                 className='w-[100px] !text-12'
               />
             </div>
@@ -1155,16 +1172,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pcsL}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pcsL', e.target.value)}
+                value={record.editModel?.pcsL ?? record.model?.pcsL ?? record.tempPrdInfo?.pcsL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pcsL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pcsW}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pcsW', e.target.value)}
+                value={record.editModel?.pcsW ?? record.model?.pcsW ?? record.tempPrdInfo?.pcsW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pcsW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1191,16 +1208,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.kitL}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitL', e.target.value)}
+                value={record.editModel?.kitL ?? record.model?.kitL ?? record.tempPrdInfo?.kitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.kitW}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitW', e.target.value)}
+                value={record.editModel?.kitW ?? record.model?.kitW ?? record.tempPrdInfo?.kitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1227,16 +1244,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pnlL}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlL', e.target.value)}
+                value={record.editModel?.pnlL ?? record.model?.pnlL ?? record.tempPrdInfo?.pnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pnlL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pnlW}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlW', e.target.value)}
+                value={record.editModel?.pnlW ?? record.model?.pnlW ?? record.tempPrdInfo?.pnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pnlW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1263,28 +1280,28 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record.tempPrdInfo?.ykitL}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ykitL', e.target.value)}
+                value={record.editModel?.ykitL ?? record.model?.ykitL ?? record.tempPrdInfo?.ykitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record.tempPrdInfo?.ykitW}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ykitW', e.target.value)}
+                value={record.editModel?.ykitW ?? record.model?.ykitW ?? record.tempPrdInfo?.ykitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record.tempPrdInfo?.ypnlL}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ypnlL', e.target.value)}
+                value={record.editModel?.ypnlL ?? record.model?.ypnlL ?? record.tempPrdInfo?.ypnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record.tempPrdInfo?.ypnlW}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.ypnlW', e.target.value)}
+                value={record.editModel?.ypnlW ?? record.model?.ypnlW ?? record.tempPrdInfo?.ypnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1311,16 +1328,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.kitPcs}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.kitPcs', e.target.value)}
+                value={record.editModel?.kitPcs ?? record.model?.kitPcs ?? record.tempPrdInfo?.kitPcs}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitPcs', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pnlKit}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pnlKit', e.target.value)}
+                value={record.editModel?.pnlKit ?? record.model?.pnlKit ?? record.tempPrdInfo?.pnlKit}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pnlKit', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1347,24 +1364,24 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.sthPnl}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.sthPnl', e.target.value)}
+                value={record.editModel?.sthPnl ?? record.model?.sthPnl ?? record.tempPrdInfo?.sthPnl}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.sthPnl', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.sthPcs}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.sthPcs', e.target.value)}
+                value={record.editModel?.sthPcs ?? record.model?.sthPcs ?? record.tempPrdInfo?.sthPcs}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.sthPcs', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.tempPrdInfo?.pinCnt}
-                onChange={(e)=>handleModelDataChange(record.id, 'tempPrdInfo.pinCnt', e.target.value)}
+                value={record.editModel?.pinCnt ?? record.model?.pinCnt ?? record.tempPrdInfo?.pinCnt}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.pinCnt', e.target.value)}
                 className="!text-12"
                 type="number"
               />
