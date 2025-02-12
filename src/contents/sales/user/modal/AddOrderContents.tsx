@@ -11,7 +11,7 @@ import Mail from "@/assets/svg/icons/mail.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
 import { LabelIcon, LabelMedium, LabelThin } from "@/components/Text/Label";
 import { newDataSalesOrderCUType, salesOrderCUType, salesOrderReq } from "@/data/type/sales/order";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
@@ -22,6 +22,9 @@ import { partnerMngRType } from "@/data/type/base/partner";
 import dayjs from "dayjs";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
+import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
+import { inputTel } from "@/utils/formatPhoneNumber";
+import { inputFax } from "@/utils/formatFax";
 
 interface Props {
   csList: Array<{value:any,label:string}>;
@@ -33,11 +36,11 @@ interface Props {
   fileIdList: string[];
   setFileIdList: React.Dispatch<SetStateAction<string[]>>;
   csMngList: partnerMngRType[];
+  setCsMngList: React.Dispatch<SetStateAction<partnerMngRType[]>>;
   stepCurrent: number;
   setStepCurrent: React.Dispatch<SetStateAction<number>>;
   setEdit: React.Dispatch<SetStateAction<boolean>>;
   handleEditOrder: () => void;
-  setNewPrtMngOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const AddOrderContents: React.FC<Props> = ({
@@ -50,13 +53,53 @@ const AddOrderContents: React.FC<Props> = ({
   fileIdList,
   setFileIdList,
   csMngList,
+  setCsMngList,
   stepCurrent,
   setStepCurrent,
   setEdit,
   handleEditOrder,
-  setNewPrtMngOpen,
 }) => {
   const { showToast, ToastContainer } = useToast();
+
+  // 담당자 추가 클릭 시 거래처 담당자 설정
+  const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
+  const [ newPartnerMngData, setNewPartnerMngData ] = useState<partnerMngRType | null>(null);
+
+  // 거래처 설정 값 변경 시 실행 함수
+  const handlePrtDataChange = (
+    dataType: 'prt' | 'mng',
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    let value = e;
+    if(type === "input" && typeof e !== "string") {
+      value = e.target.value;
+    }
+
+    // 전화번호 형식인 필드들은 자동 하이픈 처리
+    if(name.toLowerCase().includes("tel") || name.toLowerCase().includes("mobile")) {
+      value = inputTel(value.toString());
+    } else if (name.toLowerCase().includes("fax")) {
+      value = inputFax(value.toString());
+    }
+
+    if(key) {
+      setNewPartnerMngData(prev => ({
+        ...prev,
+        [name]: {
+          [key]: value,
+        },
+      } as partnerMngRType));
+    } else {
+      setNewPartnerMngData(prev => ({
+        ...prev,
+        [name]: value,
+      } as partnerMngRType));
+    }
+  }
+
   return (
     <>
       <div className={`w-[1240px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
@@ -234,6 +277,21 @@ const AddOrderContents: React.FC<Props> = ({
           </Button>
           }
       </div>
+
+      <PrtMngAddModal
+        open={newPrtMngOpen}
+        setOpen={setNewPrtMngOpen}
+        partnerId={formData.partnerId ?? ''}
+        newPartnerMngData={newPartnerMngData}
+        handlePrtDataChange={handlePrtDataChange}
+        submitEndFn={()=>{
+          setNewPrtMngOpen(false);
+          setNewPartnerMngData(null);
+        }}
+        prtMngSuccessFn={(entity)=>{
+          setCsMngList([...csMngList, {...entity} ]);
+        }}
+      />
       <ToastContainer />
     </>
   )

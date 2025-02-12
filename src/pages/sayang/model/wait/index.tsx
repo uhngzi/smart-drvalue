@@ -29,7 +29,7 @@ const SayangModelWaitPage: React.FC & {
   };
   const [data, setData] = useState<salesOrderRType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['SayangModelWaitPage'],
+    queryKey: ['sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only', pagination],
     queryFn: async () => {
       try {
         return getAPI({
