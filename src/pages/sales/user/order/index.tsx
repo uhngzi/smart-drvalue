@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Button } from "antd";
-import { isValidElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
@@ -53,7 +53,6 @@ import CardList from "@/components/List/CardList";
 import CardInputList from "@/components/List/CardInputList";
 import AntdEditModal from "@/components/Modal/AntdEditModal";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
-import { isValidEmail } from "@/utils/formatEmail";
 import { inputFax } from "@/utils/formatFax";
 
 const SalesUserPage: React.FC & {
@@ -442,7 +441,6 @@ const SalesUserPage: React.FC & {
       console.log(newPartnerMngData);
     }
   }, [drawerOpen, newPrtMngOpen]);
-  useEffect(()=>{console.log(newPartnerMngData)},[newPartnerMngData]);
 
     // 거래처 설정 값 변경 시 실행 함수
   const handlePrtDataChange = (
@@ -492,9 +490,6 @@ const SalesUserPage: React.FC & {
         } as partnerMngRType));
     }
   }
-  useEffect(()=>{
-    console.log(newPartnerMngData)
-  },[newPartnerMngData]);
 
     // 거래처 설정 저장 시 실행 함수
   const handleSubmitPrtData = async () => {
