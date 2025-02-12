@@ -64,16 +64,12 @@ const SayangModelWaitPage: React.FC & {
         onChange={handlePageChange}
       />
       <List>
-        {
-          dataLoading && <>Loading...</>
-        }
-        { !dataLoading &&
-          <AntdTableEdit
-            columns={sayangModelWaitClmn(totalData, router, pagination)}
-            data={data}
-            styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
-          />
-        }
+        <AntdTableEdit
+          columns={sayangModelWaitClmn(totalData, router, pagination)}
+          data={data}
+          styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
+          loading={dataLoading}
+        />
       </List>
     </>
   );

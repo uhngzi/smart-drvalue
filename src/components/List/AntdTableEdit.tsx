@@ -165,6 +165,7 @@ interface Props {
   setEditIndex?: React.Dispatch<SetStateAction<number>>;
   selectedRowKey?: string | number | null;
   setSelectedRowKey?: React.Dispatch<SetStateAction<string | number | null>>;
+  loading?: boolean,
 }
 
 // 컴포넌트
@@ -179,6 +180,7 @@ const AntdTableEdit: React.FC<Props> = ({
   setEditIndex, // 수정 모드일 경우 수정된 CELL INDEX
   selectedRowKey,
   setSelectedRowKey,
+  loading,
 }) => {
   const [form] = Form.useForm();
 
@@ -436,6 +438,7 @@ const AntdTableEdit: React.FC<Props> = ({
             dataSource={dataSource}
             pagination={false}
             scroll={{ x: "max-content" }}
+            loading={loading}
             onRow={(record) => ({
               onDoubleClick: () => {
                 // 더블 클릭 시 편집 모드 진입 (edit true일 때)
