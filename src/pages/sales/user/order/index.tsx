@@ -16,6 +16,7 @@ import Edit from "@/assets/svg/icons/memo.svg";
 import Plus from "@/assets/svg/icons/s_plus.svg";
 import TrArrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
+import Search from "@/assets/svg/icons/s_search.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -569,6 +570,17 @@ const SalesUserPage: React.FC & {
       console.log('catch error : ', e);
     }
   }
+
+  // 우편 번호 검색 버튼 클릭 이벤트
+  const handleSearchAddress = () => {
+    const w: any = window;
+    const d: any = w.daum;
+    new d.Postcode({
+      oncomplete: function (data: any) {
+        handlePrtDataChange('prt', data.roadAddress, 'prtAddr', 'other');
+      },
+    }).open();
+  };
   // ---------------- 거래처  ---------------- 끝
 
   return (
@@ -714,21 +726,43 @@ const SalesUserPage: React.FC & {
               </Button>
             }
             items={[
-              {value:newPartnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input', widthType:'full'},
-              {value:newPartnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtAddr,name:'prtAddr',label:'주소', type:'btnInput', widthType:'full'},
-              {value:newPartnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input', widthType:'full'},
-              {value:newPartnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtTel,name:'prtTel',label:'전화', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtFax,name:'prtFax',label:'팩스', type:'input', widthType:'half'},
-              {value:newPartnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input', widthType:'half'},
+            { value:newPartnerData?.prtNm,
+              name:'prtNm', label:'거래처명', type:'input', widthType:'full'},
+            { value:newPartnerData?.prtRegCd,
+              name:'prtRegCd', label:'식별코드', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtSnm,
+              name:'prtSnm', label:'축약명', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtEngNm,
+              name:'prtEngNm', label:'영문명', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtEngSnm,
+              name:'prtEngSnm', label:'영문축약', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtRegNo,
+              name:'prtRegNo', label:'사업자', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtCorpRegNo,
+              name:'prtCorpRegNo', label:'법인', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtBizType,
+              name:'prtBizType', label:'업태', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtBizCate,
+              name:'prtBizCate',label:'업종', type:'input',widthType:'half' },
+            { value:newPartnerData?.prtAddr,
+              name:'prtAddr', label:'주소', type:'btnInput', widthType:'full',
+              fbtn:
+              <Button type="primary" size="large" onClick={handleSearchAddress} 
+                className="flex h-center gap-8 text-white !text-14 !h-32"
+                style={{background: "#038D07"}}>
+                <p className="w-16 h-16"><Search /></p>
+                <span>우편번호</span>
+              </Button> },
+            { value:newPartnerData?.prtAddrDtl, placeholder: "세부 주소",
+              name:'prtAddrDtl', type:'input', widthType:'full' },
+            { value:newPartnerData?.prtCeo,
+              name:'prtCeo', label:'대표', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtTel,
+              name:'prtTel', label:'전화', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtFax,
+              name:'prtFax', label:'팩스', type:'input', widthType:'half' },
+            { value:newPartnerData?.prtEmail,
+              name:'prtEmail', label:'메일', type:'input', widthType:'half' },
             ]}
             handleDataChange={(e, name, type)=>handlePrtDataChange('prt', e, name, type)}
           />

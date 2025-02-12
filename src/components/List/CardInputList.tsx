@@ -11,12 +11,12 @@ import { isValidTel } from "@/utils/formatPhoneNumber";
 
 interface Item {
   name: string;
-  label: string;
+  label?: string;
   value: any;
   type: string;
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열
-  erorr?: boolean;
-  errorMsg?: string;
+  fbtn?: React.ReactNode;
+  placeholder?: string;
 }
 
 interface CardInputListProps {
@@ -63,11 +63,15 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   "col-span-1"
                 }`}
               >
-                <p className="pb-8">{item.label}</p>
-                <AntdInput 
-                  value={item.value ?? undefined}
-                  onChange={(e)=>handleDataChange(e, item.name, 'input')}
-                />
+                { item.label ? <p className="pb-8">{item.label}</p> : null}
+                <div className="h-center gap-10">
+                  { item.fbtn ?? null }
+                  <AntdInput 
+                    value={item.value ?? undefined}
+                    onChange={(e)=>handleDataChange(e, item.name, 'input')}
+                    placeholder={item?.placeholder}
+                  />
+                </div>
                 { item.value ?
                   // 이메일 형식 체크
                   item.name.toLowerCase().includes("email") && !isValidEmail(item?.value?.toString()) ?
