@@ -2,7 +2,7 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
-import { HotGrade, ModelStatus } from '../type/enum';
+import { FinalGlbStatus, HotGrade, ModelStatus } from '../type/enum';
 import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
@@ -119,20 +119,26 @@ export const salesUserOrderClmn = (
   {
     title: '모델등록',
     width: 150,
-    dataIndex: 'id',
-    key: 'id',
+    dataIndex: 'finalGlbStatus',
+    key: 'finalGlbStatus',
     align: 'center',
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
-        <div 
-          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{
-            setEdit(true);
-            setDetailId(record?.id);
-          }}
-        >
-          <p className="w-18 h-18"><Edit /></p>
-        </div>
+        { value === FinalGlbStatus.REGISTERING ? (
+          <FullChip label="대기" state="yellow" click={()=>{}}/>
+        ) : value === FinalGlbStatus.WAITING ? (
+          <FullChip
+            label="등록중" state="mint" 
+            click={()=>{
+              setEdit(true);
+              setDetailId(record?.id);
+            }}
+          />
+        ) : value === FinalGlbStatus.COMPLETED ? (
+          <FullChip label="완료" click={()=>{}}/>
+        ) : (
+          <FullChip label="폐기" click={()=>{}}/>
+        )}
       </div>
     )
   },

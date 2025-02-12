@@ -19,6 +19,7 @@ import { HotGrade } from "@/data/type/enum";
 import TextArea from "antd/lib/input/TextArea";
 import { Button, Radio } from "antd";
 import { partnerMngRType } from "@/data/type/base/partner";
+import dayjs from "dayjs";
 
 interface Props {
   csList: Array<{value:any,label:string}>;
@@ -53,7 +54,7 @@ const AddOrderContents: React.FC<Props> = ({
 }) => {
   return (
     <>
-      <div className={`w-[1240px] min-h-[515px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
+      <div className={`w-[1240px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white`}>
         <LabelMedium label="고객발주 등록"/>
         <div className="w-full h-1 border-t-1"/>
         <div className="w-full h-[421px] h-center gap-30 overflow-auto">
@@ -85,7 +86,7 @@ const AddOrderContents: React.FC<Props> = ({
             <div className="flex flex-col gap-8">
               <LabelThin label="발주일"/>
               <AntdDatePicker
-                value={formData.orderDt}
+                value={formData.orderDt ?? dayjs()}
                 onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
                 styles={{br:"2px",bc:"#D5D5D5"}}
                 className="w-full h-36"
@@ -100,7 +101,7 @@ const AddOrderContents: React.FC<Props> = ({
                   {value:HotGrade.URGENT,label:'긴급'},
                   {value:HotGrade.NORMAL,label:'일반'},
                 ]}
-                value={formData.hotGrade}
+                value={formData.hotGrade ?? HotGrade.NORMAL}
                 onChange={(e)=>{
                   const value = e+'' as HotGrade;
                   setFormData({...formData, hotGrade:value});
@@ -137,7 +138,7 @@ const AddOrderContents: React.FC<Props> = ({
           </div>
         </div>
       </div>
-      <div className="w-[1240px] min-h-[333px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
+      <div className="w-[1240px] min-h-[200px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
         <div className="flex gap-10 h-center">
           <LabelMedium label="담당자 정보"/>
           <Button className="w-30 !h-24 v-h-center !p-0"><SplusIcon/></Button>

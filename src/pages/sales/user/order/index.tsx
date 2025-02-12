@@ -51,6 +51,7 @@ import CardList from "@/components/List/CardList";
 import { MOCK } from "@/utils/Mock";
 import CardInputList from "@/components/List/CardInputList";
 import AntdEditModal from "@/components/Modal/AntdEditModal";
+import { HotGrade } from "@/data/type/enum";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -159,7 +160,7 @@ const SalesUserPage: React.FC & {
         orderTxt: data.orderTxt,
         totalOrderPrice: data.totalOrderPrice,
         empId: data.emp.id,
-        hotGrade: data.hotGrade,
+        hotGrade: data.hotGrade ?? HotGrade.NORMAL,
         files: data.files.map((file) => { return file.storageId }),
       });
       setNewProducts(data.products.map((prd: salesOrderProductRType) => ({
@@ -176,7 +177,7 @@ const SalesUserPage: React.FC & {
         orderPrdPrice: prd.orderPrdPrice,
         orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
         orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
-        orderPrdHotGrade: prd.orderPrdHotGrade,
+        orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
       })));
       setStepCurrent(1);
       setOpen(true);
@@ -239,6 +240,8 @@ const SalesUserPage: React.FC & {
   const handleSubmitOrder = async () => {
     const jsonData = {
       ...formData,
+      hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
+      orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
       orderName: newProducts.length > 0 ? newProducts[0].orderTit+'외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
       orderRepDt: new Date(),
       empId: me?.id,
@@ -247,7 +250,7 @@ const SalesUserPage: React.FC & {
         currPrdInfo: product.currPrdInfo,
         modelId: product.modelId,
         modelStatus: product.modelStatus,
-        orderDt: formData.orderDt,
+        orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
         // orderNo: index.toString(),
         orderTit: product.orderTit,
         prtOrderNo: product.prtOrderNo,
@@ -257,7 +260,7 @@ const SalesUserPage: React.FC & {
         orderPrdPrice: product.orderPrdPrice,
         orderPrdDueReqDt: product.orderPrdDueReqDt,
         orderPrdDueDt: product.orderPrdDueDt,
-        orderPrdHotGrade: formData.hotGrade,
+        orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
       }))
     } as salesOrderCUType;
     console.log(JSON.stringify(jsonData));
@@ -305,11 +308,11 @@ const SalesUserPage: React.FC & {
         partnerManagerId: formData.partnerManagerId,
         orderName: newProducts.length > 0 ? newProducts[0].orderTit+' 외 '+newProducts.length+'건' : dayjs().format('YYYY/MM/DD')+'-'+me?.userName,
         totalOrderPrice: formData.totalOrderPrice,
-        orderDt: formData.orderDt,
+        orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
         orderRepDt: formData.orderRepDt,
         orderTxt: formData.orderTxt,
         empId: me?.id,
-        hotGrade: formData.hotGrade,
+        hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
         files: formData.files,
       },
       products: {
@@ -317,7 +320,7 @@ const SalesUserPage: React.FC & {
           currPrdInfo: prd.currPrdInfo,
           modelId: prd.modelId,
           modelStatus: prd.modelStatus,
-          orderDt: formData.orderDt,
+          orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
           // orderNo: index.toString(),
           orderTit: prd.orderTit,
           prtOrderNo: prd.prtOrderNo,
@@ -327,13 +330,13 @@ const SalesUserPage: React.FC & {
           orderPrdPrice: prd.orderPrdPrice,
           orderPrdDueReqDt: prd.orderPrdDueReqDt,
           orderPrdDueDt: prd.orderPrdDueDt,
-          orderPrdHotGrade: formData.hotGrade,
+          orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
         })),
         update: newProducts.filter(f=>!f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
           id: prd.id,
           currPrdInfo: prd.currPrdInfo,
           modelStatus: prd.modelStatus,
-          orderDt: formData.orderDt,
+          orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
           // orderNo: index.toString(),
           orderTit: prd.orderTit,
           prtOrderNo: prd.prtOrderNo,
@@ -343,7 +346,7 @@ const SalesUserPage: React.FC & {
           orderPrdPrice: prd.orderPrdPrice,
           orderPrdDueReqDt: prd.orderPrdDueReqDt,
           orderPrdDueDt: prd.orderPrdDueDt,
-          orderPrdHotGrade: formData.hotGrade,
+          orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
         }))
       }
     }
@@ -574,7 +577,7 @@ const SalesUserPage: React.FC & {
           {
             // 모델 등록
             stepCurrent > 0 ?
-            <div className="h-full flex flex-col">
+            <div className="flex flex-col">
               <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
                 <AntdTableEdit
                   create={true}

@@ -2,7 +2,7 @@
 
 import { Dayjs } from "dayjs";
 import { partnerMngRType, partnerRType } from "../base/partner";
-import { HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus } from "../enum";
+import { FinalGlbStatus, HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus } from "../enum";
 
 // 고객발주 읽기 타입
 export type salesOrderRType = {
@@ -16,7 +16,8 @@ export type salesOrderRType = {
   orderTxt: string;
   isDiscard: boolean;
   totalOrderPrice: number;
-  hotGrade: HotGrade,
+  hotGrade: HotGrade;
+  finalGlbStatus: FinalGlbStatus;
   emp: {
     id: string;
     name: string;
@@ -103,6 +104,7 @@ export type salesOrderDetailRType = {
     prt: partnerRType;
     mng: partnerMngRType;
   }
+  finalGlbStatus: FinalGlbStatus;
 }
 
 // 고객발주 생성, 수정 타입
@@ -143,9 +145,9 @@ export const salesOrderReq = () => {
   return [
     { field: 'partnerId', label: '고객' },
     { field: 'partnerManagerId', label: '담당자 정보' },
-    { field: 'orderDt', label: '발주일' },
     { field: 'orderTxt', label: '발주 메일 내용' },
-    { field: 'hotGrade', label: '긴급 상태' },
+    // { field: 'orderDt', label: '발주일' },
+    // { field: 'hotGrade', label: '긴급 상태' },
     // { field: 'orderName', label: '발주명' },
     // { field: 'totalOrderPrice', label: '총 수주 금액' },
     // { field: 'orderRepDt', label: '납기요청일' },

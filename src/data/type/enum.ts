@@ -94,3 +94,10 @@ export enum AnyStatus {
   COMPLETED = 'any_reg_completed',
   DISCARDED = 'any_reg_discarded'
 }
+
+export enum FinalGlbStatus {
+  UNKNOWN =  'unknown',
+  WAITING = 'model_reg_waiting', // 대기
+  REGISTERING = 'model_reg_registering', // 등록중
+  COMPLETED = 'model_reg_completed', // 완료
+}
