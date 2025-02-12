@@ -69,15 +69,15 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       icon: <p className={iconClassNm}><Sales /></p>,
       children: [
         {
-          key: 'sales/user',
-          title: 'sales/user/order',
-          label: '고객발주/견적',
-        },
-        {
           key: 'sales/order',
           title: 'sales/order',
-          label: '수주',
+          label: '고객발주/견적',
         },
+        // {
+        //   key: 'sales/order',
+        //   title: 'sales/order',
+        //   label: '수주',
+        // },
       ]
     },
     {
