@@ -1,6 +1,6 @@
 import type { InputRef } from 'antd';
 import { useEffect, useRef, useState } from "react";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { getAPI } from "@/api/get";
@@ -18,12 +18,13 @@ import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { ModelStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
-import { orderModelType } from "@/data/type/sayang/models";
+import { modelsType, orderModelType } from "@/data/type/sayang/models";
 import { useBase } from '@/data/context/BaseContext';
 import useToast from '@/utils/useToast';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
+import Loading from '@/components/Loading/Loading';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -50,6 +51,31 @@ const SayangModelAddPage: React.FC & {
     spTypeSelectList,
   } = useBase();
   
+  const [modelDataLoading, setModelDataLoading] = useState<boolean>(true);
+  const [modelData, setModelData] = useState<modelsType[]>([]);
+  const { data:modelQueryData, isLoading:modelQueryLoading, refetch:modelQueryRefetch } = useQuery({
+    queryKey: ['models/jsxcrud/many'],
+    queryFn: async () =>{
+      try {
+        return getAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'models/jsxcrud/many',
+        });
+      } catch (e) {
+        console.log('models/jsxcrud/many Error : ', e);
+        return;
+      }
+    }
+  });
+  useEffect(()=>{
+    setModelDataLoading(true);
+    if(!modelQueryLoading && modelQueryData?.resultCode === "OK_0000") {
+      setModelData(modelQueryData?.data.data ?? []);
+      setModelDataLoading(false);
+    }
+  }, [modelQueryData]);
+
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [data, setData] = useState<orderModelType[]>([]);
@@ -78,9 +104,11 @@ const SayangModelAddPage: React.FC & {
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const arr = (queryData?.data.data ?? []).map((d:orderModelType, index:number) => ({
         ...d,
+        // model: 
         tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",  // 임시 저장된 값 파싱해서 가져오기
         index: (queryData?.data?.data?.length ?? 0) - index,
       }));
+      console.log('arr', arr);
       setData(arr);
       setDataLoading(false);
 
@@ -285,6 +313,7 @@ const SayangModelAddPage: React.FC & {
   }
 
   const [newFlag, setNewFlag] = useState<boolean>(true);
+  const [selectId, setSelectId] = useState<string | null>(null);
 
   return (
     <>
@@ -293,7 +322,9 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:1600}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        {data.map((model:orderModelType, index:number) => (
+        { dataLoading && <Loading loading={dataLoading} />}
+        { !dataLoading &&
+        data.map((model:orderModelType, index:number) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
@@ -325,6 +356,7 @@ const SayangModelAddPage: React.FC & {
                   className="w-[180px!important]" styles={{ht:'32px'}}
                   value={model.model?.prdNm}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.prdNm', e.target.value)}
+                  readonly={selectId === model.id ? !newFlag : undefined}
                 />
                 <p className="h-center justify-end">원판 </p>
                 <AntdSelect
@@ -332,12 +364,14 @@ const SayangModelAddPage: React.FC & {
                   value={model.model?.board?.id ?? boardSelectList?.[0]?.value}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.board.id', e)}
                   className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+                  disabled={selectId === model.id ? !newFlag : undefined}
                 />
                 <p className="h-center justify-end">제조사 </p>
                 <AntdInput 
                   value={model.model?.mnfNm}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.mnfNm', e.target.value)}
                   className="w-[120px!important]" styles={{ht:'32px'}}
+                  readonly={selectId === model.id ? !newFlag : undefined}
                 />
                 <p className="h-center justify-end">재질 </p>
                 <AntdSelect
@@ -345,6 +379,7 @@ const SayangModelAddPage: React.FC & {
                   value={model.model?.material?.id ?? metarialSelectList?.[0]?.value}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.material.id', e)}
                   className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+                  disabled={selectId === model.id ? !newFlag : undefined}
                 />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
@@ -373,6 +408,8 @@ const SayangModelAddPage: React.FC & {
                   spPrintSelectList,
                   spTypeSelectList,
                   handleModelDataChange,
+                  newFlag,
+                  selectId,
                 )}
                 data={[model]}
                 styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
@@ -382,6 +419,11 @@ const SayangModelAddPage: React.FC & {
             <div className="w-full h-32 flex justify-end gap-5">
               <FullOkButtonSmall
                 click={()=>{
+                  //그대로 등록일 경우에는 바로 확정만 진행
+                  if(!newFlag && selectId === model.id) {
+                    handleConfirm(model.id, model?.editModel?.id);
+                    return;
+                  }
                   handleSubmit(model.id);
                 }}
                 label="확정저장"
@@ -426,6 +468,11 @@ const SayangModelAddPage: React.FC & {
         products={data}
         setProducts={setData}
         setNewFlag={setNewFlag}
+        selectId={selectId}
+        setSelectId={setSelectId}
+        modelData={modelData}
+        setModelData={setModelData}
+        modelDataLoading={modelDataLoading}
       />
       <ToastContainer />
     </>

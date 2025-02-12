@@ -33,6 +33,11 @@ interface Props {
   products: orderModelType[];
   setProducts: React.Dispatch<SetStateAction<orderModelType[]>>;
   setNewFlag: React.Dispatch<SetStateAction<boolean>>;
+  selectId: string | null;
+  setSelectId: React.Dispatch<SetStateAction<string | null>>;
+  modelData: modelsType[];
+  setModelData: React.Dispatch<SetStateAction<modelsType[]>>;
+  modelDataLoading: boolean;
 }
 
 const AddDrawer:React.FC<Props> = ({
@@ -44,6 +49,11 @@ const AddDrawer:React.FC<Props> = ({
   products,
   setProducts,
   setNewFlag,
+  selectId,
+  setSelectId,
+  modelData,
+  setModelData,
+  modelDataLoading,
 }) => {
   const items = (record: any): MenuProps['items'] => [
     {
@@ -51,7 +61,7 @@ const AddDrawer:React.FC<Props> = ({
       key: 0,
       onClick:()=>{
         setAlertOpen(true);
-        setSelectKey(0);
+        setSelectMenuKey(0);
         setSelectRecord(record);
       },
     },
@@ -60,7 +70,7 @@ const AddDrawer:React.FC<Props> = ({
       key: 1,
       onClick:()=>{
         setAlertOpen(true);
-        setSelectKey(0);
+        setSelectMenuKey(1);
         setSelectRecord(record);
       }
     },
@@ -92,58 +102,30 @@ const AddDrawer:React.FC<Props> = ({
     }
   }, [orderQueryData]);
 
-  const [modelDataLoading, setModelDataLoading] = useState<boolean>(true);
-  const [modelData, setModelData] = useState<modelsType[]>([]);
-  const { data:modelQueryData, isLoading:modelQueryLoading, refetch:modelQueryRefetch } = useQuery({
-    queryKey: ['models/jsxcrud/many'],
-    queryFn: async () =>{
-      try {
-        return getAPI({
-          type: 'core-d1',
-          utype: 'tenant/',
-          url: 'models/jsxcrud/many',
-        });
-      } catch (e) {
-        console.log('models/jsxcrud/many Error : ', e);
-        return;
-      }
-    }
-  });
-  useEffect(()=>{
-    setModelDataLoading(true);
-    if(!modelQueryLoading && modelQueryData?.resultCode === "OK_0000") {
-      setModelData(modelQueryData?.data.data ?? []);
-      setModelDataLoading(false);
-    }
-  }, [modelQueryData]);
-
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
     setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
   }, [searchModel]);
   
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [selectKey, setSelectKey] = useState<number | null>(null);
-  const [selectId, setSelectId] = useState<string | null>(null);
+  const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
   const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
   const handleSelectMenu = () => {
-    if(selectKey===0) setNewFlag(true);   // 복사하여 새로 등록
-    else              setNewFlag(false);  // 그대로 등록
-      
+    if(selectMenuKey===0) setNewFlag(true);   // 복사하여 새로 등록
+    else                  setNewFlag(false);  // 그대로 등록
+    
     if(selectRecord !== null) {
       const newData = [...products];
       const index = newData.findIndex((item) => selectId === item.id);
       if (index > -1) {
         newData[index] = { ...newData[index], model:{ ...selectRecord }, editModel: { ...selectRecord } };
-        console.log(selectRecord);
-        console.log(newData[index]);
         setProducts(newData);
       }
       setAlertOpen(false);
       setDrawerOpen(false);
     }
   }
-
+  
   return (
     <>
       <AntdDrawer
