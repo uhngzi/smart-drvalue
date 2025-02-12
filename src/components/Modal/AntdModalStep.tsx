@@ -78,7 +78,7 @@ export const AntdModalStep2: React.FC<Props> = ({
       footer={footer||null}
       centered
     >
-      <div className="relative" style={{height: full ? '100%' : 'fit-content'}}>
+      <div className="relative overflow-y-auto" style={{height: full ? '100%' : 'fit-content'}}>
 
         <div className="w-full h-80 shrink-0 gap-10 px-30 v-between-h-center">
           <Steps
