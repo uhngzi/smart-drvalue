@@ -74,4 +74,6 @@ const AntdInputStyled = styled.div<{
   }
 `;
 
+AntdInput.displayName = "AntdInput";
+
 export default AntdInput;
