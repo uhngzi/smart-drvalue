@@ -68,21 +68,23 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   value={item.value ?? undefined}
                   onChange={(e)=>handleDataChange(e, item.name, 'input')}
                 />
-                { // 이메일 형식 체크
-                  item.name.toLowerCase().includes("email") && !isValidEmail(item?.value.toString()) ?
+                { item.value ?
+                  // 이메일 형식 체크
+                  item.name.toLowerCase().includes("email") && !isValidEmail(item?.value?.toString()) ?
                   <div className="h-center gap-3 text-[red]">
                     <p className="w-15 h-15"><Hint/></p>
                     올바르지 않은 이메일입니다.
                   </div> :
                   // 전화번호 형식 체크
-                  (item.name.toLowerCase().includes("tel") ||
-                    item.name.toLowerCase().includes("mobile")) &&
-                    !isValidTel(item?.value.toString()) ? 
+                  (item.name.toLowerCase().includes("tel")
+                  || item.name.toLowerCase().includes("mobile"))
+                  && !isValidTel(item?.value?.toString()) ? 
                     <div className="h-center gap-3 text-[red]">
                       <p className="w-15 h-15"><Hint/></p>
                       올바르지 않은 전화번호입니다.
                     </div> :
-                    <></>
+                  <></>
+                  :<></>
                 }
               </div>
             ))}
