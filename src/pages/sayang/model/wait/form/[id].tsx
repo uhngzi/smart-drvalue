@@ -164,8 +164,8 @@ const SayangModelAddPage: React.FC & {
     setData(updatedData); // 상태 업데이트
   }; 
 
-  // 임시저장 시 실행되는 함수
-  const handleSumbitTemp = async (id:string) => {
+  // 임시저장 시 실행되는 함수 & 데이터 입력을 위해 확정 시에도 실행됨
+  const handleSumbitTemp = async (id:string, temp:boolean) => {
     try {
       const tempData = data.find((d:orderModelType) => d.id === id);
       const jsonData = {
@@ -203,7 +203,7 @@ const SayangModelAddPage: React.FC & {
       }, id, jsonData);
   
       if(result.resultCode === 'OK_0000') {
-        showToast("임시저장 완료", "success");
+        if(temp)  showToast("임시저장 완료", "success");
     
         refetch();
       } else {
@@ -303,6 +303,7 @@ const SayangModelAddPage: React.FC & {
 
     if(resultPatch.resultCode === 'OK_0000') {
       showToast("확정저장 완료", "success");
+      handleSumbitTemp(id, false);
   
       refetch();
     } else {
@@ -430,7 +431,7 @@ const SayangModelAddPage: React.FC & {
               />
               <Button variant="outlined" color="primary"
                 onClick={()=>{
-                  handleSumbitTemp(model.id);
+                  handleSumbitTemp(model.id, true);
                 }}
               >임시저장</Button>
             </div>

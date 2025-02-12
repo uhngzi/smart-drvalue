@@ -133,7 +133,7 @@ const AddDrawer:React.FC<Props> = ({
         width={643}
         close={()=>{setDrawerOpen(false)}}
       >
-        <div className="w-full h-full px-20 py-30 flex flex-col gap-20">
+        <div className="w-full px-20 py-30 flex flex-col gap-20">
           <TabSmall
             items={[
               {key:1,text:'고객발주(요구)정보'},
@@ -236,7 +236,7 @@ const AddDrawer:React.FC<Props> = ({
                   <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
                 </div>
               </div>
-              <div>
+              <div className="">
                 { !modelDataLoading &&
                   <AntdTableEdit
                     columns={[
