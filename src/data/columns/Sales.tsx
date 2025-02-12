@@ -12,7 +12,6 @@ import dayjs from 'dayjs';
 
 export const salesUserOrderClmn = (
   totalData: number,
-  openPrtDrawer: () => void,
   setEdit: React.Dispatch<React.SetStateAction<boolean>>,
   setDetailId: React.Dispatch<React.SetStateAction<string>>,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
@@ -37,7 +36,6 @@ export const salesUserOrderClmn = (
       <div
         className="w-full h-full v-h-center cursor-pointer"
         onClick={()=>{
-          openPrtDrawer();
           setPartnerData(record?.prtInfo?.prt);
           setPartnerMngData(record?.prtInfo?.mng);
         }}

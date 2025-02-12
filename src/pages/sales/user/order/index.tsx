@@ -52,10 +52,12 @@ import { MOCK } from "@/utils/Mock";
 import CardInputList from "@/components/List/CardInputList";
 import AntdEditModal from "@/components/Modal/AntdEditModal";
 import { HotGrade } from "@/data/type/enum";
+import useToast from "@/utils/useToast";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const { showToast, ToastContainer } = useToast();
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -127,17 +129,10 @@ const SalesUserPage: React.FC & {
   }
     // 고객 발주 모달창 OPEN
   const [ open, setOpen ] = useState<boolean>(false);
-    // 결과 모달창을 위한 변수
-  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
-  const [ resultType, setResultType ] = useState<AlertType>('info');
-  const [ resultMsg, setResultMsg ] = useState<string>('');
-  
     // 발주 저장 변수
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
     // 모델 저장 변수
-  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([
-    // {...newDataSalesOrderProductCUType(), id:'new-1'}
-  ]);
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([]);
     // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
   const [ detailId, setDetailId ] = useState<string>("");
@@ -185,7 +180,6 @@ const SalesUserPage: React.FC & {
     }
   }
   useEffect(()=>{
-    console.log(edit);
     if(edit && detailId !== "") {
       fetchDetail();
     }
@@ -269,9 +263,7 @@ const SalesUserPage: React.FC & {
     // 모델 내 필수 값 입력 체크
     const prdVal = validReq(jsonData.products, salesOrderProcuctReq());
     if(!prdVal.isValid) {
-      setResultMsg(prdVal.missingLabels+'은(는) 필수 입력입니다.');
-      setResultType("error");
-      setResultOpen(true);
+      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
     }
 
@@ -287,17 +279,14 @@ const SalesUserPage: React.FC & {
       console.log('ok');
       refetch();
       setOpen(false);
-      setResultType("success");
-      setResultMsg("고객 발주가 완료되었습니다.");
-      setResultOpen(true);
       handleCloseOrder();
+
+      showToast("고객 발주가 완료되었습니다.", "success");
     } else {
-      console.log(result);
+      const msg = result?.response?.data?.message;
       setOpen(false);
-      setResultType("error");
-      setResultMsg("고객 발주가 실패하였습니다.");
-      setResultOpen(true);
       handleCloseOrder();
+      showToast(msg, "error");
     }
   }
 
@@ -356,18 +345,14 @@ const SalesUserPage: React.FC & {
     // 발주 내 필수 값 입력 체크
     const ordVal = validReq(jsonData.order, salesOrderReq());
     if(!ordVal.isValid) {
-      setResultMsg(ordVal.missingLabels+'은(는) 필수 입력입니다.');
-      setResultType("error");
-      setResultOpen(true);
+      showToast(ordVal.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
     }
 
     // 모델 내 필수 값 입력 체크
     const prdVal = validReq(jsonData.products.update, salesOrderProcuctReq());
     if(!prdVal.isValid) {
-      setResultMsg(prdVal.missingLabels+'은(는) 필수 입력입니다.');
-      setResultType("error");
-      setResultOpen(true);
+      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
     }
 
@@ -381,20 +366,16 @@ const SalesUserPage: React.FC & {
     );
 
     if(result.resultCode === 'OK_0000') {
-      console.log('ok');
       refetch();
       setOpen(false);
-      setResultType("success");
-      setResultMsg("고객 발주 수정이 완료되었습니다.");
-      setResultOpen(true);
       handleCloseOrder();
+      showToast("고객 발주 수정이 완료되었습니다.", "success");
     } else {
       console.log(result);
+      const msg = result?.response?.data?.message;
       setOpen(false);
-      setResultType("error");
-      setResultMsg("고객 발주 수정이 실패하였습니다.");
-      setResultOpen(true);
       handleCloseOrder();
+      showToast(msg, "error");
     }
   }
   // --------------- 고객 발주  --------------- 끝
@@ -410,10 +391,44 @@ const SalesUserPage: React.FC & {
     // Drawer 내 수정 클릭 시 거래처 설정
   const [ newPrtOpen, setNewPrtOpen ] = useState<boolean>(false);
   const [ newPartnerData, setNewPartnerData ] = useState<partnerRType | null>(null);
-  // Drawer 내 수정 클릭 시 거래처 담당자 설정 모달 OPEN
+    // Drawer 내 수정 클릭 시 거래처 담당자 설정 모달 OPEN
   const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
   const [ newPartnerMngData, setNewPartnerMngData ] = useState<partnerMngRType | null>(null);
   
+    // 거래처 클릭 시 값이 변하고 Drawer 오픈
+  useEffect(()=>{
+    if(partnerData !== null && partnerMngData !== null) {
+      setDrawerPrtItems([
+        { label: '거래처명', value: partnerData?.prtNm ?? '-', widthType: 'full' },
+        { label: '거래처 식별코드', value: partnerData?.prtRegCd ?? '-', widthType: 'half' },
+        { label: '거래처 축약명', value: partnerData?.prtSnm ?? '-', widthType: 'half' },
+        { label: '거래처 영문명', value: partnerData?.prtEngNm ?? '-', widthType: 'half' },
+        { label: '거래처 영문 축약명', value: partnerData?.prtEngSnm ?? '-', widthType: 'half' },
+        { label: '사업자등록번호', value: partnerData?.prtRegNo ?? '-', widthType: 'half' },
+        { label: '법인등록번호', value: partnerData?.prtCorpRegNo ?? '-', widthType: 'half' },
+        { label: '업태', value: partnerData?.prtBizType ?? '-', widthType: 'half' },
+        { label: '업종', value: partnerData?.prtBizCate ?? '-', widthType: 'half' },
+        { label: '주소', value: `${partnerData?.prtAddr ?? '-'} ${partnerData?.prtAddrDtl ?? '-'}`, widthType: 'full' },
+        { label: '대표자명', value: partnerData?.prtCeo ?? '-', widthType: 'half' },
+        { label: '전화번호', value: partnerData?.prtTel ?? '-', widthType: 'half' },
+        { label: '팩스번호', value: partnerData?.prtFax ?? '-', widthType: 'half' },
+        { label: '이메일', value: partnerData?.prtEmail ?? '-', widthType: 'half' },
+      ]);
+      setDrawerMngItems([
+        { label: '담당자명', value: partnerMngData?.prtMngNm ?? '-', widthType: 'full' },
+        { label: '부서명', value: partnerMngData?.prtMngDeptNm ?? '-', widthType: 'half' },
+        { label: '팀명', value: partnerMngData?.prtMngTeamNm ?? '-', widthType: 'half' },
+        { label: '전화번호', value: partnerMngData?.prtMngTel ?? '-', widthType: 'half' },
+        { label: '휴대번호', value: partnerMngData?.prtMngMobile ?? '-', widthType: 'half' },
+        { label: '팩스번호', value: partnerMngData?.prtMngFax ?? '-', widthType: 'half' },
+        { label: '이메일', value: partnerMngData?.prtMngEmail ?? '-', widthType: 'half' },
+      ]);
+      setNewPartnerData(partnerData);
+      setNewPartnerMngData(partnerMngData);
+      setDrawerOpen(true);
+    }
+  }, [partnerData, partnerMngData]);
+
     // 거래처 설정 값 변경 시 실행 함수
   const handlePrtDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -421,7 +436,6 @@ const SalesUserPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string,
   ) => {
-    console.log(type, name, e);
     let value = e;
     if(type === "input" && typeof e !== "string") {
       value = e.target.value;
@@ -431,86 +445,62 @@ const SalesUserPage: React.FC & {
       setNewPartnerData(prev => ({
         ...prev,
         [name]: {
-          [key]: e.toString(),
+          [key]: value,
         },
       } as partnerRType));
     } else {
       setNewPartnerData(prev => ({
         ...prev,
-        [name]: e,
+        [name]: value,
       } as partnerRType));
     }
   }
 
     // 거래처 설정 저장 시 실행 함수
-  const handleSubmitPrtData = async () => {
+  const handleSubmitPrtData = async (type:'prt' | 'mng') => {
     try {
-      const result = await patchAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'biz-partner',
-        jsx: 'jsxcrud'},
-        partnerData?.id ?? '0',
-        { prtTypeEm: 'cs',
-          prtNm: partnerData?.prtNm,
-          prtRegCd: partnerData?.prtRegCd,
-          prtSnm: partnerData?.prtSnm,
-          prtEngNm: partnerData?.prtEngNm,
-          prtEngSnm: partnerData?.prtEngSnm,
-          prtRegNo: partnerData?.prtRegNo,
-          prtCorpRegNo: partnerData?.prtCorpRegNo,
-          prtBizType: partnerData?.prtBizType,
-          prtBizCate: partnerData?.prtBizCate,
-          prtAddr: partnerData?.prtAddr,
-          prtAddrDtl: partnerData?.prtAddrDtl,
-          prtCeo: partnerData?.prtCeo,
-          prtTel: partnerData?.prtTel,
-          prtFax: partnerData?.prtFax,
-          prtEmail: partnerData?.prtEmail } as partnerCUType
-      );
-      
-      if(result.resultCode === "OK_0000") {
-        refetch();
-        csRefetch();
+      if(type === 'prt') {
+        const result = await patchAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'biz-partner',
+          jsx: 'jsxcrud'},
+          partnerData?.id ?? '0',
+          { prtTypeEm: 'cs',
+            prtNm: newPartnerData?.prtNm,
+            prtRegCd: newPartnerData?.prtRegCd,
+            prtSnm: newPartnerData?.prtSnm,
+            prtEngNm: newPartnerData?.prtEngNm,
+            prtEngSnm: newPartnerData?.prtEngSnm,
+            prtRegNo: newPartnerData?.prtRegNo,
+            prtCorpRegNo: newPartnerData?.prtCorpRegNo,
+            prtBizType: newPartnerData?.prtBizType,
+            prtBizCate: newPartnerData?.prtBizCate,
+            prtAddr: newPartnerData?.prtAddr,
+            prtAddrDtl: newPartnerData?.prtAddrDtl,
+            prtCeo: newPartnerData?.prtCeo,
+            prtTel: newPartnerData?.prtTel,
+            prtFax: newPartnerData?.prtFax,
+            prtEmail: newPartnerData?.prtEmail } as partnerCUType
+        );
+        
+        setDrawerOpen(false);
+        setNewPrtOpen(false);
+        if(result.resultCode === "OK_0000") {
+          refetch();
+          csRefetch();
+
+          showToast("고객 정보가 성공적으로 수정되었습니다.", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
       }
     } catch(e) {
       console.log('catch error : ', e);
     }
   }
   // ---------------- 거래처  ---------------- 끝
-
-  function openPrtDrawer(){
-    console.log(partnerData)
-    // const prtItems = [
-    //   { label: '거래처명', value: partnerData?.prtNm ?? '-', widthType: 'full' },
-    //   { label: '거래처 식별코드', value: partnerData?.prtRegCd ?? '-', widthType: 'half' },
-    //   { label: '거래처 축약명', value: partnerData?.prtSnm ?? '-', widthType: 'half' },
-    //   { label: '거래처 영문명', value: partnerData?.prtEngNm ?? '-', widthType: 'half' },
-    //   { label: '거래처 영문 축약명', value: partnerData?.prtEngSnm ?? '-', widthType: 'half' },
-    //   { label: '사업자등록번호', value: partnerData?.prtRegNo ?? '-', widthType: 'half' },
-    //   { label: '법인등록번호', value: partnerData?.prtCorpRegNo ?? '-', widthType: 'half' },
-    //   { label: '업태', value: partnerData?.prtBizwidthType ?? '-', widthType: 'half' },
-    //   { label: '업종', value: partnerData?.prtBizCate ?? '-', widthType: 'half' },
-    //   { label: '주소', value: `${partnerData?.prtAddr ?? '-'} ${partnerData?.prtAddrDtl ?? '-'}`, widthType: 'full' },
-    //   { label: '대표자명', value: partnerData?.prtCeo ?? '-', widthType: 'half' },
-    //   { label: '전화번호', value: partnerData?.prtTel ?? '-', widthType: 'half' },
-    //   { label: '팩스번호', value: partnerData?.prtFax ?? '-', widthType: 'half' },
-    //   { label: '이메일', value: partnerData?.prtEmail ?? '-', widthType: 'half' },
-      
-    // ];
-    // const mngItems = [
-    //   { label: '담당자명', value: partnerMngData?.prtMngNm ?? '-', widthType: 'full' },
-    //   { label: '부서명', value: partnerMngData?.prtMngDeptNm ?? '-', widthType: 'half' },
-    //   { label: '팀명', value: partnerMngData?.prtMngTeamNm ?? '-', widthType: 'half' },
-    //   { label: '전화번호', value: partnerMngData?.prtMngTel ?? '-', widthType: 'half' },
-    //   { label: '휴대번호', value: partnerMngData?.prtMngMobile ?? '-', widthType: 'half' },
-    //   { label: '팩스번호', value: partnerMngData?.prtMngFax ?? '-', widthType: 'half' },
-    //   { label: '이메일', value: partnerMngData?.prtMngEmail ?? '-', widthType: 'half' },
-    // ]
-    setDrawerPrtItems(MOCK.prtItems);
-    setDrawerMngItems(MOCK.mngItems);
-    setDrawerOpen(true);
-  }
 
   return (
     <>
@@ -530,7 +520,6 @@ const SalesUserPage: React.FC & {
         <AntdTableEdit
           columns={salesUserOrderClmn(
             totalData,
-            openPrtDrawer,
             setEdit,
             setDetailId,
             setPartnerData,
@@ -567,9 +556,7 @@ const SalesUserPage: React.FC & {
               handleNextStep={()=>{
                 const orderVal = validReq(formData, salesOrderReq());
                 if(!orderVal.isValid) {
-                  setResultMsg(orderVal.missingLabels+'은(는) 필수 입력입니다.');
-                  setResultType("error");
-                  setResultOpen(true);
+                  showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "success");
                 } else {
                   setStepCurrent(1);
                 }
@@ -645,144 +632,73 @@ const SalesUserPage: React.FC & {
             btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Plus/></span> 담당자 추가</div>} 
             items={drawerMngItems} btnClick={() => setNewPrtMngOpen(true)}/>
         </div>
-        {/* <div onClick={()=>{setNewPrtOpen(true);}}>수정</div>
-        <div>
-          거래처명 : {partnerData?.prtNm ?? '-'}<br/>
-          식별코드 : {partnerData?.prtRegCd ?? '-'}<br/>
-          축약명 : {partnerData?.prtSnm ?? '-'}<br/>
-          영문명 : {partnerData?.prtEngNm ?? '-'}<br/>
-          영문 축약 : {partnerData?.prtEngSnm ?? '-'}<br/>
-          사업자 : {partnerData?.prtRegNo ?? '-'}<br/>
-          법인 : {partnerData?.prtCorpRegNo ?? '-'}<br/>
-          업태 : {partnerData?.prtBizType ?? '-'}<br/>
-          업종 : {partnerData?.prtBizCate ?? '-'}<br/>
-          주소 : {partnerData?.prtAddr ?? '-'}<br/>
-          주소세부 : {partnerData?.prtAddrDtl ?? '-'}<br/>
-          대표 : {partnerData?.prtCeo ?? '-'}<br/>
-          전화 : {partnerData?.prtTel ?? '-'}<br/>
-          팩스 : {partnerData?.prtFax ?? '-'}<br/>
-          이메일 : {partnerData?.prtEmail ?? '-'}<br/>
-        </div>
-        <div onClick={()=>{setNewPrtMngOpen(true);}}>수정</div>
-        <div>
-          담당자명 : {partnerMngData?.prtMngNm}<br/>
-          부서 : {partnerMngData?.prtMngDeptNm}<br/>
-          팀 : {partnerMngData?.prtMngTeamNm}<br/>
-          전화 : {partnerMngData?.prtMngTel}<br/>
-          휴대 : {partnerMngData?.prtMngMobile}<br/>
-          이메일 : {partnerMngData?.prtMngEmail}<br/>
-          팩스 : {partnerMngData?.prtMngFax}<br/>
-        </div> */}
       </AntdDrawer>
 
       <AntdEditModal
         open={newPrtOpen}
         setOpen={setNewPrtOpen}
         width={760}
-        contents={
-          <>
+        contents={<>
           <CardInputList title="고객정보 수정" 
             btnLabel={
-              <Button type="primary" size="large" onClick={handleSubmitPrtData} 
+              <Button type="primary" size="large" onClick={()=>handleSubmitPrtData('prt')} 
                 className="w-full flex h-center gap-8 !h-full" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
                 <span>저장</span>
               </Button>
             }
-            items={
-              [
-                {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input', widthType:'full'},
-                {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input', widthType:'half'},
-                {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input', widthType:'half'},
-                {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input', widthType:'half'},
-                {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input', widthType:'half'},
-                {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input', widthType:'half'},
-                {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input', widthType:'half'},
-                {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input', widthType:'half'},
-                {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input', widthType:'half'},
-                {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'btnInput', widthType:'full'},
-                {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input', widthType:'full'},
-                {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input', widthType:'half'},
-                {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input', widthType:'half'},
-                {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input', widthType:'half'},
-                {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input', widthType:'half'},
-              ]
-            }
+            items={[
+              {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input', widthType:'full'},
+              {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input', widthType:'half'},
+              {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input', widthType:'half'},
+              {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input', widthType:'half'},
+              {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input', widthType:'half'},
+              {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input', widthType:'half'},
+              {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input', widthType:'half'},
+              {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input', widthType:'half'},
+              {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input', widthType:'half'},
+              {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'btnInput', widthType:'full'},
+              {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input', widthType:'full'},
+              {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input', widthType:'half'},
+              {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input', widthType:'half'},
+              {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input', widthType:'half'},
+              {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input', widthType:'half'},
+            ]}
             handleDataChange={handlePrtDataChange}
-            />
-            {/* <InputList
-              handleDataChange={handlePrtDataChange}
-              labelWidth={100}
-              items={[
-                {value:partnerData?.prtNm,name:'prtNm',label:'거래처명', type:'input'},
-                {value:partnerData?.prtRegCd,name:'prtRegCd',label:'식별코드', type:'input'},
-                {value:partnerData?.prtSnm,name:'prtSnm',label:'축약명', type:'input'},
-                {value:partnerData?.prtEngNm,name:'prtEngNm',label:'영문명', type:'input'},
-                {value:partnerData?.prtEngSnm,name:'prtEngSnm',label:'영문축약', type:'input'},
-                {value:partnerData?.prtRegNo,name:'prtRegNo',label:'사업자', type:'input'},
-                {value:partnerData?.prtCorpRegNo,name:'prtCorpRegNo',label:'법인', type:'input'},
-                {value:partnerData?.prtBizType,name:'prtBizType',label:'업태', type:'input'},
-                {value:partnerData?.prtBizCate,name:'prtBizCate',label:'업종', type:'input'},
-                {value:partnerData?.prtAddr,name:'prtAddr',label:'주소', type:'input'},
-                {value:partnerData?.prtAddrDtl,name:'prtAddrDtl',label:'주소세부', type:'input'},
-                {value:partnerData?.prtCeo,name:'prtCeo',label:'대표', type:'input'},
-                {value:partnerData?.prtTel,name:'prtTel',label:'전화', type:'input'},
-                {value:partnerData?.prtFax,name:'prtFax',label:'팩스', type:'input'},
-                {value:partnerData?.prtEmail,name:'prtEmail',label:'메일', type:'input'},
-              ]}
-            />
-            <div
-              onClick={handleSubmitPrtData}
-            >저장</div> */}
-          </>
-        }
+          />
+        </>}
       />
 
       <AntdEditModal
         open={newPrtMngOpen}
         setOpen={setNewPrtMngOpen}
         width={760}
-        contents={
-          <>
+        contents={<>
           <CardInputList title="담당자 추가" 
             btnLabel={
-              <Button type="primary" size="large" onClick={() =>{}} 
+              <Button type="primary" size="large" onClick={()=>handleSubmitPrtData('mng')} 
                 className="w-full flex h-center gap-8 !h-full" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
                 <span>저장</span>
               </Button>
             }
-            items={
-              [
-                {value:partnerMngData?.prtMngNm, name:'prtNm',label:'담당자명', type:'input', widthType:'full'},
-                {value:partnerMngData?.prtMngDeptNm, name:'prtDeptNm',label:'부서명', type:'input', widthType:'half'},
-                {value:partnerMngData?.prtMngTeamNm, name:'prtTeamNm',label:'팀명', type:'input', widthType:'half'},
-                {value:partnerMngData?.prtMngTel, name:'prtTel',label:'전화번호', type:'input', widthType:'half'},
-                {value:partnerMngData?.prtMngMobile, name:'prtMobile',label:'휴대번호', type:'input', widthType:'half'},
-                {value:partnerMngData?.prtMngFax, name:'prtFax',label:'팩스번호', type:'input', widthType:'half'},
-                {value:partnerMngData?.prtMngEmail, name:'prtEmail',label:'이메일', type:'input', widthType:'half'},
-              ]
-            }
+            items={[
+              {value:partnerMngData?.prtMngNm, name:'prtNm',label:'담당자명', type:'input', widthType:'full'},
+              {value:partnerMngData?.prtMngDeptNm, name:'prtDeptNm',label:'부서명', type:'input', widthType:'half'},
+              {value:partnerMngData?.prtMngTeamNm, name:'prtTeamNm',label:'팀명', type:'input', widthType:'half'},
+              {value:partnerMngData?.prtMngTel, name:'prtTel',label:'전화번호', type:'input', widthType:'half'},
+              {value:partnerMngData?.prtMngMobile, name:'prtMobile',label:'휴대번호', type:'input', widthType:'half'},
+              {value:partnerMngData?.prtMngFax, name:'prtFax',label:'팩스번호', type:'input', widthType:'half'},
+              {value:partnerMngData?.prtMngEmail, name:'prtEmail',label:'이메일', type:'input', widthType:'half'},
+            ]}
             handleDataChange={handlePrtDataChange}
-            />
-          </>
-        }
+          />
+        </>}
       />
 
-      <AntdAlertModal
-        open={resultOpen}
-        setOpen={setResultOpen}
-        title={resultType === "success" ? "고객 발주 성공" : "고객 발주 실패"}
-        contents={<div>{resultMsg}</div>}
-        type={resultType} 
-        onOk={()=>{
-          setResultOpen(false);
-        }}
-        hideCancel={true}
-        theme="main"
-      />
+      <ToastContainer />
     </>
   )
 };
