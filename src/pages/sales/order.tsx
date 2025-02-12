@@ -5,18 +5,11 @@ import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
-import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Close from "@/assets/svg/icons/s_close.svg";
-import Edit from "@/assets/svg/icons/memo.svg";
-import Plus from "@/assets/svg/icons/s_plus.svg";
-import TrArrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Bag from "@/assets/svg/icons/bag.svg";
-import Search from "@/assets/svg/icons/s_search.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -37,25 +30,17 @@ import {
 import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
 import { useUser } from "@/data/context/UserContext";
 import { 
-  partnerCUType, 
-  partnerMngCUType, 
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
 import { HotGrade } from "@/data/type/enum";
 
 import useToast from "@/utils/useToast";
-import { inputTel } from "@/utils/formatPhoneNumber";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
-import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import CardList from "@/components/List/CardList";
-import CardInputList from "@/components/List/CardInputList";
-import AntdEditModal from "@/components/Modal/AntdEditModal";
-import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
-import { inputFax } from "@/utils/formatFax";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
+import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;

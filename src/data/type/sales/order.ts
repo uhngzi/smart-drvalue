@@ -30,39 +30,40 @@ export type salesOrderRType = {
   products: Array<salesOrderProductRType>,
   prtInfo: {
     id: string;
-    prt: {
-      id: string;
-      prtTypeEm: PrtTypeEm;
-      prtNm: string;
-      prtRegCd: number;
-      prtSnm: string;
-      prtEngNm: string;
-      prtEngSnm: string;
-      prtRegNo: string;
-      prtCorpRegNo: string;
-      prtBizType: string;
-      prtBizCate: string;
-      prtAddr: string;
-      prtAddrDtl: string;
-      prtZip: string;
-      prtCeo: string;
-      prtTel: string;
-      prtFax: string;
-      prtEmail: string;
-      emp: {
-        id: string;
-        name: string;
-        userId: string;
-        status: string;
-        lastLoginAt: Date;
-        createdAt: Date | null;
-        updatedAt: Date | null;
-        deletedAt: Date | null;
-      };
-      createdAt: Date | null;
-      updatedAt: Date | null;
-      deletedAt: Date | null;
-    },
+    prt: partnerRType;
+    // {
+    //   id: string;
+    //   prtTypeEm: PrtTypeEm;
+    //   prtNm: string;
+    //   prtRegCd: number;
+    //   prtSnm: string;
+    //   prtEngNm: string;
+    //   prtEngSnm: string;
+    //   prtRegNo: string;
+    //   prtCorpRegNo: string;
+    //   prtBizType: string;
+    //   prtBizCate: string;
+    //   prtAddr: string;
+    //   prtAddrDtl: string;
+    //   prtZip: string;
+    //   prtCeo: string;
+    //   prtTel: string;
+    //   prtFax: string;
+    //   prtEmail: string;
+    //   emp: {
+    //     id: string;
+    //     name: string;
+    //     userId: string;
+    //     status: string;
+    //     lastLoginAt: Date;
+    //     createdAt: Date | null;
+    //     updatedAt: Date | null;
+    //     deletedAt: Date | null;
+    //   };
+    //   createdAt: Date | null;
+    //   updatedAt: Date | null;
+    //   deletedAt: Date | null;
+    // },
     mng: partnerMngRType;
   }
 }
