@@ -161,10 +161,10 @@ export const sayangSampleWaitClmn1 = (
 
 export const sayangSampleWaitClmn = (
   totalData: number,
-  sayangPopOpen: (value:String) => void,
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
   pagination?: {current: number, size: number},
+  sayangPopOpen?: (value:string) => void,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -174,13 +174,13 @@ export const sayangSampleWaitClmn = (
     align: 'center',
     render: (_: any, __: any, index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
   },
-  {
-    title: '관리No',
-    width: 120,
-    dataIndex: 'no',
-    key: 'no',
-    align: 'center',
-  },
+  // {
+  //   title: '관리No',
+  //   width: 120,
+  //   dataIndex: 'no',
+  //   key: 'no',
+  //   align: 'center',
+  // },
   {
     title: '업체명/코드',
     width: 120,
@@ -298,11 +298,11 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value) => (
+    render: (value, record) => (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>sayangPopOpen(value)}
+          onClick={()=>{sayangPopOpen?.(value); console.log(record);}}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>

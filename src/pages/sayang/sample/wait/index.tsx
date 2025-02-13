@@ -30,79 +30,6 @@ const SayangSampleListPage: React.FC & {
 } = () => {
   const router = useRouter();
   const { models, modelsLoading } = useModels();
-  
-  const [data, setData] = useState([
-    {
-      id:4,
-      index:4,
-      no:'900-1234',
-      cuNm:'GPN/900',
-      modelNm: 'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-      rev:'0.0.0',
-      hot:1,
-      state:1,
-      thic:1.6,
-      layer:4,
-      pcs:'58x29.36',
-      napgi:'2024-11-07',
-      order:'2024-11-07',
-    },
-    {
-      id:3,
-      index:3,
-      no:'900-1234',
-      cuNm:'GPN',
-      cuCode:'900',
-      modelNm: 'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-      rev:'0.0.0',
-      hot:3,
-      state:2,
-      thic:1.6,
-      layer:4,
-      pcs:'58x29.36',
-      napgi:'2024-11-07',
-      order:'2024-11-07',
-    },
-    {
-      id:2,
-      index:2,
-      no:'900-1234',
-      cuNm:'GPN',
-      cuCode:'900',
-      modelNm: 'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-      rev:'0.0.0',
-      hot:3,
-      state:3,
-      thic:1.6,
-      layer:4,
-      pcs:'58x29.36',
-      napgi:'2024-11-07',
-      order:'2024-11-07',
-    },
-    {
-      id:1,
-      index:1,
-      no:'900-1234',
-      cuNm:'GPN',
-      cuCode:'900',
-      modelNm: 'GPNERPTEST001-00005001V1.5, LALC0100A-0.0',
-      rev:'0.0.0',
-      hot:2,
-      state:2,
-      thic:1.6,
-      layer:4,
-      pcs:'58x29.36',
-      napgi:'2024-11-07',
-      order:'2024-11-07',
-    },
-  ]);
-  const [sayangRegOpen, setSayangRegOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<String>("");
-
-  function sayangPopOpen(value:String) {
-    setSelectedValue(value)
-    setSayangRegOpen(true);
-  }
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [paginationWait, setPaginationWait] = useState({
@@ -198,9 +125,22 @@ const SayangSampleListPage: React.FC & {
       setPartnerData(null);
       setPartnerMngData(null);
     }
-    console.log(drawerOpen);
+    console.log(partnerData, partnerMngData);
   }, [drawerOpen]);
-  useEffect(()=>{console.log(partnerData, partnerMngData)}, [partnerData, partnerMngData])
+  
+  const [sayangRegOpen, setSayangRegOpen] = useState<boolean>(false);
+  // 모델 매칭 ID
+  const [selectedValue, setSelectedValue] = useState<string>("");
+
+  function sayangPopOpen(value:string) {
+    console.log(value);
+    if(ingData.length > 0) {
+      setSelectedValue(value);
+      setSayangRegOpen(true);
+    } else {
+      router.push(`/sayang/sample/wait/form/${value}`);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-20">
@@ -212,7 +152,7 @@ const SayangSampleListPage: React.FC & {
         />
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(ingTotalData, sayangPopOpen, setPartnerData, setPartnerMngData, paginationIng)}
+            columns={sayangSampleWaitClmn(ingTotalData, setPartnerData, setPartnerMngData, paginationIng, sayangPopOpen)}
             data={ingData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={ingDataLoading}
@@ -228,32 +168,14 @@ const SayangSampleListPage: React.FC & {
         />
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitTotalData, sayangPopOpen, setPartnerData, setPartnerMngData, paginationWait)}
+            columns={sayangSampleWaitClmn(waitTotalData, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)}
             data={waitData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}
           />
         </List>
       </div>
-      {/* <div className="flex flex-col gap-40">
-        <div className="flex flex-col gap-20">
-          <TitleSmall title={`사양등록 중 ${data.length}건`} />
-          <AntdTable
-            columns={sayangSampleWaitClmn(router)}
-            data={data}
-            styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-          />
-        </div>
-        <div className="w-full h-1 border-b-1 border-line"></div>
-        <div className="flex flex-col gap-20">
-          <TitleSmall title={`사양등록 대기 ${data.length}건`} />
-          <AntdTable
-            columns={sayangSampleWaitClmn(router)}
-            data={data}
-            styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-          />
-        </div>
-      </div> */}
+      
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}
         contents={
           <div className="p-30 gap-20 rounded-14 bg-white border-1 border-line flex flex-col h-center">
@@ -268,9 +190,10 @@ const SayangSampleListPage: React.FC & {
               <Button icon={<Close/>} onClick={()=>{setSayangRegOpen(false)}}>취소</Button>
               <FullOkButtonSmall label="사양 등록" click={()=>{router.push(`/sayang/sample/wait/form/${selectedValue}`)}}/>
             </div>
-          </div>}
-        />
-        {/* ()=>{router.push(`/sayang/sample/wait/form/${value}`)} */}
+          </div>
+        }
+      />
+      {/* ()=>{router.push(`/sayang/sample/wait/form/${value}`)} */}
 
       <PrtDrawer
         open={drawerOpen}
