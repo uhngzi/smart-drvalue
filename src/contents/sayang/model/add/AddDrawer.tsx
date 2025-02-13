@@ -77,32 +77,6 @@ const AddDrawer:React.FC<Props> = ({
     },
   ]
   
-  const [orderDataLoading, setOrderDataLoading] = useState<boolean>(true);
-  const [orderData, setOrderData] = useState<salesOrderDetailRType | null>(null);
-  const { data:orderQueryData, isLoading:orderQueryLoading, refetch:orderQueryRefetch } = useQuery({
-    queryKey: ['sales-order/detail/jsxcrud/one'],
-    queryFn: async () =>{
-      try {
-        return getAPI({
-          type: 'core-d1',
-          utype: 'tenant/',
-          url: `sales-order/detail/jsxcrud/one/${orderId}`,
-        });
-      } catch (e) {
-        console.log('models/jsxcrud/many Error : ', e);
-        return;
-      }
-    }
-  });
-  useEffect(()=>{
-    setOrderDataLoading(true);
-    if(!orderQueryLoading && orderQueryData?.resultCode === "OK_0000") {
-      console.log('order : ', orderQueryData.data.data);
-      setOrderData(orderQueryData?.data.data ?? null);
-      setOrderDataLoading(false);
-    }
-  }, [orderQueryData]);
-
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
     setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
