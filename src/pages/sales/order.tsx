@@ -10,6 +10,7 @@ import { getPrtCsAPI } from "@/api/cache/client";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -41,6 +42,8 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
+import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -383,6 +386,12 @@ const SalesUserPage: React.FC & {
   }, [drawerOpen]);
   // ---------------- 거래처  ---------------- 끝
 
+  const [orderId, setOrderId] = useState<string>('');
+  const [orderDrawer, setOrderDrawer] = useState<boolean>(false);
+  useEffect(()=>{
+    console.log(orderId);
+  },[orderId])
+  
   return (
     <>
       <ListTitleBtn 
@@ -406,6 +415,8 @@ const SalesUserPage: React.FC & {
             setPartnerData,
             setPartnerMngData,
             pagination,
+            setOrderId,
+            setOrderDrawer,
           )}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
@@ -507,6 +518,20 @@ const SalesUserPage: React.FC & {
           csRefetch();
         }}
       />
+
+      <AntdDrawer
+        open={orderDrawer}
+        close={()=>{setOrderDrawer(false); setOrderId('')}}
+        width={600}
+      >
+        <div className="flex flex-col gap-15 p-20 !pr-5">
+          <div className="v-between-h-center">
+            <p className="text-16 font-medium">고객 발주 정보</p>
+            <div className="flex justify-end cursor-pointer" onClick={() => setOpen(false)}><Close/></div>
+          </div>
+          <ModelDrawerContent orderId={orderId} />
+        </div>
+      </AntdDrawer>
       
       <ToastContainer />
     </>

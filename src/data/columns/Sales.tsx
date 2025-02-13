@@ -9,6 +9,7 @@ import { partnerMngRType, partnerRType } from '../type/base/partner';
 
 import Trash from "@/assets/svg/icons/s_trash.svg";
 import dayjs from 'dayjs';
+import { SetStateAction } from 'react';
 
 export const salesUserOrderClmn = (
   totalData: number,
@@ -17,6 +18,8 @@ export const salesUserOrderClmn = (
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
   pagination: {current: number, size: number},
+  setOrderId: React.Dispatch<SetStateAction<string>>,
+  setOrderDrawer: React.Dispatch<SetStateAction<boolean>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -134,7 +137,10 @@ export const salesUserOrderClmn = (
             }}
           />
         ) : value === FinalGlbStatus.COMPLETED ? (
-          <FullChip label="완료" click={()=>{}}/>
+          <FullChip label="완료" click={()=>{
+            setOrderId(record.id);
+            setOrderDrawer(true);
+          }}/>
         ) : (
           <FullChip label="폐기" click={()=>{}}/>
         )}
