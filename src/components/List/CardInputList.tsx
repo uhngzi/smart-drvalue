@@ -9,6 +9,7 @@ import AntdInput from "../Input/AntdInput";
 import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
+import dayjs from "dayjs";
 
 interface Item {
   name: string;
@@ -33,8 +34,8 @@ interface CardInputListProps {
   btnClick?: () => void;
   handleDataChange: (
     e: React.ChangeEvent<HTMLInputElement> | string, 
-    name: string, type: 'input' | 'select' | 'date' | 'other',
-
+    name: string, 
+    type: 'input' | 'select' | 'date' | 'other',
   ) => void;
   children?: React.ReactNode;
 }
@@ -83,7 +84,7 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   {item.type === "date" && (
                     <AntdDatePicker
                       value={item.value ?? undefined}
-                      onChange={(e:Date)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
+                      onChange={(e:Date)=>handleDataChange(dayjs(e).startOf('day').format('YYYY-MM-DDTHH:mm:ss'), item.name, 'date')}
                       placeholder={item?.placeholder}
                       className="w-full !rounded-0 h-32"
                       styles={{bc: '#e5e7eb', wd: '100%'}}

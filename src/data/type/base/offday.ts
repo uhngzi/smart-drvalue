@@ -19,7 +19,7 @@ export type offdayRType = {
 export type offdayCUType = {
   offdayDt: Date;
   offdayWk?: "월요일" | "화요일" | "수요일" | "목요일" | "금요일" | "토요일" | "일요일" | "";
-  offdayWkEng?: "Monday" | "Tuesday" | "Wednesday" | "Tursday" | "Friday" | "Saturday" | "Sunday" | "";
+  offdayWkEng?: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday" | "";
   offdayTypeEm: OffdayTypeEm | null;
   offdayRepeatYn: boolean;
   offdayRemarks?: string;

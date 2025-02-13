@@ -16,6 +16,12 @@ import CardInputList from "@/components/List/CardInputList";
 import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
+import dayjs from "dayjs";
+import 'dayjs/locale/ko';  // 한글 로케일
+import 'dayjs/locale/en';  // 영어 로케일
+import { offdayCUType } from "@/data/type/base/offday";
+import { postAPI } from "@/api/post";
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 
 interface HolidayItem {
   id: number | string | null;
@@ -36,10 +42,16 @@ const CompanyOffdayListPage: React.FC & {
 } = () => {
   const [offDayList, setOffDayList] = useState<HolidayItem[]>([]);
   const [addOffOpen, setAddOffOpen] = useState<boolean>(false);
+  const [addOffData, setAddOffData] = useState<offdayCUType | null>(null);
+
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<AlertType>('success');
+  const [resultText, setResultText] = useState<string>('');
+
 
   const year = new Date().getFullYear();
 
-  const { data: offDayData, isLoading } = useQuery<apiGetResponseType, Error>({
+  const { data: offDayData, isFetching, refetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['offDay', year],
     queryFn: async () => {
       const result = await getAPI({
@@ -50,10 +62,69 @@ const CompanyOffdayListPage: React.FC & {
       return result;
     }
   });
+
+  async function addOffDay() {
+    console.log(!addOffData?.offdayRemarks)
+    if(!addOffData?.offdayRemarks) {
+      setResultOpen(true);
+      setResultText('휴일명을 입력해주세요.');
+      setResultType('error');
+      return;
+    }
+    if(!addOffData?.offdayDt) {
+      setResultOpen(true);
+      setResultText('날짜를 선택해주세요.');
+      setResultType('error');
+      return;
+    }
+
+    const result = await postAPI({
+      type: 'baseinfo',
+      utype: 'tenant/',
+      url: 'offday',
+      jsx: 'jsxcrud',
+    }, addOffData);
+
+    if(result.resultCode === 'OK_0000') {
+      refetch();
+      setResultOpen(true);
+      setResultText('쉬는 날이 등록되었습니다.');
+      setAddOffOpen(false);
+      setResultType('success');
+    } else {
+      setResultOpen(true);
+      setResultText('쉬는 날 등록을 실패했습니다.');
+      setResultType('error');
+    }
+  }
+
+  function changeOffDayData(
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string | boolean,
+      name: string,
+      type: 'input' | 'select' | 'date' | 'other',
+    ) {
+      const data = {
+        offdayTypeEm : 'holiday',
+        offdayRepeatYn: true,
+        useYn: true
+      } as any;
+
+      if(typeof e === "string" || typeof e === "boolean") {
+        data[name] = e;
+        if(name === 'offdayDt' && typeof e === "string") {
+          data.offdayWk = dayjs(e).locale('ko').format('dddd') as "월요일" | "화요일" | "수요일" | "목요일" | "금요일" | "토요일" | "일요일";
+          data.offdayWkEng = dayjs(e).locale('en').format('dddd') as "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+        }
+      } else {
+        const { value } = e.target;
+        data[name] = value;
+      }
+      setAddOffData(prev => ({...prev, ...data}));
+    }
   
   useEffect(() => {
     // 휴일정보에서 dateKind가 1이면 공휴일 매년 반복 , 2이면 임시, 대체공휴일, 3이면 추가한 지정 휴일
-      if(!isLoading){
+      if(!isFetching){
         const offDayList = offDayData?.data?.data.map((item: any) => (
           {
             id: item.id,
@@ -72,7 +143,7 @@ const CompanyOffdayListPage: React.FC & {
           setOffDayList(allOffDayList);
         });
       }
-  }, [isLoading]);
+  }, [isFetching]);
 
 
   return (
@@ -109,17 +180,18 @@ const CompanyOffdayListPage: React.FC & {
         contents={
           <div>
             <CardInputList title="" styles={{gap:'gap-20'}} items={[
-              {value:'', name:'prtMngNm',label:'', type:'input', widthType:'full'},
-                {value:'', name:'prtMngDeptNm',label:'날짜 선택', type:'date', widthType:'full'},
-                {value:'', name:'prtMngTeamNm',label:'대체 휴일 설정', type:'custom', widthType:'half',
+              {value:addOffData?.offdayRemarks, name:'offdayRemarks',label:'', type:'input', widthType:'full'},
+                {value:addOffData?.offdayDt, name:'offdayDt',label:'날짜 선택', type:'date', widthType:'full'},
+                {value:'', name:'abc',label:'대체 휴일 설정', type:'custom', widthType:'half',
                   customhtml: <Switch className="scale-110 ml-5" checkedChildren="사용함" unCheckedChildren="사용안함" defaultChecked />
                 },
-                {value:'', name:'prtMngTeamNm',label:'반복 설정', type:'custom', widthType:'half',
-                  customhtml: <Switch className="scale-110 ml-5" checkedChildren="사용함" unCheckedChildren="사용안함" defaultChecked />
+                {value:'', name:'offdayRepeatYn',label:'반복 설정', type:'custom', widthType:'half',
+                  customhtml: <Switch checked={addOffData?.offdayRepeatYn} className="scale-110 ml-5" checkedChildren="사용함" unCheckedChildren="사용안함" 
+                    defaultChecked onChange={(checked) => changeOffDayData(checked, 'offdayRepeatYn', 'other')} />
                 },
-            ]} handleDataChange={()=>{}}/>
+            ]} handleDataChange={changeOffDayData}/>
             <div className="h-[50px] mx-10">
-              <Button type="primary" size="large" onClick={()=>{}} 
+              <Button type="primary" size="large" onClick={addOffDay} 
                 className="w-full flex h-center gap-8 !h-full" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <span>만들기</span>
@@ -127,6 +199,19 @@ const CompanyOffdayListPage: React.FC & {
             </div>
           </div>
         }
+      />
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={resultType === "success" ? "등록 성공" : "등록 실패"}
+        contents={resultText}
+        type={resultType} 
+        onOk={()=>{
+          refetch();
+          setResultOpen(false);
+        }}
+        hideCancel={true}
+        theme="base"
       />
     </section>
   )
