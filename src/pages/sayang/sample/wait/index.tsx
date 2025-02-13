@@ -198,7 +198,9 @@ const SayangSampleListPage: React.FC & {
       setPartnerData(null);
       setPartnerMngData(null);
     }
+    console.log(drawerOpen);
   }, [drawerOpen]);
+  useEffect(()=>{console.log(partnerData, partnerMngData)}, [partnerData, partnerMngData])
 
   return (
     <div className="flex flex-col gap-20">
