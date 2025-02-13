@@ -11,6 +11,7 @@ import { MoreOutlined } from "@ant-design/icons";
 
 import Excel from "@/assets/png/excel.png"
 import Print from "@/assets/png/print.png"
+import { loginCheck } from "@/utils/signUtil";
 
 interface Props {
   children : React.ReactNode;
@@ -46,12 +47,20 @@ const menuProps = {
 const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
   const router = useRouter();
 
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      router.push('/sign/in');
+    }
+  });
+
   const [ collapsed, setCollapsed ] = useState<boolean>(false);
   const [ width, setWidth ] = useState<number>(240);
   useEffect(()=>{
     if(collapsed) setWidth(80);
     else          setWidth(240);
   }, [collapsed])
+  
 
   return (
     <div className="flex" key="mainPageLayout">

@@ -12,6 +12,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import Excel from "@/assets/png/excel.png"
 import Print from "@/assets/png/print.png"
 import Close from "@/assets/svg/icons/s_close.svg";
+import { loginCheck } from "@/utils/signUtil";
 
 interface Props {
   children : React.ReactNode;
@@ -39,6 +40,13 @@ const menuProps = {
 
 const PopRegLayout: React.FC<Props> = ({ children, title }) => {
   const router = useRouter();
+
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      router.push('/sign/in');
+    }
+  });
 
   const [ collapsed, setCollapsed ] = useState<boolean>(false);
   const [ width, setWidth ] = useState<number>(240);

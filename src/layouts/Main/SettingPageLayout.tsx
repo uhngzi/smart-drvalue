@@ -7,6 +7,7 @@ import Link from "next/link";
 import { TabLarge } from "@/components/Tab/Tabs";
 import SettingSider from "../Sider/SettingSider";
 import SettingContents from "../Body/SettingContents";
+import { loginCheck } from "@/utils/signUtil";
 
 interface Props {
   children : React.ReactNode;
@@ -23,6 +24,13 @@ interface Props {
 
 const SettingPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
   const router = useRouter();
+
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      router.push('/sign/in');
+    }
+  });
 
   const [ collapsed, setCollapsed ] = useState<boolean>(true);
   const [ width, setWidth ] = useState<number>(240);
