@@ -37,25 +37,7 @@ const MOCK = {
     ],
 
     //실제 사용할수도 있으려나...
-    companyInfo: [
-        {value:'', name:'companyName', label:'회사명', type:'input', widthType:'full'},
-        {value:'', name:'companyInitial', label:'회사명 약칭', type:'input', widthType:'half'},
-        {value:'', name:'companyEnName', label:'영문 회사명', type:'input', widthType:'half'},
-        {value:'', name:'companyBizNumq', label:'사업자등록번호', type:'input', widthType:'half'},
-        {value:'', name:'companyRegNum', label:'법인등록번호', type:'input', widthType:'half'},
-        {value:'', name:'companyType', label:'업태', type:'input', widthType:'half'},
-        {value:'', name:'companyBiz', label:'업종', type:'input', widthType:'half'},
-        {value:'', name:'companyCeo', label:'대표자명', type:'input', widthType:'half'},
-        {value:'', name:'companyMainTel', label:'대표 전화번호', type:'input', widthType:'half'},
-        {value:'', name:'companyMainFax', label:'대표 팩스번호', type:'btnInput', widthType:'half'},
-        {value:'', name:'companyMainMail', label:'대표 이메일', type:'input', widthType:'half'},
-        {value:'', name:'companyAddr', label:'주소', type:'input', widthType:'full'},
-    ],
-    companyTaxMng: [
-        {value:'', name:'taxMngName', label:'담당자명', type:'btnInput', widthType:'third'},
-        {value:'', name:'taxMngMail', label:'이메일', type:'input', widthType:'third'},
-        {value:'', name:'taxMngTel', label:'전화번호', type:'input', widthType:'third'},
-    ]
+    
 }
 
 

@@ -8,6 +8,7 @@ import { HtmlContext } from "next/dist/server/route-modules/pages/vendored/conte
 import AntdInput from "../Input/AntdInput";
 import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
+import AntdDatePicker from "../DatePicker/AntdDatePicker";
 
 interface Item {
   name: string;
@@ -17,6 +18,7 @@ interface Item {
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열
   fbtn?: React.ReactNode;
   placeholder?: string;
+  customhtml?: React.ReactNode;
 }
 
 interface CardInputListProps {
@@ -29,11 +31,16 @@ interface CardInputListProps {
     bgColor?: string;
   }
   btnClick?: () => void;
-  handleDataChange: (e: React.ChangeEvent<HTMLInputElement>, name: string, type: 'input' | 'select' | 'date' | 'other',) => void;
+  handleDataChange: (
+    e: React.ChangeEvent<HTMLInputElement> | string, 
+    name: string, type: 'input' | 'select' | 'date' | 'other',
+
+  ) => void;
   children?: React.ReactNode;
 }
 
 const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, titleIcon, styles, btnClick, handleDataChange, children}) => {
+  
   return (
     <div className="p-10 flex flex-col gap-10">
       {/* 제목 영역 */}
@@ -64,13 +71,28 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                 }`}
               >
                 { item.label ? <p className="pb-8">{item.label}</p> : null}
-                <div className="h-center gap-10">
+                <div className="h-center gap-10" style={{marginTop: item.label ? 0 : -10}}>
                   { item.fbtn ?? null }
-                  <AntdInput 
-                    value={item.value ?? undefined}
-                    onChange={(e)=>handleDataChange(e, item.name, 'input')}
-                    placeholder={item?.placeholder}
-                  />
+                  {item.type === "input" && (
+                    <AntdInput 
+                      value={item.value ?? undefined}
+                      onChange={(e)=>handleDataChange(e, item.name, 'input')}
+                      placeholder={item?.placeholder}
+                    />
+                  )}
+                  {item.type === "date" && (
+                    <AntdDatePicker
+                      value={item.value ?? undefined}
+                      onChange={(e:Date)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
+                      placeholder={item?.placeholder}
+                      className="w-full !rounded-0 h-32"
+                      styles={{bc: '#e5e7eb', wd: '100%'}}
+                      suffixIcon="cal"
+                    />
+                  )}
+                  {item.type === "custom" && (
+                    <>{item.customhtml}</>
+                  )}
                 </div>
                 { item.value ?
                   // 이메일 형식 체크
