@@ -43,7 +43,12 @@ export const getAPI = async (
     page?: number,
     s_search?: string,
     s_type?: 'in' | 'or' | 'eq' | 'regex' | 'elemMatch' | 'ne' | 'nin' | 'all',
-    s_list?: Array<string>
+    s_list?: Array<string>,
+    sort?: string,
+    // {
+    //   field: string,
+    //   order: 'DESC' | 'ASC',
+    // }[]
   }
 ): Promise<apiGetResponseType | apiAuthResponseType>  => {
   if(server.utype === 'root/') {
@@ -51,10 +56,11 @@ export const getAPI = async (
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,
-        s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null
+        s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
+        sort: params?.sort ?? null,
       }
     });
-    console.log('GET RESPONSE : ', response);
+    console.log('GET RESPONSE : ', server.url, response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
@@ -63,10 +69,11 @@ export const getAPI = async (
       params: {
         limit: params?.limit ?? null,
         page: params?.page ?? null,
-        s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null
+        s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
+        sort: params?.sort ?? null,
       }
     });
-    console.log('GET RESPONSE : ', response);
+    console.log('GET RESPONSE : ', server.url, response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };

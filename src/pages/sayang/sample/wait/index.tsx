@@ -56,6 +56,7 @@ const SayangSampleListPage: React.FC & {
       },{
         limit:paginationWait.size,
         page:paginationWait.current,
+        sort: 'createdAt,ASC',
       });
 
       setWaitDataLoading(false);
@@ -68,7 +69,6 @@ const SayangSampleListPage: React.FC & {
           ...d,
           model: models.find(f=>f.id === d.model?.id),
         }))
-        console.log(models, arr);
         setWaitData(arr);
         setWaitTotalData(queryData?.data.total ?? 0);
     }

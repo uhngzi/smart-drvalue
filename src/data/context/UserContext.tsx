@@ -26,15 +26,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await getAPI({ type: "auth", url: "me/tenant" });
       if (result.resultCode === "OK_0000") {
         setMe(result.data);
-        console.log(result.data);
       } else {
         console.log("error:", result.response);
       }
       return result;
     },
   });
-
-  useEffect(()=>{console.log(me)},[me]);
 
   return (
     <UserContext.Provider value={{ me, refetchUser: refetch }}>

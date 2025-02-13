@@ -1,39 +1,105 @@
-import BorderButton from "@/components/Button/BorderButton";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import AntdTable from "@/components/List/AntdTable";
+import { useState } from "react";
+import { Button } from "antd";
+import { useRouter } from "next/router";
+import { DoubleRightOutlined } from "@ant-design/icons";
 
+import AntdTable from "@/components/List/AntdTable";
 import CutSizeContents from "@/contents/sayang/add/CutSizeContents";
 import LaminationContents from "@/contents/sayang/add/LaminationContents";
 import MessageContents from "@/contents/sayang/add/MessageContents";
 import ArrayContents from "@/contents/sayang/add/ArrayContents";
-
-import Plus from "@/assets/svg/icons/l_plus.svg";
-import Data from "@/assets/svg/icons/data.svg";
-import Print from "@/assets/svg/icons/print.svg";
-import Back from "@/assets/svg/icons/back.svg";
-import Models from "@/assets/svg/icons/sales.svg";
-
-import { useState } from "react";
-
-import { filterType } from "@/data/type/filter";
-import FullOkButton from "@/components/Button/FullOkButton";
-import FullSubButton from "@/components/Button/FullSubButton";
-import FilterMain from "@/layouts/Body/Grid/FilterMain";
-import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
-
 import AntdModal from "@/components/Modal/AntdModal";
 import ProcessSelection from "@/contents/sayang/sample/wait/ProcessSelection";
 import DefaultFilter from "@/components/Filter/DeafultFilter";
+
+import Models from "@/assets/svg/icons/sales.svg";
+
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
-import { DoubleRightOutlined } from "@ant-design/icons";
-import { Button } from "antd";
-import { useRouter } from "next/router";
+
+import { filterType } from "@/data/type/filter";
+import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
+import FullOkButton from "@/components/Button/FullOkButton";
+import FullSubButton from "@/components/Button/FullSubButton";
+import { modelsMatchDetail, modelsType } from "@/data/type/sayang/models";
+import { useQuery } from "@tanstack/react-query";
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { getAPI } from "@/api/get";
+import { useBase } from "@/data/context/BaseContext";
+import { patchAPI } from "@/api/patch";
+import { postAPI } from "@/api/post";
+import useToast from "@/utils/useToast";
+
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { showToast, ToastContainer } = useToast();
+
+  // 디폴트 값 가져오기
+  const { 
+    surfaceSelectList,
+    unitSelectList,
+    vcutSelectList,
+    outSelectList,
+    smPrintSelectList,
+    smColorSelectList,
+    smTypeSelectList,
+    mkPrintSelectList,
+    mkColorSelectList,
+    mkTypeSelectList,
+    spPrintSelectList,
+    spTypeSelectList,
+  } = useBase();
+
+  const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
+  const [detailData, setDetailData] = useState<modelsMatchDetail[]>([]);
+  const [modelsData, setModelsData] = useState<modelsType[]>([])
+  const { refetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['models-match/detail/jsxcrud/one'],
+    queryFn: async () => {
+      setDetailDataLoading(true);
+      const result = await getAPI({
+        type: 'core-d1', 
+        utype: 'tenant/',
+        url: `models-match/detail/jsxcrud/one/${id}`
+      });
+
+      setDetailDataLoading(false);
+      if(result.resultCode === "OK_0000") {
+        setModelsData([...modelsData, {...result.data.data?.model, index: detailData.length+1}]);
+        console.log(result.data.data);
+      }
+      return result;
+    },
+  });
+
+  const handleSumbitTemp = async () => {
+    try {
+      const result = await postAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'spec/default/temporary-save',
+        jsx: 'default',
+        etc: true,
+      }, {
+        
+      });
+
+      if(result.resultCode === 'OK_0000') {
+        showToast("임시저장 완료", "success");
+        refetch();
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch (e) {
+      console.log('CATCH ERROR : ', e);
+    }
+  }
   
   const [filter, setFilter] = useState<filterType>({
     writeDt: null,
@@ -76,8 +142,21 @@ const SayangSampleAddPage: React.FC & {
         </div>
         <div>
           <AntdTable
-            columns={sayangSampleWaitAddClmn()}
-            data={data}
+            columns={sayangSampleWaitAddClmn(
+              surfaceSelectList,
+              unitSelectList,
+              vcutSelectList,
+              outSelectList,
+              smPrintSelectList,
+              smColorSelectList,
+              smTypeSelectList,
+              mkPrintSelectList,
+              mkColorSelectList,
+              mkTypeSelectList,
+              spPrintSelectList,
+              spTypeSelectList,
+            )}
+            data={modelsData}
             styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
             tableProps={{split:'none'}}
           />
@@ -98,6 +177,11 @@ const SayangSampleAddPage: React.FC & {
             <CutSizeContents />
           </div>
         </div>
+      </div>
+
+      <div className="v-h-center py-50 gap-15">
+        <FullOkButton label="확정저장" click={()=>{}}/>
+        <FullSubButton label="임시저장" click={()=>{}}/>
       </div>
         {/* <FilterMain
           filter={filter}
@@ -170,13 +254,14 @@ const SayangSampleAddPage: React.FC & {
             </div>
           }
         /> */}
-        <AntdModal
-          open={open}
-          setOpen={setOpen}
-          title={"공정 지정"}
-          contents={<ProcessSelection />}
-          width={1050}
-        />
+      <AntdModal
+        open={open}
+        setOpen={setOpen}
+        title={"공정 지정"}
+        contents={<ProcessSelection />}
+        width={1050}
+      />
+      <ToastContainer />
     </div>
   )
 }

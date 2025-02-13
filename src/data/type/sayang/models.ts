@@ -295,55 +295,29 @@ export type modelsMatchRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-  // id: string;
-  // model: { id: string; };
-  // glbStatus?: {
-  //   id: string;
-  //   salesOrderStatus: SalesOrderStatus;
-  //   createdAt: Date | null;
-  //   updatedAt: Date | null;
-  //   deletedAt: Date | null;
-  // },
-  // orderModel?: {
-  //   id: string;
-  //   currPrdInfo: {},
-  //   prtInfo: {
-  //     id: string;
-  //     prt: partnerRType;
-  //     mng: partnerMngRType;
-  //     createdAt: Date | null;
-  //     updatedAt: Date | null;
-  //     deletedAt: Date | null;
-  //   },
-  //   order: {
-  //     id: string;
-  //     isDiscard: boolean;
-  //     orderNm: string;
-  //     orderDt: Date | null;
-  //     orderRepDt: Date | null;
-  //     orderTxt: string;
-  //     hotGrade: HotGrade;
-  //     createdAt: Date | null;
-  //     updatedAt: Date | null;
-  //     deletedAt: Date | null;
-  //   },
-  //   model: { id: string; };
-  //   modelStatus: ModelStatus;
-  //   orderNo: string;
-  //   orderTit: string;
-  //   prtOrderNo: string;
-  //   orderPrdRemark: string;
-  //   orderPrdCnt: number;
-  //   orderPrdUnitPrice: number;
-  //   orderPrdPrice: number;
-  //   orderPrdDueReqDt: Date | null;
-  //   orderPrdDueDt: Date | null;
-  //   orderPrdHotGrade: HotGrade;
-  //   createdAt: Date | null;
-  //   updatedAt: Date | null;
-  //   deletedAt: Date | null;
-  // },
-  // createdAt: Date | null;
-  // updatedAt: Date | null;
-  // deletedAt: Date | null;
+}
+
+export type modelsMatchDetail = {
+  id: string;
+  index?: number; //프론트에서 사용하는 인덱스 번호
+  model?: modelsType;
+  glbStatus?: {
+    id: string;
+    salesOrderStatus: SalesOrderStatus;
+    salesOrderStatusChangeJson: { 
+      date: Date | Dayjs | null;
+      content: string;
+      isApproved: boolean;
+    }[];
+    specStatus: SpecStatus;
+    anyStatus: AnyStatus;
+    relation: string[];
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  },
+  orderModel: orderModelType;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }

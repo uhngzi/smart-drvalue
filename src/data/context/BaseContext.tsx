@@ -73,7 +73,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setBoard(result.data.data ?? []);
         setBoardSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -101,7 +100,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setMetarial(result.data.data ?? []);
         setMetarialSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -129,7 +127,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSurface(result.data.data ?? []);
         setSurfaceSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -157,7 +154,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setUnit(result.data.data ?? []);
         setUnitSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -185,7 +181,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setVcut(result.data.data ?? []);
         setVcutSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -213,7 +208,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setOut(result.data.data ?? []);
         setOutSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -241,7 +235,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSmPrint(result.data.data ?? []);
         setSmPrintSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -269,7 +262,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSmColor(result.data.data ?? []);
         setSmColorSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -297,7 +289,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSmType(result.data.data ?? []);
         setSmTypeSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -325,7 +316,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setMkPrint(result.data.data ?? []);
         setMkPrintSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -353,7 +343,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setMkColor(result.data.data ?? []);
         setMkColorSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -381,7 +370,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setMkType(result.data.data ?? []);
         setMkTypeSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -409,7 +397,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSpPrint(result.data.data ?? []);
         setSpPrintSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
@@ -437,7 +424,6 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }))
         setSpType(result.data.data ?? []);
         setSpTypeSelectList(arr);
-        console.log(result.data.data);
       } else {
         console.log("error:", result.response);
       }
