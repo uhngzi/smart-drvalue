@@ -11,6 +11,7 @@ import Plus from "@/assets/svg/icons/l_plus.svg";
 import Data from "@/assets/svg/icons/data.svg";
 import Print from "@/assets/svg/icons/print.svg";
 import Back from "@/assets/svg/icons/back.svg";
+import Models from "@/assets/svg/icons/sales.svg";
 
 import { useState } from "react";
 
@@ -66,9 +67,12 @@ const SayangSampleAddPage: React.FC & {
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
       <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20">
-        <div className="flex">
-          <Button type="text" icon={<DoubleRightOutlined/>} className="!bg-[#F5F6FA] !h-32" style={{border:'1px solid #D9D9D9'}} onClick={() => setApproval(prev =>!prev)}>결재</Button>
-          {approval && (<DefaultFilter filter={filter} setFilter={setFilter} />)}
+        <div className="v-between-h-center">
+          <div className="flex">
+            <Button type="text" icon={<DoubleRightOutlined/>} className="!bg-[#F5F6FA] !h-32" style={{border:'1px solid #D9D9D9'}} onClick={() => setApproval(prev =>!prev)}>결재</Button>
+            {approval && (<DefaultFilter filter={filter} setFilter={setFilter} />)}
+          </div>
+          <Button className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>} onClick={()=>{}}>모델추가</Button>
         </div>
         <div>
           <AntdTable
