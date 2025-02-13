@@ -13,6 +13,7 @@ interface Props {
   width?: number;
   onClose?: () => void;
   full?: boolean;
+  bgColor?: string;
 }
 
 const AntdModal: React.FC<Props> = ({
@@ -24,6 +25,7 @@ const AntdModal: React.FC<Props> = ({
   width,
   onClose,
   full,
+  bgColor,
 }) => {
   const useStyle = createStyles(({ token }) => ({
     'my-modal-body': {
@@ -52,7 +54,7 @@ const AntdModal: React.FC<Props> = ({
       maxHeight: full ? '100vh' : '90vh',
     },
     content: {
-      background: '#F5F6FA',
+      background: bgColor || '#F5F6FA',
       borderRadius: '14px',
       padding: 0,
       maxHeight: full ? '100vh' : '90vh'

@@ -13,7 +13,7 @@ interface Item {
 
 interface CardListProps {
   title: string;
-  btnLabel: React.ReactNode;
+  btnLabel?: React.ReactNode;
   items: Item[];
   btnClick?: () => void;
   children?: React.ReactNode;

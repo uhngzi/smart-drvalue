@@ -66,6 +66,7 @@ const AntdDatePicker: React.FC<Props> = ({
       $bc={styles?.bc ? styles.bc : "#979797"}
       $br={styles?.br ? styles.br : "6px"}
       $pd={styles?.pd ? styles.pd : "0 11px"}
+      $wd={styles?.wd ? styles.wd : "unset"}
       >
       <DatePicker
         value={dayjs(value).isValid() ? dayjs(value) : null}
@@ -98,7 +99,9 @@ const AntdDatePickerStyled = styled.div<{
   $bc: string;
   $br: string;
   $pd: string;
+  $wd: string
 }>`
+  width: ${({ $wd }) => $wd};
   .ant-picker {
     background: ${({ $bg }) => $bg};
     border-radius: ${({ $br }) => $br};
