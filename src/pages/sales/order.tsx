@@ -11,6 +11,7 @@ import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
+import DragHandle from "@/assets/svg/icons/dragHandlevert.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -459,7 +460,7 @@ const SalesUserPage: React.FC & {
         onClose={stepModalClose}
         width={1300}
         contents={
-        <div className="flex gap-10 h-full">
+        <div className="flex h-full">
           <div style={{width:stepCurrent>0 ? `calc(100% - ${width});`:'100%'}} className="overflow-x-auto">
             <AddOrderContents
               csList={csList}
@@ -481,52 +482,58 @@ const SalesUserPage: React.FC & {
           {
             // 모델 등록
             stepCurrent > 0 ?
-            <div ref={containerRef} className="flex flex-col relative" style={{width:`${width}px`}}>
+            <div ref={containerRef} className="flex relative" style={{width:`${width}px`}}>
+              
               <div
-                className="absolute top-0 left-0 h-full w-2 cursor-col-resize hover:bg-gray-600"
+                className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200"
                 onMouseDown={handleModelMouseDown}
               />
-              <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
-                <AntdTableEdit
-                  create={true}
-                  columns={salesUserOrderModelClmn(newProducts, setNewProducts)}
-                  data={newProducts}
-                  setData={setNewProducts}
-                  styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-                />
-                <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                  onClick={() => {
-                    setNewProducts((prev: salesOrderProcuctCUType[]) =>[
-                      ...prev,
-                      {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
-                    ]);
-                  }}
-                >
-                <SplusIcon/>
-                <span>모델 추가하기</span>
-                </div>
+              <div className="w-10 h-center">
+                <span style={{zIndex:9999}}><DragHandle /></span>
               </div>
-              <div className="flex w-full h-50 v-between-h-center">
-                <Button
-                  className="w-109 h-32 rounded-6"
-                  onClick={()=>{
-                    setStepCurrent(0);
-                  }}
-                >
-                  <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
-                </Button>
-                <Button
-                  className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                  onClick={()=>{
-                    if(edit && detailId !== "") {
-                      handleEditOrder();
-                    } else {
-                      handleSubmitOrder();
-                    }
-                  }}
-                >
-                  <Arrow /> { edit ? '모델수정' : '모델등록'}
-                </Button>
+              <div className="w-full flex flex-col">
+                <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
+                  <AntdTableEdit
+                    create={true}
+                    columns={salesUserOrderModelClmn(newProducts, setNewProducts)}
+                    data={newProducts}
+                    setData={setNewProducts}
+                    styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+                  />
+                  <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
+                    onClick={() => {
+                      setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                        ...prev,
+                        {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
+                      ]);
+                    }}
+                  >
+                  <SplusIcon/>
+                  <span>모델 추가하기</span>
+                  </div>
+                </div>
+                <div className="flex w-full h-50 v-between-h-center">
+                  <Button
+                    className="w-109 h-32 rounded-6"
+                    onClick={()=>{
+                      setStepCurrent(0);
+                    }}
+                  >
+                    <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
+                  </Button>
+                  <Button
+                    className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                    onClick={()=>{
+                      if(edit && detailId !== "") {
+                        handleEditOrder();
+                      } else {
+                        handleSubmitOrder();
+                      }
+                    }}
+                  >
+                    <Arrow /> { edit ? '모델수정' : '모델등록'}
+                  </Button>
+                </div>
               </div>
             </div>
             :<></>
