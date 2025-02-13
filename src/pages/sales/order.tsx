@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Button } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
@@ -392,6 +392,33 @@ const SalesUserPage: React.FC & {
     console.log(orderId);
   },[orderId])
   
+
+
+
+
+  // 모델 등록 드래그 앤 드롭으로 크기 조절
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(800);
+  const handleModelMouseDown = (e: React.MouseEvent) => {
+    const startX = e.clientX;
+    const startWidth = width;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const diffX = startX - moveEvent.clientX; // 왼쪽으로 이동 → diffX 증가
+      const newWidth = startWidth + diffX;
+      if (newWidth >= 100 && newWidth <= 1100) { // 최소/최대 너비 제한
+        setWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
   return (
     <>
       <ListTitleBtn 
@@ -433,7 +460,7 @@ const SalesUserPage: React.FC & {
         width={1300}
         contents={
         <div className="flex gap-10 h-full">
-          <div style={{width:stepCurrent>0?500:'100%'}} className="overflow-x-auto">
+          <div style={{width:stepCurrent>0 ? `calc(100% - ${width});`:'100%'}} className="overflow-x-auto">
             <AddOrderContents
               csList={csList}
               csMngList={csMngList}
@@ -454,7 +481,11 @@ const SalesUserPage: React.FC & {
           {
             // 모델 등록
             stepCurrent > 0 ?
-            <div className="flex flex-col">
+            <div ref={containerRef} className="flex flex-col relative" style={{width:`${width}px`}}>
+              <div
+                className="absolute top-0 left-0 h-full w-2 cursor-col-resize hover:bg-gray-600"
+                onMouseDown={handleModelMouseDown}
+              />
               <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
                 <AntdTableEdit
                   create={true}
