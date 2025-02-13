@@ -125,7 +125,7 @@ const CompanyOffdayListPage: React.FC & {
   useEffect(() => {
     // 휴일정보에서 dateKind가 1이면 공휴일 매년 반복 , 2이면 임시, 대체공휴일, 3이면 추가한 지정 휴일
       if(!isFetching){
-        const offDayList = offDayData?.data?.data.map((item: any) => (
+        const offDayList = (offDayData?.data?.data ?? []).map((item: any) => (
           {
             id: item.id,
             imgType: 'worker',
