@@ -26,10 +26,14 @@ import DefaultFilter from "@/components/Filter/DeafultFilter";
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { Button } from "antd";
+import { useRouter } from "next/router";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  
   const [filter, setFilter] = useState<filterType>({
     writeDt: null,
     writer: '',
