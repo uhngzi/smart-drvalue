@@ -125,7 +125,6 @@ const SayangSampleListPage: React.FC & {
       setPartnerData(null);
       setPartnerMngData(null);
     }
-    console.log(partnerData, partnerMngData);
   }, [drawerOpen]);
   
   const [sayangRegOpen, setSayangRegOpen] = useState<boolean>(false);
