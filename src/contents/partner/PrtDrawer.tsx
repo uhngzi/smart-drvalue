@@ -53,7 +53,7 @@ const PrtDrawer: React.FC<Props> = ({
 
   // 거래처 클릭 시 값이 변하고 Drawer 오픈
   useEffect(()=>{
-    if(partnerData !== null && partnerMngData !== null) {
+    if(partnerData !== null) {
       setDrawerPrtItems([
         { label: '거래처명', value: partnerData?.prtNm ?? '-', widthType: 'full' },
         { label: '거래처 식별코드', value: partnerData?.prtRegCd ?? '-', widthType: 'half' },
@@ -70,6 +70,11 @@ const PrtDrawer: React.FC<Props> = ({
         { label: '팩스번호', value: partnerData?.prtFax ?? '-', widthType: 'half' },
         { label: '이메일', value: partnerData?.prtEmail ?? '-', widthType: 'half' },
       ]);
+    } else {
+      setDrawerPrtItems([]);
+    }
+
+    if(partnerMngData !== null) {
       setDrawerMngItems([
         { label: '담당자명', value: partnerMngData?.prtMngNm ?? '-', widthType: 'full' },
         { label: '부서명', value: partnerMngData?.prtMngDeptNm ?? '-', widthType: 'half' },
@@ -79,6 +84,11 @@ const PrtDrawer: React.FC<Props> = ({
         { label: '팩스번호', value: partnerMngData?.prtMngFax ?? '-', widthType: 'half' },
         { label: '이메일', value: partnerMngData?.prtMngEmail ?? '-', widthType: 'half' },
       ]);
+    } else {
+      setDrawerMngItems([]);
+    }
+
+    if(partnerData !== null || partnerMngData !== null) {
       setNewPartnerData(partnerData);
       setOpen(true);
     }
