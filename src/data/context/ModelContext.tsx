@@ -23,10 +23,10 @@ export const ModelProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const result = await getAPI({ type: "core-d1", utype: "tenant/", url: "models/jsxcrud/many" });
       if (result.resultCode === "OK_0000") {
         setModels(result.data.data ?? []);
+        setModelsLoading(false);
       } else {
         console.log("MODELS ERROR:", result.response);
       }
-      setModelsLoading(false);
       return result;
     },
   });

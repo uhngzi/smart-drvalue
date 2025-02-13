@@ -56,7 +56,6 @@ const SayangSampleListPage: React.FC & {
       },{
         limit:paginationWait.size,
         page:paginationWait.current,
-        sort: 'createdAt,ASC',
       });
 
       setWaitDataLoading(false);
@@ -65,13 +64,14 @@ const SayangSampleListPage: React.FC & {
   });
   useEffect(()=>{
     if(!waitLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
-        const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType) => ({
-          ...d,
-          model: models.find(f=>f.id === d.model?.id),
-        }))
-        setWaitData(arr);
-        setWaitTotalData(queryData?.data.total ?? 0);
+      const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType) => ({
+        ...d,
+        model: models.find(f=>f.id === d.model?.id),
+      }))
+      setWaitData(arr);
+      setWaitTotalData(queryData?.data.total ?? 0);
     }
+    console.log(models);
   }, [queryData, models]);
 
   const [paginationIng, setPaginationIng] = useState({
