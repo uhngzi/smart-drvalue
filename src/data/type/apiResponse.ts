@@ -30,3 +30,17 @@ export type apiPatchResponseType = {
   resultCode?: string;
   response?: any;
 }
+
+export type apiDeleteResponseType = {
+  data: {
+    data: any;
+    status?: number;
+    resultCode?: string;
+    message: string;
+    timestamp?: Date;
+    path?: string;
+    requestUser?: any;
+  }
+  resultCode?: string;
+  response?: any;
+}

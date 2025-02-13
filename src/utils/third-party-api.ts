@@ -21,7 +21,7 @@ export async function getHoliday(year: number) {
 
   const workersDay = {dateName: '근로자의날', locdate: Number(`${year}0501`), seq: 1, dateKind: '공휴일', isHoliday: 'N'}
 
-  const holiday = (await axios.get(`${url}?ServiceKey=${serviceKey}&solYear=${solYear}&_type=json&numOfRows=100`)).data.response.body.items.item
+  const holiday = (await axios.get(`${url}?ServiceKey=${serviceKey}&solYear=${solYear}&_type=json&numOfRows=100`)).data?.response?.body?.items.item
 
   holiday.push(workersDay)
 
