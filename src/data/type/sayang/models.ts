@@ -364,3 +364,83 @@ export const modelReq = () => {
     { field : 'pinCnt', label: '핀 수' },
   ]
 }
+
+export type sayangType = {
+  specId?: string;
+  specDetail: {
+    specNo?: string;
+    specLamination?: { id: string; };
+    specLamNo?: string;
+    specLamThk?: string;
+    board?: { id: string; };
+    brdArrYldRate?: string;
+    wksizeW?: string;
+    wksizeH?: string;
+    stdW?: string;
+    stdH?: string;
+    brdArrStorageKey?: string;
+    cutCnt?: string;
+    jYn?: string;
+    prcNotice?: string;
+    camNotice?: string;
+  },
+  models: {
+    id: string;
+    glbStatusId: string;
+    modelMatchId: string;
+    prdNm: string;
+    prdRevNo: string;
+    layerEm: LayerEm;
+    modelTypeEm: ModelTypeEm;
+    thk: number;
+    board: commonCodeRType;
+    mnfNm: string;
+    material: commonCodeRType;
+    surface: commonCodeRType;
+    copOut: number;
+    copIn: number;
+    smPrint: commonCodeRType;
+    smColor: commonCodeRType;
+    smType: commonCodeRType;
+    mkPrint: commonCodeRType;
+    mkColor: commonCodeRType;
+    mkType: commonCodeRType;
+    spPrint?: commonCodeRType;
+    spType?: commonCodeRType;
+    aprType: commonCodeRType;
+    vcutYn: boolean;
+    vcutType: commonCodeRType;
+    fpNo?: string;
+    drgNo?: string;
+    unit: commonCodeRType;
+    pcsW: number;
+    pcsL: number;
+    kitW: number;
+    kitL: number;
+    pnlW: number;
+    pnlL: number;
+    ykitW: number;
+    ykitL: number;
+    ypnlW: number;
+    ypnlL: number;
+    kitPcs: number;
+    pnlKit: number;
+    sthPnl: number;
+    sthPcs: number;
+    pltThk: number;
+    pltAlph: number;
+    spPltNi?: number;
+    spPltNiAlph?: number;
+    spPltAu?: number;
+    spPltAuAlph?: number;
+    pinCnt: number;
+  }[];
+  prdGroup?: {
+    prdGrpNm: string;
+    data: {
+      prcIdx: string;
+      order: number;
+      prcWkRemark: string;
+    }
+  }
+}
