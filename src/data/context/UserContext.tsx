@@ -3,7 +3,7 @@ import { getAPI } from "@/api/get";
 import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
 
-interface User {
+export interface User {
   id: string;
   userId: string;
   userName: string;

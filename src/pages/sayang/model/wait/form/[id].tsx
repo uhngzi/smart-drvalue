@@ -19,12 +19,14 @@ import PopRegLayout from "@/layouts/Main/PopRegLayout";
 import { ModelStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { modelsType, orderModelType } from "@/data/type/sayang/models";
-import { useBase } from '@/data/context/BaseContext';
+import { BaseProvider, useBase } from '@/data/context/BaseContext';
 import useToast from '@/utils/useToast';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Loading from '@/components/Loading/Loading';
+import { ModelProvider, useModels } from '@/data/context/ModelContext';
+import { changeModelAddNewModel, changeModelAddTemp } from '@/data/type/sayang/changeData';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -50,31 +52,7 @@ const SayangModelAddPage: React.FC & {
     spPrintSelectList,
     spTypeSelectList,
   } = useBase();
-  
-  const [modelDataLoading, setModelDataLoading] = useState<boolean>(true);
-  const [modelData, setModelData] = useState<modelsType[]>([]);
-  const { data:modelQueryData, isLoading:modelQueryLoading, refetch:modelQueryRefetch } = useQuery({
-    queryKey: ['models/jsxcrud/many'],
-    queryFn: async () =>{
-      try {
-        return getAPI({
-          type: 'core-d1',
-          utype: 'tenant/',
-          url: 'models/jsxcrud/many',
-        });
-      } catch (e) {
-        console.log('models/jsxcrud/many Error : ', e);
-        return;
-      }
-    }
-  });
-  useEffect(()=>{
-    setModelDataLoading(true);
-    if(!modelQueryLoading && modelQueryData?.resultCode === "OK_0000") {
-      setModelData(modelQueryData?.data.data ?? []);
-      setModelDataLoading(false);
-    }
-  }, [modelQueryData]);
+  const { models, setModels, modelsLoading } = useModels();
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -97,6 +75,7 @@ const SayangModelAddPage: React.FC & {
 
   // 첫 접속 시 자동 포커스를 위한 Flag
   const [focusInitialized, setFocusInitialized] = useState(false);
+
   // 첫 모델명 ref
   const inputRef = useRef<InputRef>(null);
   useEffect(()=>{
@@ -168,47 +147,26 @@ const SayangModelAddPage: React.FC & {
   const handleSumbitTemp = async (id:string, temp:boolean) => {
     try {
       const tempData = data.find((d:orderModelType) => d.id === id);
-      const jsonData = {
-        currPrdInfo: tempData?.currPrdInfo,
-        tempPrdInfo: {
-          ...tempData?.tempPrdInfo,
-          ...tempData?.editModel,
-          partner: tempData?.prtInfo?.prt?.id,
-          prdNm: tempData?.model?.prdNm,
-          mnfNm: tempData?.model?.mnfNm,
-        },
-        partnerId: tempData?.prtInfo?.prt?.id,
-        partnerManagerId: tempData?.prtInfo?.mng?.id,
-        order: { id: tempData?.order?.id },
-        model: { ...tempData?.model },
-        modelStatus: tempData?.modelStatus,
-        orderDt: tempData?.orderDt,
-        orderTit: tempData?.orderTit,
-        prtOrderNo: tempData?.prtOrderNo,
-        orderPrdRemark: tempData?.orderPrdRemark,
-        orderPrdCnt: tempData?.orderPrdCnt,
-        orderPrdUnitPrice: tempData?.orderPrdUnitPrice,
-        orderPrdPrice: tempData?.orderPrdPrice,
-        orderPrdDueReqDt: tempData?.orderPrdDueReqDt,
-        orderPrdDueDt: tempData?.orderPrdDueDt,
-        orderPrdHotGrade: tempData?.orderPrdHotGrade
-      }
-      console.log(JSON.stringify(jsonData));
 
-      const result = await patchAPI({
-        type: 'core-d1',
-        utype: 'tenant/',
-        url: 'sales-order/product',
-        jsx: 'jsxcrud'
-      }, id, jsonData);
-  
-      if(result.resultCode === 'OK_0000') {
-        if(temp)  showToast("임시저장 완료", "success");
+      if(tempData) {
+        const jsonData = changeModelAddTemp(tempData);
+        console.log(JSON.stringify(jsonData));
+
+        const result = await patchAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'sales-order/product',
+          jsx: 'jsxcrud'
+        }, id, jsonData);
     
-        refetch();
-      } else {
-        const msg = result?.response?.data?.message;
-        showToast(msg, "error");
+        if(result.resultCode === 'OK_0000') {
+          if(temp)  showToast("임시저장 완료", "success");
+      
+          refetch();
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
       }
     } catch (e) {
       console.log('CATCH ERROR : ', e);
@@ -219,74 +177,77 @@ const SayangModelAddPage: React.FC & {
   const handleSubmit = async (id:string) => {
     // 기존에 있는 모델을 선택한 것이 아닐 경우 새로 생성해야 함
     const tempData = data.find((d:orderModelType) => d.id === id);
-    const jsonData = {
-      inactiveYn: false,
-      partner: { id: tempData?.prtInfo?.prt?.id },
-      prdNm: tempData?.model?.prdNm,
-      board: { id: tempData?.model?.board?.id ?? boardSelectList?.[0]?.value },
-      mnfNm: tempData?.model?.mnfNm,
-      fpNo: tempData?.editModel?.fpNo ?? tempData?.tempPrdInfo?.fpNo,
-      drgNo: tempData?.editModel?.drgNo ?? tempData?.tempPrdInfo?.drgNo,
-      thk: tempData?.editModel?.thk ?? tempData?.tempPrdInfo?.thk,
-      prdRevNo: tempData?.editModel?.prdRevNo ?? tempData?.tempPrdInfo?.prdRevNo,
-      layerEm: tempData?.editModel?.layerEm ?? tempData?.tempPrdInfo?.layerEm ?? "L1",
-      modelTypeEm: tempData?.editModel?.modelTypeEm ?? tempData?.tempPrdInfo?.modelTypeEm ?? "sample",
-      copOut: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copOut,
-      copIn: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copIn,
-      material: { id: tempData?.editModel?.material?.id  ?? tempData?.tempPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value },
-      surface: { id: tempData?.editModel?.surface?.id  ?? tempData?.tempPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value },
-      smPrint: { id: tempData?.editModel?.smPrint?.id  ?? tempData?.tempPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value },
-      smColor: { id: tempData?.editModel?.smColor?.id  ?? tempData?.tempPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value },
-      smType: { id: tempData?.editModel?.smType?.id  ?? tempData?.tempPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value },
-      mkPrint: { id: tempData?.editModel?.mkPrint?.id  ?? tempData?.tempPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value },
-      mkColor: { id: tempData?.editModel?.mkColor?.id  ?? tempData?.tempPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value },
-      mkType: { id: tempData?.editModel?.mkType?.id  ?? tempData?.tempPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value },
-      spPrint: { id: tempData?.editModel?.spPrint?.id  ?? tempData?.tempPrdInfo?.spPrint?.id },
-      spType: { id: tempData?.editModel?.spType?.id  ?? tempData?.tempPrdInfo?.spType?.id },
-      aprType: { id: tempData?.editModel?.aprType?.id  ?? tempData?.tempPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value },
-      vcutYn: tempData?.editModel?.vcutYn ?? tempData?.tempPrdInfo?.vcutYn ?? false,
-      vcutType: { id: tempData?.editModel?.vcutType?.id ?? tempData?.tempPrdInfo?.vcutType?.id },
-      unit: { id: tempData?.editModel?.unit?.id ?? tempData?.tempPrdInfo?.unit?.id },
-      pcsW: tempData?.editModel?.pcsW ?? tempData?.tempPrdInfo?.pcsW,
-      pcsL: tempData?.editModel?.pcsL ?? tempData?.tempPrdInfo?.pcsL,
-      kitW: tempData?.editModel?.kitW ?? tempData?.tempPrdInfo?.kitW,
-      kitL: tempData?.editModel?.kitL ?? tempData?.tempPrdInfo?.kitL,
-      pnlW: tempData?.editModel?.pnlW ?? tempData?.tempPrdInfo?.pnlW,
-      pnlL: tempData?.editModel?.pnlL ?? tempData?.tempPrdInfo?.pnlL,
-      ykitW: tempData?.editModel?.ykitW ?? tempData?.tempPrdInfo?.ykitW,
-      ykitL: tempData?.editModel?.ykitL ?? tempData?.tempPrdInfo?.ykitL,
-      ypnlW: tempData?.editModel?.ypnlW ?? tempData?.tempPrdInfo?.ypnlW,
-      ypnlL: tempData?.editModel?.ypnlL ?? tempData?.tempPrdInfo?.ypnlL,
-      kitPcs: tempData?.editModel?.kitPcs ?? tempData?.tempPrdInfo?.kitPcs,
-      pnlKit: tempData?.editModel?.pnlKit ?? tempData?.tempPrdInfo?.pnlKit,
-      sthPnl: tempData?.editModel?.sthPnl ?? tempData?.tempPrdInfo?.sthPnl,
-      sthPcs: tempData?.editModel?.sthPcs ?? tempData?.tempPrdInfo?.sthPcs,
-      pltThk: tempData?.editModel?.pltThk ?? tempData?.tempPrdInfo?.pltThk,
-      pltAlph: tempData?.editModel?.pltAlph ?? tempData?.tempPrdInfo?.pltAlph,
-      spPltNi: tempData?.editModel?.spPltNi ?? tempData?.tempPrdInfo?.spPltNi,
-      spPltNiAlph: tempData?.editModel?.spPltNiAlph ?? tempData?.tempPrdInfo?.spPltNiAlph,
-      spPltAu: tempData?.editModel?.spPltAu ?? tempData?.tempPrdInfo?.spPltAu,
-      spPltAuAlph: tempData?.editModel?.spPltAuAlph ?? tempData?.tempPrdInfo?.spPltAuAlph,
-      pinCnt: tempData?.editModel?.pinCnt ?? tempData?.tempPrdInfo?.pinCnt,
-    }
-    console.log(JSON.stringify(jsonData));
+    if(tempData) {
+      const jsonData = changeModelAddNewModel(tempData);
+      console.log(JSON.stringify(jsonData));
 
-    const resultPost = await postAPI({
-      type: 'core-d1',
-      utype: 'tenant/',
-      url: 'models',
-      jsx: 'jsxcrud'
-    }, jsonData);
+      const resultPost = await postAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'models',
+        jsx: 'jsxcrud'
+      }, jsonData);
 
-    if(resultPost.resultCode === 'OK_0000') {
-      const modelId = resultPost.data?.entity?.id;
-      console.log('MODEL ID : ', modelId);
-      handleConfirm(id, modelId);
-    } else {
-      const msg = resultPost?.response?.data?.message;
-      showToast(msg, "error");
-      console.log(msg);
+      if(resultPost.resultCode === 'OK_0000') {
+        const modelId = resultPost.data?.entity?.id;
+        console.log('MODEL ID : ', modelId);
+        handleConfirm(id, modelId);
+      } else {
+        const msg = resultPost?.response?.data?.message;
+        showToast(msg, "error");
+        console.log(msg);
+      }
     }
+    // const jsonData = {
+    //   inactiveYn: false,
+    //   partner: { id: tempData?.prtInfo?.prt?.id },
+    //   prdNm: tempData?.model?.prdNm,
+    //   board: { id: tempData?.model?.board?.id ?? boardSelectList?.[0]?.value },
+    //   mnfNm: tempData?.model?.mnfNm,
+    //   fpNo: tempData?.editModel?.fpNo ?? tempData?.tempPrdInfo?.fpNo,
+    //   drgNo: tempData?.editModel?.drgNo ?? tempData?.tempPrdInfo?.drgNo,
+    //   thk: tempData?.editModel?.thk ?? tempData?.tempPrdInfo?.thk,
+    //   prdRevNo: tempData?.editModel?.prdRevNo ?? tempData?.tempPrdInfo?.prdRevNo,
+    //   layerEm: tempData?.editModel?.layerEm ?? tempData?.tempPrdInfo?.layerEm ?? "L1",
+    //   modelTypeEm: tempData?.editModel?.modelTypeEm ?? tempData?.tempPrdInfo?.modelTypeEm ?? "sample",
+    //   copOut: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copOut,
+    //   copIn: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copIn,
+    //   material: { id: tempData?.editModel?.material?.id  ?? tempData?.tempPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value },
+    //   surface: { id: tempData?.editModel?.surface?.id  ?? tempData?.tempPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value },
+    //   smPrint: { id: tempData?.editModel?.smPrint?.id  ?? tempData?.tempPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value },
+    //   smColor: { id: tempData?.editModel?.smColor?.id  ?? tempData?.tempPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value },
+    //   smType: { id: tempData?.editModel?.smType?.id  ?? tempData?.tempPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value },
+    //   mkPrint: { id: tempData?.editModel?.mkPrint?.id  ?? tempData?.tempPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value },
+    //   mkColor: { id: tempData?.editModel?.mkColor?.id  ?? tempData?.tempPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value },
+    //   mkType: { id: tempData?.editModel?.mkType?.id  ?? tempData?.tempPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value },
+    //   spPrint: { id: tempData?.editModel?.spPrint?.id  ?? tempData?.tempPrdInfo?.spPrint?.id },
+    //   spType: { id: tempData?.editModel?.spType?.id  ?? tempData?.tempPrdInfo?.spType?.id },
+    //   aprType: { id: tempData?.editModel?.aprType?.id  ?? tempData?.tempPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value },
+    //   vcutYn: tempData?.editModel?.vcutYn ?? tempData?.tempPrdInfo?.vcutYn ?? false,
+    //   vcutType: { id: tempData?.editModel?.vcutType?.id ?? tempData?.tempPrdInfo?.vcutType?.id },
+    //   unit: { id: tempData?.editModel?.unit?.id ?? tempData?.tempPrdInfo?.unit?.id },
+    //   pcsW: tempData?.editModel?.pcsW ?? tempData?.tempPrdInfo?.pcsW,
+    //   pcsL: tempData?.editModel?.pcsL ?? tempData?.tempPrdInfo?.pcsL,
+    //   kitW: tempData?.editModel?.kitW ?? tempData?.tempPrdInfo?.kitW,
+    //   kitL: tempData?.editModel?.kitL ?? tempData?.tempPrdInfo?.kitL,
+    //   pnlW: tempData?.editModel?.pnlW ?? tempData?.tempPrdInfo?.pnlW,
+    //   pnlL: tempData?.editModel?.pnlL ?? tempData?.tempPrdInfo?.pnlL,
+    //   ykitW: tempData?.editModel?.ykitW ?? tempData?.tempPrdInfo?.ykitW,
+    //   ykitL: tempData?.editModel?.ykitL ?? tempData?.tempPrdInfo?.ykitL,
+    //   ypnlW: tempData?.editModel?.ypnlW ?? tempData?.tempPrdInfo?.ypnlW,
+    //   ypnlL: tempData?.editModel?.ypnlL ?? tempData?.tempPrdInfo?.ypnlL,
+    //   kitPcs: tempData?.editModel?.kitPcs ?? tempData?.tempPrdInfo?.kitPcs,
+    //   pnlKit: tempData?.editModel?.pnlKit ?? tempData?.tempPrdInfo?.pnlKit,
+    //   sthPnl: tempData?.editModel?.sthPnl ?? tempData?.tempPrdInfo?.sthPnl,
+    //   sthPcs: tempData?.editModel?.sthPcs ?? tempData?.tempPrdInfo?.sthPcs,
+    //   pltThk: tempData?.editModel?.pltThk ?? tempData?.tempPrdInfo?.pltThk,
+    //   pltAlph: tempData?.editModel?.pltAlph ?? tempData?.tempPrdInfo?.pltAlph,
+    //   spPltNi: tempData?.editModel?.spPltNi ?? tempData?.tempPrdInfo?.spPltNi,
+    //   spPltNiAlph: tempData?.editModel?.spPltNiAlph ?? tempData?.tempPrdInfo?.spPltNiAlph,
+    //   spPltAu: tempData?.editModel?.spPltAu ?? tempData?.tempPrdInfo?.spPltAu,
+    //   spPltAuAlph: tempData?.editModel?.spPltAuAlph ?? tempData?.tempPrdInfo?.spPltAuAlph,
+    //   pinCnt: tempData?.editModel?.pinCnt ?? tempData?.tempPrdInfo?.pinCnt,
+    // }
   }
 
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
@@ -297,9 +258,7 @@ const SayangModelAddPage: React.FC & {
       url: `models-match/default/confirm/input-model/${id}`,
       jsx: 'default',
       etc: true,
-    },
-    id,
-    {modelId: modelId });
+    }, id, {modelId: modelId });
 
     if(resultPatch.resultCode === 'OK_0000') {
       showToast("확정저장 완료", "success");
@@ -309,12 +268,15 @@ const SayangModelAddPage: React.FC & {
     } else {
       const msg = resultPatch?.response?.data?.message;
       showToast(msg, "error");
-      console.log(msg);
     }
   }
 
   const [newFlag, setNewFlag] = useState<boolean>(true);
   const [selectId, setSelectId] = useState<string | null>(null);
+
+  if (modelsLoading || dataLoading) {
+    return <div className="w-full h-full v-h-center"><Spin /></div>;
+  }
 
   return (
     <>
@@ -323,7 +285,6 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:1600}}
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        { dataLoading && <Loading loading={dataLoading} />}
         { !dataLoading &&
         data.map((model:orderModelType, index:number) => (
           <div className="flex flex-col gap-16" key={model.id}>
@@ -471,9 +432,9 @@ const SayangModelAddPage: React.FC & {
         setNewFlag={setNewFlag}
         selectId={selectId}
         setSelectId={setSelectId}
-        modelData={modelData}
-        setModelData={setModelData}
-        modelDataLoading={modelDataLoading}
+        modelData={models}
+        setModelData={setModels}
+        modelDataLoading={modelsLoading}
       />
       <ToastContainer />
     </>
@@ -481,12 +442,11 @@ const SayangModelAddPage: React.FC & {
 }
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout 
-    title="모델 등록"
-    // menuTitle="모델 등록 및 현황"
-    // subTitle="모델등록"
-    // menu={[]}
-  >{page}</PopRegLayout>
+  <BaseProvider>
+  <ModelProvider>
+    <PopRegLayout title="모델 등록">{page}</PopRegLayout>
+  </ModelProvider>
+  </BaseProvider>
 )
 
 export default SayangModelAddPage;

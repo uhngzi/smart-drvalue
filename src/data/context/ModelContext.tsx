@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, SetStateAction, useContext, useEffect, useState } from "react";
 import { getAPI } from "@/api/get";
 import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { modelsType } from "../type/sayang/models";
 
 interface ModelContextType {
   models: modelsType[];
+  setModels: React.Dispatch<SetStateAction<modelsType[]>>;
   modelsLoading: boolean;
   refetchModels: () => void;
 }
@@ -32,7 +33,7 @@ export const ModelProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   return (
-    <ModelContext.Provider value={{ models, modelsLoading, refetchModels:refetch }}>
+    <ModelContext.Provider value={{ models, setModels, modelsLoading, refetchModels:refetch }}>
       {children}
     </ModelContext.Provider>
   );
