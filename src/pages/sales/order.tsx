@@ -46,6 +46,7 @@ import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 import { LabelMedium } from "@/components/Text/Label";
+import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -74,6 +75,7 @@ const SalesUserPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        sort: "createdAt,DESC",
       });
     }
   });
@@ -226,31 +228,7 @@ const SalesUserPage: React.FC & {
 
     // 신규 등록 시 실행 함수
   const handleSubmitOrder = async () => {
-    const jsonData = {
-      ...formData,
-      hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-      orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-      orderName: formData.orderName,
-      orderRepDt: new Date(),
-      empId: me?.id,
-      products: newProducts.map((product:salesOrderProcuctCUType, index:number) => ({
-        customPartnerManagerId: formData.partnerManagerId,
-        currPrdInfo: product.currPrdInfo,
-        modelId: product.modelId,
-        modelStatus: product.modelStatus,
-        orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-        // orderNo: index.toString(),
-        orderTit: product.orderTit,
-        prtOrderNo: product.prtOrderNo,
-        orderPrdRemark: product.orderPrdRemark,
-        orderPrdCnt: product.orderPrdCnt,
-        orderPrdUnitPrice: product.orderPrdUnitPrice,
-        orderPrdPrice: product.orderPrdPrice,
-        orderPrdDueReqDt: product.orderPrdDueReqDt,
-        orderPrdDueDt: product.orderPrdDueDt,
-        orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-      }))
-    } as salesOrderCUType;
+    const jsonData = changeOrderNew(formData, newProducts, me);
     console.log(JSON.stringify(jsonData));
 
     // 모델 내 필수 값 입력 체크
@@ -284,55 +262,7 @@ const SalesUserPage: React.FC & {
   }
 
   const handleEditOrder = async () => {
-    const jsonData = {
-      order: {
-        id: formData.id,
-        partnerId: formData.partnerId,
-        partnerManagerId: formData.partnerManagerId,
-        orderName: formData.orderName,
-        totalOrderPrice: formData.totalOrderPrice,
-        orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-        orderRepDt: formData.orderRepDt,
-        orderTxt: formData.orderTxt,
-        empId: me?.id,
-        hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-        files: formData.files,
-      },
-      products: {
-        create: newProducts.filter(f=>f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
-          currPrdInfo: prd.currPrdInfo,
-          modelId: prd.modelId,
-          modelStatus: prd.modelStatus,
-          orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-          // orderNo: index.toString(),
-          orderTit: prd.orderTit,
-          prtOrderNo: prd.prtOrderNo,
-          orderPrdRemark: prd.orderPrdRemark,
-          orderPrdCnt: prd.orderPrdCnt,
-          orderPrdUnitPrice: prd.orderPrdUnitPrice,
-          orderPrdPrice: prd.orderPrdPrice,
-          orderPrdDueReqDt: prd.orderPrdDueReqDt,
-          orderPrdDueDt: prd.orderPrdDueDt,
-          orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-        })),
-        update: newProducts.filter(f=>!f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
-          id: prd.id,
-          currPrdInfo: prd.currPrdInfo,
-          modelStatus: prd.modelStatus,
-          orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-          // orderNo: index.toString(),
-          orderTit: prd.orderTit,
-          prtOrderNo: prd.prtOrderNo,
-          orderPrdRemark: prd.orderPrdRemark,
-          orderPrdCnt: prd.orderPrdCnt,
-          orderPrdUnitPrice: prd.orderPrdUnitPrice,
-          orderPrdPrice: prd.orderPrdPrice,
-          orderPrdDueReqDt: prd.orderPrdDueReqDt,
-          orderPrdDueDt: prd.orderPrdDueDt,
-          orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-        }))
-      }
-    }
+    const jsonData = changeOrderEdit(formData, newProducts, me);
     console.log(JSON.stringify(jsonData));
 
     // 발주 내 필수 값 입력 체크
@@ -342,10 +272,17 @@ const SalesUserPage: React.FC & {
       return;
     }
 
-    // 모델 내 필수 값 입력 체크
-    const prdVal = validReq(jsonData.products.update, salesOrderProcuctReq());
-    if(!prdVal.isValid) {
-      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
+    // 모델 내 수정 필수 값 입력 체크
+    const prdValUp = validReq(jsonData.products.update, salesOrderProcuctReq());
+    if(!prdValUp.isValid) {
+      showToast(prdValUp.missingLabels+'은(는) 필수 입력입니다.', "error");
+      return;
+    }
+
+    // 모델 내 생성 필수 값 입력 체크
+    const prdValCr = validReq(jsonData.products.create, salesOrderProcuctReq());
+    if(!prdValCr.isValid) {
+      showToast(prdValCr.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
     }
 
@@ -390,14 +327,7 @@ const SalesUserPage: React.FC & {
 
   const [orderId, setOrderId] = useState<string>('');
   const [orderDrawer, setOrderDrawer] = useState<boolean>(false);
-  useEffect(()=>{
-    console.log(orderId);
-  },[orderId])
   
-
-
-
-
   // 모델 등록 드래그 앤 드롭으로 크기 조절
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
