@@ -321,3 +321,46 @@ export type modelsMatchDetail = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
 }
+
+// 모델 매칭 내 모델 필수값 필드
+export const modelReq = () => {
+  return [
+    { field : 'prdNm', label: '모델명' },
+    { field : 'prdRevNo', label: 'REV' },
+    { field : 'layerEm', label: '층' },
+    { field : 'modelTypeEm', label: '모델 구분' },
+    { field : 'thk', label: '두께' },
+    { field : 'board', label: '원판' },
+    { field : 'mnfNm', label: '제조사' },
+    { field : 'material', label: '재질' },
+    { field : 'surface', label: '표면' },
+    { field : 'copOut', label: '동박외층' },
+    { field : 'copIn', label: '동박내층' },
+    { field : 'smPrint', label: 'S/M인쇄' },
+    { field : 'smColor', label: 'S/M색상' },
+    { field : 'smType', label: 'S/M종류' },
+    { field : 'mkPrint', label: 'M/K인쇄' },
+    { field : 'mkColor', label: 'M/K색상' },
+    { field : 'mkType', label: 'M/K종류' },
+    { field : 'aprType', label: '외형가공형태' },
+    { field : 'vcutYn', label: 'VCUT 유무' },
+    { field : 'unit', label: '단위' },
+    { field : 'pcsW', label: 'PCS X' },
+    { field : 'pcsL', label: 'PCS Y' },
+    { field : 'kitW', label: 'KIT X' },
+    { field : 'kitL', label: 'KIT Y' },
+    { field : 'pnlW', label: 'PNL X' },
+    { field : 'pnlL', label: 'PNL Y' },
+    { field : 'ykitW', label: '연조KIT X' },
+    { field : 'ykitL', label: '연조KIT Y' },
+    { field : 'ypnlW', label: '연조PNL X' },
+    { field : 'ypnlL', label: '연조PNL Y' },
+    { field : 'kitPcs', label: 'KITPcs' },
+    { field : 'pnlKit', label: 'pnlKIT' },
+    { field : 'sthPnl', label: 'sthPnl' },
+    { field : 'sthPcs', label: 'sthPcs' },
+    { field : 'pltThk', label: '도금 두께' },
+    { field : 'pltAlph', label: '도금 두께 여유' },
+    { field : 'pinCnt', label: '핀 수' },
+  ]
+}

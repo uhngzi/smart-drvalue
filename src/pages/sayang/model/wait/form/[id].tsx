@@ -18,15 +18,15 @@ import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { ModelStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
-import { modelsType, orderModelType } from "@/data/type/sayang/models";
+import { modelReq, orderModelType } from "@/data/type/sayang/models";
 import { BaseProvider, useBase } from '@/data/context/BaseContext';
 import useToast from '@/utils/useToast';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
-import Loading from '@/components/Loading/Loading';
 import { ModelProvider, useModels } from '@/data/context/ModelContext';
 import { changeModelAddNewModel, changeModelAddTemp } from '@/data/type/sayang/changeData';
+import { validReq } from '@/utils/valid';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -52,7 +52,7 @@ const SayangModelAddPage: React.FC & {
     spPrintSelectList,
     spTypeSelectList,
   } = useBase();
-  const { models, setModels, modelsLoading } = useModels();
+  const { models, setModels, modelsLoading, refetchModels } = useModels();
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -161,8 +161,6 @@ const SayangModelAddPage: React.FC & {
     
         if(result.resultCode === 'OK_0000') {
           if(temp)  showToast("임시저장 완료", "success");
-      
-          refetch();
         } else {
           const msg = result?.response?.data?.message;
           showToast(msg, "error");
@@ -175,11 +173,31 @@ const SayangModelAddPage: React.FC & {
 
   // 확정저장 시 실행되는 함수
   const handleSubmit = async (id:string) => {
+    console.log('NEW', id);
     // 기존에 있는 모델을 선택한 것이 아닐 경우 새로 생성해야 함
     const tempData = data.find((d:orderModelType) => d.id === id);
     if(tempData) {
-      const jsonData = changeModelAddNewModel(tempData);
+      const jsonData = changeModelAddNewModel(
+        tempData,
+        boardSelectList,
+        metarialSelectList,
+        surfaceSelectList,
+        outSelectList,
+        smPrintSelectList,
+        smColorSelectList,
+        smTypeSelectList,
+        mkPrintSelectList,
+        mkColorSelectList,
+        mkTypeSelectList,
+        unitSelectList,
+      );
       console.log(JSON.stringify(jsonData));
+      
+      const val = validReq(jsonData, modelReq());
+      if(!val.isValid) {
+        showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
+        return;
+      }
 
       const resultPost = await postAPI({
         type: 'core-d1',
@@ -189,6 +207,7 @@ const SayangModelAddPage: React.FC & {
       }, jsonData);
 
       if(resultPost.resultCode === 'OK_0000') {
+        refetchModels();
         const modelId = resultPost.data?.entity?.id;
         console.log('MODEL ID : ', modelId);
         handleConfirm(id, modelId);
@@ -198,60 +217,11 @@ const SayangModelAddPage: React.FC & {
         console.log(msg);
       }
     }
-    // const jsonData = {
-    //   inactiveYn: false,
-    //   partner: { id: tempData?.prtInfo?.prt?.id },
-    //   prdNm: tempData?.model?.prdNm,
-    //   board: { id: tempData?.model?.board?.id ?? boardSelectList?.[0]?.value },
-    //   mnfNm: tempData?.model?.mnfNm,
-    //   fpNo: tempData?.editModel?.fpNo ?? tempData?.tempPrdInfo?.fpNo,
-    //   drgNo: tempData?.editModel?.drgNo ?? tempData?.tempPrdInfo?.drgNo,
-    //   thk: tempData?.editModel?.thk ?? tempData?.tempPrdInfo?.thk,
-    //   prdRevNo: tempData?.editModel?.prdRevNo ?? tempData?.tempPrdInfo?.prdRevNo,
-    //   layerEm: tempData?.editModel?.layerEm ?? tempData?.tempPrdInfo?.layerEm ?? "L1",
-    //   modelTypeEm: tempData?.editModel?.modelTypeEm ?? tempData?.tempPrdInfo?.modelTypeEm ?? "sample",
-    //   copOut: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copOut,
-    //   copIn: tempData?.editModel?.copOut ?? tempData?.tempPrdInfo?.copIn,
-    //   material: { id: tempData?.editModel?.material?.id  ?? tempData?.tempPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value },
-    //   surface: { id: tempData?.editModel?.surface?.id  ?? tempData?.tempPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value },
-    //   smPrint: { id: tempData?.editModel?.smPrint?.id  ?? tempData?.tempPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value },
-    //   smColor: { id: tempData?.editModel?.smColor?.id  ?? tempData?.tempPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value },
-    //   smType: { id: tempData?.editModel?.smType?.id  ?? tempData?.tempPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value },
-    //   mkPrint: { id: tempData?.editModel?.mkPrint?.id  ?? tempData?.tempPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value },
-    //   mkColor: { id: tempData?.editModel?.mkColor?.id  ?? tempData?.tempPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value },
-    //   mkType: { id: tempData?.editModel?.mkType?.id  ?? tempData?.tempPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value },
-    //   spPrint: { id: tempData?.editModel?.spPrint?.id  ?? tempData?.tempPrdInfo?.spPrint?.id },
-    //   spType: { id: tempData?.editModel?.spType?.id  ?? tempData?.tempPrdInfo?.spType?.id },
-    //   aprType: { id: tempData?.editModel?.aprType?.id  ?? tempData?.tempPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value },
-    //   vcutYn: tempData?.editModel?.vcutYn ?? tempData?.tempPrdInfo?.vcutYn ?? false,
-    //   vcutType: { id: tempData?.editModel?.vcutType?.id ?? tempData?.tempPrdInfo?.vcutType?.id },
-    //   unit: { id: tempData?.editModel?.unit?.id ?? tempData?.tempPrdInfo?.unit?.id },
-    //   pcsW: tempData?.editModel?.pcsW ?? tempData?.tempPrdInfo?.pcsW,
-    //   pcsL: tempData?.editModel?.pcsL ?? tempData?.tempPrdInfo?.pcsL,
-    //   kitW: tempData?.editModel?.kitW ?? tempData?.tempPrdInfo?.kitW,
-    //   kitL: tempData?.editModel?.kitL ?? tempData?.tempPrdInfo?.kitL,
-    //   pnlW: tempData?.editModel?.pnlW ?? tempData?.tempPrdInfo?.pnlW,
-    //   pnlL: tempData?.editModel?.pnlL ?? tempData?.tempPrdInfo?.pnlL,
-    //   ykitW: tempData?.editModel?.ykitW ?? tempData?.tempPrdInfo?.ykitW,
-    //   ykitL: tempData?.editModel?.ykitL ?? tempData?.tempPrdInfo?.ykitL,
-    //   ypnlW: tempData?.editModel?.ypnlW ?? tempData?.tempPrdInfo?.ypnlW,
-    //   ypnlL: tempData?.editModel?.ypnlL ?? tempData?.tempPrdInfo?.ypnlL,
-    //   kitPcs: tempData?.editModel?.kitPcs ?? tempData?.tempPrdInfo?.kitPcs,
-    //   pnlKit: tempData?.editModel?.pnlKit ?? tempData?.tempPrdInfo?.pnlKit,
-    //   sthPnl: tempData?.editModel?.sthPnl ?? tempData?.tempPrdInfo?.sthPnl,
-    //   sthPcs: tempData?.editModel?.sthPcs ?? tempData?.tempPrdInfo?.sthPcs,
-    //   pltThk: tempData?.editModel?.pltThk ?? tempData?.tempPrdInfo?.pltThk,
-    //   pltAlph: tempData?.editModel?.pltAlph ?? tempData?.tempPrdInfo?.pltAlph,
-    //   spPltNi: tempData?.editModel?.spPltNi ?? tempData?.tempPrdInfo?.spPltNi,
-    //   spPltNiAlph: tempData?.editModel?.spPltNiAlph ?? tempData?.tempPrdInfo?.spPltNiAlph,
-    //   spPltAu: tempData?.editModel?.spPltAu ?? tempData?.tempPrdInfo?.spPltAu,
-    //   spPltAuAlph: tempData?.editModel?.spPltAuAlph ?? tempData?.tempPrdInfo?.spPltAuAlph,
-    //   pinCnt: tempData?.editModel?.pinCnt ?? tempData?.tempPrdInfo?.pinCnt,
-    // }
   }
 
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
   const handleConfirm = async (id: string, modelId: string) => {
+    console.log('confirm', id, modelId);
     const resultPatch = await patchAPI({
       type: 'core-d1',
       utype: 'tenant/',
@@ -263,8 +233,7 @@ const SayangModelAddPage: React.FC & {
     if(resultPatch.resultCode === 'OK_0000') {
       showToast("확정저장 완료", "success");
       handleSumbitTemp(id, false);
-  
-      refetch();
+      setNewFlag(true);
     } else {
       const msg = resultPatch?.response?.data?.message;
       showToast(msg, "error");
@@ -275,7 +244,7 @@ const SayangModelAddPage: React.FC & {
   const [selectId, setSelectId] = useState<string | null>(null);
 
   if (modelsLoading || dataLoading) {
-    return <div className="w-full h-full v-h-center"><Spin /></div>;
+    return <div className="w-full h-full v-h-center"><Spin tip="Loading..."/></div>;
   }
 
   return (
