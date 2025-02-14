@@ -793,17 +793,58 @@ export const sayangSampleWaitAddClmn = (
     ]
   },
   {
-    title: '연조',
+    title: '연조KIT',
     width:55,
     dataIndex: 'ar',
     key: 'ar',
     align: 'center',
-    render: (value, record) => (
-      <div className={divTopClass}>
-        <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
-        <div className={divClass+"gap-3 !text-12"}><AntdInputFill className="w-[30px!important] !text-12"/>연조</div>
-      </div>
-    )
+    children:[
+      {
+        title: '연조PNL',
+        width:100,
+        dataIndex: 'arpnl',
+        key: 'arpnl',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.model?.ykitL}
+                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+              <AntdInputFill
+                value={record.model?.ykitW}
+                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.model?.ypnlL}
+                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlL', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+              <AntdInputFill
+                value={record.model?.ypnlW}
+                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlW', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+    // render: (value, record) => (
+    //   <div className={divTopClass}>
+    //     <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
+    //     <div className={divClass+"gap-3 !text-12"}><AntdInputFill className="w-[30px!important] !text-12"/>연조</div>
+    //   </div>
+    // )
   },
   {
     title: 'SPEC',
@@ -1404,21 +1445,13 @@ export const sayangModelWaitAddClmn = (
     align: 'center',
     children: [
       {
-        title:'필름번호',
+        title:'',
         width:100,
-        dataIndex: 'filmNo',
-        key: 'filmNo',
+        dataIndex: 'doNum',
+        key: 'doNum',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.editModel?.drgNo ?? record.model?.drgNo ?? record.tempPrdInfo?.drgNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.drgNo', e.target.value)}
-                className='w-[100px] !text-12'
-                readonly={selectId === record.id ? !newFlag : undefined}
-              />
-            </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.editModel?.fpNo ?? record.model?.fpNo ?? record.tempPrdInfo?.fpNo}
@@ -1432,7 +1465,6 @@ export const sayangModelWaitAddClmn = (
       }
     ]
   },
-  
   {
     title: 'PCS',
     width:50,

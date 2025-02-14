@@ -32,9 +32,10 @@ interface Props {
     rowSelection?: 'radio' | 'checkbox';
     split?: 'none';
   };
+  loading?: boolean;
 }
 
-const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tableProps }) => {
+const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tableProps, loading }) => {
   return (
     <AntdTableStyled 
       className={className}
@@ -66,6 +67,7 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
           dataSource={data} 
           pagination={false}
           scroll={{ x: 'max-content' }}
+          loading={loading}
         />
       </ConfigProvider>
     </AntdTableStyled>
