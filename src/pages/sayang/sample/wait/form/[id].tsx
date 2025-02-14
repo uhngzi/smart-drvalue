@@ -68,10 +68,10 @@ const SayangSampleAddPage: React.FC & {
         url: `models-match/detail/jsxcrud/one/${id}`
       });
 
-      setDetailDataLoading(false);
       if(result.resultCode === "OK_0000") {
         setModelsData([...modelsData, {...result.data.data?.model, index: detailData.length+1}]);
         console.log(result.data.data);
+        setDetailDataLoading(false);
       }
       return result;
     },
@@ -79,6 +79,9 @@ const SayangSampleAddPage: React.FC & {
 
   const handleSumbitTemp = async () => {
     try {
+      const jsonData = {
+      }
+
       const result = await postAPI({
         type: 'core-d1',
         utype: 'tenant/',
@@ -159,6 +162,7 @@ const SayangSampleAddPage: React.FC & {
             data={modelsData}
             styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
             tableProps={{split:'none'}}
+            loading={detailDataLoading}
           />
         </div>
       </div>
@@ -183,77 +187,7 @@ const SayangSampleAddPage: React.FC & {
         <FullOkButton label="확정저장" click={()=>{}}/>
         <FullSubButton label="임시저장" click={()=>{}}/>
       </div>
-        {/* <FilterMain
-          filter={filter}
-          setFilter={setFilter}
-          filterTitle="사양 및 생산의뢰 등록"
 
-          titleEtc={
-            <BorderButton 
-              label={
-                <div className="h-center gap-10 text-14 text-[#666666]">
-                  <p className="w-15 h-15"><Back /></p>
-                  <p>이전 단계</p>
-                </div>
-              }
-              click={()=>{}}
-              styles={{bc:'#666666'}}
-            />
-          }
-
-          filterBtn={
-            <div className="h-center gap-20 min-w-[200px]">
-              <BorderButton 
-                label={<><p className="w-18 h-18 text-point1 mr-5"><Plus /></p><p className="text-point1">모델추가</p></>}
-                click={()=>{}}
-                styles={{bc:'#4880FF'}}
-              />
-              <BorderButton 
-                label={<><p className="w-18 h-18 mr-5"><Data /></p><p>공정지정</p></>}
-                click={()=>{setOpen(true)}}
-              />
-              <BorderButton 
-                label={<p className="w-20 h-20"><Print /></p>}
-                click={()=>{}}
-              />
-            </div>
-          }
-
-          filterContents={
-            <div>
-              <AntdTable
-                columns={sayangSampleWaitAddClmn()}
-                data={data}
-                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
-                tableProps={{split:'none'}}
-              />
-            </div>
-          }
-
-          main={
-            <div className="flex justify-between gap-10">
-              <div className="min-w-[300px]">
-                <LaminationContents />
-              </div>
-              <div className="min-w-[550px]">
-                <MessageContents />
-              </div>
-              <div className="min-w-[400px]">
-                <ArrayContents />
-              </div>
-              <div className="min-w-[300px]">
-                <CutSizeContents />
-              </div>
-            </div>
-          }
-
-          btn={
-            <div className="v-h-center py-50 gap-15">
-              <FullOkButton label="확정저장" click={()=>{}}/>
-              <FullSubButton label="임시저장" click={()=>{}}/>
-            </div>
-          }
-        /> */}
       <AntdModal
         open={open}
         setOpen={setOpen}
