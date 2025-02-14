@@ -45,10 +45,6 @@ export const getAPI = async (
     s_type?: 'in' | 'or' | 'eq' | 'regex' | 'elemMatch' | 'ne' | 'nin' | 'all',
     s_list?: Array<string>,
     sort?: string,
-    // {
-    //   field: string,
-    //   order: 'DESC' | 'ASC',
-    // }[]
   }
 ): Promise<apiGetResponseType | apiAuthResponseType>  => {
   if(server.utype === 'root/') {
@@ -57,7 +53,7 @@ export const getAPI = async (
         limit: params?.limit ?? null,
         page: params?.page ?? null,
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
-        sort: params?.sort ?? null,
+        sort: params?.sort ?? "createdAt,DESC",
       }
     });
     console.log('GET RESPONSE : ', server.url, response);
@@ -70,7 +66,7 @@ export const getAPI = async (
         limit: params?.limit ?? null,
         page: params?.page ?? null,
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
-        sort: params?.sort ?? null,
+        sort: params?.sort ?? "createdAt,DESC",
       }
     });
     console.log('GET RESPONSE : ', server.url, response);

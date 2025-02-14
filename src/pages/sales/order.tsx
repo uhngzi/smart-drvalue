@@ -75,7 +75,6 @@ const SalesUserPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        sort: "createdAt,DESC",
       });
     }
   });
