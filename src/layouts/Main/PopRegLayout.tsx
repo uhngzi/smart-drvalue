@@ -1,42 +1,16 @@
 import { useEffect, useState } from "react";
-import Contents from "../Body/Contents";
-import MainHeader from "../Header/MainHeader";
 import Sider from "../Sider/Sider";
 import { useRouter } from "next/router";
-import Link from "next/link";
-import { TabLarge } from "@/components/Tab/Tabs";
-import { Button, Dropdown, MenuProps, Pagination } from "antd";
-import Image from "next/image";
-import { MoreOutlined } from "@ant-design/icons";
 
-import Excel from "@/assets/png/excel.png"
-import Print from "@/assets/png/print.png"
 import Close from "@/assets/svg/icons/s_close.svg";
 import { loginCheck } from "@/utils/signUtil";
+import { BaseProvider } from "@/data/context/BaseContext";
 
 interface Props {
   children : React.ReactNode;
   title: string;
   writeButtonHref?: string;
 }
-
-const items: MenuProps['items'] = [
-  {
-    label: <span className="text-12">Excel</span>,
-    key: '1',
-    icon: <Image src={Excel} alt="Excel" width={16} height={16} />,
-  },
-  {
-    label: <span className="text-12">Print</span>,
-    key: '2',
-    icon: <Image src={Print} alt="Print" width={16} height={16} />,
-  },
-]
-
-const menuProps = {
-  items,
-  // onClick: handleMenuClick,
-};
 
 const PopRegLayout: React.FC<Props> = ({ children, title }) => {
   const router = useRouter();
@@ -57,6 +31,7 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
 
   return (
     <div className="flex" key="mainPageLayout">
+      <BaseProvider>
       <div>
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
@@ -80,6 +55,7 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
           {children}
         </div>
       </div>
+      </BaseProvider>
     </div>
   )
 }

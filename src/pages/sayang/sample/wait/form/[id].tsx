@@ -24,7 +24,7 @@ import { modelsMatchDetail, modelsType } from "@/data/type/sayang/models";
 import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
-import { useBase } from "@/data/context/BaseContext";
+import { BaseProvider, useBase } from "@/data/context/BaseContext";
 import { patchAPI } from "@/api/patch";
 import { postAPI } from "@/api/post";
 import useToast from "@/utils/useToast";
@@ -267,9 +267,7 @@ const SayangSampleAddPage: React.FC & {
 }
 
 SayangSampleAddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout 
-    title="사양등록"
-  >{page}</PopRegLayout>
+  <PopRegLayout title="사양등록">{page}</PopRegLayout>
 );
 
 export default SayangSampleAddPage;

@@ -411,11 +411,9 @@ const SayangModelAddPage: React.FC & {
 }
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
-  <BaseProvider>
   <ModelProvider>
     <PopRegLayout title="모델 등록">{page}</PopRegLayout>
   </ModelProvider>
-  </BaseProvider>
 )
 
 export default SayangModelAddPage;
