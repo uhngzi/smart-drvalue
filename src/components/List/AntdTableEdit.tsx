@@ -66,6 +66,7 @@ const EditableCell: React.FC<
                   }
                 }}
                 style={{borderRadius:'2px', height:32}}
+                disabled={record?.disabled ?? undefined}
               />
             </ConfigProvider>
           :
@@ -78,6 +79,7 @@ const EditableCell: React.FC<
                 const label = selectOptions.find(f=>f.value===value)?.label;
                 onFieldChange(value, label);
               }}
+              disabled={record?.disabled ?? undefined}
             />
           :
           editType === "toggle" ?
@@ -87,6 +89,7 @@ const EditableCell: React.FC<
                 // 숫자로 변경    ** render에 if문 추가되므로 간략화 하기 위해 true, false가 아닌 숫자로 사용
                 onFieldChange(e ? 1 : 0);
               }}
+              disabled={record?.disabled ?? undefined}
             />
           :
           editType === "none" ? (
@@ -104,6 +107,7 @@ const EditableCell: React.FC<
                 onFieldChange(value);
               }}
               type={inputType}
+              readonly={record?.disabled ?? undefined}
             />
         }</>
       ) : (

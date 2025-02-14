@@ -183,6 +183,7 @@ export type salesOrderProductRType = {
   updatedAt?: Date | null;
   deletedAt?: Date | null;
   model?: any;
+  disabled?: boolean;
 }
 
 // 고객발주 내 모델 생성, 수정 타입
@@ -203,6 +204,7 @@ export type salesOrderProcuctCUType = {
   orderPrdDueReqDt?: Date | Dayjs | null;
   orderPrdDueDt?: Date | Dayjs | null;
   orderPrdHotGrade: HotGrade | null;
+  disabled?: boolean;
 }
 
 // 고객발주 내 모델 초기값 생성

@@ -35,7 +35,7 @@ import {
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
-import { HotGrade } from "@/data/type/enum";
+import { HotGrade, SalesOrderStatus } from "@/data/type/enum";
 
 import useToast from "@/utils/useToast";
 
@@ -168,6 +168,7 @@ const SalesUserPage: React.FC & {
         orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
         orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
         orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
+        disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
       })));
       setStepCurrent(1);
       setOpen(true);
@@ -350,6 +351,10 @@ const SalesUserPage: React.FC & {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   };
+
+  useEffect(()=>{
+    console.log(newProducts)
+  }, [newProducts]);
   return (
     <>
       <ListTitleBtn 
@@ -492,7 +497,7 @@ const SalesUserPage: React.FC & {
         <div className="flex flex-col gap-15 p-20 !pr-5">
           <div className="v-between-h-center">
             <p className="text-16 font-medium">고객 발주 정보</p>
-            <div className="flex justify-end cursor-pointer" onClick={() => setOpen(false)}><Close/></div>
+            <div className="flex justify-end cursor-pointer" onClick={() => setOrderDrawer(false)}><Close/></div>
           </div>
           <ModelDrawerContent orderId={orderId} />
         </div>
