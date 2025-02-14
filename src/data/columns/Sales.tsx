@@ -8,7 +8,6 @@ import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 
 import Trash from "@/assets/svg/icons/s_trash.svg";
-import dayjs from 'dayjs';
 import { SetStateAction } from 'react';
 
 export const salesUserOrderClmn = (
@@ -127,7 +126,12 @@ export const salesUserOrderClmn = (
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
         { value === FinalGlbStatus.REGISTERING ? (
-          <FullChip label="대기" state="yellow" click={()=>{}}/>
+          <FullChip label="대기" state="yellow" 
+            click={()=>{
+              setEdit(true);
+              setDetailId(record?.id);
+            }}
+          />
         ) : value === FinalGlbStatus.WAITING ? (
           <FullChip
             label="등록중" state="mint" 
