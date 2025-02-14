@@ -174,13 +174,13 @@ export const sayangSampleWaitClmn = (
     align: 'center',
     render: (_: any, __: any, index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
   },
-  // {
-  //   title: '관리No',
-  //   width: 120,
-  //   dataIndex: 'no',
-  //   key: 'no',
-  //   align: 'center',
-  // },
+  {
+    title: '관리No',
+    width: 120,
+    dataIndex: 'orderModel.orderNo',
+    key: 'orderModel.orderNo',
+    align: 'center',
+  },
   {
     title: '업체명/코드',
     width: 120,
