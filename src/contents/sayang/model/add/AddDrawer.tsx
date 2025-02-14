@@ -1,28 +1,18 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Dropdown, MenuProps, Radio, Space } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import dayjs from "dayjs";
+import styled from "styled-components";
 
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import CardList from "@/components/List/CardList";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { TabSmall } from "@/components/Tab/Tabs";
-import { LabelIcon } from "@/components/Text/Label";
 
 import { modelsType, orderModelType } from "@/data/type/sayang/models";
-import { salesOrderDetailRType } from "@/data/type/sales/order";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
-import Call from "@/assets/svg/icons/s_call.svg";
-import Mobile from "@/assets/svg/icons/mobile.svg";
-import Mail from "@/assets/svg/icons/mail.svg";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import styled from "styled-components";
-import FullChip from "@/components/Chip/FullChip";
-import { HotGrade } from "@/data/type/enum";
+
 import ModelDrawerContent from "./ModelDrawerContent";
 
 interface Props {
@@ -81,13 +71,15 @@ const AddDrawer:React.FC<Props> = ({
   useEffect(()=>{
     setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
   }, [searchModel]);
-  
+
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
   const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
+
   const handleSelectMenu = () => {
-    if(selectMenuKey===0) setNewFlag(true);   // 복사하여 새로 등록
-    else                  setNewFlag(false);  // 그대로 등록
+    if(selectMenuKey===0)       setNewFlag(true);   // 복사하여 새로 등록
+    else if(selectMenuKey===1)  setNewFlag(false);  // 그대로 등록
+    else                        return ;
     
     if(selectRecord !== null) {
       const newData = [...products];
@@ -98,8 +90,13 @@ const AddDrawer:React.FC<Props> = ({
       }
       setAlertOpen(false);
       setDrawerOpen(false);
+      setSelectMenuKey(null);
     }
   }
+  
+  // 입력하려는 모델에 값이 있는지 체크
+  const [productChk, setProductChk] = useState<boolean>(false);
+  const [alertProductOpen, setAlertProductOpen] = useState<boolean>(false);
   
   return (
     <>
@@ -203,13 +200,18 @@ const AddDrawer:React.FC<Props> = ({
         setOpen={setAlertOpen}
         title={"등록할 모델의 관리번호 선택"}
         contents={<div>
-          <CustomRadioGroup size="large" className="flex gap-20">
+          <CustomRadioGroup size="large" className="flex gap-20" value={selectId}>
           {
             products.map((p) => (
               <Radio.Button
                 key={p.id}
                 value={p.id}
-                onClick={(e)=>{setSelectId(p.id)}}
+                onClick={(e)=>{
+                  setSelectId(p.id);
+                  // 해당 모델에 입력된 값이 있을 경우
+                  if(p.editModel) setProductChk(true);
+                  console.log(p);
+                }}
                 className="!rounded-20 [border-inline-start-width:1px]"
               >{p.prtOrderNo}</Radio.Button>
             ))
@@ -221,10 +223,38 @@ const AddDrawer:React.FC<Props> = ({
           setAlertOpen(false);
         }}
         onOk={()=>{
-          handleSelectMenu();
+          // 해당 모델에 입력된 값이 있을 경우
+          if(productChk) {
+            setAlertOpen(false);
+            setAlertProductOpen(true);
+          } else {
+            handleSelectMenu();
+          }
         }}
         okText={'완료'}
         cancelText={'취소'}
+      />
+
+      <AntdAlertModal
+        open={alertProductOpen}
+        setOpen={setAlertProductOpen}
+        title={"값이 이미 존재하는 모델입니다."}
+        contents={<div>
+          기존에 입력된 데이터가 있습니다.<br/>
+          입력된 데이터가 사라지고 모델의 정보로 입력됩니다.
+        </div>}
+        type={'warning'} 
+        onCancle={()=>{
+          setProductChk(false);
+          setAlertProductOpen(false);
+        }}
+        onOk={()=>{
+          setProductChk(false);
+          setAlertProductOpen(false);
+          handleSelectMenu();
+        }}
+        okText={'선택한 모델의 정보로 새로 입력할게요'}
+        cancelText={'취소할게요'}
       />
     </>
   )
