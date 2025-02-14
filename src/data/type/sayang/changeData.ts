@@ -1,5 +1,5 @@
-import { useBase } from "@/data/context/BaseContext";
 import { orderModelType } from "./models";
+import { selectType } from "../componentStyles";
 
 // 사양 - 모델 등록 대기 내 임시 저장 값 변환
 export const changeModelAddTemp = (tempData:orderModelType | null) => {
@@ -7,10 +7,10 @@ export const changeModelAddTemp = (tempData:orderModelType | null) => {
     currPrdInfo: tempData?.currPrdInfo,
     tempPrdInfo: {
       ...tempData?.tempPrdInfo,
-      ...tempData?.editModel,
       partner: tempData?.prtInfo?.prt?.id,
       prdNm: tempData?.model?.prdNm,
       mnfNm: tempData?.model?.mnfNm,
+      ...tempData?.editModel,
     },
     partnerId: tempData?.prtInfo?.prt?.id,
     partnerManagerId: tempData?.prtInfo?.mng?.id,
@@ -33,27 +33,27 @@ export const changeModelAddTemp = (tempData:orderModelType | null) => {
 }
 
 // 사양 - 모델 등록 대기에서 확정 저장 시 모델이 새로 생성되는 값 변환
-export const changeModelAddNewModel = (tempData:orderModelType) => {
-  const {
-    boardSelectList,
-    metarialSelectList,
-    surfaceSelectList,
-    smPrintSelectList,
-    smColorSelectList,
-    smTypeSelectList,
-    mkPrintSelectList,
-    mkColorSelectList,
-    mkTypeSelectList,
-    outSelectList,
-  } = useBase();
-
+export const changeModelAddNewModel = (
+  tempData:orderModelType, 
+  boardSelectList: selectType[],
+  metarialSelectList: selectType[],
+  surfaceSelectList: selectType[],
+  outSelectList: selectType[],
+  smPrintSelectList: selectType[],
+  smColorSelectList: selectType[],
+  smTypeSelectList: selectType[],
+  mkPrintSelectList: selectType[],
+  mkColorSelectList: selectType[],
+  mkTypeSelectList: selectType[],
+  unitSelectList: selectType[],
+) => {
   const jsonData = {
     inactiveYn: false,
     partner: { id: tempData?.prtInfo?.prt?.id },
     prdNm: tempData?.model?.prdNm,
     board: { id: tempData?.model?.board?.id ?? boardSelectList?.[0]?.value },
     mnfNm: tempData?.model?.mnfNm,
-    fpNo: tempData?.editModel?.fpNo ?? tempData?.tempPrdInfo?.fpNo,
+    // fpNo: tempData?.editModel?.fpNo ?? tempData?.tempPrdInfo?.fpNo,
     drgNo: tempData?.editModel?.drgNo ?? tempData?.tempPrdInfo?.drgNo,
     thk: tempData?.editModel?.thk ?? tempData?.tempPrdInfo?.thk,
     prdRevNo: tempData?.editModel?.prdRevNo ?? tempData?.tempPrdInfo?.prdRevNo,
@@ -74,7 +74,7 @@ export const changeModelAddNewModel = (tempData:orderModelType) => {
     aprType: { id: tempData?.editModel?.aprType?.id  ?? tempData?.tempPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value },
     vcutYn: tempData?.editModel?.vcutYn ?? tempData?.tempPrdInfo?.vcutYn ?? false,
     vcutType: { id: tempData?.editModel?.vcutType?.id ?? tempData?.tempPrdInfo?.vcutType?.id },
-    unit: { id: tempData?.editModel?.unit?.id ?? tempData?.tempPrdInfo?.unit?.id },
+    unit: { id: tempData?.editModel?.unit?.id ?? tempData?.tempPrdInfo?.unit?.id ?? unitSelectList?.[0]?.value },
     pcsW: tempData?.editModel?.pcsW ?? tempData?.tempPrdInfo?.pcsW,
     pcsL: tempData?.editModel?.pcsL ?? tempData?.tempPrdInfo?.pcsL,
     kitW: tempData?.editModel?.kitW ?? tempData?.tempPrdInfo?.kitW,
