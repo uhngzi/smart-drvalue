@@ -395,7 +395,7 @@ const SalesUserPage: React.FC & {
         onClose={stepModalClose}
         width={1300}
         contents={
-        <div className="flex h-full">
+        <div className="flex h-full overflow-x-hidden">
           <div style={{width:stepCurrent>0 ? `calc(100% - ${width});`:'100%'}} className="overflow-x-auto">
             <AddOrderContents
               csList={csList}
