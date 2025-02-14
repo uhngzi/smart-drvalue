@@ -45,6 +45,7 @@ import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
+import { LabelMedium } from "@/components/Text/Label";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -488,6 +489,8 @@ const SalesUserPage: React.FC & {
               </div>
               <div className="w-full flex flex-col">
                 <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
+                  <div className="py-20 px-10"><LabelMedium label="모델 등록"/></div>
+                  <div className="w-full h-1 border-t-1 mb-20"/>
                   <AntdTableEdit
                     create={true}
                     columns={salesUserOrderModelClmn(newProducts, setNewProducts)}
