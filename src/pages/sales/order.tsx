@@ -482,14 +482,9 @@ const SalesUserPage: React.FC & {
           {
             // 모델 등록
             stepCurrent > 0 ?
-            <div ref={containerRef} className="flex relative" style={{width:`${width}px`}}>
-              
-              <div
-                className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200"
-                onMouseDown={handleModelMouseDown}
-              />
-              <div className="w-10 h-center">
-                <span style={{zIndex:9999}}><DragHandle /></span>
+            <div ref={containerRef} className="flex relative pl-10" style={{width:`${width}px`}}>
+              <div className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200 h-center" onMouseDown={handleModelMouseDown}>
+                <DragHandle />
               </div>
               <div className="w-full flex flex-col">
                 <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
