@@ -82,7 +82,7 @@ const PrtMngAddModal:React.FC<Props> = ({
             titleIcon={<Bag/>}
             btnLabel={
               <Button type="primary" size="large" onClick={handleSubmitPrtMngData}
-                className="w-full flex h-center gap-8 !h-full" 
+                className="w-full flex h-center gap-8 !h-[50px]" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
                 <span>저장</span>

@@ -13,9 +13,10 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import Edit from "@/assets/svg/icons/edit.svg"
 
 import dynamic from "next/dynamic";
-import { Checkbox, TableProps } from "antd";
+import { Button, Checkbox, TableProps } from "antd";
 import { useState } from "react";
 import AntdDragger from "@/components/Upload/AntdDragger";
+import YieldCalculate from "@/contents/base/yield/YieldCalculate";
 
 const QuillTextArea = dynamic(
   () => import('@/components/TextArea/QuillTextArea'),
@@ -232,8 +233,11 @@ const SalesUserEstimatePage: React.FC & {
   const [fileList, setFileList] = useState<any[]>([]);
   const [fileIdList, setFileIdList] = useState<string[]>([]);
 
+  const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
+
   return (
     <div className="flex flex-col gap-20">
+      <Button className="w-16" onClick={() => setYieldPopOpen(true)}>임시</Button>
       {/* <div className="">총 4건</div> */}
       <AntdTable
         columns={sampleCl(setOpen)}
@@ -302,6 +306,13 @@ const SalesUserEstimatePage: React.FC & {
             </div>
           </div>
         }
+      />
+      <AntdModal
+        open={yieldPopOpen}
+        setOpen={setYieldPopOpen}
+        width={1540}
+        title="원판수율계산"
+        contents={<YieldCalculate/>}
       />
     </div>
   )

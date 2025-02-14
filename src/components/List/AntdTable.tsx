@@ -105,7 +105,7 @@ const AntdTableStyled = styled.div<{
       padding-top: 10px;
     }
     & > tr:last-child>th {
-      padding-bottom: 10px;
+      /* padding-bottom: 10px; */
     }
     .req { color: #1814F3 !important; }
 

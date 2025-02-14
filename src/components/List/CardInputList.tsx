@@ -10,6 +10,7 @@ import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import dayjs from "dayjs";
+import styled from "styled-components";
 
 interface Item {
   name: string;
@@ -29,7 +30,8 @@ interface CardInputListProps {
   titleIcon?: React.ReactNode;
   styles?: {
     gap?: string;
-    bgColor?: string;
+    bg?: string;
+    pd?: string;
   }
   btnClick?: () => void;
   handleDataChange: (
@@ -43,7 +45,10 @@ interface CardInputListProps {
 const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, titleIcon, styles, btnClick, handleDataChange, children}) => {
   
   return (
-    <div className="p-10 flex flex-col gap-10">
+    <StyledCardInputList 
+      $bg={styles?.bg ? styles.bg : "#F8F8FA"}
+      $pd={styles?.pd ? styles.pd : "20px"}
+      className="p-10 flex flex-col gap-10">
       {/* 제목 영역 */}
       {!!title && (
         <div className="w-full flex justify-between items-center h-[50px]">
@@ -55,7 +60,7 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
       )}
 
       {/* 정보 섹션 */}
-      <section className="p-20 rounded-lg bg-[#F8F8FA] border border-[#D9D9D9]">
+      <section className="rounded-lg border border-[#D9D9D9]">
         {children ? (
           children
         ) : (
@@ -119,12 +124,21 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
         )}
       </section>
       {!!btnLabel && (
-        <div className="h-[50px]">
-            {btnLabel}
-        </div>
+        <>{btnLabel}</>
       )}
-    </div>
+    </StyledCardInputList>
   );
 };
+
+const StyledCardInputList = styled.div<{
+  $bg: string;
+  $pd: string;
+}>`
+  & > section {
+    background: ${({ $bg }) => $bg};
+    padding: ${({ $pd }) => $pd};
+  }
+  
+`
 
 export default CardInputList;
