@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import { Button, Radio } from "antd";
+import { Button, Radio, Spin } from "antd";
 import { getAPI } from "@/api/get";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { List } from "@/layouts/Body/List";
 import { ListPagination } from "@/layouts/Body/Pagination";
+import ModelPageLayout from "@/layouts/Main/ModelPageLayout";
 
 import Info from "@/assets/svg/icons/s_grayInfo.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -15,15 +16,13 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import { useModels } from "@/data/context/ModelContext";
 import { modelsMatchRType } from "@/data/type/sayang/models";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import { sayangSampleWaitClmn, sayangSampleWaitClmn1 } from "@/data/columns/Sayang";
+import { sayangSampleWaitClmn } from "@/data/columns/Sayang";
 
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdModal from "@/components/Modal/AntdModal";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 import { LabelIcon } from "@/components/Text/Label";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -31,7 +30,7 @@ const SayangSampleListPage: React.FC & {
   const router = useRouter();
   const { models, modelsLoading } = useModels();
 
-  // ------------ 리스트 데이터 세팅 ------------ 시작
+  // ------------ 대기중 리스트 데이터 세팅 ------------ 시작
   const [paginationWait, setPaginationWait] = useState({
     current: 1,
     size: 10,
@@ -73,7 +72,9 @@ const SayangSampleListPage: React.FC & {
     }
     console.log(models);
   }, [queryData, models]);
+  // ------------ 대기중 리스트 데이터 세팅 ------------ 끝
 
+  // ------------ 등록중 리스트 데이터 세팅 ------------ 시작
   const [paginationIng, setPaginationIng] = useState({
     current: 1,
     size: 3,
@@ -98,6 +99,7 @@ const SayangSampleListPage: React.FC & {
       },{
         limit:paginationIng.size,
         page:paginationIng.current,
+        sort: "createdAt,ASC"
       });
       setIngDataLoading(false);
       return result;
@@ -113,7 +115,7 @@ const SayangSampleListPage: React.FC & {
         setIngTotalData(queryIngData?.data.total ?? 0);
     }
   }, [queryIngData, models]);
-  // ------------ 리스트 데이터 세팅 ------------ 끝
+  // ------------ 등록중 리스트 데이터 세팅 ------------ 끝
 
   // 리스트 내 거래처
   const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
@@ -139,6 +141,10 @@ const SayangSampleListPage: React.FC & {
     } else {
       router.push(`/sayang/sample/wait/form/${value}`);
     }
+  }
+
+  if (modelsLoading || ingDataLoading || waitDataLoading) {
+    return <div className="w-full h-full v-h-center"><Spin tip="Loading..."/></div>;
   }
 
   return (
@@ -192,7 +198,6 @@ const SayangSampleListPage: React.FC & {
           </div>
         }
       />
-      {/* ()=>{router.push(`/sayang/sample/wait/form/${value}`)} */}
 
       <PrtDrawer
         open={drawerOpen}
@@ -212,13 +217,13 @@ const CustomRadioGroup = styled(Radio.Group)`
 `;
 
 SayangSampleListPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout
+  <ModelPageLayout
     menuTitle="샘플-사양등록및현황"
     menu={[
       {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
       {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/situation'},
     ]}
-  >{page}</MainPageLayout>
+  >{page}</ModelPageLayout>
 )
 
 export default SayangSampleListPage;
