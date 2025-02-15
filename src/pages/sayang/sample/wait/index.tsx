@@ -237,6 +237,7 @@ const SayangSampleListPage: React.FC & {
               {
                 ingData.map((data:specType, index:number)=> (
                   <Radio.Button className="!rounded-20 [border-inline-start-width:1px]"
+                    key={data.id}
                     value={data.id}
                     onClick={()=>{
                       if(selectedValue?.specId !== data.id)
