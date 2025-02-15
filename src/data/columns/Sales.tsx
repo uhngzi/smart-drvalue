@@ -29,20 +29,20 @@ export const salesUserOrderClmn = (
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
-    title: '고객명',
-    width: 250,
+    title: '업체명/코드',
+    width: 150,
     dataIndex: 'prtInfo.prt.prtNm',
     key: 'prtNm',
     align: 'center',
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-full v-h-center cursor-pointer"
+        className="w-full h-full h-center cursor-pointer jutify-left"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt);
           setPartnerMngData(record?.prtInfo?.mng);
         }}
       >
-        {record.prtInfo?.prt?.prtNm}
+        {record.prtInfo?.prt?.prtNm} / {record.prtInfo?.prt?.prtRegCd}
       </div>
     )
   },
@@ -72,10 +72,24 @@ export const salesUserOrderClmn = (
     }
   },
   {
-    title: '고객처 담당',
+    title: '업체 담당',
     width: 120,
     dataIndex: 'prtInfo.mng.prtMngNm',
     key: 'prtInfo.mng.prtMngNm',
+    align: 'center',
+  },
+  {
+    title: '담당 전화번호',
+    width: 130,
+    dataIndex: 'prtInfo.mng.prtMngTel',
+    key: 'prtInfo.mng.prtMngTel',
+    align: 'center',
+  },
+  {
+    title: '담당 이메일',
+    width: 140,
+    dataIndex: 'prtInfo.mng.prtMngEmail',
+    key: 'prtInfo.mng.prtMngEmail',
     align: 'center',
   },
   {
