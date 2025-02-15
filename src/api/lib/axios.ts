@@ -33,7 +33,7 @@ export const instance = axios.create({
   baseURL,
   headers: {
     // Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
-    'x-tenant-code': 'test',
+    'x-tenant-code': 'test2',
   },
 });
 
@@ -45,7 +45,7 @@ instance.interceptors.request.use(
     );
     
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
-    config.headers["x-tenant-code"] = 'test';
+    config.headers["x-tenant-code"] = 'test2';
 
     return config;
   },
