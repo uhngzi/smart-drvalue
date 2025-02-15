@@ -156,7 +156,8 @@ const SayangSampleListPage: React.FC & {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       setSayangRegOpen(true);
     } else {
-      router.push(`/sayang/sample/wait/form/${matchId}`);
+      setSelectedValue({...selectedValue, matchId: matchId});
+      handleSumbitTemp();
     }
   }
 
@@ -176,8 +177,8 @@ const SayangSampleListPage: React.FC & {
         }, jsonData);
   
         if(result.resultCode === 'OK_0000') {
-          console.log(result.data.data.specId);
-          router.push(`/sayang/sample/wait/form/${result.data.data.specId}`);
+          const specId:any = result.data;
+          router.push(`/sayang/sample/wait/form/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           showToast(msg, "error");
@@ -232,8 +233,10 @@ const SayangSampleListPage: React.FC & {
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}
         contents={
           <div className="p-30 gap-20 rounded-14 bg-white border-1 border-line flex flex-col h-center">
-            <CustomRadioGroup size="large" className="flex gap-20"
-              value={selectedValue?.specId} onChange={(e)=>{console.log(e)}}>
+            <CustomRadioGroup
+              size="large" className="flex gap-20"
+              value={selectedValue?.specId}
+            >
               {
                 ingData.map((data:specType, index:number)=> (
                   <Radio.Button className="!rounded-20 [border-inline-start-width:1px]"
