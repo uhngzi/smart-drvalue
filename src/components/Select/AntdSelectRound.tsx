@@ -6,6 +6,7 @@ import Arrow from "@/assets/svg/icons/l_drop_down.svg";
 
 interface Props {
   value?: any;
+  onChange?: React.ChangeEventHandler<HTMLSelectElement>;
   options: Array<selectType>;
   defaultValue?: any;
   disabled?: boolean;
@@ -17,6 +18,7 @@ interface Props {
 
 const AntdSelectRound : React.FC<Props> = ({ 
   value,
+  onChange,
   options, 
   defaultValue, 
   disabled, 
@@ -35,6 +37,7 @@ const AntdSelectRound : React.FC<Props> = ({
     >
       <Select
         value={value}
+        onChange={onChange}
         className={`w-full ${className}`}
         options={options}
         defaultValue={defaultValue}
