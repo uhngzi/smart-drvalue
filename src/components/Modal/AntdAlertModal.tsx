@@ -7,7 +7,7 @@ import {
   ExclamationCircleFilled  // warning
 } from '@ant-design/icons';
 
-export type AlertType = 'success' | 'info' | 'error' | 'warning';
+export type AlertType = 'success' | 'info' | 'error' | 'warning' | 'confirm';
 
 interface Props {
   open: boolean;
@@ -28,6 +28,7 @@ const iconMap = {
   info: { icon: InfoCircleFilled, color: '#1677ff' },
   error: { icon: CloseCircleFilled, color: '#ff4d4f' },
   warning: { icon: ExclamationCircleFilled, color: '#faad14' },
+  confirm: { icon: CheckCircleFilled, color: '#52c41a' },
 };
 
 const CustomModal = styled(Modal)<{ theme?: 'main' | 'base' }>`
@@ -68,7 +69,7 @@ const AntdAlertModal: React.FC<Props> = ({
       }
       onOk={onOk || (() => setOpen(false))}
       onCancel={onCancle || (() => setOpen(false))}
-      cancelButtonProps={{ style: { display: hideCancel ? 'none' : 'inline-block' } }}
+      cancelButtonProps={{ style: { display: hideCancel && type !== 'confirm' ? 'none' : 'inline-block' } }}
       okText={okText}
       cancelText={cancelText}
     >

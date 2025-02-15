@@ -27,6 +27,7 @@ import Category from "@/assets/svg/icons/category.svg";
 import { ModelProvider, useModels } from '@/data/context/ModelContext';
 import { changeModelAddNewModel, changeModelAddTemp } from '@/data/type/sayang/changeData';
 import { validReq } from '@/utils/valid';
+import AntdAlertModal, { AlertType } from '@/components/Modal/AntdAlertModal';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -219,6 +220,9 @@ const SayangModelAddPage: React.FC & {
     }
   }
 
+    // 결과 모달창을 위한 변수
+  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
   const handleConfirm = async (id: string, modelId: string) => {
     console.log('confirm', id, modelId);
@@ -234,6 +238,7 @@ const SayangModelAddPage: React.FC & {
       showToast("확정저장 완료", "success");
       handleSumbitTemp(id, false);
       setNewFlag(true);
+      setResultOpen(true);
     } else {
       const msg = resultPatch?.response?.data?.message;
       showToast(msg, "error");
@@ -407,6 +412,29 @@ const SayangModelAddPage: React.FC & {
         setModelData={setModels}
         modelDataLoading={modelsLoading}
       />
+
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={"확정 저장 완료"}
+        contents={<div>
+          확정 저장에 성공했습니다.<br/>
+          사양 등록으로 이동하시겠습니까?
+        </div>}
+        type={"confirm"} 
+        onOk={()=>{
+          setResultOpen(false);
+          router.push('/sayang/sample/wait');
+        }}
+        onCancle={()=>{
+          setResultOpen(false);
+        }}
+        hideCancel={true}
+        theme="base"
+        okText="이동할게요"
+        cancelText="여기 더 있을래요"
+      />
+
       <ToastContainer />
     </>
   )
