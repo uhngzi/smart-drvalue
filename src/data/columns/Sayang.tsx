@@ -19,6 +19,7 @@ import { modelsMatchDetail, modelsMatchRType, modelsType, orderModelType } from 
 import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { SetStateAction } from 'react';
+import { specModelType, specType } from '../type/sayang/sample';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
@@ -159,12 +160,195 @@ export const sayangSampleWaitClmn1 = (
   },
 ];
 
+export const specIngClmn = (
+  totalData: number,
+  setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
+  pagination?: {current: number, size: number},
+  router?: NextRouter,
+): CustomColumn[] => [
+  {
+    title: '대기',
+    width: 80,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    render: (_,__,index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
+  },
+  {
+    title: '관리No',
+    width: 120,
+    dataIndex: 'specNo',
+    key: 'specNo',
+    align: 'center',
+  },
+  {
+    title: '업체명/코드',
+    width: 120,
+    dataIndex: 'prtNm',
+    key: 'prtNm',
+    align: 'center',
+    render: (_, record:modelsMatchRType) => (
+      <div className="text-left cursor-pointer"
+        onClick={()=>{
+          // setPartnerData(record.orderModel?.prtInfo.prt ?? null);
+          // setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
+        }}
+      >
+        {/* {record.orderModel?.prtInfo.prt.prtNm} */}
+        /
+        {/* {record.orderModel?.prtInfo.prt.prtRegCd} */}
+      </div>
+    )
+  },
+  {
+    title: '모델명',
+    width: 350,
+    dataIndex: 'specModels.prdNm',
+    key: 'specModels.prdNm',
+    align: 'center',
+    cellAlign: 'left',
+    render: (_, record:specType) => (
+      <div className="w-full h-full h-center">
+        {record.specModels?.[0].prdNm}
+      </div>
+    )
+  },
+  {
+    title: '모델수',
+    width: 70,
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.length;
+    }
+  },
+  {
+    title: 'Rev',
+    width: 100,
+    dataIndex: 'specModels.prdRevNo',
+    key: 'specModels.prdRevNo',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="w-full h-full h-center">
+        {record.specModels?.[0].prdRevNo}
+      </div>
+    )
+  },
+  {
+    title: '긴급',
+    width: 80,
+    dataIndex: 'specModels.orderPrdHotGrade',
+    key: 'specModels.orderPrdHotGrade',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="v-h-center">
+        {/* {record.orderModel?.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : record.orderModel?.orderPrdHotGrade === HotGrade.URGENT ? (
+          <FullChip label="긴급" state="pink" />
+        ) : (
+          <FullChip label="일반" />
+        )} */}
+      </div>
+    ),
+  },
+  {
+    title: '구분',
+    width: 80,
+    dataIndex: 'specModels.modelStatus',
+    key: 'specModels.modelStatus',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="v-h-center">
+        {/* {record.orderModel?.modelStatus === ModelStatus.NEW ? (
+          <FullChip label="신규" />
+        ) : record.orderModel?.modelStatus === ModelStatus.MODIFY ? (
+          <FullChip label="수정" state="yellow" />
+        ) : (
+          <FullChip label="반복" state="mint"/>
+        )} */}
+      </div>
+    ),
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'specModels.thk',
+    key: 'specModels.thk',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].thk;
+    }
+  },
+  {
+    title: '층',
+    width: 50,
+    dataIndex: 'specModels.layerEm',
+    key: 'specModels.layerEm',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].layerEm?.replace("L", "");
+    }
+  },
+  {
+    title: 'PCS',
+    width: 100,
+    dataIndex: 'specModels.pcsW',
+    key: 'specModels.pcsW',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].pcsL+'/'+record.specModels?.[0].pcsW;
+    }
+  },
+  {
+    title: '납기일',
+    width: 150,
+    dataIndex: 'specModels.orderPrdDueDt',
+    key: 'specModels.orderPrdDueDt',
+    align: 'center',
+    // render: (_, record:specType) => {
+    //   return record.specModels?.[0].;
+    // }
+  },
+  {
+    title: '발주일',
+    width: 150,
+    dataIndex: 'specModels.order.orderDt',
+    key: 'specModels.order.orderDt',
+    align: 'center',
+    // render: (_, record:specType) => {
+    //   return record.specModels?.[0].;
+    // }
+  },
+  {
+    title: '사양등록',
+    width: 100,
+    dataIndex: 'id',
+    key: 'id',
+    align: 'center',
+    render: (value) => (
+      <div className="w-full h-full v-h-center">
+        <div 
+          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
+          onClick={()=>{
+            router?.push(`/sayang/sample/wait/form/${value}`);
+          }}
+        >
+          <p className="w-18 h-18"><Edit /></p>
+        </div>
+      </div>
+    )
+  },
+]
+
 export const sayangSampleWaitClmn = (
   totalData: number,
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
   pagination?: {current: number, size: number},
-  sayangPopOpen?: (value:string) => void,
+  sayangPopOpen?: (value:string, model:string, status:string) => void,
 ): CustomColumn[] => [
   {
     title: '대기',
@@ -177,8 +361,8 @@ export const sayangSampleWaitClmn = (
   {
     title: '관리No',
     width: 120,
-    dataIndex: 'orderModel.orderNo',
-    key: 'orderModel.orderNo',
+    dataIndex: 'model.prdMngNo',
+    key: 'model.prdMngNo',
     align: 'center',
   },
   {
@@ -298,11 +482,11 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value, record) => (
+    render: (value, record:modelsMatchRType) => (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{sayangPopOpen?.(value); console.log(record);}}
+          onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? ''); console.log(record);}}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>
@@ -327,6 +511,13 @@ export const sayangSampleWaitAddClmn = (
   mkTypeSelectList: selectType[],
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
+  ul1SelectList: selectType[],
+  ul2SelectList: selectType[],
+  handleModelDataChange: (
+    id?: string,
+    name?: string,
+    value?: any
+  ) => void,
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -334,14 +525,14 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value:any, record:any) => (
+    render: (value:any,_,index:number) => (
       <>
         <div className="h-[33%] w-[100%] v-h-center ">
           <Checkbox id={value}/>
         </div>
         <div className="h-[34%] w-[100%] v-h-center ">
           <p className="w-24 h-24 bg-back rounded-6 v-h-center">
-            {record?.index}
+            {index+1}
           </p>
         </div>
         <div className="h-[33%] w-[100%] v-h-center">
@@ -364,7 +555,7 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'user',
         key:'user',
         align: 'center',
-        render: (_, record) => (
+        render: (_, record:specModelType) => (
           <>
             <div className="h-[50%] w-[100%] v-h-center !text-12">
               {record?.prdMngNo}
@@ -389,7 +580,7 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'rev',
         key:'rev',
         align: 'center',
-        render: (_, record) => (
+        render: (_, record:specModelType) => (
           <>
             <div className="h-[50%] w-[100%] h-center break-words text-left !text-12">
               {record?.prdNm}
@@ -414,20 +605,20 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'thic_layer',
         key:'thic_layer',
         align: 'center',
-        render: (_, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
               <AntdSelectFill
                 options={generateFloorOptions()}
                 value={record.layerEm}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.layerEm', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'layerEm', e)}
                 styles={{fs:'12px'}}
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record?.thk}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.thk', e.target.value)}
+                value={record.thk}
+                onChange={(e)=>handleModelDataChange(record.id, 'thk', e.target.value)}
                 className='!text-12'
                 type="number"
               />
@@ -443,12 +634,12 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'dongback',
     key: 'dongback',
     align: 'center',
-    render: (_, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass+"mb-3 gap-5 !text-12"}>
           <AntdInputFill 
             value={record?.copOut}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.copOut', e.target.value)}
+            onChange={(e)=>handleModelDataChange(record.id, 'copOut', e.target.value)}
             className="!text-12" 
             type="number"
           /> 외
@@ -456,7 +647,7 @@ export const sayangSampleWaitAddClmn = (
         <div className={divClass+"gap-5 !text-12"}>
           <AntdInputFill 
             value={record?.copIn}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.copIn', e.target.value)}
+            onChange={(e)=>handleModelDataChange(record.id, 'copIn', e.target.value)}
             className="!text-12" 
             type="number"
           />내
@@ -470,26 +661,44 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'dogeum',
     key: 'dogeum',
     align: 'center',
-    render: (value, record) => (
-      <div className={divTopClass}>
-        <div className={divClass+"mb-3"}>
-          <AntdInputFill
-            value={record?.pltThk}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.pltThk', e.target.value)}
-            className="!text-12"
-            type="number"
-          />
-        </div>
-        {/* <div className={divClass}>
-          <AntdInputFill 
-            value={record.model?.pltAlph}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.pltAlph', e.target.value)}
-            className="!text-12"
-            type="number"
-          />
-        </div> */}
-      </div>
-    )
+    children: [
+      {
+        title:'단위',
+        width: 90,
+        dataIndex: 'unit',
+        key:'unit',
+        align: 'center',
+        render: (_, record:specModelType) => (
+          <div className={divTopClass}>
+            <div className={divClass+"mb-3"}>
+              <AntdInputFill
+                value={record?.pltThk}
+                onChange={(e)=>handleModelDataChange(record.id, 'pltThk', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={unitSelectList}
+                value={record.unit?.id}
+                onChange={(e)=>handleModelDataChange(record.id, 'unit.id', e)}
+                // className="w-[60px!important]"
+                styles={{pd:"0",fs:'12px'}}
+              />
+            </div>
+            {/* <div className={divClass}>
+              <AntdInputFill 
+                value={record.model?.pltAlph}
+                onChange={(e)=>handleModelDataChange(record.id, 'pltAlph', e.target.value)}
+                className="!text-12"
+                type="number"
+              />
+            </div> */}
+          </div>
+        )
+      }
+    ],
   },
   {
     title: '특수도금(㎛)',
@@ -497,7 +706,6 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'tDogeum',
     key: 'tDogeum',
     align: 'center',
-
     children: [
       {
         title:'Ni Au',
@@ -505,18 +713,18 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'tDogeum',
         key:'tDogeum',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record?.spPltNi}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNi', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'spPltNi', e.target.value)}
                 type="number"
                 className="!text-12"
               />
               <AntdInputFill 
                 value={record?.spPltNiAlph}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNiAlph', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'spPltNiAlph', e.target.value)}
                 type="number"
                 className="!text-12"
               />
@@ -524,13 +732,13 @@ export const sayangSampleWaitAddClmn = (
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record?.spPltAu}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAu', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'spPltAu', e.target.value)}
                 type="number"
                 className="!text-12"
               />
               <AntdInputFill 
                 value={record?.spPltAuAlph}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAuAlph', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'spPltAuAlph', e.target.value)}
                 type="number"
                 className="!text-12"
               />
@@ -556,11 +764,38 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'ul',
     key: 'ul',
     align: 'center',
-    render: (value, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
-        <div className={divClass+"mb-3"}><AntdInputFill className='!text-12'/></div>
-        <div className={divClass+"gap-5"}><AntdSelectFill options={[{value:1,label:'M/K'}]} className="w-[60px!important]" styles={{pd:"0",fs:'12px'}}/><AntdSelectFill options={[{value:1,label:'CS+S/S'}]} className="w-[60px!important]" styles={{pd:"0",fs:'12px'}}/></div>
+        <div className={divClass+"mb-3"}>
+          <AntdInputFill
+            value={record.ulTxt1}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
+            className='!text-12'
+            />
+        </div>
+        <div className={divClass+"mb-3"}>
+          <AntdInputFill
+            value={record.ulTxt2}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
+            className='!text-12'
+            />
+        </div>
+        <div className={divClass+"gap-5"}>
+          <AntdSelectFill
+            options={ul1SelectList}
+            value={record.ulCd1?.id}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulCd1.id', e)}
+            className="w-[60px!important]"
+            styles={{pd:"0",fs:'12px'}}
+            />
+          <AntdSelectFill
+            options={ul2SelectList}
+            value={record.ulCd2?.id}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulCd2.id', e)}
+            className="w-[60px!important]"
+            styles={{pd:"0",fs:'12px'}}
+          />
+        </div>
       </div>
     )
   },
@@ -577,13 +812,13 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: '',
         key:'',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdSelectFill 
                 options={smPrintSelectList} 
                 value={record?.smPrint?.id}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.smPrint.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'smPrint.id', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -591,7 +826,7 @@ export const sayangSampleWaitAddClmn = (
               <AntdSelectFill 
                 options={smColorSelectList} 
                 value={record?.smColor?.id}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.smColor.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'smColor.id', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -599,7 +834,7 @@ export const sayangSampleWaitAddClmn = (
               <AntdSelectFill 
                 options={smTypeSelectList} 
                 value={record?.smType?.id}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.smType.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'smType.id', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -614,13 +849,13 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'mk',
     key: 'mk',
     align: 'center',
-    render: (value, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill
             options={mkPrintSelectList}
             value={record?.mkPrint?.id}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkPrint.id', e)}
+            onChange={(e)=>handleModelDataChange(record.id, 'mkPrint.id', e)}
             styles={{fs:'12px'}}
           />
         </div>
@@ -640,13 +875,13 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'mkInk_color',
         key: 'mkInk_color',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
               <AntdSelectFill
                 options={mkColorSelectList}
                 value={record?.mkColor?.id}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkColor.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'mkColor.id', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -654,7 +889,7 @@ export const sayangSampleWaitAddClmn = (
               <AntdSelectFill
                 options={mkTypeSelectList}
                 value={record?.mkType?.id}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkType.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'mkType.id', e)}
                 styles={{fs:'12px'}}
               />
             </div>
@@ -669,13 +904,13 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'tPrint',
     key: 'tPrint',
     align: 'center',
-    render: (value, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill 
             options={spPrintSelectList}
             value={record?.spPrint?.id}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint.id', e)}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
             styles={{fs:'12px'}}
           />
         </div>
@@ -688,13 +923,13 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'surf',
     key: 'surf',
     align: 'center',
-    render: (_, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill 
             options={surfaceSelectList}
             value={record?.surface?.id}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint.id', e)}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
             styles={{fs:'12px'}}
           />
         </div>
@@ -707,13 +942,13 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'out',
     key: 'out',
     align: 'center',
-    render: (_, record) => (
+    render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill
             options={outSelectList}
             value={record?.aprType?.id}
-            // onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint.id', e)}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
             styles={{fs:'12px'}}
           />
         </div>
@@ -733,12 +968,12 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'pcsSize_xy',
         key: 'pcsSize_xy',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
               <AntdInputFill
                 value={record?.pcsL}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.pcsL', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'pcsL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -746,7 +981,7 @@ export const sayangSampleWaitAddClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record?.pcsW}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.pcsW', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'pcsW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -769,12 +1004,12 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'kitSize_xy',
         key: 'kitSize_xy',
         align: 'center',
-        render: (_, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
               <AntdInputFill
                 value={record?.kitL}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitL', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'kitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -782,7 +1017,7 @@ export const sayangSampleWaitAddClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record?.kitW}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitW', e.target.value)}
+                onChange={(e)=>handleModelDataChange(record.id, 'kitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -805,32 +1040,32 @@ export const sayangSampleWaitAddClmn = (
         dataIndex: 'arpnl',
         key: 'arpnl',
         align: 'center',
-        render: (value, record) => (
+        render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record.model?.ykitL}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
+                value={record?.ykitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'ykitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record.model?.ykitW}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
+                value={record?.ykitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'ykitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record.model?.ypnlL}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlL', e.target.value)}
+                value={record?.ypnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'ypnlL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record.model?.ypnlW}
-                // onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlW', e.target.value)}
+                value={record?.ypnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'ypnlW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -839,12 +1074,6 @@ export const sayangSampleWaitAddClmn = (
         )
       },
     ]
-    // render: (value, record) => (
-    //   <div className={divTopClass}>
-    //     <div className={divClass+"mb-3"}><AntdSelectFill options={[{value:1,label:'Au'}]} styles={{fs:'12px'}}/></div>
-    //     <div className={divClass+"gap-3 !text-12"}><AntdInputFill className="w-[30px!important] !text-12"/>연조</div>
-    //   </div>
-    // )
   },
   {
     title: 'SPEC',
@@ -852,32 +1081,40 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'spec',
     key: 'spec',
     align: 'center',
-    render: (value, record) => (
+    render: (_, record:specModelType) => (
       <>
         <div className={divClass+"mb-3"}>
           <p className="text-left w-37 !text-12">LINE</p>
           <AntdInputFill 
+            value={record?.specLine}
+            onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
             className="w-[45px!important] !text-12"
-          />
+            />
           <p className="w-12 !text-12">㎜</p>
         </div>
         <div className={divClass+"mb-3"}>
           <p className="text-left w-37 !text-12">SPACE</p>
           <AntdInputFill 
+            value={record?.specSpace}
+            onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
             className="w-[45px!important] !text-12"
-          />
+            />
           <p className="w-12 !text-12">㎜</p>
         </div>
         <div className={divClass+"mb-3"}>
           <p className="text-left w-37 !text-12">DR</p>
           <AntdInputFill 
+            value={record?.specDr}
+            onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
             className="w-[45px!important] !text-12"
-          />
+            />
           <p className="w-12 !text-12">￠</p>
         </div>
         <div className={divClass}>
           <p className="text-left w-37 !text-12">PAD</p>
           <AntdInputFill
+            value={record?.specPad}
+            onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
             className="w-[45px!important] !text-12"
           />
           <p className="w-12 !text-12">￠</p>
@@ -911,7 +1148,7 @@ export const sayangModelWaitClmn = (
   // },
   {
     title: '업체명/코드',
-    width: 120,
+    width: 150,
     dataIndex: 'prtInfo.prtNm',
     key: 'prtInfo.prtNm',
     align: 'center',
@@ -938,10 +1175,34 @@ export const sayangModelWaitClmn = (
     )
   },
   {
+    title: '모델수',
+    width: 70,
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
+    align: 'center',
+    render: (_:any, record:salesOrderRType) => {
+      return record?.products?.length;
+    }
+  },
+  {
     title: '업체담당',
     width: 100,
     dataIndex: 'prtInfo.mng.prtMngNm',
     key: 'prtInfo.mng.prtMngNm',
+    align: 'center',
+  },
+  {
+    title: '담당 전화번호',
+    width: 130,
+    dataIndex: 'prtInfo.mng.prtMngTel',
+    key: 'prtInfo.mng.prtMngTel',
+    align: 'center',
+  },
+  {
+    title: '담당 이메일',
+    width: 140,
+    dataIndex: 'prtInfo.mng.prtMngEmail',
+    key: 'prtInfo.mng.prtMngEmail',
     align: 'center',
   },
   {

@@ -1,5 +1,6 @@
-import { orderModelType } from "./models";
+import { modelsMatchRType, modelsType, orderModelType } from "./models";
 import { selectType } from "../componentStyles";
+import { specModelType, specPrdGroupPrcs, specType } from "./sample";
 
 // 사양 - 모델 등록 대기 내 임시 저장 값 변환
 export const changeModelAddTemp = (tempData:orderModelType | null) => {
@@ -97,6 +98,173 @@ export const changeModelAddNewModel = (
     spPltAuAlph: tempData?.editModel?.spPltAuAlph ?? tempData?.tempPrdInfo?.spPltAuAlph,
     pinCnt: tempData?.editModel?.pinCnt ?? tempData?.tempPrdInfo?.pinCnt,
   }
+
+  return jsonData;
+}
+
+// 사양 - 사양 등록 임시저장에서 값 변환
+export const changeSayangTemp = (
+  type:"new"|"re",  // 신규인지 재등록인지 판단
+  data:modelsMatchRType | specType
+) => {
+  let jsonData = {}
+  if(type === "new") {
+    const model = (data as modelsMatchRType).model;
+    jsonData = {
+      specDetail: {},
+      models: {
+        glbStatusId: model?.glbStatus?.id,
+        modelMatchId: data.id,
+        prdNm: model?.prdNm,
+        prdRevNo: model?.prdRevNo,
+        layerEm: model?.layerEm,
+        modelTypeEm: model?.modelTypeEm,
+        thk: model?.thk,
+        mnfNm: model?.mnfNm,
+        copOut: model?.copOut,
+        copIn: model?.copIn,
+        vcutYn: model?.vcutYn,
+        board: model?.board,
+        material: model?.material,
+        surface: model?.surface,
+        smPrint: model?.smPrint,
+        smColor: model?.smColor,
+        smType: model?.smType,
+        mkPrint: model?.mkPrint,
+        mkColor: model?.mkColor,
+        mkType: model?.mkType,
+        spPrint: model?.spPrint,
+        spType: model?.spType,
+        aprType: model?.aprType,
+        vcutType: model?.vcutType,
+        fpNo: model?.fpNo,
+        drgNo: model?.drgNo,
+        unit: model?.unit,
+        pcsW: model?.pcsW,
+        pcsL: model?.pcsL,
+        kitW: model?.kitW,
+        kitL: model?.kitL,
+        pnlW: model?.pnlW,
+        pnlL: model?.pnlL,
+        ykitW: model?.ykitW,
+        ykitL: model?.ykitL,
+        ypnlW: model?.ypnlW,
+        ypnlL: model?.ypnlL,
+        kitPcs: model?.kitPcs,
+        pnlKit: model?.pnlKit,
+        sthPnl: model?.sthPnl,
+        sthPcs: model?.sthPcs,
+        pltThk: model?.pltThk,
+        pltAlph: model?.pltAlph,
+        spPltNi: model?.spPltNi,
+        spPltNiAlph: model?.spPltNiAlph,
+        spPltAu: model?.spPltAu,
+        spPltAuAlph: model?.spPltAuAlph,
+        pinCnt: model?.pinCnt,
+        ulTxt1: model?.ulTxt1,
+        ulTxt2: model?.ulTxt2,
+        ulCd1: { id: model?.ulCd1?.id },
+        ulCd2: { id: model?.ulCd2?.id },
+        specLine: model?.specLine,
+        specSpace: model?.specSpace,
+        specDr: model?.specDr,
+        specPad: model?.specPad,
+      }
+    } as specType
+  } else {
+    const specData = data as specType;
+    const modelsData = (data as specType).specModels;
+    jsonData = {
+      specId: specData.id,
+      specDetail: {
+        specLamination: { id: specData.specLamination?.id },
+        board: { id: specData.board?.id },
+        brdArrYldRate: specData.brdArrYldRate,
+        wksizeW: specData.wksizeW,
+        wksizeH: specData.wksizeH,
+        stdW: specData.stdW,
+        stdH: specData.stdH,
+        brdArrStorageKey: specData.brdArrStorageKey,
+        cutCnt: specData.cutCnt,
+        jYn: specData.jYn,
+        prcNotice: specData.prcNotice,
+        camNotice: specData.camNotice,
+      },
+      models: (modelsData ?? []).map((model:specModelType) => ({
+        id: model.id,
+        glbStatusId: model.glbStatus?.id,
+        modelMatchId: model.modelMatch?.id ?? model.matchId,
+        prdNm: model.prdNm,
+        prdRevNo: model.prdRevNo,
+        layerEm: model.layerEm,
+        modelTypeEm: model.modelTypeEm,
+        thk: model.thk,
+        mnfNm: model.mnfNm,
+        copOut: model.copOut,
+        copIn: model.copIn,
+        vcutYn: model.vcutYn,
+        board: model.board,
+        material: model.material,
+        surface: model.surface,
+        smPrint: model.smPrint,
+        smColor: model.smColor,
+        smType: model.smType,
+        mkPrint: model.mkPrint,
+        mkColor: model.mkColor,
+        mkType: model.mkType,
+        spPrint: model.spPrint,
+        spType: model.spType,
+        aprType: model.aprType,
+        vcutType: model.vcutType,
+        fpNo: model.fpNo,
+        drgNo: model.drgNo,
+        unit: model.unit,
+        pcsW: model.pcsW,
+        pcsL: model.pcsL,
+        kitW: model.kitW,
+        kitL: model.kitL,
+        pnlW: model.pnlW,
+        pnlL: model.pnlL,
+        ykitW: model.ykitW,
+        ykitL: model.ykitL,
+        ypnlW: model.ypnlW,
+        ypnlL: model.ypnlL,
+        kitPcs: model.kitPcs,
+        pnlKit: model.pnlKit,
+        sthPnl: model.sthPnl,
+        sthPcs: model.sthPcs,
+        pltThk: model.pltThk,
+        pltAlph: model.pltAlph,
+        spPltNi: model.spPltNi,
+        spPltNiAlph: model.spPltNiAlph,
+        spPltAu: model.spPltAu,
+        spPltAuAlph: model.spPltAuAlph,
+        pinCnt: model.pinCnt,
+        ulTxt1: model.ulTxt1,
+        ulTxt2: model.ulTxt2,
+        ulCd1: { id: model.ulCd1?.id },
+        ulCd2: { id: model.ulCd2?.id },
+        specLine: model.specLine,
+        specSpace: model.specSpace,
+        specDr: model.specDr,
+        specPad: model.specPad,
+      })),
+    }
+    if(specData.specPrdGroupPrcs?.[0]?.prdGrpNm){
+      jsonData = { 
+        ...jsonData,
+        prdGroup: {
+          prdGrpNm: specData.specPrdGroupPrcs?.[0]?.prdGrpNm,
+          data: specData.specPrdGroupPrcs && specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
+            prcIdx: prc.id,
+            order: prc.ordNo,
+            prcWkRemark: prc.prcWkRemark
+          }))
+        }
+      }
+    }
+  }
+  console.log(JSON.stringify(jsonData));
 
   return jsonData;
 }

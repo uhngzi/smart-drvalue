@@ -73,6 +73,15 @@ export type orderModelType = {
 
 export type modelsType = {
   id: string;
+  glbStatus?: {
+    id: string;
+    salesOrderStatus: SalesOrderStatus;
+    salesOrderStatusChangeJson: {
+      date: Date | Dayjs | null,
+      content: string;
+      isApproved: boolean;
+    }
+  };
   partner: partnerRType;
   usedYn: boolean;
   inactiveYn: boolean;
@@ -100,6 +109,7 @@ export type modelsType = {
   vcutYn: false,
   vcutType: commonCodeRType;
   fpNo: string;
+  drgNo: string;
   unit: commonCodeRType;
   pcsW: number;
   pcsL: number;
@@ -125,6 +135,14 @@ export type modelsType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
+  ulTxt1?: string;
+  ulTxt2?: string;
+  ulCd1: { id?: string; };
+  ulCd2: { id?: string; };
+  specLine?: number;
+  specSpace?: number;
+  specDr?: number;
+  specPad?: number;
 }
 
 // 모델 생성, 수정 타입
@@ -434,6 +452,14 @@ export type sayangType = {
     spPltAu?: number;
     spPltAuAlph?: number;
     pinCnt: number;
+    ulTxt1?: string;
+    ulTxt2?: string;
+    ulCd1: { id?: string; };
+    ulCd2: { id?: string; };
+    specLine?: number;
+    specSpace?: number;
+    specDr?: number;
+    specPad?: number;
   }[];
   prdGroup?: {
     prdGrpNm: string;
