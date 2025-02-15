@@ -429,8 +429,7 @@ const SayangModelAddPage: React.FC & {
         onCancle={()=>{
           setResultOpen(false);
         }}
-        hideCancel={true}
-        theme="base"
+        theme="main"
         okText="이동할게요"
         cancelText="여기 더 있을래요"
       />

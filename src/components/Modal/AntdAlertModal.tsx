@@ -69,7 +69,7 @@ const AntdAlertModal: React.FC<Props> = ({
       }
       onOk={onOk || (() => setOpen(false))}
       onCancel={onCancle || (() => setOpen(false))}
-      cancelButtonProps={{ style: { display: hideCancel && type !== 'confirm' ? 'none' : 'inline-block' } }}
+      cancelButtonProps={{ style: { display: hideCancel ? 'none' : 'inline-block' } }}
       okText={okText}
       cancelText={cancelText}
     >
