@@ -102,8 +102,6 @@ const SayangSampleListPage: React.FC & {
         utype: 'tenant/',
         url: 'spec/jsxcrud/many/by-model-status/spec-registering-only'
       },{
-        limit:paginationIng.size,
-        page:paginationIng.current,
         sort: "createdAt,ASC"
       });
       setIngDataLoading(false);
@@ -114,7 +112,7 @@ const SayangSampleListPage: React.FC & {
     if(!ingLoading && !modelsLoading && queryIngData?.resultCode === 'OK_0000') {
       const arr = (queryIngData.data.data ?? []).map((data:specType, idx:number) => ({ 
         ...data,
-        index: (Number(queryIngData?.data.total) ?? (queryIngData.data.data ?? 0).length) - idx,
+        // index: (Number(queryIngData?.data.total) ?? (queryIngData.data.data ?? 0).length) - idx,
       }))
       setIngData(arr);
       setIngTotalData(queryIngData?.data.total ?? 0);
@@ -201,12 +199,12 @@ const SayangSampleListPage: React.FC & {
       <div>
         <ListPagination 
           pagination={paginationIng}
-          totalData={ingTotalData}
+          totalData={ingData.length}
           onChange={handlePageIngChange}
         />
         <List>
           <AntdTableEdit
-            columns={specIngClmn(ingTotalData, setPartnerData, setPartnerMngData, paginationIng, router)}
+            columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, paginationIng, router)}
             data={ingData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={ingDataLoading}
@@ -247,13 +245,13 @@ const SayangSampleListPage: React.FC & {
                         setSelectedValue({
                           ...selectedValue,
                           specId: data.id,
-                          text: data.specNo ?? data.index?.toString()
+                          text: data.specNo ?? (ingData.length - index).toString(),
                         });
                       // 재선택 시 취소
                       else  setSelectedValue({matchId:selectedValue?.matchId})
                     }}
                   >
-                    {data.specNo ?? data?.index}
+                    {data.specNo ?? (ingData.length - index).toString()}
                   </Radio.Button>
                 ))
               }
