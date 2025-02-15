@@ -24,7 +24,7 @@ const AntdInputRound: React.FC<Props> = ({
       $ht={styles?.ht?styles.ht:'30px'}
       $bg={styles?.bg?styles.bg:'none'}
       $bw={styles?.bw?styles.bw:'1px'}
-      $bc={styles?.bc?styles.bc:'#D5D5D5'}
+      $bc={styles?.bc?styles.bc:'#D9D9D9'}
       className={`${className}`}
     >
       <Input
