@@ -3,7 +3,7 @@ import { Input } from "antd"
 import styled from "styled-components";
 
 interface Props {
-  value?: string;
+  value?: string | number;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
   styles?: componentsStylesType;
