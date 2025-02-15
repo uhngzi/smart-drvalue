@@ -20,6 +20,7 @@ import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { SetStateAction } from 'react';
 import { specModelType, specType } from '../type/sayang/sample';
+import dayjs from 'dayjs';
 
 export const sayangSampleWaitClmn1 = (
   totalData: number,
@@ -188,16 +189,16 @@ export const specIngClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
-    render: (_, record:modelsMatchRType) => (
+    render: (_, record:specType) => (
       <div className="text-left cursor-pointer"
         onClick={()=>{
-          // setPartnerData(record.orderModel?.prtInfo.prt ?? null);
-          // setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
+          setPartnerData(record.specModels?.[0]?.partner ?? null);
+          setPartnerMngData(null);
         }}
       >
-        {/* {record.orderModel?.prtInfo.prt.prtNm} */}
+        {record?.specModels?.[0]?.partner?.prtNm}
         /
-        {/* {record.orderModel?.prtInfo.prt.prtRegCd} */}
+        {record?.specModels?.[0]?.partner?.prtRegCd}
       </div>
     )
   },
@@ -239,18 +240,18 @@ export const specIngClmn = (
   {
     title: '긴급',
     width: 80,
-    dataIndex: 'specModels.orderPrdHotGrade',
-    key: 'specModels.orderPrdHotGrade',
+    dataIndex: 'specModels.modelMatch',
+    key: 'specModels.modelMatch',
     align: 'center',
     render: (_, record:specType) => (
       <div className="v-h-center">
-        {/* {record.orderModel?.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
+        {record.specModels?.[0]?.modelMatch?.orderModel.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
           <FullChip label="초긴급" state="purple"/>
-        ) : record.orderModel?.orderPrdHotGrade === HotGrade.URGENT ? (
+        ) : record.specModels?.[0]?.modelMatch?.orderModel.orderPrdHotGrade === HotGrade.URGENT ? (
           <FullChip label="긴급" state="pink" />
         ) : (
           <FullChip label="일반" />
-        )} */}
+        )}
       </div>
     ),
   },
@@ -262,13 +263,13 @@ export const specIngClmn = (
     align: 'center',
     render: (_, record:specType) => (
       <div className="v-h-center">
-        {/* {record.orderModel?.modelStatus === ModelStatus.NEW ? (
+        {record.specModels?.[0]?.modelMatch?.orderModel.modelStatus === ModelStatus.NEW ? (
           <FullChip label="신규" />
-        ) : record.orderModel?.modelStatus === ModelStatus.MODIFY ? (
+        ) : record.specModels?.[0]?.modelMatch?.orderModel.modelStatus === ModelStatus.MODIFY ? (
           <FullChip label="수정" state="yellow" />
         ) : (
           <FullChip label="반복" state="mint"/>
-        )} */}
+        )}
       </div>
     ),
   },
@@ -308,9 +309,9 @@ export const specIngClmn = (
     dataIndex: 'specModels.orderPrdDueDt',
     key: 'specModels.orderPrdDueDt',
     align: 'center',
-    // render: (_, record:specType) => {
-    //   return record.specModels?.[0].;
-    // }
+    render: (_, record:specType) => {
+      return dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt).format('YYYY-MM-DD');
+    }
   },
   {
     title: '발주일',
@@ -318,9 +319,9 @@ export const specIngClmn = (
     dataIndex: 'specModels.order.orderDt',
     key: 'specModels.order.orderDt',
     align: 'center',
-    // render: (_, record:specType) => {
-    //   return record.specModels?.[0].;
-    // }
+    render: (_, record:specType) => {
+      return dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderDt).format('YYYY-MM-DD');
+    }
   },
   {
     title: '사양등록',
