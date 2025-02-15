@@ -310,7 +310,9 @@ export const specIngClmn = (
     key: 'specModels.orderPrdDueDt',
     align: 'center',
     render: (_, record:specType) => {
-      return dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt).format('YYYY-MM-DD');
+      return record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt ?
+        dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt).format('YYYY-MM-DD')
+        : null ;
     }
   },
   {
