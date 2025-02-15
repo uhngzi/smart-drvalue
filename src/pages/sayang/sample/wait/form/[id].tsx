@@ -23,16 +23,16 @@ import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { filterType } from "@/data/type/filter";
 import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
-import { modelsMatchRType, modelsType } from "@/data/type/sayang/models";
+import { modelsType } from "@/data/type/sayang/models";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { useBase } from "@/data/context/BaseContext";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { specModelType, specType } from "@/data/type/sayang/sample";
 import { selectType } from "@/data/type/componentStyles";
 import { commonCodeRType } from "@/data/type/base/common";
+import { useModels } from "@/data/context/ModelContext";
 
 import useToast from "@/utils/useToast";
-import { useModels } from "@/data/context/ModelContext";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -107,27 +107,9 @@ const SayangSampleAddPage: React.FC & {
     });
   // ------------ 필요 데이터 세팅 ------------ 끝
 
-  // ---------- 모델 매칭 데이터 세팅 ---------- 시작
-    // glbStatus ID를 통해 매치 ID, parter 가져오기 위함
-  const { data:queryDataModel, isLoading:modelLoading } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_registering'],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'core-d1', 
-        utype: 'tenant/',
-        url: 'models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_registering'
-      });
-      return result;
-    },
-  });
-  // ---------- 모델 매칭 데이터 세팅 ---------- 끝
-
   // ------------ 세부 데이터 세팅 ------------ 시작
   const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<specType>({});
-  // const [modelsData, setModelsData] = useState<specModelType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -144,48 +126,41 @@ const SayangSampleAddPage: React.FC & {
   });
   useEffect(()=>{
     setDetailDataLoading(true);
-    if(!isLoading && queryData?.resultCode === "OK_0000"
-      && !modelLoading && queryDataModel?.resultCode === "OK_0000") {
+    if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
-      const modelData = queryDataModel.data.data as modelsMatchRType[];
-      let arr:specModelType[] = [];
-      (rdata.specModels ?? []).map((model:specModelType) => {
-        const match = modelData.find((match) => match.glbStatus?.id === model.glbStatus?.id);
-        arr.push({
-          ...model,
-          matchId: match?.id,
-          // partner: match?.orderModel?.prtInfo.prt,
-        });
-      });
-      const detailArr = {...rdata, specModels:arr} as specType;
-      setDetailData(detailArr ?? null);
+      setDetailData(rdata);
       setDetailDataLoading(false);
+      setAddModelFlag(true);
     }
-  }, [queryData, queryDataModel]);
+  }, [queryData]);
 
     // 모델 조합 시 실행
   useEffect(()=>{
     if(!detailDataLoading && !modelsLoading && !!model && !!status) {
       const matchModel = models.find(d => d.id === model) as modelsType;
       const specModels = detailData.specModels ?? [];
-      if(specModels.find(d=>d.matchId === match) === undefined) {
-        setDetailData({
-          ...detailData,
-          specModels: [
-            {
-              ...matchModel,
-              id: undefined,
-              unit: { id: matchModel.unit?.id },
-              board: { id: matchModel.board.id },
-              matchId: match,
-              glbStatus: { id: status },
-            } as specModelType,
-            ...specModels,
-          ]
-        });
-      }
+      setDetailData({
+        ...detailData,
+        specModels: [
+          {
+            ...matchModel,
+            id: undefined,
+            unit: { id: matchModel.unit?.id },
+            board: { id: matchModel.board.id },
+            matchId: match,
+            glbStatus: { id: status },
+          } as specModelType,
+          ...specModels,
+        ]
+      });
+      setTemp(false);
     }
   }, [detailDataLoading, model, models])
+
+    // 모델 조합 후 자동 임시 저장
+  useEffect(()=>{
+    if(!temp) handleSumbitTemp();
+  }, [detailData])
   // ------------ 세부 데이터 세팅 ------------ 끝
 
   // 모델의 값 변경 시 실행 함수
@@ -225,6 +200,9 @@ const SayangSampleAddPage: React.FC & {
     }
   };
 
+  const [temp, setTemp] = useState<boolean>(true);
+  const [addModelFlag, setAddModelFlag] = useState<boolean>(false);
+  
   // 임시저장 시 실행
   const handleSumbitTemp = async () => {
     try {
@@ -239,9 +217,18 @@ const SayangSampleAddPage: React.FC & {
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        showToast("임시저장 완료", "success");
-        // refetch();
-        router.push(`/sayang/sample/wait/form/${id}`);
+        if(temp)  showToast("임시저장 완료", "success");
+        setTemp(true);
+        if(!addModelFlag) {
+          router.push(`/sayang/sample/wait/form/${id}`);
+          refetch();
+        } else {
+          showToast("이동", "info");
+          router.push({
+            pathname: '/sayang/sample/wait',
+            query: { id: detailData.id, text: detailData.specNo },
+          });
+        }
       } else {
         const msg = result?.response?.data?.message;
         showToast(msg, "error");
@@ -274,11 +261,8 @@ const SayangSampleAddPage: React.FC & {
           <Button
             className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
             onClick={()=>{
+              setAddModelFlag(true);
               handleSumbitTemp();
-              router.push({
-                pathname: '/sayang/sample/wait',
-                query: { id: detailData.id, text: detailData.specNo },
-              });
             }}
           >모델추가</Button>
         </div>
