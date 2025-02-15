@@ -63,7 +63,7 @@ const LaminationContents: React.FC<Props> = ({
   });
   // ------------ 베이스 데이터 세팅 ----------- 끝
 
-  const [lamination, setLamination] = useState<laminationRType[]>();
+  const [lamination, setLamination] = useState<laminationRType[]>([]);
   useEffect(()=>{
     if(detailData.specLamination?.specDetail && typeof detailData.specLamination?.specDetail === "string"){
       const detail = JSON.parse(detailData.specLamination?.specDetail?.toString() ?? "");
@@ -102,7 +102,7 @@ const LaminationContents: React.FC<Props> = ({
           ))
         }
         {
-          (!Array.isArray(lamination) || lamination?.length < 0) &&
+          (!Array.isArray(lamination) || lamination?.length < 1) &&
           <Empty />
         }
       </div>
