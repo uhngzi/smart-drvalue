@@ -53,4 +53,6 @@ const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick
   );
 };
 
+BaseLaminationRow.displayName = 'BaseLaminationRow';
+
 export default React.memo(BaseLaminationRow);

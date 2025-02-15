@@ -40,4 +40,6 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color }
   );
 });
 
+LaminationRow.displayName = 'LaminationRow';
+
 export default LaminationRow;

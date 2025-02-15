@@ -51,4 +51,6 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
   );
 };
 
+SpecSourceRow.displayName = 'SpecSourceRow';
+
 export default React.memo(SpecSourceRow);
