@@ -244,7 +244,9 @@ const SayangModelAddPage: React.FC & {
   const [selectId, setSelectId] = useState<string | null>(null);
 
   if (modelsLoading || dataLoading) {
-    return <div className="w-full h-full v-h-center"><Spin tip="Loading..."/></div>;
+    return <div className="w-full h-[90vh] v-h-center">
+      <Spin tip="Loading..."/>
+    </div>;
   }
 
   return (
@@ -411,9 +413,7 @@ const SayangModelAddPage: React.FC & {
 }
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
-  <ModelProvider>
-    <PopRegLayout title="모델 등록">{page}</PopRegLayout>
-  </ModelProvider>
+  <PopRegLayout title="모델 등록">{page}</PopRegLayout>
 )
 
 export default SayangModelAddPage;

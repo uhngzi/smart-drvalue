@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Close from "@/assets/svg/icons/s_close.svg";
 import { loginCheck } from "@/utils/signUtil";
 import { BaseProvider } from "@/data/context/BaseContext";
+import { ModelProvider } from "@/data/context/ModelContext";
 
 interface Props {
   children : React.ReactNode;
@@ -32,6 +33,7 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
   return (
     <div className="flex" key="mainPageLayout">
       <BaseProvider>
+      <ModelProvider>
       <div>
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
@@ -55,6 +57,7 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
           {children}
         </div>
       </div>
+      </ModelProvider>
       </BaseProvider>
     </div>
   )
