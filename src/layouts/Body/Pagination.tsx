@@ -53,6 +53,7 @@ export const ListPagination: React.FC<Props> = ({
           window.scrollTo({ top: 0, behavior: 'smooth' });
           onChange?.(page);
         }}
+        pageSize={pagination.size}
       />
       <Dropdown menu={menuProps} trigger={['click']} placement="bottomCenter" getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}>
         <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
