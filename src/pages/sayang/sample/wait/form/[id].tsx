@@ -130,7 +130,7 @@ const SayangSampleAddPage: React.FC & {
       const rdata = queryData?.data?.data as specType;
       setDetailData(rdata);
       setDetailDataLoading(false);
-      setAddModelFlag(true);
+      setAddModelFlag(false);
     }
   }, [queryData]);
 
@@ -202,7 +202,7 @@ const SayangSampleAddPage: React.FC & {
 
   const [temp, setTemp] = useState<boolean>(true);
   const [addModelFlag, setAddModelFlag] = useState<boolean>(false);
-  
+
   // 임시저장 시 실행
   const handleSumbitTemp = async () => {
     try {
@@ -223,7 +223,6 @@ const SayangSampleAddPage: React.FC & {
           router.push(`/sayang/sample/wait/form/${id}`);
           refetch();
         } else {
-          showToast("이동", "info");
           router.push({
             pathname: '/sayang/sample/wait',
             query: { id: detailData.id, text: detailData.specNo },
@@ -294,7 +293,9 @@ const SayangSampleAddPage: React.FC & {
       </div>
       <div className="flex bg-white rounded-14 p-30 gap-40">
         <div className="min-w-[300px]">
-          <LaminationContents />
+          <LaminationContents
+            defaultLayerEm={detailData.specModels?.[0]?.layerEm}
+          />
         </div>
         <div className="w-full flex gap-40">
           <div className="min-w-[550px] flex-grow-[44]">
