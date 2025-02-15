@@ -8,8 +8,8 @@ interface LaminationRowProps {
   item: laminationRType;
   index: number;
   color: string[];
-  lamination: laminationRType[];
-  setLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
+  lamination?: laminationRType[];
+  setLamination?: React.Dispatch<SetStateAction<laminationRType[]>>;
 }
 
 const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, lamination, setLamination }) => {
@@ -39,20 +39,21 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, 
           "/" +
           item.copIn}
       </p>
-      <div
+      { lamination &&
+        <div
         className="w-34 v-h-center cursor-pointer"
         onClick={()=>{
           const newArray = [
             ...lamination.slice(0, index),
             ...lamination.slice(index + 1)
           ];
-          setLamination(newArray);
+          setLamination?.(newArray);
         }}
       >
         { item.lamDtlTypeEm !== 'cf' &&
           <Close />
         }
-      </div>
+      </div>}
     </div>
   );
 });

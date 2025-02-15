@@ -1,14 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
+import { Button } from "antd";
 import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
+import { specType } from "@/data/type/sayang/sample";
 
 import useToast from "@/utils/useToast";
 
 import AntdInputRound from "@/components/Input/AntdInputRound";
 import AntdSelectRound from "@/components/Select/AntdSelectRound";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import { LabelMedium } from "@/components/Text/Label";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Back from "@/assets/svg/icons/back.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Check from "@/assets/svg/icons/s_check.svg";
 
 import { generateFloorOptions, LamDtlTypeEm, LayerEm } from "@/data/type/enum";
 import { specLaminationType } from "@/data/type/sayang/lamination";
@@ -18,26 +25,36 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import SpecSourceRow from "./SpecSourceRow";
 import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
-import { LabelMedium } from "@/components/Text/Label";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 interface Props {
   defaultLayerEm?: LayerEm;
+  detailData: specType;
+  setDetailData: React.Dispatch<SetStateAction<specType>>;
+  handleSumbitTemp: () => void;
+  baseLamination: laminationRType[],
+  baseLaminationLoading: boolean;
+  color: string[];
 }
 
 const AddLaminationModalContents: React.FC<Props> = ({
   defaultLayerEm,
+  detailData,
+  setDetailData,
+  handleSumbitTemp,
+  baseLamination,
+  baseLaminationLoading,
+  color,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
+  // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<"sel" | "oz" | "">("");
   const [result, setResult] = useState<laminationRType | null>(null);
 
   // 라이브러리 ID 선택 값 저장
-  const [select, setSelect] = useState<number | string>();
-
-  // 구성 요소에 따른 색상
-  const color = ['#CEE4B3','#F1F4F9','#7551E933','#F5D9B1','#F5B1A1'];
+  const [select, setSelect] = useState<string>();
+  const [selectSource, setSelectSource] = useState<specLaminationType | null>();
 
   // 라이브러리 필터 값 선택
   const [ selectLamiEm, setSeletLamiEm ] = useState<'cf' | 'pp' | 'ccl'>('cf');
@@ -46,7 +63,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
     oz?: 'cf' | 'pp' | 'ccl',
     thk?: number,
     cf?: number,
-  }>({cf:0});
+  }>({cf:1});
 
   // 첫 모델의 Layer로 초기값 설정
   useEffect(()=>{
@@ -55,35 +72,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
       layer:defaultLayerEm
     })
   }, [defaultLayerEm]);
-
-  // ------------ 베이스 데이터 세팅 ----------- 시작
-  const [ baseLaminationLoading, setBaseLaminationLoading ] = useState<boolean>(true);
-  const [ baseLamination, setBaseLamination ] = useState<Array<laminationRType>>([]);
-  const { refetch:baseLaminationRefetch } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['lamination-source/jsxcrud/many'],
-    queryFn: async () => {
-      setBaseLaminationLoading(true);
-      setBaseLamination([]);
-
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'lamination-source/jsxcrud/many'
-      });
-
-      if (result.resultCode === 'OK_0000') {
-        setBaseLamination(result.data.data ?? []);
-      } else {
-        console.log('error:', result.response);
-      }
-
-      setBaseLaminationLoading(false);
-      return result;
-    },
-  });
-  // ------------ 베이스 데이터 세팅 ----------- 끝
 
   // ---------- 라이브러리 데이터 세팅 ---------- 시작
   const [ specSourcesLoading, setSpecSourcesLoading ] = useState<boolean>(true);
@@ -118,15 +106,39 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const [lamination, setLamination] = useState<laminationRType[]>([]);
 
   // 라이브러리 선택 시 구성 요소 보여주는 함수
-  const handleSelectSource = (source:specLaminationType) => {
+  const handleSelectSource = () => {
     let arr = [] as laminationRType[];
-    source.specDetail?.data?.map((detail) => {
-      const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
-      if(item)  arr.push(item);
-    });
-    setLamination(arr);
-    setSelect(source.id);
+    if(selectSource && typeof selectSource.specDetail !== "string") {
+      selectSource.specDetail?.data?.map((detail) => {
+        const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
+        if(item)  arr.push(item);
+      });
+      setLamination(arr);
+      setSelect(selectSource.id);
+    }
   }
+
+  useEffect(()=>{
+    if(select && selectSource && typeof selectSource.specDetail !== "string") {
+      // 기존 라이브러리가 있는데 편집을 할 경우 select가 취소되어야 함
+      // 1. 구성요소 추가로 인한 길이의 값이 달라짐
+      // 2. CF의 값이 달라짐
+      // 3. 구성요소의 위치를 변경함 :: 드래그 시 함수 내부에서 자동 취소됨
+      if(selectSource.specDetail?.data?.length !== lamination.length) {
+        setSelect(undefined);
+        setSelectSource(null);
+      } else {
+        const item = baseLamination.find((f) => 
+            typeof selectSource.specDetail !== "string" &&
+            f.id === selectSource.specDetail?.data?.[0]?.specLamIdx
+          ) as laminationRType;
+        if(item.id !== lamination[0].id) {
+          setSelect(undefined);
+          setSelectSource(null);
+        }
+      }
+    }
+  }, [lamination]);
 
   // 베이스 적층 요소 클릭 시 메뉴 값에 따라 추가해주는 함수
   const handleMenuClick = (e:any, item:laminationRType) => {
@@ -148,6 +160,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       if(lamination.length > 1) {
         // showToast("OZ는 한 번만 추가 가능합니다.", "error");
         setResultOpen(true);
+        setResultType("oz");
         setResult(item);
         return;
       } else {
@@ -169,6 +182,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
     ]);
   };
 
+  // ---------- 적층 구조 드래그 함수 ---------- 시작
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
 
   const handleDragStart = (index: number) => {
@@ -186,6 +200,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
     if(index === 0 || index === lamination.length - 1 ||
       draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1)  return;
 
+    setSelect(undefined);
+    setSelectSource(null);
     const updatedLamination = [...lamination];
     const [movedItem] = updatedLamination.splice(draggedItemIndex, 1); // 드래그한 항목 삭제
     updatedLamination.splice(index, 0, movedItem); // 새로운 위치에 삽입
@@ -193,7 +209,78 @@ const AddLaminationModalContents: React.FC<Props> = ({
     setLamination(updatedLamination);
     setDraggedItemIndex(null); // 드래그 상태 초기화
   };
+  // ---------- 적층 구조 드래그 함수 ---------- 끝
 
+  // ------------ 편집 저장 시 함수 ----------- 시작
+  const handleSubmitSaveSource = async () => {
+    try {
+      const jsonData = {
+        specDetail: {
+          data: lamination.map((d:laminationRType ,idx:number)=> ({
+            index: idx,
+            specLamIdx: d.id,
+          }))
+        }
+      }
+      console.log(JSON.stringify(jsonData));
+
+      const result = await postAPI({
+        type: 'core-d1', 
+        utype: 'tenant/',
+        url: 'spec/lamination-source',
+        jsx: 'jsxcrud'
+      }, jsonData);
+
+      if(result.resultCode === 'OK_0000') {
+        showToast("라이브러리 생성 완료", "success");
+        const entity = result.data.entity as specLaminationType;
+        setSpecSources([...specSources, {...entity}]);
+        // 생성 후 라이브러리 자동 선택
+        setSelect(entity.id);
+        setSelectSource(entity);
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ------------ 편집 저장 시 함수 ----------- 끝
+
+  // -------------- 선택 시 함수 ------------- 시작
+  const [submitFlag, setSubmitFlag] = useState<boolean>(false);
+  const handleSubmitSelectSource = async () => {
+    // 기존 라이브러리로 선택할 경우
+    if(select && selectSource) {
+      setDetailData({
+        ...detailData,
+        specLamination: { id: select },
+      });
+      setSubmitFlag(true);
+      console.log(detailData, select);
+    }
+    // 확정을 어떻게 진행할지 미정이라서 일단.. 새 라이브러리 생성 후 편집 저장은... 보류...
+    // else {
+    //   // 새로 라이브러리 생성...
+    //   handleSubmitSaveSource();
+    //   if(select) {
+    //     // 받아 온 값으로 라이브러리 저장
+    //     setDetailData({
+    //       ...detailData,
+    //       specLamination: { id: select },
+    //     });
+    //     handleSumbitTemp();
+    //   }
+    // }
+  }
+  useEffect(()=>{
+    if(submitFlag) {
+      handleSumbitTemp();
+      setSubmitFlag(false);
+    }
+  }, [submitFlag])
+  // -------------- 선택 시 함수 ------------- 끝
 
   return (
     <div className="v-h-center gap-20 px-10">
@@ -306,7 +393,13 @@ const AddLaminationModalContents: React.FC<Props> = ({
                     setSelect(undefined);
                     setLamination([]);
                   } else {
-                    handleSelectSource(selectedSource);
+                    setSelectSource(selectedSource);
+                    if(lamination.length > 0) {
+                      setResultOpen(true);
+                      setResultType("sel");
+                    } else {
+                      handleSelectSource()
+                    }
                   }
                 }}
               />
@@ -317,7 +410,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       <div className="min-w-[665px] h-[612px] v-h-center gap-5">
         <div className="min-w-[298px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
           <div className="v-between-h-center h-40 w-full mb-20">
-              <p className="text-16 font-medium">적층구조 라이브러리 구성/편집</p>
+            <LabelMedium label="적층구조 라이브러리 구성/편집"/>
             <div
               className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
               onClick={()=>{
@@ -328,7 +421,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
               <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
             </div>
           </div>
-          <div className="h-[440px]">
+          <div className="h-[440px] overflow-y-auto">
             <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
               {
                 Array.isArray(lamination) && lamination.length > 0 &&
@@ -355,6 +448,24 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 ))
               }
             </div>
+          </div>
+          <div className="w-full v-h-center gap-10">
+            <Button
+              className="h-32 rounded-6"
+              onClick={()=>{
+                handleSubmitSelectSource();
+              }}
+            >
+              <p className="w-16 h-16 text-[#222222]"><Check /></p> 선택
+            </Button>
+            <Button
+              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+              onClick={()=>{
+                handleSubmitSaveSource();
+              }}
+            >
+              <Arrow /> 편집 저장
+            </Button>
           </div>
         </div>
         <div className="w-24 h-center flex-col gap-5">
@@ -438,17 +549,21 @@ const AddLaminationModalContents: React.FC<Props> = ({
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={"OZ는 하나만 추가할 수 있습니다."}
-        contents={<div>선택하신 OZ로 변경하시겠습니까?</div>}
+        title={resultType === "sel" ? "편집중인 라이브러리가 존재합니다." :"OZ는 하나만 추가할 수 있습니다."}
+        contents={resultType === "sel" ? <div>해당 적층구조 라이브러리의 구성으로 변경하시겠습니까?</div> : <div>선택하신 OZ로 변경하시겠습니까?</div>}
         type="warning"
         onOk={()=>{
-          if(result) {
-            const newLami = lamination.slice(1, -1);
-            setLamination([
-              result,
-              ...newLami,
-              result,
-            ]);
+          if(resultType === "sel") {
+            handleSelectSource();
+          } else {
+            if(result) {
+              const newLami = lamination.slice(1, -1);
+              setLamination([
+                result,
+                ...newLami,
+                result,
+              ]);
+            }
           }
           setResultOpen(false);
         }}

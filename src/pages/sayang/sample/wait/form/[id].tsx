@@ -295,6 +295,11 @@ const SayangSampleAddPage: React.FC & {
         <div className="min-w-[300px]">
           <LaminationContents
             defaultLayerEm={detailData.specModels?.[0]?.layerEm}
+            detailData={detailData}
+            setDetailData={setDetailData}
+            handleSumbitTemp={()=>{
+              handleSumbitTemp();
+            }}
           />
         </div>
         <div className="w-full flex gap-40">

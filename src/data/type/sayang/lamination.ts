@@ -8,7 +8,7 @@ export type specLaminationType = {
   confirmYn?: boolean;
   lamThk?: number
   lamRealThk?: number;
-  specDetail?: {
+  specDetail?: string | {
     data?: {
       index: number;
       specLamIdx: string;
