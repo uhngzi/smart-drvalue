@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Arrow from "@/assets/svg/icons/l_drop_down.svg";
 
 interface Props {
+  value?: any;
   options: Array<selectType>;
   defaultValue?: any;
   disabled?: boolean;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const AntdSelectRound : React.FC<Props> = ({ 
+  value,
   options, 
   defaultValue, 
   disabled, 
@@ -32,6 +34,7 @@ const AntdSelectRound : React.FC<Props> = ({
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
     >
       <Select
+        value={value}
         className={`w-full ${className}`}
         options={options}
         defaultValue={defaultValue}
