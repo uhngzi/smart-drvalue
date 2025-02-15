@@ -3,11 +3,12 @@ import { Input } from "antd"
 import styled from "styled-components";
 
 interface Props {
-  value?: string;
+  value?: string | number;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
   styles?: componentsStylesType;
   placeholder?: string;
+  type?: "string" | "number";
 }
 
 const AntdInputRound: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const AntdInputRound: React.FC<Props> = ({
   className,
   styles,
   placeholder,
+  type,
 }) => {
   return (
     <AntdInputStyled
@@ -30,6 +32,7 @@ const AntdInputRound: React.FC<Props> = ({
         onChange={onChange}
         className={`${className}`}
         placeholder={placeholder}
+        type={type}
       />
     </AntdInputStyled>
   )
