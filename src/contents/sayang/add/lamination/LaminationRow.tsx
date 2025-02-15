@@ -1,14 +1,18 @@
-import React, { memo } from "react";
+import React, { memo, SetStateAction } from "react";
+
 import { laminationRType } from "@/data/type/base/lamination";
 import { LamDtlTypeEm } from "@/data/type/enum";
 
+import Close from "@/assets/svg/icons/s_close.svg";
 interface LaminationRowProps {
   item: laminationRType;
   index: number;
   color: string[];
+  lamination: laminationRType[];
+  setLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
 }
 
-const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color }) => {
+const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, lamination, setLamination }) => {
   return (
     <div
       key={item.id}
@@ -35,7 +39,20 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color }
           "/" +
           item.copIn}
       </p>
-      <div className="w-34 v-h-center"></div>
+      <div
+        className="w-34 v-h-center cursor-pointer"
+        onClick={()=>{
+          const newArray = [
+            ...lamination.slice(0, index),
+            ...lamination.slice(index + 1)
+          ];
+          setLamination(newArray);
+        }}
+      >
+        { item.lamDtlTypeEm !== 'cf' &&
+          <Close />
+        }
+      </div>
     </div>
   );
 });

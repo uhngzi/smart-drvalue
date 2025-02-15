@@ -19,6 +19,7 @@ import SpecSourceRow from "./SpecSourceRow";
 import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
 import { LabelMedium } from "@/components/Text/Label";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 interface Props {
   defaultLayerEm?: LayerEm;
@@ -28,6 +29,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
   defaultLayerEm,
 }) => {
   const { showToast, ToastContainer } = useToast();
+
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [result, setResult] = useState<laminationRType | null>(null);
 
   // 라이브러리 ID 선택 값 저장
   const [select, setSelect] = useState<number | string>();
@@ -142,7 +146,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
     } else if(item.lamDtlTypeEm === 'cf') {
       // CF를 선택했으나 이미 값이 있는 경우
       if(lamination.length > 1) {
-        showToast("OZ는 한 번만 추가 가능합니다.", "error");
+        // showToast("OZ는 한 번만 추가 가능합니다.", "error");
+        setResultOpen(true);
+        setResult(item);
         return;
       } else {
         // 위 아래로 2개 추가 됨
@@ -162,6 +168,32 @@ const AddLaminationModalContents: React.FC<Props> = ({
       ...prevItems.slice(index), // 기존 배열의 뒷 부분
     ]);
   };
+
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => {
+    setDraggedItemIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); // 기본 동작인 drop 방지
+  };
+
+  const handleDrop = (index: number, item:laminationRType) => {
+    if (draggedItemIndex === null || draggedItemIndex === index) return;
+
+    // 맨 위 아래는 CF로 고정 되어있으므로 위치 변경 불가
+    if(index === 0 || index === lamination.length - 1 ||
+      draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1)  return;
+
+    const updatedLamination = [...lamination];
+    const [movedItem] = updatedLamination.splice(draggedItemIndex, 1); // 드래그한 항목 삭제
+    updatedLamination.splice(index, 0, movedItem); // 새로운 위치에 삽입
+
+    setLamination(updatedLamination);
+    setDraggedItemIndex(null); // 드래그 상태 초기화
+  };
+
 
   return (
     <div className="v-h-center gap-20 px-10">
@@ -301,12 +333,25 @@ const AddLaminationModalContents: React.FC<Props> = ({
               {
                 Array.isArray(lamination) && lamination.length > 0 &&
                 lamination.map((item:laminationRType, index:number) => (
-                  <LaminationRow
-                    key={item.id+':'+index}
-                    item={item}
-                    index={index}
-                    color={color}
-                  />
+                  <div
+                    key={item.id+":"+index}
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={handleDragOver}
+                    onDrop={() => {
+                      handleDrop(index, item);
+                    }}
+                    style={{cursor:item.lamDtlTypeEm !== 'cf' ? "grab" : "no-drop"}}
+                    draggable
+                  >
+                    <LaminationRow
+                      key={item.id+':'+index}
+                      item={item}
+                      index={index}
+                      color={color}
+                      lamination={lamination}
+                      setLamination={setLamination}
+                    />
+                  </div>
                 ))
               }
             </div>
@@ -389,6 +434,31 @@ const AddLaminationModalContents: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={"OZ는 하나만 추가할 수 있습니다."}
+        contents={<div>선택하신 OZ로 변경하시겠습니까?</div>}
+        type="warning"
+        onOk={()=>{
+          if(result) {
+            const newLami = lamination.slice(1, -1);
+            setLamination([
+              result,
+              ...newLami,
+              result,
+            ]);
+          }
+          setResultOpen(false);
+        }}
+        onCancle={()=>{
+          setResultOpen(false);
+        }}
+        okText="변경 할래요"
+        cancelText="변경 안할래요"
+      />
+
       <ToastContainer />
     </div>
   )
