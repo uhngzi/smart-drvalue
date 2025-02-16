@@ -1,20 +1,37 @@
 import ArrayIcon from "@/assets/svg/icons/array.svg";
+import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
+import YieldCalculate from "@/contents/base/yield/YieldCalculate";
+import { Button } from "antd";
+import { useState } from "react";
 
 interface Props {
-
 }
 
 const ArrayContents: React.FC<Props> = ({
 
 }) => {
+  // 원판 수율 팝업
+  const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
+
   return (
     <div className="w-full flex flex-col gap-20">
-      <TitleIcon
-        title="배열 도면"
-        icon={<ArrayIcon />}
-      />
+      <div className="v-between-h-center">
+        <TitleIcon
+          title="배열 도면"
+          icon={<ArrayIcon />}
+        />
+        <Button
+          className="h-32 rounded-6"
+          style={{color:"#444444E0"}}
+          onClick={() => {
+            setYieldPopOpen(true);
+          }}
+        >
+          수율 계산
+        </Button>
+      </div>
 
       <div className="w-full h-[310px] flex flex-col gap-30 items-center">
         <div className="h-[111px] border-1 border-line flex w-full">
@@ -98,6 +115,15 @@ const ArrayContents: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+      <AntdModal
+        open={yieldPopOpen}
+        setOpen={setYieldPopOpen}
+        width={1540}
+        title="원판수율계산"
+        contents={
+        <YieldCalculate/>}
+      />
     </div>
   )
 }
