@@ -26,6 +26,13 @@ const AntdInputFill: React.FC<Props> = ({
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
 
+    // 빈 문자열 허용
+    if(value === "") {
+      // 전달받은 onChange 핸들러 실행
+      onChange?.(e);
+      return;
+    }
+
     // 숫자 타입일 때 0 이하 입력 제한
     if (type === "number") {
       const numericValue = parseFloat(value);
