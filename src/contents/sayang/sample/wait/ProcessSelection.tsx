@@ -23,14 +23,10 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 interface Props {
   detailData: specType;
-  setDetailData: React.Dispatch<SetStateAction<specType>>;
-  handleSumbitTemp: () => void;
 }
 
 const ProcessSelection: React.FC<Props> = ({
   detailData,
-  setDetailData,
-  handleSumbitTemp,
 }) => {
   const { showToast, ToastContainer } = useToast();
 

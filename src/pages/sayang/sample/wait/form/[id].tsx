@@ -247,7 +247,10 @@ const SayangSampleAddPage: React.FC & {
     confirmPer: '',
   });
 
+  // 공정 지정 팝업
   const [open, setOpen] = useState<boolean>(false);
+
+  // 필터 펼치기
   const [approval, setApproval] = useState<boolean>(false);
 
   return (
@@ -325,6 +328,13 @@ const SayangSampleAddPage: React.FC & {
         </div>
       </div>
 
+      <div className="v-h-center py-50 gap-15">
+        <FullOkButton label="확정저장" click={()=>{}}/>
+        <FullSubButton label="임시저장" click={()=>{
+          handleSumbitTemp();
+        }}/>
+      </div>
+
       <AntdModal
         open={open}
         setOpen={setOpen}
@@ -332,10 +342,6 @@ const SayangSampleAddPage: React.FC & {
         contents={
         <ProcessSelection
           detailData={detailData}
-          setDetailData={setDetailData}
-          handleSumbitTemp={()=>{
-            handleSumbitTemp();
-          }}
         />}
         width={1050}
         onClose={()=>{
@@ -344,12 +350,6 @@ const SayangSampleAddPage: React.FC & {
         }}
       />
 
-      <div className="v-h-center py-50 gap-15">
-        <FullOkButton label="확정저장" click={()=>{}}/>
-        <FullSubButton label="임시저장" click={()=>{
-          handleSumbitTemp();
-        }}/>
-      </div>
       <ToastContainer />
     </div>
   )
