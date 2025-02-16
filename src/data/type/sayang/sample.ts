@@ -125,3 +125,61 @@ export type specPrdGroupPrcs = {
   ordNo?: number;
   prcWkRemark?: string;
 }
+
+export type yieldInputType = {
+  minPanelLength?: number;
+  diskWidth?: number;
+  diskHeight?: number;
+  minYield?: number;
+  kitWidth?: number;
+  kitHeight?: number;
+  kitGapX?: number;
+  kitGapY?: number;
+  kitArrangeX?: number;
+  kitArrangeY?: number;
+  marginLongSide?: number;
+  marginShortSide?: number;
+}
+
+export const yieldInputReq = () => {
+  return [
+    { field : 'minPanelLength', label: '판넬 최저 길이' },
+    { field : 'diskWidth', label: '원판 너비' },
+    { field : 'diskHeight', label: '원판 높이' },
+    { field : 'minYield', label: '최저 수율' },
+    { field : 'kitWidth', label: 'Kit 너비' },
+    { field : 'kitHeight', label: 'Kit 높이' },
+    { field : 'kitGapX', label: 'Kit 간격 X' },
+    { field : 'kitGapY', label: 'Kit 간격 Y' },
+    { field : 'kitArrangeX', label: 'Kit 배치 X' },
+    { field : 'kitArrangeY', label: 'Kit 배치 Y' },
+    { field : 'marginLongSide', label: '긴쪽 여분' },
+    { field : 'marginShortSide', label: '짧은쪽 여분' },
+  ]
+}
+
+export type yieldCalType = {
+  panel?: {
+    width?: number;
+    height?: number;
+    arrangeX?: number;
+    arrangeY?: number;
+  },
+  layout?: {
+    placed?: {
+      x?: number;
+      y?: number;
+      w?: number;
+      h?: number;
+      rotated?: boolean;
+    }[];
+    yieldRatio?: number;
+  },
+  panelCount?: number;
+  kitCount?: number;
+  requestId?: string;
+  images?: {
+    layout?: string;
+    panel?: string;
+  }
+}
