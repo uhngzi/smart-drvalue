@@ -29,7 +29,7 @@ export const newDataProductLinesType = ():productLinesCUType => {
 export type productLinesGroupRType = {
   id: string;
   name: string;
-  productLines?: productLinesRType;
+  productLines?: productLinesRType[];
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;

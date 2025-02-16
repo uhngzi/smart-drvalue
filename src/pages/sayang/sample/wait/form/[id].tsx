@@ -18,6 +18,7 @@ import FullOkButton from "@/components/Button/FullOkButton";
 import FullSubButton from "@/components/Button/FullSubButton";
 
 import Models from "@/assets/svg/icons/sales.svg";
+import Prc from "@/assets/svg/icons/data.svg";
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
@@ -257,13 +258,22 @@ const SayangSampleAddPage: React.FC & {
             <Button type="text" icon={<DoubleRightOutlined/>} className="!bg-[#F5F6FA] !h-32" style={{border:'1px solid #D9D9D9'}} onClick={() => setApproval(prev =>!prev)}>결재</Button>
             {approval && (<DefaultFilter filter={filter} setFilter={setFilter} />)}
           </div>
-          <Button
-            className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
-            onClick={()=>{
-              setAddModelFlag(true);
-              handleSumbitTemp();
-            }}
-          >모델추가</Button>
+          <div className="h-center gap-20">
+            <Button
+              className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
+              onClick={()=>{
+                setAddModelFlag(true);
+                handleSumbitTemp();
+              }}
+            >모델추가</Button>
+            <Button
+              className="!border-[#444444]"
+              icon={<Prc className="w-16 h-16"/>}
+              onClick={()=>{
+                setOpen(true);
+              }}
+            >공정지정</Button>
+          </div>
         </div>
         <div>
           <AntdTable
@@ -315,20 +325,31 @@ const SayangSampleAddPage: React.FC & {
         </div>
       </div>
 
+      <AntdModal
+        open={open}
+        setOpen={setOpen}
+        title={"공정 지정"}
+        contents={
+        <ProcessSelection
+          detailData={detailData}
+          setDetailData={setDetailData}
+          handleSumbitTemp={()=>{
+            handleSumbitTemp();
+          }}
+        />}
+        width={1050}
+        onClose={()=>{
+          refetch();
+          setOpen(false);
+        }}
+      />
+
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{}}/>
         <FullSubButton label="임시저장" click={()=>{
           handleSumbitTemp();
         }}/>
       </div>
-
-      <AntdModal
-        open={open}
-        setOpen={setOpen}
-        title={"공정 지정"}
-        contents={<ProcessSelection />}
-        width={1050}
-      />
       <ToastContainer />
     </div>
   )

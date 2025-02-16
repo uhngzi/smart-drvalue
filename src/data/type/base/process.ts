@@ -19,6 +19,7 @@ export type processRType = {
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;
+  remark?: string;
 }
 
 export type processCUType = {

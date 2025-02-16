@@ -112,7 +112,8 @@ const LaminationContents: React.FC<Props> = ({
         open={open}
         setOpen={setOpen}
         title={"적층구조 라이브러리 선택 및 편집 구성"}
-        contents={<AddLaminationModalContents
+        contents={
+        <AddLaminationModalContents
           defaultLayerEm={defaultLayerEm}
           detailData={detailData}
           setDetailData={setDetailData}
