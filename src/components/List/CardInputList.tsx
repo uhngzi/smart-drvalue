@@ -76,7 +76,7 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   "col-span-1"
                 }`}
               >
-                { item.label ? <p className="pb-8">{item.label}</p> : null}
+                { item.label ? <p className="pb-8">{item.label}</p> : <p className="pt-5"></p>}
                 <div className="h-center gap-10" style={{marginTop: item.label ? 0 : -10}}>
                   { item.fbtn ?? null }
                   {item.type === "input" && (
