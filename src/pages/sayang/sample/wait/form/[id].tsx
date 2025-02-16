@@ -222,7 +222,7 @@ const SayangSampleAddPage: React.FC & {
       if(result.resultCode === 'OK_0000') {
         if(temp)  showToast("임시저장 완료", "success");
         setTemp(true);
-        if(!addModelFlag) {
+        if(addModelFlag) {
           router.push(`/sayang/sample/wait/form/${id}`);
           refetch();
         } else {
