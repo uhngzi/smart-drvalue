@@ -58,7 +58,7 @@ const PrtMngAddModal:React.FC<Props> = ({
       
       submitEndFn?.();
       if(result.resultCode === "OK_0000") {
-        const csMng = result.data.entity as partnerMngRType;
+        const csMng = result.data?.entity as partnerMngRType;
         prtMngSuccessFn?.(csMng);
 
         showToast("담당자가 성공적으로 추가되었습니다.", "success");

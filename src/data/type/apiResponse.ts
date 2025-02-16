@@ -17,7 +17,7 @@ export type apiAuthResponseType = {
 }
 
 export type apiPatchResponseType = {
-  data: {
+  data: any | any[] | {
     data: any;
     message: string;
     status?: number;
@@ -26,7 +26,7 @@ export type apiPatchResponseType = {
     timestamp?: Date;
     requestUser?: any;
     entity?: any;
-  } | any[];
+  };
   resultCode?: string;
   response?: any;
 }
