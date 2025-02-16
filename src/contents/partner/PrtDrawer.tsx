@@ -266,7 +266,7 @@ const PrtDrawer: React.FC<Props> = ({
             { value:newPartnerData?.prtBizCate,
               name:'prtBizCate',label:'업종', type:'input',widthType:'half' },
             { value:newPartnerData?.prtAddr,
-              name:'prtAddr', label:'주소', type:'btnInput', widthType:'full',
+              name:'prtAddr', label:'주소', type:'input', widthType:'full',
               fbtn:
               <Button type="primary" size="large" onClick={handleSearchAddress} 
                 className="flex h-center gap-8 text-white !text-14 !h-32"
