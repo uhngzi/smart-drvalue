@@ -82,7 +82,7 @@ const SayangSampleListPage: React.FC & {
   // ------------ 등록중 리스트 데이터 세팅 ------------ 시작
   const [paginationIng, setPaginationIng] = useState({
     current: 1,
-    size: 3,
+    size: 100,
   });
   const handlePageIngChange = (page: number) => {
     setPaginationIng({ ...paginationIng, current: page });

@@ -34,6 +34,8 @@ import { commonCodeRType } from "@/data/type/base/common";
 import { useModels } from "@/data/context/ModelContext";
 
 import useToast from "@/utils/useToast";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import { patchAPI } from "@/api/patch";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -237,6 +239,27 @@ const SayangSampleAddPage: React.FC & {
       console.log('CATCH ERROR : ', e);
     }
   }
+
+  const handleSubmitConfirm = async () => {
+    try {
+      const result = await patchAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `spec/default/confirm/${id}`,
+        etc: true,
+      }, id+"", {});
+      
+      if(result.resultCode === "OK_0000") {
+        setResultOpen(true);
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
   
   const [filter, setFilter] = useState<filterType>({
     writeDt: null,
@@ -249,6 +272,7 @@ const SayangSampleAddPage: React.FC & {
 
   // 공정 지정 팝업
   const [open, setOpen] = useState<boolean>(false);
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
 
   // 필터 펼치기
   const [approval, setApproval] = useState<boolean>(false);
@@ -329,7 +353,9 @@ const SayangSampleAddPage: React.FC & {
       </div>
 
       <div className="v-h-center py-50 gap-15">
-        <FullOkButton label="확정저장" click={()=>{}}/>
+        <FullOkButton label="확정저장" click={()=>{
+          handleSubmitConfirm();
+        }}/>
         <FullSubButton label="임시저장" click={()=>{
           handleSumbitTemp();
         }}/>
@@ -348,6 +374,20 @@ const SayangSampleAddPage: React.FC & {
           refetch();
           setOpen(false);
         }}
+      />
+      
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={"사양 확정 완료"}
+        contents={<div>사양 확정에 성공하였습니다.</div>}
+        type="success"
+        onOk={()=>{
+          setResultOpen(false);
+          router.push('/sayang/sample/wait');
+        }}
+        hideCancel={true}
+        okText="목록으로 이동"
       />
 
       <ToastContainer />
