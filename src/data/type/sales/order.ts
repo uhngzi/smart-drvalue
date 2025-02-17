@@ -7,9 +7,9 @@ import { FinalGlbStatus, HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus } fr
 // 고객발주 읽기 타입
 export type salesOrderRType = {
   id: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
   orderNm: string;
   orderDt: Date;
   orderRepDt: Date;
@@ -23,47 +23,14 @@ export type salesOrderRType = {
     name: string;
     userId: string;
     status: string;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
   products: Array<salesOrderProductRType>,
   prtInfo: {
     id: string;
     prt: partnerRType;
-    // {
-    //   id: string;
-    //   prtTypeEm: PrtTypeEm;
-    //   prtNm: string;
-    //   prtRegCd: number;
-    //   prtSnm: string;
-    //   prtEngNm: string;
-    //   prtEngSnm: string;
-    //   prtRegNo: string;
-    //   prtCorpRegNo: string;
-    //   prtBizType: string;
-    //   prtBizCate: string;
-    //   prtAddr: string;
-    //   prtAddrDtl: string;
-    //   prtZip: string;
-    //   prtCeo: string;
-    //   prtTel: string;
-    //   prtFax: string;
-    //   prtEmail: string;
-    //   emp: {
-    //     id: string;
-    //     name: string;
-    //     userId: string;
-    //     status: string;
-    //     lastLoginAt: Date;
-    //     createdAt: Date | null;
-    //     updatedAt: Date | null;
-    //     deletedAt: Date | null;
-    //   };
-    //   createdAt: Date | null;
-    //   updatedAt: Date | null;
-    //   deletedAt: Date | null;
-    // },
     mng: partnerMngRType;
   }
 }
@@ -81,9 +48,9 @@ export type salesOrderDetailRType = {
   hotGrade: HotGrade;
   isDiscard: boolean;
   emp: {
-    createdAt: Date | Dayjs | null;
-    updatedAt: Date | Dayjs | null;
-    deletedAt: Date | Dayjs | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
     id: string;
     name: string;
     userId: string;
@@ -163,9 +130,9 @@ export type salesOrderProductRType = {
   glbStatus: {  // 현재 모델 상태
     id: string;
     salesOrderStatus: SalesOrderStatus;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
   modelStatus: ModelStatus;
   orderDt: Date | Dayjs;

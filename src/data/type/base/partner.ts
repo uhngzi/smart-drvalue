@@ -1,5 +1,6 @@
 // 기초정보 - 거래처, 거래처 담당자
 
+import { Dayjs } from "dayjs";
 import { PrtTypeEm } from "../enum";
 
 export type partnerRType = {
@@ -23,9 +24,9 @@ export type partnerRType = {
   prtEmail: string;
   emp?: { id?: string; };
   managers?: Array<partnerMngRType>;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type partnerCUType = {
@@ -82,9 +83,9 @@ export type partnerMngRType = {
   prtMngMobile: string;
   prtMngFax: string;
   prtMngEmail: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type partnerMngCUType = {

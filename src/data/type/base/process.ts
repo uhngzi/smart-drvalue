@@ -1,5 +1,6 @@
 // 기초정보 - 공정그룹, 공정, 공정 공급처, 공정 공급처 가격
 
+import { Dayjs } from "dayjs";
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
 import { partnerRType } from "./partner";
 
@@ -10,15 +11,15 @@ export type processRType = {
     prcGrpNm: string;
     useYn: boolean;
     processes?: Array<any>;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
-    deletedAt?: Date | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
   prcNm: string;
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
   remark?: string;
 }
 
@@ -41,9 +42,9 @@ export type processGroupRType = {
   prcGrpNm: string;
   useYn: boolean;
   processes: Array<processRType>;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type processGroupCUType = {
@@ -64,9 +65,9 @@ export type processVendorRType = {
   vendor: partnerRType;
   processGroup: processGroupRType,
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type processVendorCUType = {
@@ -109,9 +110,9 @@ export type processVendorPriceRType = {
   m2Max?: number;
   useYn: boolean;
   appDt: Date;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type processVendorPriceCUType = {
@@ -174,7 +175,7 @@ export type processVendorPriceHistoryRType = {
   useYn: boolean;
   appDt: Date;
   appBeDt: Date;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }

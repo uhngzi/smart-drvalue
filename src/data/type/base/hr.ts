@@ -1,13 +1,15 @@
 // 기초정보 - 부서, 팀
 
+import { Dayjs } from "dayjs";
+
 export type deptRType = {
   id: string;
   deptNm: string;
   useYn: boolean;
   teams?: teamRType;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type deptCUType = {
@@ -27,9 +29,9 @@ export type teamRType = {
   dept?: deptRType;
   teamNm: string;
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type teamCUType = {

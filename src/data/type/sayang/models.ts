@@ -269,7 +269,8 @@ export type modelsMatchRType = {
   },
   orderModel?: {
     id: string;
-    currPrdInfo: {},
+    currPrdInfo: any,
+    tempPrdInfo?: any,
     prtInfo: {
       id: string;
       prt: partnerRType;

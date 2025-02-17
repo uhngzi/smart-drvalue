@@ -1,5 +1,7 @@
 // 기초정보 - 공통코드 그룹, 공통코드
 
+import { Dayjs } from "dayjs";
+
 export type commonCodeGroupType = {
   id?: string;
   cdGrpNm: string;
@@ -40,9 +42,9 @@ export type commonCodeRType = {
   cdNm: string;
   cdDesc?: string;
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
   codeGroup?: {
     id: string;
     cdGrpNm: string;
@@ -52,13 +54,13 @@ export type commonCodeRType = {
       id: string;
       deptNm: string;
       useYn: boolean;
-      createdAt: Date | null;
-      updatedAt: Date | null;
-      deletedAt: Date | null;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
     },
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    deletedAt: Date | null;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
   },
 }
 

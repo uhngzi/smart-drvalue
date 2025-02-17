@@ -1,5 +1,6 @@
 // 기초정보 - 제품군
 
+import { Dayjs } from "dayjs";
 import { processRType } from "./process";
 
 export type productLinesRType = {
@@ -7,9 +8,9 @@ export type productLinesRType = {
   productLinesGroup?: productLinesGroupRType;
   process?: processRType;
   prcWkRemark: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type productLinesCUType = {
@@ -30,9 +31,9 @@ export type productLinesGroupRType = {
   id: string;
   name: string;
   productLines?: productLinesRType[];
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type productLinesGroupCUType = {

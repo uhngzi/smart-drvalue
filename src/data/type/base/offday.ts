@@ -1,5 +1,6 @@
 // 기초정보 - 휴일
 
+import { Dayjs } from "dayjs";
 import { OffdayTypeEm } from "../enum";
 
 export type offdayRType = {
@@ -11,9 +12,9 @@ export type offdayRType = {
   offdayRepeatYn: boolean;
   offdayRemarks: string;
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type offdayCUType = {

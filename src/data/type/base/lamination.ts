@@ -1,5 +1,6 @@
 // 기초정보 - 적층구조
 
+import { Dayjs } from "dayjs";
 import { LamDtlTypeEm } from "../enum";
 
 export type laminationRType = {
@@ -12,9 +13,9 @@ export type laminationRType = {
   lamDtlThk: number;
   lamDtlRealThk: number;
   useYn: boolean;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 export type laminationCUType = {
