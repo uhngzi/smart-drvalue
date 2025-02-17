@@ -155,22 +155,24 @@ const SalesUserPage: React.FC & {
         hotGrade: data.hotGrade ?? HotGrade.NORMAL,
         files: data.files.map((file) => { return file.storageId }),
       });
-      setNewProducts(data.products.map((prd: salesOrderProductRType) => ({
-        id: prd.id,
-        currPrdInfo: JSON.parse(prd.currPrdInfo),
-        modelStatus: prd.modelStatus,
-        orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
-        // orderNo: prd.orderNo,
-        orderTit: prd.orderTit,
-        prtOrderNo: prd.prtOrderNo,
-        orderPrdRemark: prd.orderPrdRemark,
-        orderPrdCnt: prd.orderPrdCnt,
-        orderPrdUnitPrice: prd.orderPrdUnitPrice,
-        orderPrdPrice: prd.orderPrdPrice,
-        orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
-        orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
-        orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
-        disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
+      setNewProducts(data.products
+        .filter((prd:salesOrderProductRType) => prd.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        .map((prd: salesOrderProductRType) => ({
+          id: prd.id,
+          currPrdInfo: JSON.parse(prd.currPrdInfo),
+          modelStatus: prd.modelStatus,
+          orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
+          // orderNo: prd.orderNo,
+          orderTit: prd.orderTit,
+          prtOrderNo: prd.prtOrderNo,
+          orderPrdRemark: prd.orderPrdRemark,
+          orderPrdCnt: prd.orderPrdCnt,
+          orderPrdUnitPrice: prd.orderPrdUnitPrice,
+          orderPrdPrice: prd.orderPrdPrice,
+          orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
+          orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
+          orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
+          disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
       })));
       setStepCurrent(1);
       setOpen(true);
