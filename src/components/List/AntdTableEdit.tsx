@@ -47,7 +47,7 @@ const EditableCell: React.FC<
   ...restProps
 }) => {
   return (
-    <td {...restProps} style={{textAlign:cellAlign}}>
+    <td {...restProps} style={{textAlign:cellAlign,background:record?.disabled?"#F2F2F2":"#FFF"}}>
       {editing ? (
         <>{
           editType === "date" ?
@@ -108,6 +108,7 @@ const EditableCell: React.FC<
               }}
               type={inputType}
               readonly={record?.disabled ?? undefined}
+              styles={{bg:"none"}}
             />
         }</>
       ) : (
