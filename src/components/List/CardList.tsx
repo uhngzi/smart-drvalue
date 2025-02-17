@@ -29,9 +29,9 @@ const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, c
             <Bag />
             <p className="text-16 font-medium">{title}</p>
           </div>
-          <Button onClick={btnClick}>
+          {btnLabel && <Button onClick={btnClick}>
             {btnLabel}
-          </Button>
+          </Button>}
         </div>
       )}
 
