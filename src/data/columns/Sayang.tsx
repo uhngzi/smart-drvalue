@@ -1,165 +1,23 @@
+import dayjs from 'dayjs';
+import { Checkbox } from 'antd';
+import { NextRouter } from 'next/router';
+import { SetStateAction } from 'react';
 import { TableProps } from 'antd/es/table';
-import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
-import Plus from "@/assets/svg/icons/l_plus.svg";
-import Data from "@/assets/svg/icons/data.svg";
-import Print from "@/assets/svg/icons/print.svg";
-import Back from "@/assets/svg/icons/back.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 
-import { NextRouter } from 'next/router';
-import { Checkbox } from 'antd';
+import FullChip from '@/components/Chip/FullChip';
 import AntdSelectFill from '@/components/Select/AntdSelectFill';
 import AntdInputFill from '@/components/Input/AntdInputFill';
-import { generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm } from '../type/enum';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
+
 import { salesOrderRType } from '../type/sales/order';
-import { modelsMatchDetail, modelsMatchRType, modelsType, orderModelType } from '../type/sayang/models';
+import { modelsMatchRType } from '../type/sayang/models';
 import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
-import { SetStateAction } from 'react';
 import { specModelType, specType } from '../type/sayang/sample';
-import dayjs from 'dayjs';
-
-export const sayangSampleWaitClmn1 = (
-  totalData: number,
-  sayangPopOpen: (value:String) => void,
-  pagination?: {current: number, size: number},
-): CustomColumn[] => [
-  {
-    title: '대기',
-    width: 80,
-    dataIndex: 'index',
-    key: 'index',
-    align: 'center',
-    render: (_: any, __: any, index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
-  },
-  {
-    title: '관리No',
-    width: 120,
-    dataIndex: 'no',
-    key: 'no',
-    align: 'center',
-  },
-  {
-    title: '업체명/코드',
-    width: 120,
-    dataIndex: 'cuNm',
-    key: 'cuNm',
-    align: 'center',
-  },
-  {
-    title: 'Model',
-    // minWidth: 245,
-    width: 245,
-    dataIndex: 'modelNm',
-    key: 'modelNm',
-    align: 'center',
-  },
-  {
-    title: '필름번호',
-    width: 105,
-    dataIndex: 'rev',
-    key: 'rev',
-    align: 'center',
-  },
-  {
-    title: 'Rev',
-    width: 100,
-    dataIndex: 'rev',
-    key: 'rev',
-    align: 'center',
-  },
-  {
-    title: '긴급',
-    width:80,
-    dataIndex: 'hot',
-    key: 'hot',
-    align: 'center',
-    render: (value: HotGrade) => (
-      <div className="v-h-center">
-        {value === HotGrade.SUPER_URGENT ? (
-          <FullChip label="초긴급" state="purple"/>
-        ) : value === HotGrade.URGENT ? (
-          <FullChip label="긴급" state="pink" />
-        ) : (
-          <FullChip label="일반" />
-        )}
-      </div>
-    ),
-  },
-  {
-    title: '구분',
-    width: 80,
-    dataIndex: 'state',
-    key: 'state',
-    align: 'center',
-    render: (value: number) => (
-      <div className="v-h-center">
-        {value === 3 ? (
-          <FullChip label="신규" />
-        ) : value === 2 ? (
-          <FullChip label="수정" state="yellow" />
-        ) : (
-          <FullChip label="반복" state="mint"/>
-        )}
-      </div>
-    ),
-  },
-  {
-    title: '두께',
-    width: 80,
-    dataIndex: 'thic',
-    key: 'thic',
-    align: 'center',
-  },
-  {
-    title: '층',
-    width: 50,
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
-  },
-  {
-    title: 'PCS',
-    width: 100,
-    dataIndex: 'pcs',
-    key: 'pcs',
-    align: 'center',
-  },
-  {
-    title: '납기일',
-    width: 150,
-    dataIndex: 'napgi',
-    key: 'napgi',
-    align: 'center',
-  },
-  {
-    title: '발주일',
-    width: 150,
-    dataIndex: 'order',
-    key: 'order',
-    align: 'center',
-  },
-  {
-    title: '사양등록',
-    width: 100,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value) => (
-      <div className="w-full h-full v-h-center">
-        <div 
-          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={() => sayangPopOpen(value)}
-        >
-          <p className="w-18 h-18"><Edit /></p>
-        </div>
-      </div>
-    )
-  },
-];
+import { generateFloorOptions, HotGrade, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
 
 export const specIngClmn = (
   totalData: number,
@@ -1011,16 +869,16 @@ export const sayangSampleWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
               <AntdInputFill
-                value={record?.kitL}
-                onChange={(e)=>handleModelDataChange(record.id, 'kitL', e.target.value)}
+                value={record?.kitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'kitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record?.kitW}
-                onChange={(e)=>handleModelDataChange(record.id, 'kitW', e.target.value)}
+                value={record?.kitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'kitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1047,28 +905,28 @@ export const sayangSampleWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record?.ykitL}
-                onChange={(e)=>handleModelDataChange(record.id, 'ykitL', e.target.value)}
+                value={record?.ykitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'ykitW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record?.ykitW}
-                onChange={(e)=>handleModelDataChange(record.id, 'ykitW', e.target.value)}
+                value={record?.ykitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'ykitL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
             </div>
             <div className={divClass+" gap-3"}>
               <AntdInputFill
-                value={record?.ypnlL}
-                onChange={(e)=>handleModelDataChange(record.id, 'ypnlL', e.target.value)}
+                value={record?.ypnlW}
+                onChange={(e)=>handleModelDataChange(record.id, 'ypnlW', e.target.value)}
                 className="!text-12"
                 type="number"
               />
               <AntdInputFill
-                value={record?.ypnlW}
-                onChange={(e)=>handleModelDataChange(record.id, 'ypnlW', e.target.value)}
+                value={record?.ypnlL}
+                onChange={(e)=>handleModelDataChange(record.id, 'ypnlL', e.target.value)}
                 className="!text-12"
                 type="number"
               />
@@ -1718,8 +1576,8 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.editModel?.fpNo ?? record.model?.fpNo ?? record.tempPrdInfo?.fpNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.fpNo', e.target.value)}
+                value={record.editModel?.doNum ?? record.model?.doNum ?? record.tempPrdInfo?.doNum}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.doNum', e.target.value)}
                 className='w-[100px] !text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
               />
@@ -1979,5 +1837,123 @@ export const sayangModelWaitAddClmn = (
         )
       },
     ]
+  },
+]
+
+export const sayangModelStatusClmn = (
+  totalData: number,
+  pagination: {current: number, size: number},
+  setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
+  setModelId: React.Dispatch<SetStateAction<modelsMatchRType | null>>,
+): CustomColumn[] => [
+  {
+    title: '대기',
+    width: 80,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+  },
+  {
+    title: '업체명/코드',
+    width: 150,
+    dataIndex: 'orderModel.prtInfo.prtNm',
+    key: 'orderModel.prtInfo.prtNm',
+    align: 'center',
+    render: (_, record:modelsMatchRType) => (
+      <div className="text-left cursor-pointer"
+        onClick={()=>{
+          setPartnerData(record.orderModel?.prtInfo?.prt ?? null);
+          setPartnerMngData(record.orderModel?.prtInfo?.mng ?? null);
+        }}
+      >
+        {record.orderModel?.prtInfo?.prt.prtNm}
+        /
+        {record.orderModel?.prtInfo?.prt.prtRegCd}
+      </div>
+    )
+  },
+  {
+    title: '발주 모델명',
+    dataIndex: 'orderModel.orderTit',
+    key: 'model.prdNm',
+    align: 'center',
+    render: (_, record:modelsMatchRType) => (
+      <div
+        className="text-left cursor-pointer"
+        onClick={()=>{
+          setModelId(record);
+        }}
+      >
+        {record.orderModel?.orderTit}
+      </div>
+    )
+  },
+  {
+    title: '업체담당',
+    width: 100,
+    dataIndex: 'orderModel.prtInfo.mng.prtMngNm',
+    key: 'orderModel.prtInfo.mng.prtMngNm',
+    align: 'center',
+  },
+  {
+    title: '담당 전화번호',
+    width: 130,
+    dataIndex: 'orderModel.prtInfo.mng.prtMngTel',
+    key: 'orderModel.prtInfo.mng.prtMngTel',
+    align: 'center',
+  },
+  {
+    title: '담당 이메일',
+    width: 140,
+    dataIndex: 'orderModel.prtInfo.mng.prtMngEmail',
+    key: 'orderModel.prtInfo.mng.prtMngEmail',
+    align: 'center',
+  },
+  {
+    title: '긴급',
+    width: 80,
+    dataIndex: 'orderModel.orderPrdHotGrade',
+    key: 'orderModel.orderPrdHotGrade',
+    align: 'center',
+    render: (_,record:modelsMatchRType) => (
+      <div className="v-h-center">
+        {record.orderModel?.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : record.orderModel?.orderPrdHotGrade === HotGrade.URGENT ? (
+          <FullChip label="긴급" state="pink" />
+        ) : (
+          <FullChip label="일반" />
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '발주일',
+    width: 150,
+    dataIndex: 'orderModel.orderDt',
+    key: 'orderModel.orderDt',
+    align: 'center',
+  },
+  {
+    title: '모델등록',
+    width: 150,
+    dataIndex: 'id',
+    key: 'id',
+    align: 'center',
+    render: (_, record:modelsMatchRType) => (
+      <div className="w-full h-full v-h-center">
+        {record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? (
+          <FullChip label="완료" />
+        ) : record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED ? (
+          <FullChip label="폐기" />
+        ) : record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING ? (
+          <FullChip label="등록중" state="mint" />
+        ) : (
+          <FullChip label="대기" state="yellow"/>
+        )}
+      </div>
+    )
   },
 ]

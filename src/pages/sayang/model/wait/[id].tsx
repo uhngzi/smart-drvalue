@@ -16,7 +16,7 @@ import AddDrawer from '@/contents/sayang/model/add/AddDrawer';
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
-import { ModelStatus } from "@/data/type/enum";
+import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { modelReq, orderModelType } from "@/data/type/sayang/models";
 import { BaseProvider, useBase } from '@/data/context/BaseContext';
@@ -174,7 +174,14 @@ const SayangModelAddPage: React.FC & {
 
   // 확정저장 시 실행되는 함수
   const handleSubmit = async (id:string) => {
-    console.log('NEW', id);
+    const modelStatus = data.find(f=>f.id === id)?.modelStatus;
+    console.log("MODEL STATUS :: ", modelStatus);
+
+    if(!modelStatus) {
+      showToast("모델 반복 여부 선택", "error");
+      return;
+    }
+
     // 기존에 있는 모델을 선택한 것이 아닐 경우 새로 생성해야 함
     const tempData = data.find((d:orderModelType) => d.id === id);
     if(tempData) {
@@ -211,7 +218,7 @@ const SayangModelAddPage: React.FC & {
         refetchModels();
         const modelId = resultPost.data?.entity?.id;
         console.log('MODEL ID : ', modelId);
-        handleConfirm(id, modelId);
+        handleConfirm(id, modelId, modelStatus);
       } else {
         const msg = resultPost?.response?.data?.message;
         showToast(msg, "error");
@@ -224,7 +231,7 @@ const SayangModelAddPage: React.FC & {
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
 
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
-  const handleConfirm = async (id: string, modelId: string) => {
+  const handleConfirm = async (id: string, modelId: string, modelStatus:ModelStatus) => {
     console.log('confirm', id, modelId);
     const resultPatch = await patchAPI({
       type: 'core-d1',
@@ -232,7 +239,10 @@ const SayangModelAddPage: React.FC & {
       url: `models-match/default/confirm/input-model/${id}`,
       jsx: 'default',
       etc: true,
-    }, id, {modelId: modelId });
+    }, id, {
+      modelId: modelId,
+      modelStatus: modelStatus,
+    });
 
     if(resultPatch.resultCode === 'OK_0000') {
       showToast("확정저장 완료", "success");
@@ -262,7 +272,10 @@ const SayangModelAddPage: React.FC & {
       >
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
         { !dataLoading &&
-        data.map((model:orderModelType, index:number) => (
+        data
+        .filter(f=>f.model?.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        .map((model:orderModelType, index:number) => (
           <div className="flex flex-col gap-16" key={model.id}>
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
@@ -283,6 +296,7 @@ const SayangModelAddPage: React.FC & {
                     {value:ModelStatus.MODIFY,label:'수정'},
                   ]}
                   value={model.modelStatus}
+                  onChange={(e)=>handleModelDataChange(model.id, 'model.modelStatus', e)}
                   className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
                 />
               </div>
@@ -357,9 +371,14 @@ const SayangModelAddPage: React.FC & {
             <div className="w-full h-32 flex justify-end gap-5">
               <FullOkButtonSmall
                 click={()=>{
+                  if(!model.modelStatus) {
+                    showToast("모델 선택", "error");
+                    return;
+                  }
+
                   //그대로 등록일 경우에는 바로 확정만 진행
                   if(!newFlag && selectId === model.id) {
-                    handleConfirm(model.id, model?.editModel?.id);
+                    handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
                     return;
                   }
                   handleSubmit(model.id);
