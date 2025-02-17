@@ -20,6 +20,7 @@ import CardList from "@/components/List/CardList";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 import { TabSmall } from "@/components/Tab/Tabs";
 import { ModelTypeEm } from "@/data/type/enum";
+import { InboxOutlined } from "@ant-design/icons";
 
 const SayangModelStatPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -95,11 +96,12 @@ const SayangModelStatPage: React.FC & {
           { label: '제조사', value: model?.mnfNm ?? '-', widthType: 'half' },
           { label: 'REV', value: model?.prdRevNo ?? '-', widthType: 'half' },
           { label: '구분', value: model?.modelTypeEm === ModelTypeEm.SAMPLE ? "샘플" : model?.modelTypeEm === ModelTypeEm.PRODUCTION ? "양산" : '-', widthType: 'half' },
-          { label: '원판', value: model?.board?.cdNm ?? '-', widthType: 'half' },
+          // { label: '원판', value: model?.board?.cdNm ?? '-', widthType: 'half' },
           { label: '층', value: model?.layerEm?.replace("L","") ?? '-', widthType: 'half' },
           { label: '두께', value: model?.thk ?? '-', widthType: 'half' },
           { label: '단위', value: model?.unit?.cdNm ?? '-', widthType: 'half' },
           { label: '재질', value: model?.material?.cdNm ?? '-', widthType: 'half' },
+          { label: '외형가공형태', value: model?.aprType?.cdNm ?? '-', widthType: 'half' },
           { label: '동박내층', value: model?.copIn ?? '-', widthType: 'half' },
           { label: '동박외층', value: model?.copOut ?? '-', widthType: 'half' },
           { label: 'S/M 인쇄', value: model?.smPrint?.cdNm ?? '-', widthType: 'half' },
@@ -110,23 +112,22 @@ const SayangModelStatPage: React.FC & {
           { label: 'M/K 종류', value: model?.mkType?.cdNm ?? '-', widthType: 'half' },
           { label: '특수인쇄', value: model?.spPrint?.cdNm ?? '-', widthType: 'half' },
           { label: '특수인쇄종류', value: model?.spType?.cdNm ?? '-', widthType: 'half' },
-          { label: '도면번호', value: model?.drgNo ?? '-', widthType: 'half' },
-          { label: '외형가공형태', value: model?.aprType?.cdNm ?? '-', widthType: 'half' },
-          { label: '핀 수', value: model?.pinCnt ?? '-', widthType: 'half' },
-          { label: 'KIT X/Y', value: model?.kitW && model?.kitL ? model?.kitW+"/"+model?.kitL: '-', widthType: 'half' },
-          { label: 'PCS X/Y', value: model?.pcsW && model?.pcsL ? model?.pcsW+"/"+model?.pcsL : '-', widthType: 'half' },
-          { label: 'PNL X/Y', value: model?.pnlW && model?.pnlL ? model?.pnlW+"/"+model?.pnlL : '-', widthType: 'half' },
-          { label: 'kitPcs', value: model?.kitPcs ?? '-', widthType: 'half' },
-          { label: 'pnlKit', value: model?.pnlKit ?? '-', widthType: 'half' },
           { label: '도금 두께', value: model?.pltThk ?? '-', widthType: 'half' },
           { label: '도금 두께 여유', value: model?.pltAlph ?? '-', widthType: 'half' },
           { label: '특별도금(Au)', value: model?.spPltAu ?? '-', widthType: 'half' },
           { label: '특별도금여유(Au)', value: model?.spPltAuAlph ?? '-', widthType: 'half' },
           { label: '특별도금(Ni)', value: model?.spPltNi ?? '-', widthType: 'half' },
           { label: '특별도금여유(Ni)', value: model?.spPltNiAlph ?? '-', widthType: 'half' },
+          // { label: '도면번호', value: model?.drgNo ?? '-', widthType: 'half' },
+          { label: '핀 수', value: model?.pinCnt ?? '-', widthType: 'half' },
+          { label: 'KIT X/Y', value: model?.kitW && model?.kitL ? model?.kitW+"/"+model?.kitL: '-', widthType: 'half' },
+          { label: 'PCS X/Y', value: model?.pcsW && model?.pcsL ? model?.pcsW+"/"+model?.pcsL : '-', widthType: 'half' },
+          { label: 'PNL X/Y', value: model?.pnlW && model?.pnlL ? model?.pnlW+"/"+model?.pnlL : '-', widthType: 'half' },
+          { label: 'kitPcs', value: model?.kitPcs ?? '-', widthType: 'half' },
+          { label: 'pnlKit', value: model?.pnlKit ?? '-', widthType: 'half' },
           { label: 'sthPcs', value: model?.sthPcs ?? '-', widthType: 'half' },
           { label: 'sthPnl', value: model?.sthPnl ?? '-', widthType: 'half' },
-          { label: '브이컷유무', value: model?.vcutYn ?? '-', widthType: 'half' },
+          // { label: '브이컷유무', value: model?.vcutYn ?? '-', widthType: 'half' },
           { label: '브이컷형태', value: model?.vcutType?.cdNm ?? '-', widthType: 'half' },
           { label: '연조KIT', value: model?.ykitW && model?.ykitL ? model?.ykitW+' '+model?.ykitL : '-', widthType: 'half' },
           { label: '연조PNL', value: model?.ypnlW && model?.ypnlL ? model?.ypnlW+"/"+model?.ypnlL : '-', widthType: 'half' },
@@ -191,7 +192,10 @@ const SayangModelStatPage: React.FC & {
           ( modelItem.length > 0 ?
             <CardList title="모델 정보" items={modelItem} />
             :
-            <>폐기되었거나 등록 전인 모델입니다.</>
+            <div className="w-full h-[300px] v-h-center flex-col p-20">
+              <InboxOutlined style={{ fontSize: 50, color: "#aaa" }} />
+              폐기되었거나 등록 전인 모델입니다.
+            </div>
           )
         }
       </div>

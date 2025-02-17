@@ -19,6 +19,183 @@ import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { specModelType, specType } from '../type/sayang/sample';
 import { generateFloorOptions, HotGrade, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
 
+export const specStatusClmn = (
+  totalData: number,
+  setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
+  pagination?: {current: number, size: number},
+  router?: NextRouter,
+): CustomColumn[] => [
+  {
+    title: '대기',
+    width: 80,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    render: (_,__,index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
+  },
+  {
+    title: '관리No',
+    width: 120,
+    dataIndex: 'specNo',
+    key: 'specNo',
+    align: 'center',
+  },
+  {
+    title: '업체명/코드',
+    width: 120,
+    dataIndex: 'prtNm',
+    key: 'prtNm',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="text-left cursor-pointer"
+        onClick={()=>{
+          setPartnerData(record.specModels?.[0]?.partner ?? null);
+          setPartnerMngData(null);
+        }}
+      >
+        {record?.specModels?.[0]?.partner?.prtNm}
+        /
+        {record?.specModels?.[0]?.partner?.prtRegCd}
+      </div>
+    )
+  },
+  {
+    title: '모델명',
+    width: 350,
+    dataIndex: 'specModels.prdNm',
+    key: 'specModels.prdNm',
+    align: 'center',
+    cellAlign: 'left',
+    render: (_, record:specType) => (
+      <div className="w-full h-full h-center">
+        {record.specModels?.[0].prdNm}
+      </div>
+    )
+  },
+  {
+    title: '모델수',
+    width: 70,
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.length;
+    }
+  },
+  {
+    title: 'Rev',
+    width: 100,
+    dataIndex: 'specModels.prdRevNo',
+    key: 'specModels.prdRevNo',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="w-full h-full h-center">
+        {record.specModels?.[0].prdRevNo}
+      </div>
+    )
+  },
+  {
+    title: '긴급',
+    width: 80,
+    dataIndex: 'specModels.modelMatch',
+    key: 'specModels.modelMatch',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="v-h-center">
+        {record.specModels?.[0]?.modelMatch?.orderModel.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : record.specModels?.[0]?.modelMatch?.orderModel.orderPrdHotGrade === HotGrade.URGENT ? (
+          <FullChip label="긴급" state="pink" />
+        ) : (
+          <FullChip label="일반" />
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '구분',
+    width: 80,
+    dataIndex: 'specModels.modelStatus',
+    key: 'specModels.modelStatus',
+    align: 'center',
+    render: (_, record:specType) => (
+      <div className="v-h-center">
+        {record.specModels?.[0]?.modelMatch?.orderModel.modelStatus === ModelStatus.NEW ? (
+          <FullChip label="신규" />
+        ) : record.specModels?.[0]?.modelMatch?.orderModel.modelStatus === ModelStatus.MODIFY ? (
+          <FullChip label="수정" state="yellow" />
+        ) : (
+          <FullChip label="반복" state="mint"/>
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'specModels.thk',
+    key: 'specModels.thk',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].thk;
+    }
+  },
+  {
+    title: '층',
+    width: 50,
+    dataIndex: 'specModels.layerEm',
+    key: 'specModels.layerEm',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].layerEm?.replace("L", "");
+    }
+  },
+  {
+    title: 'PCS',
+    width: 100,
+    dataIndex: 'specModels.pcsW',
+    key: 'specModels.pcsW',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0].pcsL+'/'+record.specModels?.[0].pcsW;
+    }
+  },
+  {
+    title: '납기일',
+    width: 150,
+    dataIndex: 'specModels.orderPrdDueDt',
+    key: 'specModels.orderPrdDueDt',
+    align: 'center',
+    render: (_, record:specType) => {
+      return record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt ?
+        dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderPrdDueDt).format('YYYY-MM-DD')
+        : null ;
+    }
+  },
+  {
+    title: '발주일',
+    width: 150,
+    dataIndex: 'specModels.order.orderDt',
+    key: 'specModels.order.orderDt',
+    align: 'center',
+    render: (_, record:specType) => {
+      return dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderDt).format('YYYY-MM-DD');
+    }
+  },
+  // {
+  //   title: '사양등록',
+  //   width: 100,
+  //   dataIndex: 'id',
+  //   key: 'id',
+  //   align: 'center',
+  //   render: (_,record: specType) => (
+  //     <div className="w-full h-full v-h-center">
+  //       {record.}
+  //     </div>
+  //   )
+  // },
+]
 export const specIngClmn = (
   totalData: number,
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
