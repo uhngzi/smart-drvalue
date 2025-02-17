@@ -3,14 +3,16 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
 import YieldCalculate from "@/contents/base/yield/YieldCalculate";
+import { boardType } from "@/data/type/base/board";
 import { Button } from "antd";
 import { useState } from "react";
 
 interface Props {
+  board: boardType[];
 }
 
 const ArrayContents: React.FC<Props> = ({
-
+  board,
 }) => {
   // 원판 수율 팝업
   const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
@@ -122,7 +124,9 @@ const ArrayContents: React.FC<Props> = ({
         width={1540}
         title="원판수율계산"
         contents={
-        <YieldCalculate/>}
+        <YieldCalculate
+          board={board}
+        />}
       />
     </div>
   )
