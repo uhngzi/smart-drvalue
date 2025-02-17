@@ -126,7 +126,7 @@ const SalesUserPage: React.FC & {
     // 발주 저장 변수
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
     // 모델 저장 변수
-  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([]);
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
     // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
   const [ detailId, setDetailId ] = useState<string>("");
@@ -224,6 +224,9 @@ const SalesUserPage: React.FC & {
     setDetailId("");
     setFormData(newDataSalesOrderCUType);
     setNewProducts([newDataSalesOrderProductCUType()]);
+    setFileList([]);
+    setFileIdList([]);
+    setDeleted(false);
   }
 
     // 신규 등록 시 실행 함수
@@ -303,8 +306,8 @@ const SalesUserPage: React.FC & {
     } else {
       console.log(result);
       const msg = result?.response?.data?.message;
-      setOpen(false);
-      handleCloseOrder();
+      // setOpen(false);
+      // handleCloseOrder();
       showToast(msg, "error");
     }
   }
@@ -352,9 +355,13 @@ const SalesUserPage: React.FC & {
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  const [deleted, setDeleted] = useState<boolean>(false);
   useEffect(()=>{
-    console.log(newProducts)
-  }, [newProducts]);
+    if(deleted) {
+      showToast("모델 저장을 하여야 모델 삭제가 저장됩니다.", "info");
+    }
+  }, [deleted])
+
   return (
     <>
       <ListTitleBtn 
@@ -421,50 +428,50 @@ const SalesUserPage: React.FC & {
               <div className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200 h-center" onMouseDown={handleModelMouseDown}>
                 <DragHandle />
               </div>
-              <div className="w-full flex flex-col">
-                <div className="w-full flex-1 bg-white rounded-14 overflow-auto p-10">
-                  <div className="py-20 px-10"><LabelMedium label="모델 등록"/></div>
-                  <div className="w-full h-1 border-t-1 mb-20"/>
-                  <AntdTableEdit
-                    create={true}
-                    columns={salesUserOrderModelClmn(newProducts, setNewProducts)}
-                    data={newProducts}
-                    setData={setNewProducts}
-                    styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-                  />
-                  <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                    onClick={() => {
-                      setNewProducts((prev: salesOrderProcuctCUType[]) =>[
-                        ...prev,
-                        {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
-                      ]);
-                    }}
-                  >
-                  <SplusIcon/>
-                  <span>모델 추가하기</span>
+              <div className="w-full">
+                <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
+                  <div className=""><LabelMedium label="모델 등록"/></div>
+                  <div className="w-full h-1 border-t-1"/>
+                    <AntdTableEdit
+                      create={true}
+                      columns={salesUserOrderModelClmn(newProducts, setNewProducts, setDeleted)}
+                      data={newProducts}
+                      setData={setNewProducts}
+                      styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+                    />
+                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
+                      onClick={() => {
+                        setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                          ...prev,
+                          {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
+                        ]);
+                      }}
+                    >
+                    <SplusIcon/>
+                    <span>모델 추가하기</span>
                   </div>
-                </div>
-                <div className="flex w-full h-50 v-between-h-center">
-                  <Button
-                    className="w-109 h-32 rounded-6"
-                    onClick={()=>{
-                      setStepCurrent(0);
-                    }}
-                  >
-                    <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
-                  </Button>
-                  <Button
-                    className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                    onClick={()=>{
-                      if(edit && detailId !== "") {
-                        handleEditOrder();
-                      } else {
-                        handleSubmitOrder();
-                      }
-                    }}
-                  >
-                    <Arrow /> { edit ? '모델수정' : '모델등록'}
-                  </Button>
+                  <div className="flex w-full h-50 v-between-h-center">
+                    <Button
+                      className="w-109 h-32 rounded-6"
+                      onClick={()=>{
+                        setStepCurrent(0);
+                      }}
+                    >
+                      <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
+                    </Button>
+                    <Button
+                      className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                      onClick={()=>{
+                        if(edit && detailId !== "") {
+                          handleEditOrder();
+                        } else {
+                          handleSubmitOrder();
+                        }
+                      }}
+                    >
+                      <Arrow /> { edit ? '모델수정' : '모델저장'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

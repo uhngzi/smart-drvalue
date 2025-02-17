@@ -170,6 +170,7 @@ export const salesUserOrderClmn = (
 export const salesUserOrderModelClmn = (
   newProducts: salesOrderProcuctCUType[],
   setNewProducts: React.Dispatch<React.SetStateAction<salesOrderProcuctCUType[]>>,
+  setDeleted: React.Dispatch<SetStateAction<boolean>>,
 ): CustomColumn[] => [
   {
     title: '발주 모델명',
@@ -244,15 +245,31 @@ export const salesUserOrderModelClmn = (
   {
     title: '',
     width: 40,
-    dataIndex: 'modelAmount',
-    key: 'modelAmount',
+    dataIndex: 'id',
+    key: 'id',
     align: 'center',
     editType: 'none',
-    render: (_, record) => (
+    render: (value:string, record) => (
       <div
         className='w-24 h-24 v-h-center cursor-pointer'
         onClick={()=>{
-          setNewProducts(newProducts.filter((f:salesOrderProcuctCUType)=>f.id !== record?.id));
+          if(value.includes('new')) {
+            setNewProducts(newProducts.filter((f:salesOrderProcuctCUType)=>f.id !== value));
+          } else {
+            const updateData = newProducts;
+            const index = newProducts.findIndex(f=> f.id === value);
+            if(index > -1) {
+              updateData[index] = { ...updateData[index], disabled: true };
+
+              const newArray = [
+                ...updateData.slice(0, index),
+                updateData[index],
+                ...updateData.slice(index + 1)
+              ];
+              setNewProducts(newArray);
+              setDeleted(true);
+            }
+          }
         }}
       >
         <Trash/>

@@ -210,7 +210,7 @@ export type salesOrderProcuctCUType = {
 // 고객발주 내 모델 초기값 생성
 export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
   return {
-    modelStatus: null,
+    modelStatus: ModelStatus.NEW,
     orderDt: null,
     // orderNo: '',
     orderTit: '',
@@ -222,6 +222,10 @@ export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
     orderPrdDueReqDt: null,
     orderPrdDueDt: null,
     orderPrdHotGrade: null,
+    currPrdInfo: {
+      layer: 1,
+      thic: 1,
+    }
   }
 }
 
