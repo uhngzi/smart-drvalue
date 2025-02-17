@@ -224,7 +224,7 @@ const SayangSampleAddPage: React.FC & {
         if(temp)  showToast("임시저장 완료", "success");
         setTemp(true);
         if(addModelFlag) {
-          router.push(`/sayang/sample/wait/form/${id}`);
+          router.push(`/sayang/sample/wait/${id}`);
           refetch();
           setAddModelFlag(false);
         } else {

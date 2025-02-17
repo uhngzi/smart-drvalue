@@ -176,7 +176,7 @@ const SayangSampleListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/wait/form/${specId?.specId}`);
+          router.push(`/sayang/sample/wait/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           showToast(msg, "error");
@@ -263,7 +263,7 @@ const SayangSampleListPage: React.FC & {
                 click={()=>{
                   if(selectedValue?.specId){
                     router.push({
-                      pathname: `/sayang/sample/wait/form/${selectedValue.specId}`,
+                      pathname: `/sayang/sample/wait/${selectedValue.specId}`,
                       query: { 
                         match: selectedValue.matchId,
                         model: selectedValue.modelId,
@@ -303,7 +303,7 @@ SayangSampleListPage.layout = (page: React.ReactNode) => (
     menuTitle="샘플-사양등록및현황"
     menu={[
       {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
-      {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/situation'},
+      {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/status'},
     ]}
   >{page}</ModelPageLayout>
 )

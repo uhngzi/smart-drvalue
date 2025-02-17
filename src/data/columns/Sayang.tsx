@@ -336,7 +336,7 @@ export const specIngClmn = (
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            router?.push(`/sayang/sample/wait/form/${value}`);
+            router?.push(`/sayang/sample/wait/${value}`);
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
@@ -1258,7 +1258,7 @@ export const sayangModelWaitClmn = (
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
-            router.push(`/sayang/model/wait/form/${value}`);
+            router.push(`/sayang/model/wait/${value}`);
             // setOrder
           }}
         >
