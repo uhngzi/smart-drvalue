@@ -47,6 +47,7 @@ import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 import { LabelMedium } from "@/components/Text/Label";
 import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
+import { patchAPI } from "@/api/patch";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -130,6 +131,7 @@ const SalesUserPage: React.FC & {
     // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
   const [ detailId, setDetailId ] = useState<string>("");
+  
     // 수정 시 데이터 세팅
   const fetchDetail = async () => {
     const result = await getAPI({
@@ -227,6 +229,7 @@ const SalesUserPage: React.FC & {
     setFileList([]);
     setFileIdList([]);
     setDeleted(false);
+    refetch();
   }
 
     // 신규 등록 시 실행 함수
@@ -265,6 +268,11 @@ const SalesUserPage: React.FC & {
   }
 
   const handleEditOrder = async () => {
+    // 삭제 시 실행
+    if(deleted) {
+      handleDelete();
+    }
+
     const jsonData = changeOrderEdit(formData, newProducts, me);
     console.log(JSON.stringify(jsonData));
 
@@ -356,9 +364,35 @@ const SalesUserPage: React.FC & {
   };
 
   const [deleted, setDeleted] = useState<boolean>(false);
+  const handleDelete = async () => {
+    const deletedData = newProducts.filter(f => f.disabled)
+    console.log(deletedData);
+
+    if(deletedData.length > 0 && deletedData[0].id) {
+      deletedData.map(async (item) => {
+        if(item.id) {
+          const result = await patchAPI({
+            type: 'core-d1',
+            utype: 'tenant/',
+            url: `sales-order/product/default/discard/${item.id}`,
+            jsx: 'default',
+            etc: true,
+          }, item.id);
+    
+          // if(result.resultCode === "OK_0000") {
+          //   showToast("삭제 완료", "success");
+          // } else {
+          //   const msg = result?.response?.data?.message;
+          //   showToast(msg, "error");
+          // }
+        }
+      })
+    }
+  }
   useEffect(()=>{
     if(deleted) {
       showToast("모델 저장을 하여야 모델 삭제가 저장됩니다.", "info");
+      // handleDelete();
     }
   }, [deleted])
 
