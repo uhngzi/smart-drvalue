@@ -312,7 +312,9 @@ const SalesUserEstimatePage: React.FC & {
         setOpen={setYieldPopOpen}
         width={1540}
         title="원판수율계산"
-        contents={<YieldCalculate/>}
+        contents={<YieldCalculate
+          board={[]}
+        />}
       />
     </div>
   )
