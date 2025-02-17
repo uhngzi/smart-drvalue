@@ -307,9 +307,9 @@ const SalesUserPage: React.FC & {
     );
 
     if(result.resultCode === 'OK_0000') {
-      refetch();
-      setOpen(false);
-      handleCloseOrder();
+      // refetch();
+      // setOpen(false);
+      // handleCloseOrder();
       showToast("고객 발주 수정이 완료되었습니다.", "success");
     } else {
       console.log(result);
