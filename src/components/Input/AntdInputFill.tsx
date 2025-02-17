@@ -35,7 +35,7 @@ const AntdInputFill: React.FC<Props> = ({
 
     // 숫자 타입일 때 0 이하 입력 제한
     if (type === "number") {
-      const numericValue = parseFloat(value);
+      const numericValue = parseFloat(value.replace(/\D/g, ""));
       if (numericValue < 0 || isNaN(numericValue)) {
         return; // 0 이하 값 무시
       }

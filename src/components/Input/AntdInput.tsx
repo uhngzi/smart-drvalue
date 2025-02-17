@@ -31,6 +31,28 @@ const AntdInput = forwardRef<InputRef, Props>((
   },
   ref
 ) => {
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { value } = e.target;
+
+    // 빈 문자열 허용
+    if(value === "") {
+      // 전달받은 onChange 핸들러 실행
+      onChange?.(e);
+      return;
+    }
+
+    // 숫자 타입일 때 0 이하 입력 제한
+    if (type === "number") {
+      const numericValue = parseFloat(value.replace(/\D/g, ""));
+      if (numericValue < 0 || isNaN(numericValue)) {
+        return; // 0 이하 값 무시
+      }
+    }
+
+    // 전달받은 onChange 핸들러 실행
+    onChange?.(e);
+  };
+
   return (
     <AntdInputStyled
       $ht={styles?.ht ? styles.ht : "32px"}
@@ -41,7 +63,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     >
       <Input
         value={value}
-        onChange={onChange}
+        onChange={handleInputChange}
         className={`${className}`}
         placeholder={placeholder}
         type={type}
