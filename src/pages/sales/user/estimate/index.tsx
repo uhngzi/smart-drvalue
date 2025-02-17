@@ -307,15 +307,19 @@ const SalesUserEstimatePage: React.FC & {
           </div>
         }
       />
-      <AntdModal
+      {/* <AntdModal
         open={yieldPopOpen}
         setOpen={setYieldPopOpen}
         width={1540}
         title="원판수율계산"
         contents={<YieldCalculate
           board={[]}
+          disk={[]}
+          setDisk={()=>{}}
+          setYielddata={()=>{}}
+          yielddata={null}
         />}
-      />
+      /> */}
     </div>
   )
 };
