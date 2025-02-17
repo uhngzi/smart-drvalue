@@ -24,7 +24,7 @@ const ModelDrawerContent: React.FC<Props> = ({
   const [orderDataLoading, setOrderDataLoading] = useState<boolean>(true);
   const [orderData, setOrderData] = useState<salesOrderDetailRType | null>(null);
   const { data:orderQueryData, isLoading:orderQueryLoading, refetch:orderQueryRefetch } = useQuery({
-    queryKey: ['sales-order/detail/jsxcrud/one'],
+    queryKey: ['sales-order/detail/jsxcrud/one', orderId],
     queryFn: async () =>{
       try {
         return getAPI({
@@ -36,7 +36,8 @@ const ModelDrawerContent: React.FC<Props> = ({
         console.log('models/jsxcrud/many Error : ', e);
         return;
       }
-    }
+    },
+    enabled: !!orderId,
   });
   useEffect(()=>{
     setOrderDataLoading(true);
