@@ -179,6 +179,7 @@ const ProcessSelection: React.FC<Props> = ({
   
       const jsonData = {
         specId: detailData.id,
+        prdGrpIdx: selectPrdGrp.id,
         prdGrpNm: selectPrdGrp.name,
         data: selectPrc.map((item:processRType, index:number) => ({
           prcIdx: item.id,
