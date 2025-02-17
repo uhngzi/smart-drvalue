@@ -49,6 +49,7 @@ const SayangSampleAddPage: React.FC & {
 
   // 디폴트 값 가져오기
   const { 
+    board,
     surfaceSelectList,
     unitSelectList,
     vcutSelectList,
@@ -225,6 +226,7 @@ const SayangSampleAddPage: React.FC & {
         if(addModelFlag) {
           router.push(`/sayang/sample/wait/form/${id}`);
           refetch();
+          setAddModelFlag(false);
         } else {
           router.push({
             pathname: '/sayang/sample/wait',
@@ -330,6 +332,7 @@ const SayangSampleAddPage: React.FC & {
       </div>
       <div className="flex bg-white rounded-14 p-30 gap-40">
         <div className="min-w-[300px]">
+          {/* 적층 구조 */}
           <LaminationContents
             defaultLayerEm={detailData.specModels?.[0]?.layerEm}
             detailData={detailData}
@@ -341,12 +344,17 @@ const SayangSampleAddPage: React.FC & {
         </div>
         <div className="w-full flex gap-40">
           <div className="min-w-[550px] flex-grow-[44]">
+            {/* 전달 사항 */}
             <MessageContents />
           </div>
           <div className="min-w-[400px] flex-grow-[32]">
-            <ArrayContents />
+            {/* 배열 도면 */}
+            <ArrayContents
+              board={board}
+            />
           </div>
           <div className="min-w-[300px] flex-grow-[24]">
+            {/* 재단 사이즈 */}
             <CutSizeContents />
           </div>
         </div>
