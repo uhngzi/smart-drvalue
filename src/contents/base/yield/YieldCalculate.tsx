@@ -195,7 +195,6 @@ const YieldCalculate: React.FC<Props> = ({
         <div className='flex gap-10 w-full' style={{flex:1.1, maxHeight:'530px'}}>
 
           <div className='flex-1 p-30 bg-white rounded-14 border border-[#D9D9D9]'>
-          <Radio.Group>
             <AntdTable
               className='h-full'
               columns={[
@@ -233,7 +232,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 98,
                     align: 'center',
                     render: (value, record) => (
-                      <Radio
+                      <Checkbox
                         value={value}
                         name="board"
                         onChange={(e) => {
@@ -247,7 +246,6 @@ const YieldCalculate: React.FC<Props> = ({
               data={boardData}
               styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
             />
-          </Radio.Group>
           </div>
           <div className='p-30 bg-white rounded-14 border border-[#D9D9D9]'>
           <AntdTable
