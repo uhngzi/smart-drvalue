@@ -4,6 +4,7 @@ import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
 import YieldCalculate from "@/contents/base/yield/YieldCalculate";
 import { boardType } from "@/data/type/base/board";
+import { yieldInputType } from "@/data/type/sayang/sample";
 import { Button } from "antd";
 import { useState } from "react";
 
@@ -16,6 +17,9 @@ const ArrayContents: React.FC<Props> = ({
 }) => {
   // 원판 수율 팝업
   const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
+
+  const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
+  const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
   return (
     <div className="w-full flex flex-col gap-20">
@@ -126,7 +130,16 @@ const ArrayContents: React.FC<Props> = ({
         contents={
         <YieldCalculate
           board={board}
+          yielddata={yielddata}
+          setYielddata={setYielddata}
+          disk={disk}
+          setDisk={setDisk}
         />}
+        onClose={()=>{
+          setYieldPopOpen(false);
+          setYielddata(null);
+          setDisk([]);
+        }}
       />
     </div>
   )

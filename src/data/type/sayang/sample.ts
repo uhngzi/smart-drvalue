@@ -128,6 +128,10 @@ export type specPrdGroupPrcs = {
 
 export type yieldInputType = {
   minPanelLength?: number;
+  disks?: {
+    diskWidth: number;
+    diskHeight: number;
+  }[];
   diskWidth?: number;
   diskHeight?: number;
   minYield?: number;
@@ -144,8 +148,8 @@ export type yieldInputType = {
 export const yieldInputReq = () => {
   return [
     { field : 'minPanelLength', label: '판넬 최저 길이' },
-    { field : 'diskWidth', label: '원판 너비' },
-    { field : 'diskHeight', label: '원판 높이' },
+    // { field : 'diskWidth', label: '원판 너비' },
+    // { field : 'diskHeight', label: '원판 높이' },
     { field : 'minYield', label: '최저 수율' },
     { field : 'kitWidth', label: 'Kit 너비' },
     { field : 'kitHeight', label: 'Kit 높이' },
@@ -159,6 +163,10 @@ export const yieldInputReq = () => {
 }
 
 export type yieldCalType = {
+  disk?: {
+    diskWidth?: number;
+    diskHeight?: number;
+  },
   panel?: {
     width?: number;
     height?: number;

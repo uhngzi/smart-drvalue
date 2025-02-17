@@ -54,6 +54,10 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
   },
+
+  images: {
+    domains: ['115.68.221.100'], // 추가한 도메인
+  },
 };
 
 export default nextConfig;

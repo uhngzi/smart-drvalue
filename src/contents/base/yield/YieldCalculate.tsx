@@ -3,7 +3,7 @@
 // make typescript react component
 
 import { Button, Checkbox, Radio, Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 
 import Calculate from "@/assets/svg/icons/calculate.svg";
 import Print from "@/assets/svg/icons/print.svg";
@@ -15,9 +15,23 @@ import { postAPI } from '@/api/post';
 import useToast from '@/utils/useToast';
 import { validReq } from '@/utils/valid';
 import { boardType } from '@/data/type/base/board';
+import Image from 'next/image';
+import { baseURL } from '@/api/lib/config';
 
 interface Props {
   board: boardType[];
+  yielddata: yieldInputType | null;
+  setYielddata: React.Dispatch<SetStateAction<yieldInputType | null>>;
+  disk: {
+    id:string;
+    diskWidth:number;
+    diskHeight:number;
+  }[];
+  setDisk: React.Dispatch<SetStateAction<{
+    id:string;
+    diskWidth:number;
+    diskHeight:number;
+  }[]>>;
   // minYield: number;
   // minLengthPanel: number;
   // longKitLength: number;
@@ -32,6 +46,10 @@ interface Props {
 
 const YieldCalculate: React.FC<Props> = ({
   board,
+  yielddata,
+  setYielddata,
+  disk,
+  setDisk,
 }) => {
   const stenTableData = [
     {
@@ -78,16 +96,26 @@ const YieldCalculate: React.FC<Props> = ({
 
   const { showToast, ToastContainer } = useToast();
 
-  const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
+  // const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
 
   const [yieldTableData, setYieldTableData] = useState<yieldCalType[]>([]);
 
   const [boardData, setBoardData] = useState<boardType[]>([]);
+  // const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
+
   useEffect(()=>{
     if(board.length > 0) {
       setBoardData(board);
     }
   }, [board]);
+
+  useEffect(()=>{
+    if(yielddata === null) {
+      setYieldTableData([]);
+    }
+  }, [yielddata])
+
+  useEffect(()=>{console.log(disk)}, [disk]);
 
   const [calLoading, setCalLoading] = useState<boolean>(false);
 
@@ -106,18 +134,23 @@ const YieldCalculate: React.FC<Props> = ({
     {value:yielddata?.marginShortSide, name:'marginShortSide', label:'짧은쪽 여분', type:'input', widthType:'full'},
   ]
 
-  const handleCheckboxChange = (w: number, h: number) => {
+  const handleCheckboxChange = (id:string, w: number, h: number) => {
     // setYielddata((prev) => {
     //   if (prev) {
     //     return { ...prev, diskWidth: w, diskHeight: h };
     //   }
     //   return null;
     // });
-    setYielddata({...yielddata, diskWidth:w, diskHeight:h});
+    setDisk([ ...disk.filter(f=>f.id !== id), {id:id, diskWidth:w, diskHeight:h} ]);
   };
 
   const handleCalculdate = async () => {
     try {
+      if(disk.length < 1) {
+        showToast("원판을 선택해주세요.", "error");
+        return;
+      }
+
       const val = validReq(yielddata, yieldInputReq());
       if(!val.isValid) {
         showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
@@ -131,9 +164,10 @@ const YieldCalculate: React.FC<Props> = ({
         type: 'core-d1',
         utype: 'tenant/',
         jsx: 'default',
-        url:'board-yield-calc-default/default/calculate/auto',
+        url:'board-yield-calc-default/default/calculate/auto/multi-board',
         etc: true,
-      }, yielddata);
+      }, { ...yielddata, disks:disk.map(d=>({diskWidth:d.diskWidth,diskHeight:d.diskHeight})) });
+      console.log(result);
   
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as yieldCalType[];
@@ -153,7 +187,6 @@ const YieldCalculate: React.FC<Props> = ({
   function calculdate(){
     handleCalculdate();
   }
-  useEffect(()=>{console.log(yielddata)}, [yielddata]);
 
   return (
     <section className='flex gap-10 w-full'>
@@ -165,6 +198,7 @@ const YieldCalculate: React.FC<Props> = ({
               <div className="h-center gap-10" >
                 <AntdInput 
                   value={item.value ?? undefined}
+                  type="number"
                   onChange={(e)=>{
                     setYielddata({
                       ...yielddata,
@@ -233,10 +267,10 @@ const YieldCalculate: React.FC<Props> = ({
                     align: 'center',
                     render: (value, record) => (
                       <Checkbox
-                        value={value}
+                        checked={disk.filter(d=>d.id===value).length > 0 ? true : false}
                         name="board"
                         onChange={(e) => {
-                          handleCheckboxChange(record.brdW, record.brdH)
+                          handleCheckboxChange(value, record.brdW, record.brdH)
                         }}
                       />
                     )
@@ -259,22 +293,22 @@ const YieldCalculate: React.FC<Props> = ({
                 children: [
                   {
                     title: '가로',
-                    dataIndex: 'stenHorizon',
-                    key: 'stenHorizon',
+                    dataIndex: 'diskWidth',
+                    key: 'diskWidth',
                     width: 80,
                     align: 'center',
-                    render: (_) => {
-                      return yielddata?.diskWidth;
+                    render: (_, record:yieldCalType) => {
+                      return record.disk?.diskWidth;
                     }
                   },
                   {
                     title: '세로',
-                    dataIndex: 'stenVertical',
-                    key: 'stenVertical',
+                    dataIndex: 'diskHeight',
+                    key: 'diskHeight',
                     width: 80,
                     align: 'center',
-                    render: (_) => {
-                      return yielddata?.diskHeight;
+                    render: (_, record:yieldCalType) => {
+                      return record.disk?.diskHeight;
                     }
                   },
                 ],
@@ -367,9 +401,39 @@ const YieldCalculate: React.FC<Props> = ({
           />
           </div>
         </div>
-        <div className='flex gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]' style={{flex:1}}>
-          <section className='bg-[#FCF779C2]' style={{flex:1.5}}></section>
-          <section className='bg-[#0F884FC4]' style={{flex:1}}></section>
+        <div className="flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
+          {yieldTableData.length > 0 &&
+            yieldTableData.reduce((acc, data, index) => {
+              if (index % 2 === 0) {
+                acc.push([]);
+              }
+              acc[acc.length - 1].push(data);
+              return acc;
+            }, [] as any[][]) // 🔹 2개씩 그룹핑
+            .map((group, rowIndex) => (
+              <div key={rowIndex} className="flex w-full gap-30">
+                {group.map((data, colIndex) => (
+                  <div key={colIndex} className="flex" style={{ flex: 1 }}>
+                    <section className="bg-[#FCF779C2] relative" style={{ flex: 1.5 }}>
+                      <Image
+                        src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.layout}`}
+                        alt=""
+                        layout="fill" // 🔹 부모 크기에 맞춤
+                        objectFit="contain" // 🔹 이미지 비율 유지하면서 부모 영역에 맞춤
+                      />
+                    </section>
+                    <section className="bg-[#0F884FC4] relative" style={{ flex: 1 }}>
+                      <Image
+                        src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.panel}`}
+                        alt=""
+                        layout="fill" // 🔹 부모 크기에 맞춤
+                        objectFit="contain" // 🔹 이미지 비율 유지하면서 부모 영역에 맞춤
+                      />
+                    </section>
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
       </section>
       <ToastContainer/>
