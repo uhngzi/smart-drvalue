@@ -66,7 +66,7 @@ const LaminationContents: React.FC<Props> = ({
   const [lamination, setLamination] = useState<laminationRType[]>([]);
   useEffect(()=>{
     setLamination([]);
-    if(detailData.specLamination?.specDetail && typeof detailData.specLamination?.specDetail === "string"){
+    if(detailData.specLamination && !baseLaminationLoading){
       const detail = JSON.parse(detailData.specLamination?.specDetail?.toString() ?? "");
       let arr = [] as laminationRType[];
       (detail.data ?? []).map((d:{index:number, specLamIdx:string}) => {
@@ -74,12 +74,8 @@ const LaminationContents: React.FC<Props> = ({
         if(item)  arr.push(item);
       });
       setLamination(arr);
-      console.log(arr);
     }
-  }, [detailData.specLamination]);
-  useEffect(()=>{
-    console.log(lamination, detailData.specLamination)
-  }, [lamination]);
+  }, [detailData.specLamination, baseLaminationLoading]);
 
   // 구성 요소에 따른 색상
   const color = ['#CEE4B3','#F1F4F9','#7551E933','#F5D9B1','#F5B1A1'];
