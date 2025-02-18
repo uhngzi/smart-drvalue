@@ -389,7 +389,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return Math.floor(Number(record.layout?.yieldRatio ?? 0) * 100) / 100;
+                      return Math.floor(Number(record.layout?.yieldRatio ?? 0))
                     }
                   },
                 ],
@@ -414,7 +414,7 @@ const YieldCalculate: React.FC<Props> = ({
               <div key={rowIndex} className="flex w-full gap-30">
                 {group.map((data, colIndex) => (
                   <div key={colIndex} className="flex" style={{ flex: 1 }}>
-                    <section className="bg-[#FCF779C2] relative" style={{ flex: 1.5 }}>
+                    <section className="relative" style={{ flex: 1.5 }}>
                       <Image
                         src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.layout}`}
                         alt=""
@@ -422,7 +422,7 @@ const YieldCalculate: React.FC<Props> = ({
                         objectFit="contain" // 🔹 이미지 비율 유지하면서 부모 영역에 맞춤
                       />
                     </section>
-                    <section className="bg-[#0F884FC4] relative" style={{ flex: 1 }}>
+                    <section className="relative" style={{ flex: 1 }}>
                       <Image
                         src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.panel}`}
                         alt=""
