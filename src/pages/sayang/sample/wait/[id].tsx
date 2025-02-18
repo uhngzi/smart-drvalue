@@ -119,6 +119,8 @@ const SayangSampleAddPage: React.FC & {
   >({
     queryKey: ['spec/jsxcrud/one'],
     queryFn: async () => {
+      setDetailDataLoading(true);
+      
       const result = await getAPI({
         type: 'core-d1', 
         utype: 'tenant/',
@@ -129,7 +131,6 @@ const SayangSampleAddPage: React.FC & {
     enabled: !!id,
   });
   useEffect(()=>{
-    setDetailDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
       setDetailData(rdata);
@@ -226,7 +227,7 @@ const SayangSampleAddPage: React.FC & {
         if(temp) {
           showToast("임시저장 완료", "success");
           setTemp(true);
-          // refetch();
+          refetch();
         }
 
         if(addModelFlag) {

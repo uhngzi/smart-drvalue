@@ -66,7 +66,7 @@ const LaminationContents: React.FC<Props> = ({
   const [lamination, setLamination] = useState<laminationRType[]>([]);
   useEffect(()=>{
     setLamination([]);
-    if(detailData.specLamination && !baseLaminationLoading){
+    if(detailData.specLamination && typeof detailData.specLamination?.specDetail === "string"  && !baseLaminationLoading){
       const detail = JSON.parse(detailData.specLamination?.specDetail?.toString() ?? "");
       let arr = [] as laminationRType[];
       (detail.data ?? []).map((d:{index:number, specLamIdx:string}) => {
