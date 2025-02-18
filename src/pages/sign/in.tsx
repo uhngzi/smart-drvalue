@@ -47,16 +47,17 @@ const SignInPage: React.FC & {
       
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
-        setOpen(true);
-        setType("success");
-        console.log("ok", open, type);
+        router.push('/');
+        // setOpen(true);
+        // setType("success");
+        // console.log("ok", open, type);
       } else {
-        setOpen(true);
-        setType("error");
+        // setOpen(true);
+        // setType("error");
       }
     } catch (e) {
-      setOpen(true);
-      setType("error");
+      // setOpen(true);
+      // setType("error");
     }
   };
 
