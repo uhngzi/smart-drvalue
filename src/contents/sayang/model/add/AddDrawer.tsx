@@ -202,7 +202,7 @@ const AddDrawer:React.FC<Props> = ({
         contents={<div>
           <CustomRadioGroup size="large" className="flex gap-20" value={selectId}>
           {
-            products.map((p) => (
+            products.filter(f=>!f.completed).map((p) => (
               <Radio.Button
                 key={p.id}
                 value={p.id}

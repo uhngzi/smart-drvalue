@@ -28,6 +28,7 @@ import { ModelProvider, useModels } from '@/data/context/ModelContext';
 import { changeModelAddNewModel, changeModelAddTemp } from '@/data/type/sayang/changeData';
 import { validReq } from '@/utils/valid';
 import AntdAlertModal, { AlertType } from '@/components/Modal/AntdAlertModal';
+import FullChip from '@/components/Chip/FullChip';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -87,6 +88,7 @@ const SayangModelAddPage: React.FC & {
         // model: 
         tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",  // 임시 저장된 값 파싱해서 가져오기
         index: (queryData?.data?.data?.length ?? 0) - index,
+        completed: d.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? true : false,
       }));
       console.log('arr', arr);
       setData(arr);
@@ -162,6 +164,18 @@ const SayangModelAddPage: React.FC & {
     
         if(result.resultCode === 'OK_0000') {
           if(temp)  showToast("임시저장 완료", "success");
+          const index = data.findIndex(f=>f.id === id);
+          if(index > -1) {
+            const updateData = data;
+            updateData[index] = { ...data[index], temp: true };
+
+            const newArray = [
+              ...updateData.slice(0, index),
+              updateData[index],
+              ...updateData.slice(index + 1)
+            ];
+            setData(newArray);
+          }
         } else {
           const msg = result?.response?.data?.message;
           showToast(msg, "error");
@@ -276,18 +290,22 @@ const SayangModelAddPage: React.FC & {
         .filter(f=>f.model?.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
         .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
         .map((model:orderModelType, index:number) => (
-          <div className="flex flex-col gap-16" key={model.id}>
+          <div className="flex flex-col gap-16" key={model.id}
+            // style={model.completed?{background:"#F8F8F8"}:{}}
+          >
             <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">발주명</p>
                 <AntdInput 
                   value={model.orderTit}
                   className="w-[180px!important]" readonly={true} styles={{ht:'32px', bg:'#F5F5F5'}}
+                  disabled={model.completed}
                 />
                 <p className="h-center justify-end">관리번호 </p>
                 <AntdInput 
                   value={model.prtOrderNo}
                   className="w-[180px!important]" styles={{ht:'32px', bg:'#F5F5F5'}} readonly={true}
+                  disabled={model.completed}
                 />
                 <AntdSelect
                   options={[
@@ -298,6 +316,7 @@ const SayangModelAddPage: React.FC & {
                   value={model.modelStatus}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.modelStatus', e)}
                   className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+                  disabled={model.completed}
                 />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
@@ -309,6 +328,7 @@ const SayangModelAddPage: React.FC & {
                   value={model.model?.prdNm}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.prdNm', e.target.value)}
                   readonly={selectId === model.id ? !newFlag : undefined}
+                  disabled={model.completed}
                 />
                 <p className="h-center justify-end">원판 </p>
                 <AntdSelect
@@ -316,7 +336,7 @@ const SayangModelAddPage: React.FC & {
                   value={model.model?.board?.id ?? boardSelectList?.[0]?.value}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.board.id', e)}
                   className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-                  disabled={selectId === model.id ? !newFlag : undefined}
+                  disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
                 />
                 <p className="h-center justify-end">제조사 </p>
                 <AntdInput 
@@ -324,6 +344,7 @@ const SayangModelAddPage: React.FC & {
                   onChange={(e)=>handleModelDataChange(model.id, 'model.mnfNm', e.target.value)}
                   className="w-[120px!important]" styles={{ht:'32px'}}
                   readonly={selectId === model.id ? !newFlag : undefined}
+                  disabled={model.completed}
                 />
                 <p className="h-center justify-end">재질 </p>
                 <AntdSelect
@@ -331,7 +352,7 @@ const SayangModelAddPage: React.FC & {
                   value={model.model?.material?.id ?? metarialSelectList?.[0]?.value}
                   onChange={(e)=>handleModelDataChange(model.id, 'model.material.id', e)}
                   className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-                  disabled={selectId === model.id ? !newFlag : undefined}
+                  disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
                 />
               </div>
               <div className="w=[1px] h-full" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
@@ -341,6 +362,14 @@ const SayangModelAddPage: React.FC & {
                   model.orderPrdDueDt ?
                   dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null
                 }</p>
+              </div>
+              <div className="flex-1 flex jutify-end">
+              { model.completed && 
+                  <FullChip label="확정" state="mint" className="!mr-20 !w-80 !h-30"/>
+              }
+              { model.temp && 
+                  <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
+              }
               </div>
             </div>
             <div className="flex flex-col ">
@@ -368,6 +397,7 @@ const SayangModelAddPage: React.FC & {
                 tableProps={{split:'none'}}
                 />
             </div>
+            { !model.completed ?
             <div className="w-full h-32 flex justify-end gap-5">
               <FullOkButtonSmall
                 click={()=>{
@@ -390,7 +420,10 @@ const SayangModelAddPage: React.FC & {
                   handleSumbitTemp(model.id, true);
                 }}
               >임시저장</Button>
-            </div>
+            </div> : 
+            <div className="w-full h-32 flex justify-end gap-5">
+              {/* <FullChip label="확정 완료" state="mint" /> */}
+            </div>}
           </div>
         ))}
         </div>
@@ -446,6 +479,7 @@ const SayangModelAddPage: React.FC & {
           router.push('/sayang/sample/wait');
         }}
         onCancle={()=>{
+          refetch();
           setResultOpen(false);
         }}
         theme="main"

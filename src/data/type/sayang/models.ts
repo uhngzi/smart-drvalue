@@ -69,6 +69,8 @@ export type orderModelType = {
   },
   model?: modelsType | null;
   editModel?: any;  // 프론트 내에서 모델 값 저장을 위해 추가
+  completed?: boolean;
+  temp?: boolean;
 }
 
 export type modelsType = {

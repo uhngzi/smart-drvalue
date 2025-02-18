@@ -14,13 +14,14 @@ import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
-import { modelsMatchRType } from "@/data/type/sayang/models";
+import { modelsMatchRType, modelsType } from "@/data/type/sayang/models";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import CardList from "@/components/List/CardList";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 import { TabSmall } from "@/components/Tab/Tabs";
 import { ModelTypeEm } from "@/data/type/enum";
 import { InboxOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 const SayangModelStatPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -37,15 +38,16 @@ const SayangModelStatPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
-  const [data, setData] = useState<modelsMatchRType[]>([]);
+  const [data, setData] = useState<modelsType[]>([]);
   const { data:queryData, isLoading } = useQuery({
-    queryKey: ['sales-order/jsxcrud/many', pagination],
+    queryKey: ['models/jsxcrud/many', pagination],
+    // queryKey: ['sales-order/jsxcrud/many', pagination],
     queryFn: async () => {
       try {
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
-          url: 'models-match/jsxcrud/many'
+          url: 'models/jsxcrud/many'
         },{
           limit: pagination.size,
           page: pagination.current,
@@ -80,61 +82,60 @@ const SayangModelStatPage: React.FC & {
     }
   }, [drawerOpen]);
   
-  const [ modelDetail, setModelDetail ] = useState<modelsMatchRType | null>(null);
+  const [ modelDetail, setModelDetail ] = useState<modelsType | null>(null);
   const [ selectTabDrawer, setSelectTabDrawer ] = useState<1 | 2>(1);
   const [ modelItem, setModelItem ] = useState<any[]>([]);
   const [ modelOpen, setModelOpen ] = useState<boolean>(false);
   useEffect(()=>{
     if(modelDetail) {
       setModelOpen(true);
-      const model = JSON.parse(modelDetail.orderModel?.tempPrdInfo);
-       
-      if(Object.keys(model).length > 0) {
+      // if(Object.keys(model).length > 0) {
         setModelItem([
-          { label: '모델명', value: model?.prdNm ?? '-', widthType: 'half' },
-          { label: '관리No', value: model?.prdMngNo ?? '-', widthType: 'half' },
-          { label: '제조사', value: model?.mnfNm ?? '-', widthType: 'half' },
-          { label: 'REV', value: model?.prdRevNo ?? '-', widthType: 'half' },
-          { label: '구분', value: model?.modelTypeEm === ModelTypeEm.SAMPLE ? "샘플" : model?.modelTypeEm === ModelTypeEm.PRODUCTION ? "양산" : '-', widthType: 'half' },
-          // { label: '원판', value: model?.board?.cdNm ?? '-', widthType: 'half' },
-          { label: '층', value: model?.layerEm?.replace("L","") ?? '-', widthType: 'half' },
-          { label: '두께', value: model?.thk ?? '-', widthType: 'half' },
-          { label: '단위', value: model?.unit?.cdNm ?? '-', widthType: 'half' },
-          { label: '재질', value: model?.material?.cdNm ?? '-', widthType: 'half' },
-          { label: '외형가공형태', value: model?.aprType?.cdNm ?? '-', widthType: 'half' },
-          { label: '동박내층', value: model?.copIn ?? '-', widthType: 'half' },
-          { label: '동박외층', value: model?.copOut ?? '-', widthType: 'half' },
-          { label: 'S/M 인쇄', value: model?.smPrint?.cdNm ?? '-', widthType: 'half' },
-          { label: 'M/K 인쇄', value: model?.mkPrint?.cdNm ?? '-', widthType: 'half' },
-          { label: 'S/M 색상', value: model?.smColor?.cdNm ?? '-', widthType: 'half' },
-          { label: 'M/K 색상', value: model?.mkColor?.cdNm ?? '-', widthType: 'half' },
-          { label: 'S/M 종류', value: model?.smType?.cdNm ?? '-', widthType: 'half' },
-          { label: 'M/K 종류', value: model?.mkType?.cdNm ?? '-', widthType: 'half' },
-          { label: '특수인쇄', value: model?.spPrint?.cdNm ?? '-', widthType: 'half' },
-          { label: '특수인쇄종류', value: model?.spType?.cdNm ?? '-', widthType: 'half' },
-          { label: '도금 두께', value: model?.pltThk ?? '-', widthType: 'half' },
-          { label: '도금 두께 여유', value: model?.pltAlph ?? '-', widthType: 'half' },
-          { label: '특별도금(Au)', value: model?.spPltAu ?? '-', widthType: 'half' },
-          { label: '특별도금여유(Au)', value: model?.spPltAuAlph ?? '-', widthType: 'half' },
-          { label: '특별도금(Ni)', value: model?.spPltNi ?? '-', widthType: 'half' },
-          { label: '특별도금여유(Ni)', value: model?.spPltNiAlph ?? '-', widthType: 'half' },
-          // { label: '도면번호', value: model?.drgNo ?? '-', widthType: 'half' },
-          { label: '핀 수', value: model?.pinCnt ?? '-', widthType: 'half' },
-          { label: 'KIT X/Y', value: model?.kitW && model?.kitL ? model?.kitW+"/"+model?.kitL: '-', widthType: 'half' },
-          { label: 'PCS X/Y', value: model?.pcsW && model?.pcsL ? model?.pcsW+"/"+model?.pcsL : '-', widthType: 'half' },
-          { label: 'PNL X/Y', value: model?.pnlW && model?.pnlL ? model?.pnlW+"/"+model?.pnlL : '-', widthType: 'half' },
-          { label: 'kitPcs', value: model?.kitPcs ?? '-', widthType: 'half' },
-          { label: 'pnlKit', value: model?.pnlKit ?? '-', widthType: 'half' },
-          { label: 'sthPcs', value: model?.sthPcs ?? '-', widthType: 'half' },
-          { label: 'sthPnl', value: model?.sthPnl ?? '-', widthType: 'half' },
-          // { label: '브이컷유무', value: model?.vcutYn ?? '-', widthType: 'half' },
-          { label: '브이컷형태', value: model?.vcutType?.cdNm ?? '-', widthType: 'half' },
-          { label: '연조KIT', value: model?.ykitW && model?.ykitL ? model?.ykitW+' '+model?.ykitL : '-', widthType: 'half' },
-          { label: '연조PNL', value: model?.ypnlW && model?.ypnlL ? model?.ypnlW+"/"+model?.ypnlL : '-', widthType: 'half' },
+          { label: '모델명', value: modelDetail?.prdNm ?? '-', widthType: 'half' },
+          { label: '관리No', value: modelDetail?.prdMngNo ?? '-', widthType: 'half' },
+          { label: '제조사', value: modelDetail?.mnfNm ?? '-', widthType: 'half' },
+          { label: 'REV', value: modelDetail?.prdRevNo ?? '-', widthType: 'half' },
+          { label: '구분', value: modelDetail?.modelTypeEm === ModelTypeEm.SAMPLE ? "샘플" : modelDetail?.modelTypeEm === ModelTypeEm.PRODUCTION ? "양산" : '-', widthType: 'half' },
+          // { label: '원판', value: modelDetail?.board?.cdNm ?? '-', widthType: 'half' },
+          { label: '층', value: modelDetail?.layerEm?.replace("L","") ?? '-', widthType: 'half' },
+          { label: '두께', value: modelDetail?.thk ?? '-', widthType: 'half' },
+          { label: '단위', value: modelDetail?.unit?.cdNm ?? '-', widthType: 'half' },
+          { label: '재질', value: modelDetail?.material?.cdNm ?? '-', widthType: 'half' },
+          { label: '외형가공형태', value: modelDetail?.aprType?.cdNm ?? '-', widthType: 'half' },
+          { label: '동박내층', value: modelDetail?.copIn ?? '-', widthType: 'half' },
+          { label: '동박외층', value: modelDetail?.copOut ?? '-', widthType: 'half' },
+          { label: 'S/M 인쇄', value: modelDetail?.smPrint?.cdNm ?? '-', widthType: 'half' },
+          { label: 'M/K 인쇄', value: modelDetail?.mkPrint?.cdNm ?? '-', widthType: 'half' },
+          { label: 'S/M 색상', value: modelDetail?.smColor?.cdNm ?? '-', widthType: 'half' },
+          { label: 'M/K 색상', value: modelDetail?.mkColor?.cdNm ?? '-', widthType: 'half' },
+          { label: 'S/M 종류', value: modelDetail?.smType?.cdNm ?? '-', widthType: 'half' },
+          { label: 'M/K 종류', value: modelDetail?.mkType?.cdNm ?? '-', widthType: 'half' },
+          { label: '특수인쇄', value: modelDetail?.spPrint?.cdNm ?? '-', widthType: 'half' },
+          { label: '특수인쇄종류', value: modelDetail?.spType?.cdNm ?? '-', widthType: 'half' },
+          { label: '도금 두께', value: modelDetail?.pltThk ?? '-', widthType: 'half' },
+          { label: '도금 두께 여유', value: modelDetail?.pltAlph ?? '-', widthType: 'half' },
+          { label: '특별도금(Au)', value: modelDetail?.spPltAu ?? '-', widthType: 'half' },
+          { label: '특별도금여유(Au)', value: modelDetail?.spPltAuAlph ?? '-', widthType: 'half' },
+          { label: '특별도금(Ni)', value: modelDetail?.spPltNi ?? '-', widthType: 'half' },
+          { label: '특별도금여유(Ni)', value: modelDetail?.spPltNiAlph ?? '-', widthType: 'half' },
+          // { label: '도면번호', value: modelDetail?.drgNo ?? '-', widthType: 'half' },
+          { label: '핀 수', value: modelDetail?.pinCnt ?? '-', widthType: 'half' },
+          { label: 'KIT X/Y', value: modelDetail?.kitW && modelDetail?.kitL ? modelDetail?.kitW+"/"+modelDetail?.kitL: '-', widthType: 'half' },
+          { label: 'PCS X/Y', value: modelDetail?.pcsW && modelDetail?.pcsL ? modelDetail?.pcsW+"/"+modelDetail?.pcsL : '-', widthType: 'half' },
+          { label: 'PNL X/Y', value: modelDetail?.pnlW && modelDetail?.pnlL ? modelDetail?.pnlW+"/"+modelDetail?.pnlL : '-', widthType: 'half' },
+          { label: 'kitPcs', value: modelDetail?.kitPcs ?? '-', widthType: 'half' },
+          { label: 'pnlKit', value: modelDetail?.pnlKit ?? '-', widthType: 'half' },
+          { label: 'sthPcs', value: modelDetail?.sthPcs ?? '-', widthType: 'half' },
+          { label: 'sthPnl', value: modelDetail?.sthPnl ?? '-', widthType: 'half' },
+          { label: '브이컷유무', value: modelDetail?.vcutYn ?? '-', widthType: 'half' },
+          { label: '브이컷형태', value: modelDetail?.vcutType?.cdNm ?? '-', widthType: 'half' },
+          { label: '연조KIT', value: modelDetail?.ykitW && modelDetail?.ykitL ? modelDetail?.ykitW+' '+modelDetail?.ykitL : '-', widthType: 'half' },
+          { label: '연조PNL', value: modelDetail?.ypnlW && modelDetail?.ypnlL ? modelDetail?.ypnlW+"/"+modelDetail?.ypnlL : '-', widthType: 'half' },
+          { label: '등록일', value: dayjs(modelDetail?.createdAt).format("YYYY-MM-DD HH:ss") ?? '-', widthType: 'half' },
         ]);
-      } else {
-        setModelItem([]);
-      }
+      // } else {
+      //   setModelItem([]);
+      // }
     }
   }, [modelDetail])
   
@@ -173,7 +174,7 @@ const SayangModelStatPage: React.FC & {
         mask={false}
       >
       <div className="flex flex-col gap-15 p-20 !pr-5">
-        <div className="v-between-h-center">
+        {/* <div className="v-between-h-center">
           <TabSmall
             items={[
               {key:1,text:'고객 발주 정보'},
@@ -189,15 +190,15 @@ const SayangModelStatPage: React.FC & {
         }
         {
           selectTabDrawer === 2 &&
-          ( modelItem.length > 0 ?
+          ( modelItem.length > 0 ? */}
             <CardList title="모델 정보" items={modelItem} />
-            :
+            {/* :
             <div className="w-full h-[300px] v-h-center flex-col p-20">
               <InboxOutlined style={{ fontSize: 50, color: "#aaa" }} />
               폐기되었거나 등록 전인 모델입니다.
             </div>
           )
-        }
+        } */}
       </div>
       </AntdDrawer>
     </>

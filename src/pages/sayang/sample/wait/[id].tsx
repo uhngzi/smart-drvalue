@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import { useRouter } from "next/router";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -133,8 +133,10 @@ const SayangSampleAddPage: React.FC & {
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
       setDetailData(rdata);
-      setDetailDataLoading(false);
       setAddModelFlag(false);
+      setTimeout(() => {
+        setDetailDataLoading(false);
+      }, 200);
     }
   }, [queryData]);
 
@@ -221,18 +223,23 @@ const SayangSampleAddPage: React.FC & {
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        if(temp)  showToast("임시저장 완료", "success");
-        setTemp(true);
+        if(temp) {
+          showToast("임시저장 완료", "success");
+          setTemp(true);
+          // refetch();
+        }
+
         if(addModelFlag) {
           router.push(`/sayang/sample/wait/${id}`);
           refetch();
           setAddModelFlag(false);
-        } else {
-          router.push({
-            pathname: '/sayang/sample/wait',
-            query: { id: detailData.id, text: detailData.specNo },
-          });
         }
+        // else {
+        //   router.push({
+        //     pathname: '/sayang/sample/wait',
+        //     query: { id: detailData.id, text: detailData.specNo },
+        //   });
+        // }
       } else {
         const msg = result?.response?.data?.message;
         showToast(msg, "error");
@@ -281,6 +288,8 @@ const SayangSampleAddPage: React.FC & {
 
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
+      { detailDataLoading && <Spin tip="loading..." /> }
+      { !detailDataLoading && <>
       <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20">
         <div className="v-between-h-center">
           <div className="flex">
@@ -292,6 +301,7 @@ const SayangSampleAddPage: React.FC & {
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{
                 setAddModelFlag(true);
+                setAddModelFlag(false);
                 handleSumbitTemp();
               }}
             >모델추가</Button>
@@ -338,6 +348,7 @@ const SayangSampleAddPage: React.FC & {
             detailData={detailData}
             setDetailData={setDetailData}
             handleSumbitTemp={()=>{
+              setTemp(true);
               handleSumbitTemp();
             }}
           />
@@ -368,6 +379,7 @@ const SayangSampleAddPage: React.FC & {
           handleSumbitTemp();
         }}/>
       </div>
+      </>}
 
       <AntdModal
         open={open}

@@ -13,11 +13,11 @@ import AntdInputFill from '@/components/Input/AntdInputFill';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 
 import { salesOrderRType } from '../type/sales/order';
-import { modelsMatchRType } from '../type/sayang/models';
+import { modelsMatchRType, modelsType } from '../type/sayang/models';
 import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { specModelType, specType } from '../type/sayang/sample';
-import { generateFloorOptions, HotGrade, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
+import { generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
 
 export const specStatusClmn = (
   totalData: number,
@@ -1331,14 +1331,19 @@ export const sayangModelWaitAddClmn = (
     render: (value: any, record: any) => (
       <>
         <div className="h-[50%] w-[100%] v-h-center ">
-          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
+        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
         </div>
         <div className="h-[50%] w-[100%] v-h-center">
-          <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
-            onClick={()=>deleteModel(value)}
-          >
-            <p className="w-16 h-16"><Trash /></p>
-          </div>
+        {
+          !record.completed &&
+          // <FullChip label="확정완료" state="mint" className="" />
+          // :
+            <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
+              onClick={()=>deleteModel(value)}
+            >
+              <p className="w-16 h-16"><Trash /></p>
+            </div>
+        }
         </div>
       </>
     ),
@@ -1364,6 +1369,7 @@ export const sayangModelWaitAddClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.prdRevNo', e.target.value)}
                 className='!text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1372,7 +1378,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.unit?.id ?? record.model?.unit?.id ?? record.tempPrdInfo?.unit?.id ?? unitSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.unit.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
           </div>
@@ -1400,7 +1406,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.layerEm ?? record.model?.layerEm ?? record.tempPrdInfo?.layerEm ?? "L1"}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.layerEm', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1410,6 +1416,7 @@ export const sayangModelWaitAddClmn = (
                 className='!text-12'
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1439,6 +1446,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12" 
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               /> 외
             </div>
             <div className={divClass+"gap-5"}>
@@ -1448,6 +1456,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12" 
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />내
             </div>
           </div>
@@ -1477,6 +1486,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1486,6 +1496,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1515,6 +1526,7 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
               <AntdInputFill 
                 value={record.editModel?.spPltNiAlph ?? record.model?.spPltNiAlph ?? record.tempPrdInfo?.spPltNiAlph}
@@ -1522,6 +1534,7 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass+"gap-5"}>
@@ -1531,6 +1544,7 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
               <AntdInputFill 
                 value={record.editModel?.spPltAuAlph ?? record.model?.spPltAuAlph ?? record.tempPrdInfo?.spPltAuAlph}
@@ -1538,6 +1552,7 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1566,7 +1581,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smPrint?.id ?? record.model?.smPrint?.id ?? record.tempPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1575,7 +1590,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smColor?.id ?? record.model?.smColor?.id ?? record.tempPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1584,7 +1599,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smType?.id ?? record.model?.smType?.id ?? record.tempPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
           </div>
@@ -1613,7 +1628,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkPrint?.id ?? record.model?.mkPrint?.id ?? record.tempPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1622,7 +1637,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkColor?.id ?? record.model?.mkColor?.id ?? record.tempPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1631,7 +1646,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkType?.id ?? record.model?.mkType?.id ?? record.tempPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
           </div>
@@ -1660,7 +1675,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.spPrint?.id ?? record.model?.spPrint?.id ?? record.tempPrdInfo?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1669,7 +1684,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.spType?.id ?? record.model?.spType?.id ?? record.tempPrdInfo?.spType?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1678,7 +1693,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.modelTypeEm?.id ?? record.model?.modelTypeEm?.id ?? record.tempPrdInfo?.modelTypeEm?.id ?? "sample"}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.modelTypeEm?.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
           </div>
@@ -1708,7 +1723,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.aprType?.id ?? record.model?.aprType?.id ?? record.tempPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.aprType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1718,7 +1733,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.vcutYn ?? record.model?.vcutYn ?? record.tempPrdInfo?.vcutYn ?? false}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutYn', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
             <div className={divClass}>
@@ -1728,7 +1743,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.vcutType?.id ?? record.model?.vcutType?.id ?? record.tempPrdInfo?.vcutType?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
             </div>
           </div>
@@ -1757,6 +1772,7 @@ export const sayangModelWaitAddClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.doNum', e.target.value)}
                 className='w-[100px] !text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1786,6 +1802,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1795,6 +1812,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1824,6 +1842,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1833,6 +1852,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1862,6 +1882,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1871,6 +1892,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1900,6 +1922,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
               <AntdInputFill
                 value={record.editModel?.ykitW ?? record.model?.ykitW ?? record.tempPrdInfo?.ykitW}
@@ -1907,6 +1930,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass+" gap-3"}>
@@ -1916,6 +1940,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
               <AntdInputFill
                 value={record.editModel?.ypnlW ?? record.model?.ypnlW ?? record.tempPrdInfo?.ypnlW}
@@ -1923,6 +1948,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1952,6 +1978,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1961,6 +1988,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -1990,6 +2018,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -1999,6 +2028,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
             <div className={divClass}>
@@ -2008,6 +2038,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
               />
             </div>
           </div>
@@ -2022,10 +2053,10 @@ export const sayangModelStatusClmn = (
   pagination: {current: number, size: number},
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
-  setModelId: React.Dispatch<SetStateAction<modelsMatchRType | null>>,
+  setModelId: React.Dispatch<SetStateAction<modelsType | null>>,
 ): CustomColumn[] => [
   {
-    title: '대기',
+    title: 'No',
     width: 80,
     dataIndex: 'index',
     key: 'index',
@@ -2033,104 +2064,151 @@ export const sayangModelStatusClmn = (
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
-    title: '업체명/코드',
-    width: 150,
-    dataIndex: 'orderModel.prtInfo.prtNm',
-    key: 'orderModel.prtInfo.prtNm',
+    title: '관리No',
+    width: 130,
+    dataIndex: 'prdMngNo',
+    key: 'prdMngNo',
     align: 'center',
-    render: (_, record:modelsMatchRType) => (
-      <div className="text-left cursor-pointer"
-        onClick={()=>{
-          setPartnerData(record.orderModel?.prtInfo?.prt ?? null);
-          setPartnerMngData(record.orderModel?.prtInfo?.mng ?? null);
-        }}
-      >
-        {record.orderModel?.prtInfo?.prt.prtNm}
-        /
-        {record.orderModel?.prtInfo?.prt.prtRegCd}
-      </div>
-    )
   },
   {
-    title: '발주 모델명',
-    dataIndex: 'orderModel.orderTit',
-    key: 'model.prdNm',
+    title: '모델명',
+    dataIndex: 'prdNm',
+    key: 'prdNm',
     align: 'center',
-    render: (_, record:modelsMatchRType) => (
+    render: (_, record:modelsType) => (
       <div
         className="text-left cursor-pointer"
         onClick={()=>{
           setModelId(record);
         }}
       >
-        {record.orderModel?.orderTit}
+        {record.prdNm}
       </div>
     )
   },
   {
-    title: '업체담당',
+    title: '제조사',
+    width: 150,
+    dataIndex: 'mnfNm',
+    key: 'mnfNm',
+    align: 'center',
+    cellAlign: 'left',
+  },
+  {
+    title: 'Rev',
+    width: 150,
+    dataIndex: 'prdRevNo',
+    key: 'prdRevNo',
+    align: 'center',
+    cellAlign: 'left',
+  },
+  {
+    title: '구분',
+    width: 60,
+    dataIndex: 'modelTypeEm',
+    key: 'modelTypeEm',
+    align: 'center',
+    render: (value:ModelTypeEm) => {
+      return value === "sample" ? "샘플" : "양산"
+    }
+  },
+  {
+    title: '층',
+    width: 50,
+    dataIndex: 'layerEm',
+    key: 'layerEm',
+    align: 'center',
+    render: (value:LayerEm) => {
+      return value.replace("L", "");
+    }
+  },
+  {
+    title: '두께',
+    width: 70,
+    dataIndex: 'thk',
+    key: 'thk',
+    align: 'center',
+  },
+  {
+    title: '단위',
     width: 100,
-    dataIndex: 'orderModel.prtInfo.mng.prtMngNm',
-    key: 'orderModel.prtInfo.mng.prtMngNm',
+    dataIndex: 'unit.cdNm',
+    key: 'unit.cdNm',
     align: 'center',
   },
   {
-    title: '담당 전화번호',
-    width: 130,
-    dataIndex: 'orderModel.prtInfo.mng.prtMngTel',
-    key: 'orderModel.prtInfo.mng.prtMngTel',
+    title: '재질',
+    width: 100,
+    dataIndex: 'material.cdNm',
+    key: 'material.cdNm',
     align: 'center',
   },
   {
-    title: '담당 이메일',
-    width: 140,
-    dataIndex: 'orderModel.prtInfo.mng.prtMngEmail',
-    key: 'orderModel.prtInfo.mng.prtMngEmail',
+    title: '동박',
+    width: 120,
+    dataIndex: 'copIn',
+    key: 'copIn',
     align: 'center',
+    render: (value:number, record:modelsType) => {
+      return record.copOut+"(외) / "+value+"(내)";
+    }
   },
   {
-    title: '긴급',
-    width: 80,
-    dataIndex: 'orderModel.orderPrdHotGrade',
-    key: 'orderModel.orderPrdHotGrade',
+    title: '도금',
+    width: 70,
+    dataIndex: 'pltThk',
+    key: 'pltThk',
     align: 'center',
-    render: (_,record:modelsMatchRType) => (
-      <div className="v-h-center">
-        {record.orderModel?.orderPrdHotGrade === HotGrade.SUPER_URGENT ? (
-          <FullChip label="초긴급" state="purple"/>
-        ) : record.orderModel?.orderPrdHotGrade === HotGrade.URGENT ? (
-          <FullChip label="긴급" state="pink" />
-        ) : (
-          <FullChip label="일반" />
-        )}
-      </div>
-    ),
   },
+  // {
+  //   title: 'S/M인쇄',
+  //   width: 120,
+  //   dataIndex: 'smPrint.cdNm',
+  //   key: 'smPrint.cdNm',
+  //   align: 'center',
+  // },
+  // {
+  //   title: 'S/M색상',
+  //   width: 120,
+  //   dataIndex: 'smColor.cdNm',
+  //   key: 'smColor.cdNm',
+  //   align: 'center',
+  // },
+  // {
+  //   title: 'S/M종류',
+  //   width: 120,
+  //   dataIndex: 'smType.cdNm',
+  //   key: 'smType.cdNm',
+  //   align: 'center',
+  // },
   {
-    title: '발주일',
+    title: '등록일',
     width: 150,
-    dataIndex: 'orderModel.orderDt',
-    key: 'orderModel.orderDt',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
     align: 'center',
+    render: (value) => {
+      return dayjs(value).format("YYYY-MM-DD HH:mm");
+    }
   },
-  {
-    title: '모델등록',
-    width: 150,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (_, record:modelsMatchRType) => (
-      <div className="w-full h-full v-h-center">
-        {record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? (
-          <FullChip label="완료" />
-        ) : record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED ? (
-          <FullChip label="폐기" />
-        ) : record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING ? (
-          <FullChip label="등록중" state="mint" />
-        ) : (
-          <FullChip label="대기" state="yellow"/>
-        )}
-      </div>
-    )
-  },
+  // {
+  //   title: '발주',
+  //   width: 80,
+  //   dataIndex: 'glbStatus.salesOrderStatus',
+  //   key: 'glbStatus.salesOrderStatus',
+  //   align: 'center',
+  //   render: (_,record:modelsType) => (
+  //     <div className="v-h-center">
+  //       {record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? (
+  //         <FullChip label="완료" state="default"/>
+  //       ) :
+  //       record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED ? (
+  //         <FullChip label="폐기" />
+  //       ) :
+  //         record.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING ? (
+  //         <FullChip label="대기" state="yellow" />
+  //       ) : <FullChip label="등록중" state="mint" />}
+  //     </div>
+  //   ),
+  // },
 ]
