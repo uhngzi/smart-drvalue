@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
-import TextArea from "antd/es/input/TextArea";
-import { Button, Empty, Radio, Steps } from "antd";
+import { Button, Steps } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,15 +8,8 @@ import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
 
-import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
-import { DividerH, DividerV } from "@/components/Divider/Divider";
-import AntdInput from "@/components/Input/AntdInput";
-import AntdSelect from "@/components/Select/AntdSelect";
-import { LabelIcon, LabelMedium, LabelThin } from "@/components/Text/Label";
-import AntdDragger from "@/components/Upload/AntdDragger";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-
-import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
+import { LabelMedium } from "@/components/Text/Label";
+import SalesModelTable from "@/components/ModelTable/SalesModelTable";
 
 import {
   partnerMngRType,
@@ -39,14 +31,8 @@ import {
 } from "@/data/type/sales/order";
 import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
 import { useUser } from "@/data/context/UserContext";
-import { salesUserOrderModelClmn } from "@/data/columns/Sales";
 
-import Edit from "@/assets/svg/icons/memo.svg"
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
-import MessageOn from "@/assets/svg/icons/s_inquiry.svg";
-import Call from "@/assets/svg/icons/s_call.svg";
-import Mobile from "@/assets/svg/icons/mobile.svg";
-import Mail from "@/assets/svg/icons/mail.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
@@ -54,34 +40,32 @@ import Category from "@/assets/svg/icons/category.svg";
 
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
-import { inputTel } from "@/utils/formatPhoneNumber";
-import { inputFax } from "@/utils/formatFax";
 import { useModels } from "@/data/context/ModelContext";
+
 import SalesOrderContent from "./SalesOrderContent";
 import CsMngContent from "./CsMngContent";
-import ModelTable from "@/components/ModelTable/ModelTable";
+import { DividerH } from "@/components/Divider/Divider";
 
 const OrderAddLayout = () => {
   const router = useRouter();
   const { id } = router.query;
-  
   const { me } = useUser();
-
   const { showToast, ToastContainer } = useToast();
-
   const { models } = useModels();
 
   // 스탭 저장 변수
   const [ stepCurrent, setStepCurrent ] = useState<number>(0);
   // 발주 저장 변수
   const [ formData, setFormData ] = useState<salesOrderCUType>(newDataSalesOrderCUType);
+  // 발주 내 첨부파일
+  const [ fileList, setFileList ] = useState<any[]>([]);
+  const [ fileIdList, setFileIdList ] = useState<string[]>([]);
   // 모델 저장 변수
   const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
   // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
-  // 발주 내 첨부파일
-  const [ fileList, setFileList ] = useState<any[]>([]);
-  const [ fileIdList, setFileIdList ] = useState<string[]>([]);
+  // 우측 탭 클릭 시 필요 변수
+  const [ open, setOpen ] = useState<boolean>(false);
 
   // ----------- 거래처 데이터 세팅 ----------- 시작
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
@@ -116,12 +100,10 @@ const OrderAddLayout = () => {
       }
     }
   }, [formData.partnerId])
-  
-  const [ open, setOpen ] = useState<boolean>(false);
   // ----------- 거래처 데이터 세팅 ----------- 끝
   
   // -------------- 수정 세팅 -------------- 시작
-    // id가 NEW일 경우 수정 모드
+    // id가 NEW일 경우 생성, 아닐 경우 수정
   useEffect(()=>{
     if(id?.includes("new")) setEdit(false);
     else {
@@ -130,7 +112,7 @@ const OrderAddLayout = () => {
     }
   }, [id]);
 
-    // 데이터 세팅
+    // 수정일 경우 디테일 데이터 세팅
   const fetchDetail = async () => {
     const result = await getAPI({
       type: 'core-d1',
@@ -157,7 +139,7 @@ const OrderAddLayout = () => {
         .filter((prd:salesOrderProductRType) => prd.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
         .map((prd: salesOrderProductRType) => ({
           id: prd.id,
-          currPrdInfo: JSON.parse(prd.currPrdInfo),
+          currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
           modelStatus: prd.modelStatus,
           orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
           // orderNo: prd.orderNo,
@@ -172,6 +154,7 @@ const OrderAddLayout = () => {
           orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
           disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
       })));
+      // 자동으로 스탭2
       setStepCurrent(1);
     }
   }
@@ -202,6 +185,9 @@ const OrderAddLayout = () => {
       // handleDelete();
     }
   }, [deleted])
+
+  // 모델 수정 저장 시 실행되는 함수 -> 1개씩 저장되는 것으로 변경될 예정 (현재 전체 저장)
+  // 1개씩 저장 API :: sales-order/product/jsxcrud/create
   const handleEditOrder = async () => {
     // 삭제 시 실행
     if(deleted) {
@@ -242,35 +228,16 @@ const OrderAddLayout = () => {
     );
 
     if(result.resultCode === 'OK_0000') {
-      // refetch();
-      // setOpen(false);
-      // handleCloseOrder();
       showToast("고객 발주 수정이 완료되었습니다.", "success");
     } else {
       console.log(result);
       const msg = result?.response?.data?.message;
-      // setOpen(false);
-      // handleCloseOrder();
       showToast(msg, "error");
     }
   }
   // -------------- 수정 세팅 -------------- 끝
 
-  // 총 수주 금액 자동 입력 세팅
-  useEffect(()=>{
-    const totalPrice = newProducts.reduce((acc, product) => {
-      const productPrice = Number(product.orderPrdPrice);
-      const productCount = Number(product.orderPrdCnt);
-      return acc + productPrice * productCount;
-    }, 0);
-  
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      totalOrderPrice: totalPrice,
-    }));
-  }, [newProducts]);
-
-    // 신규 등록 시 실행 함수
+  // 신규 등록 시 실행 함수
   const handleSubmitOrder = async () => {
     const jsonData = changeOrderNew(formData, newProducts, me);
     console.log(JSON.stringify(jsonData));
@@ -300,6 +267,20 @@ const OrderAddLayout = () => {
       showToast(msg, "error");
     }
   }
+
+  // 총 수주 금액 자동 입력 세팅
+  useEffect(()=>{
+    const totalPrice = newProducts.reduce((acc, product) => {
+      const productPrice = Number(product.orderPrdPrice);
+      const productCount = Number(product.orderPrdCnt);
+      return acc + productPrice * productCount;
+    }, 0);
+  
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      totalOrderPrice: totalPrice,
+    }));
+  }, [newProducts]);
 
   return (
   <div className="h-center gap-20">
@@ -369,30 +350,22 @@ const OrderAddLayout = () => {
             }
         </div>
 
-      {
-        // 모델 등록
-        stepCurrent > 0 ?
+        {/* 모델 컨텐츠 */}
+      { stepCurrent > 0 &&
         <div className="flex w-full relative pl-10">
           <div className="w-full">
-
-            <ModelTable
-              type="order"
-              data={newProducts}
-              setData={setNewProducts}
-              selectId=""
-              newFlag={false}
-            />
-            
             <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
-              <div className=""><LabelMedium label="모델 등록"/></div>
+              <div><LabelMedium label="모델 등록"/></div>
+              <DividerH />
+              <SalesModelTable
+                data={newProducts}
+                setData={setNewProducts}
+                selectId=""
+                newFlag={false}
+                setDeleted={setDeleted}
+              />
+              {/* 버튼(아래 컨텐츠들) 부분은 아직 미수정... */}
               <div className="w-full h-1 border-t-1"/>
-                <AntdTableEdit
-                  create={true}
-                  columns={salesUserOrderModelClmn(newProducts, setNewProducts, setDeleted)}
-                  data={newProducts}
-                  setData={setNewProducts}
-                  styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-                />
                 <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
                   onClick={() => {
                     setNewProducts((prev: salesOrderProcuctCUType[]) =>[
@@ -428,9 +401,7 @@ const OrderAddLayout = () => {
               </div>
             </div>
           </div>
-        </div>
-        :<></>
-      }
+        </div> }
       </div>
     </div>
 
