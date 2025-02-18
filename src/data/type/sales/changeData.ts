@@ -11,7 +11,7 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
     orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
     orderName: formData.orderName,
     orderRepDt: new Date(),
-    empId: me?.id,
+    empId: me?.id ?? "1",
     products: newProducts.map((product:salesOrderProcuctCUType) => ({
       customPartnerManagerId: formData.partnerManagerId,
       currPrdInfo: product.currPrdInfo,

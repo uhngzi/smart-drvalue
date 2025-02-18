@@ -52,6 +52,8 @@ import { patchAPI } from "@/api/patch";
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const { me } = useUser();
+
   const { showToast, ToastContainer } = useToast();
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -91,9 +93,6 @@ const SalesUserPage: React.FC & {
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   // ------------- 필요 데이터 세팅 ------------- 시작
-    // ME = EMP
-  const { me } = useUser();
-
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
   const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
