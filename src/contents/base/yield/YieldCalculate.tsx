@@ -113,9 +113,7 @@ const YieldCalculate: React.FC<Props> = ({
     if(yielddata === null) {
       setYieldTableData([]);
     }
-  }, [yielddata])
-
-  useEffect(()=>{console.log(disk)}, [disk]);
+  }, [yielddata]);
 
   const [calLoading, setCalLoading] = useState<boolean>(false);
 
@@ -287,7 +285,8 @@ const YieldCalculate: React.FC<Props> = ({
                   },
                 ],
               }]}
-              data={[...boardData,...boardData]}
+              // data={[...boardData,...boardData]}
+              data={boardData}
               styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
             />
           </div>
