@@ -2,7 +2,7 @@
 
 import { Dayjs } from "dayjs";
 import { partnerMngRType, partnerRType } from "../base/partner";
-import { FinalGlbStatus, HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus } from "../enum";
+import { AnyStatus, FinalGlbStatus, HotGrade, ModelStatus, PrtTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
 
 // 고객발주 읽기 타입
 export type salesOrderRType = {
@@ -156,8 +156,19 @@ export type salesOrderProductRType = {
 // 고객발주 내 모델 생성, 수정 타입
 export type salesOrderProcuctCUType = {
   id?: string;
+  glbStatus?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    salesOrderStatus?: SalesOrderStatus;
+    salesOrderStatusChangeJson?: string;
+    specStatus?: SpecStatus;
+    anyStatus?: AnyStatus;
+    relation?: string;
+  },
   customPartnerManagerId?: string;
-  currPrdInfo?: {},
+  currPrdInfo?: any,
   modelId?: string;
   modelStatus?: ModelStatus | null;
   orderDt?: Date | Dayjs | null;

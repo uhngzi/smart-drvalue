@@ -9,16 +9,16 @@ import { partnerMngRType, partnerRType } from '../type/base/partner';
 
 import Trash from "@/assets/svg/icons/s_trash.svg";
 import { SetStateAction } from 'react';
+import { NextRouter } from 'next/router';
 
 export const salesUserOrderClmn = (
   totalData: number,
-  setEdit: React.Dispatch<React.SetStateAction<boolean>>,
-  setDetailId: React.Dispatch<React.SetStateAction<string>>,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
   pagination: {current: number, size: number},
   setOrderId: React.Dispatch<SetStateAction<string>>,
   setOrderDrawer: React.Dispatch<SetStateAction<boolean>>,
+  router: NextRouter,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -142,8 +142,7 @@ export const salesUserOrderClmn = (
         { value === FinalGlbStatus.WAITING ? (
           <FullChip label="대기" state="yellow" 
             click={()=>{
-              setEdit(true);
-              setDetailId(record?.id);
+              router.push(`/sales/order/${record.id}`);
             }}
           />
         ) : value === FinalGlbStatus.COMPLETED ? (
@@ -156,8 +155,7 @@ export const salesUserOrderClmn = (
           <FullChip
             label="등록중" state="mint" 
             click={()=>{
-              setEdit(true);
-              setDetailId(record?.id);
+              router.push(`/sales/order/${record.id}`);
             }}
           />
          )

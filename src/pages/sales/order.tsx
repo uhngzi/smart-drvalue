@@ -5,6 +5,7 @@ import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
@@ -18,6 +19,9 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { List } from "@/layouts/Body/List";
 import { ListPagination } from "@/layouts/Body/Pagination";
 
+import { useUser } from "@/data/context/UserContext";
+import { HotGrade, SalesOrderStatus } from "@/data/type/enum";
+import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
 import { 
   newDataSalesOrderCUType, 
   newDataSalesOrderProductCUType, 
@@ -30,28 +34,27 @@ import {
   salesOrderRType 
 } from "@/data/type/sales/order";
 import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
-import { useUser } from "@/data/context/UserContext";
 import { 
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
-import { HotGrade, SalesOrderStatus } from "@/data/type/enum";
 
 import useToast from "@/utils/useToast";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import AddOrderContents from "@/contents/sales/user/modal/AddOrderContents";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
-import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
+import AddOrderContents from "@/contents/sales/order/AddOrderContents";
 import { LabelMedium } from "@/components/Text/Label";
-import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
-import { patchAPI } from "@/api/patch";
+import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
+import { useRouter } from "next/router";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const router = useRouter();
+
   const { me } = useUser();
 
   const { showToast, ToastContainer } = useToast();
@@ -401,7 +404,10 @@ const SalesUserPage: React.FC & {
     <>
       <ListTitleBtn 
         label="신규"
-        onClick={()=>{setOpen(true)}}
+        onClick={()=>{
+          router.push('/sales/order/new');
+          // setOpen(true)
+        }}
         icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
       />
 
@@ -415,21 +421,20 @@ const SalesUserPage: React.FC & {
         <AntdTableEdit
           columns={salesUserOrderClmn(
             totalData,
-            setEdit,
-            setDetailId,
             setPartnerData,
             setPartnerMngData,
             pagination,
             setOrderId,
             setOrderDrawer,
+            router,
           )}
           data={data}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
         />
       </List>
-
-      <AntdModalStep2
+      
+      {/* <AntdModalStep2
         open={open}
         setOpen={setOpen}
         items={stepItems}
@@ -513,7 +518,7 @@ const SalesUserPage: React.FC & {
             :<></>
           }
         </div>}
-      />
+      /> */}
 
       <PrtDrawer
         open={drawerOpen}
