@@ -192,7 +192,7 @@ const YieldCalculate: React.FC<Props> = ({
   return (
     <section className='flex gap-10 w-full'>
       <div className='w-[300px] bg-white flex flex-col gap-20 rounded-14 p-30 border border-[#D9D9D9] justify-between'>
-        <div className='flex flex-col gap-20 h-[850px] overflow-y-auto'>
+        <div className='flex flex-col gap-10 h-[750px] overflow-y-auto'>
           {items.map((item, idx) => (
             <div key={idx}>
               <p className='pb-8'>{item.label}</p>
@@ -225,22 +225,19 @@ const YieldCalculate: React.FC<Props> = ({
             <span className='w-16 h-16'><Calculate/></span>
             <span>계산</span>
           </Button>
-          <Button className="w-full flex h-center">
-            <span className='w-16 h-16'><Print/></span>
-            <span>인쇄</span>
-          </Button>
-          <Button type="text" className="w-full flex h-center">
+          
+          {/* <Button type="text" className="w-full flex h-center">
             <span className='w-16 h-16'><Close/></span>
             <span>종료</span>
-          </Button>
+          </Button> */}
         </div>
       </div>
       <section className='flex flex-col gap-10 w-full'>
-        <div className='flex gap-10 w-full' style={{flex:1.1, maxHeight:'530px'}}>
+        <div className='flex gap-10 w-full' style={{flex:1.1, maxHeight:'400px'}}>
 
           <div className='flex-1 p-30 bg-white rounded-14 border border-[#D9D9D9]'>
             <AntdTable
-              className='h-full'
+              className='h-full overflow-y-auto'
               columns={[
               {
                 title: '원판',
@@ -249,7 +246,7 @@ const YieldCalculate: React.FC<Props> = ({
                 align: 'center',
                 children: [
                   { 
-                    title: '규격',
+                    title: '가로',
                     dataIndex: 'brdW',
                     key: 'brdW',
                     width: 80,
@@ -263,7 +260,7 @@ const YieldCalculate: React.FC<Props> = ({
                     align: 'center',
                   },
                   {
-                    title: 'TYPE',
+                    title: '원판명-축약',
                     dataIndex: 'brdType',
                     key: 'brdType',
                     width: 127,
@@ -290,7 +287,7 @@ const YieldCalculate: React.FC<Props> = ({
                   },
                 ],
               }]}
-              data={boardData}
+              data={[...boardData,...boardData]}
               styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
             />
           </div>
@@ -380,7 +377,7 @@ const YieldCalculate: React.FC<Props> = ({
                 ],
               },
               {
-                title: '비고',
+                title: '계산결과',
                 dataIndex: 'remark',
                 key: 'remark',
                 align: 'center',
@@ -414,7 +411,10 @@ const YieldCalculate: React.FC<Props> = ({
           />
           </div>
         </div>
-        <div className="flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
+        <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
+          <Button className="flex h-center absolute top-10 right-10 w-24 h-24 !p-0">
+            <span className='w-16 h-16'><Print/></span>
+          </Button>
           {yieldTableData.length > 0 &&
             yieldTableData.reduce((acc, data, index) => {
               if (index % 2 === 0) {

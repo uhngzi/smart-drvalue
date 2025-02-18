@@ -2,19 +2,22 @@ import { getAPI } from "@/api/get";
 import { patchAPI } from "@/api/patch";
 import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import CardInputList from "@/components/List/CardInputList";
+import AntdModal from "@/components/Modal/AntdModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { boardReq, boardType, newDataBoardType } from "@/data/type/base/board";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
 
 const WkBoardListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   // true - 등록 눌렸을 때 (저장 시 false)
-  const [insertChk, setInsertChk] = useState<boolean>(false);
+  const [addOpen, setAddOpen] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -27,6 +30,7 @@ const WkBoardListPage: React.FC & {
     setPagination({ ...pagination, current: page });
   };
 
+  const [addData, setAddData] = useState<boardType | null>(null);
   const [ data, setData ] = useState<Array<boardType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
@@ -55,41 +59,57 @@ const WkBoardListPage: React.FC & {
       return result;
     },
   });
+  function changeNewData(
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+      name: string,
+      type: 'input' | 'select' | 'date' | 'other',
+    ) {
+     
+      if(typeof e === "string") {
+        setAddData(prev => ({...prev, [name]: e} as boardType));
+      } else {
+        const { value } = e.target;
+        setAddData(prev => ({...prev, [name]: value} as boardType));
+      }
+    }
+
 
     // 결과 모달창을 위한 변수
   const { showToast, ToastContainer } = useToast();
+  const regBoard = async () => {
+    const val = validReq(addData, boardReq());
+    if(!val.isValid) {
+      showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
+      return;
+    }
 
-    // 등록 함수
+    const result = await postAPI({
+      type: 'baseinfo',
+      utype: 'tenant/',
+      url: 'board',
+      jsx: 'jsxcrud'
+    }, {
+      brdType: addData?.brdType,
+      brdDesc: addData?.brdDesc,
+      brdW: addData?.brdW,
+      brdH: addData?.brdH,
+    } as boardType);
+
+    if(result.resultCode === 'OK_0000') {
+      showToast("등록 완료", "success");
+    } else {
+      showToast(result?.response?.data?.message, "error");
+    }
+    refetch();
+    setAddOpen(false);
+  }
+  
+    // 수정 함수
   const handleSubmit = async () => {
     try {
       const newData = data[editIndex];
       console.log(newData);
       
-      if(newData.id?.includes('new')){
-        const val = validReq(newData, boardReq());
-        if(!val.isValid) {
-          showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
-          return;
-        }
-  
-        const result = await postAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'board',
-          jsx: 'jsxcrud'
-        }, {
-          brdType: newData?.brdType,
-          brdDesc: newData?.brdDesc,
-          brdW: newData?.brdW,
-          brdH: newData?.brdH,
-        } as boardType);
-
-        if(result.resultCode === 'OK_0000') {
-          showToast("등록 완료", "success");
-        } else {
-          showToast(result?.response?.data?.message, "error");
-        }
-      } else {
         const result = await patchAPI({
           type: 'baseinfo',
           utype: 'tenant/',
@@ -109,16 +129,13 @@ const WkBoardListPage: React.FC & {
         } else {
           showToast(result?.response?.data?.message, "error");
         }
-      }
       
       refetch();
-      setInsertChk(false);
       setEditIndex(-1);
     } catch(e) {
       showToast("원판 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.", "error");
 
       refetch();
-      setInsertChk(false);
       setEditIndex(-1);
     }
   }
@@ -139,15 +156,9 @@ const WkBoardListPage: React.FC & {
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-            onClick={()=>{
-              if(!insertChk){
-                setData([{...newDataBoardType(), id:'new-'+data.length+1}, ...data]);
-              } else {
-                handleSubmit();
-              }
-            }}
+            onClick={()=>setAddOpen(true)}
           >
-            { insertChk? '저장' : '등록'}
+            등록
           </div>
         </div>
         
@@ -200,13 +211,39 @@ const WkBoardListPage: React.FC & {
           setEditIndex={setEditIndex}
         />
       </>}
+      <AntdModal
+        title="원판 등록"
+        width={500}
+        open={addOpen}
+        setOpen={setAddOpen}
+        bgColor="#fff"
+        contents={
+          <div>
+            <CardInputList title="" styles={{gap:'gap-20'}} items={[
+              {value:addData?.brdType, name:'brdType',label:'원판유형', type:'input', widthType:'full'},
+              {value:addData?.brdDesc, name:'brdDesc',label:'원판명', type:'input', widthType:'full'},
+              {value:addData?.brdW, name:'brdW',label:'가로', type:'input', widthType:'full'},
+              {value:addData?.brdH, name:'brdH',label:'세로', type:'input', widthType:'full'},
+              {value:addData?.brdExtraInfo, name:'brdExtraInfo',label:'추가정보', type:'input', widthType:'full'},
+                
+            ]} handleDataChange={changeNewData}/>
+            <div className="h-[50px] mx-10">
+              <Button type="primary" size="large" onClick={regBoard} 
+                className="w-full flex h-center gap-8 !h-full" 
+                style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
+                <span>등록</span>
+              </Button>
+            </div>
+          </div>
+        }
+      />
       <ToastContainer/>
     </>
   )
 }
 
 WkBoardListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'70px'}}>{page}</SettingPageLayout>
 )
 
 export default WkBoardListPage;
