@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
+  
+  distDir: ".next_build",
 
   transpilePackages: [
     '@ant-design',
