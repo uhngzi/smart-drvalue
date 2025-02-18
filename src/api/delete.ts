@@ -15,10 +15,9 @@ export const deleteAPI = async (
     if(server.etc) {
       try {
         const response = await instance.delete(`${server.type}/v1/${server.utype??''}${server.url}/${id}`);
-        console.log('DELETE RESPONSE : ', response);
+        console.log(`%cDELETE :: ${server.url}`, "color: red", response);
         
         const { data, resultCode } = response.data;
-        console.log(data, resultCode, response);
         return { data, resultCode, response };
       } catch (e) {
         console.log(e);
@@ -27,10 +26,9 @@ export const deleteAPI = async (
     } else {
       try {
         const response = await instance.delete(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/delete/${id}`);
-        console.log('DELETE RESPONSE : ', response);
+        console.log(`%cDELETE :: ${server.url}`, "color: red", response);
         
         const { data, resultCode } = response.data;
-        console.log(data, resultCode, response);
         return { data, resultCode, response };
       } catch (e) {
         console.log(e);
@@ -40,10 +38,9 @@ export const deleteAPI = async (
   } else {
     try {
       const response = await instanceRoot.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/delete/${id}`);
-      console.log('DELETE RESPONSE : ', response);
+        console.log(`%cDELETE :: ${server.url}`, "color: red", response);
       
       const { data, resultCode } = response.data;
-      console.log(data, resultCode, response);
       return { data, resultCode, response };
     } catch (e) {
       console.log(e);

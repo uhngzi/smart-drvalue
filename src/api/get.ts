@@ -56,7 +56,7 @@ export const getAPI = async (
         sort: params?.sort ?? "createdAt,DESC",
       }
     });
-    console.log('GET RESPONSE : ', server.url, response);
+    console.log(`%cGET :: ${server.url}`, "color: red", response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };
@@ -69,7 +69,7 @@ export const getAPI = async (
         sort: params?.sort ?? "createdAt,DESC",
       }
     });
-    console.log('GET RESPONSE : ', server.url, response);
+    console.log(`%cGET :: ${server.url}`, "color: red", response);
     
     const { data, resultCode } = response.data;
     return { data, resultCode, response };

@@ -16,10 +16,9 @@ export const patchAPI = async (
     if(server.etc) {
       try {
         const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}`, body);
-        console.log('PATCH RESPONSE : ', response);
+        console.log(`%cPATCH :: ${server.url}`, "color: red", response);
         
         const { data, resultCode } = response.data;
-        console.log(data, resultCode, response);
         return { data, resultCode, response };
       } catch (e) {
         console.log(e);
@@ -28,10 +27,9 @@ export const patchAPI = async (
     } else {
       try {
         const response = await instance.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
-        console.log('PATCH RESPONSE : ', response);
+        console.log(`%cPATCH :: ${server.url}`, "color: red", response);
         
         const { data, resultCode } = response.data;
-        console.log(data, resultCode, response);
         return { data, resultCode, response };
       } catch (e) {
         console.log(e);
@@ -41,10 +39,9 @@ export const patchAPI = async (
   } else {
     try {
       const response = await instanceRoot.patch(`${server.type}/v1/${server.utype??''}${server.url}/${server.jsx}/update/${id}`, body);
-      console.log('PATCH RESPONSE : ', response);
+      console.log(`%cPATCH :: ${server.url}`, "color: red", response);
       
       const { data, resultCode } = response.data;
-      console.log(data, resultCode, response);
       return { data, resultCode, response };
     } catch (e) {
       console.log(e);

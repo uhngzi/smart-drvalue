@@ -15,10 +15,10 @@ export const instanceRoot = axios.create({
 
 instanceRoot.interceptors.request.use(
   (config) => {
-    console.log(
-      `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
-      "color: pink"
-    );
+    // console.log(
+    //   `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+    //   "color: pink"
+    // );
     
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
 
@@ -39,10 +39,10 @@ export const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    console.log(
-      `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
-      "color: pink"
-    );
+    // console.log(
+    //   `%c${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+    //   "color: pink"
+    // );
     
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
     config.headers["x-tenant-code"] = 'test2';
