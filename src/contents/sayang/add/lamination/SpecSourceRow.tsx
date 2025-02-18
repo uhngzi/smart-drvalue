@@ -34,9 +34,12 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
           {index + 1}
         </div>
       </div>
-      <div className="w-[112px] px-8 py-8">{source.lamNo}</div>
+      <div className="flex-1 px-8 py-8 cursor-pointer"
+        onClick={() => onSelect(source)}
+      >{source.lamNo}</div>
       <div className="w-45 v-h-center">{source.lamThk}T</div>
-      <div
+      <div className="w-45 v-h-center">{source.lamRealThk}T</div>
+      {/* <div
         className="w-34 v-h-center cursor-pointer"
         onClick={() => onSelect(source)}
       >
@@ -46,7 +49,7 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
         >
           {isSelected ? <Check /> : <Edit />}
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };
