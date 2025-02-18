@@ -139,7 +139,7 @@ export const salesUserOrderClmn = (
     align: 'center',
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
-        { value === FinalGlbStatus.REGISTERING ? (
+        { value === FinalGlbStatus.WAITING ? (
           <FullChip label="대기" state="yellow" 
             click={()=>{
               setEdit(true);
@@ -151,8 +151,8 @@ export const salesUserOrderClmn = (
             setOrderId(record.id);
             setOrderDrawer(true);
           }}/>
-        // ) : value === FinalGlbStatus.WAITING ? (
-        ) : (
+        ) : value === FinalGlbStatus.REGISTERING ? (
+        // ) : (
           <FullChip
             label="등록중" state="mint" 
             click={()=>{
@@ -160,11 +160,10 @@ export const salesUserOrderClmn = (
               setDetailId(record?.id);
             }}
           />
-        )
-        // : (
-        //   <FullChip label="폐기" click={()=>{}}/>
-        // )
-        }
+         )
+        : (
+           <FullChip label="폐기" click={()=>{}}/>
+        )}
       </div>
     )
   },

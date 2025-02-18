@@ -100,4 +100,5 @@ export enum FinalGlbStatus {
   WAITING = 'model_reg_waiting', // 대기
   REGISTERING = 'model_reg_registering', // 등록중
   COMPLETED = 'model_reg_completed', // 완료
+  DISCARDED = 'model_reg_discarded' // 폐기
 }
