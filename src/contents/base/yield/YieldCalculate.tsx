@@ -141,12 +141,7 @@ const YieldCalculate: React.FC<Props> = ({
     //   }
     //   return null;
     // });
-    const farr = disk.filter(f=>f.id !== id);
-    if(farr.length > 0) {
-      setDisk(farr);
-    } else {
-      setDisk([ ...farr, {id:id, diskWidth:w, diskHeight:h} ]);
-    }
+    setDisk([ ...disk.filter(f=>f.id !== id), {id:id, diskWidth:w, diskHeight:h} ]);
   };
 
   const handleCalculdate = async () => {
@@ -162,7 +157,8 @@ const YieldCalculate: React.FC<Props> = ({
         return;
       } 
 
-      console.log(JSON.stringify(yielddata));
+      const jsonData = { ...yielddata, disks:disk.map(d=>({diskWidth:d.diskWidth,diskHeight:d.diskHeight})) };
+      console.log(JSON.stringify(jsonData));
 
       setCalLoading(true);
       const result = await postAPI({
@@ -171,7 +167,7 @@ const YieldCalculate: React.FC<Props> = ({
         jsx: 'default',
         url:'board-yield-calc-default/default/calculate/auto/multi-board',
         etc: true,
-      }, { ...yielddata, disks:disk.map(d=>({diskWidth:d.diskWidth,diskHeight:d.diskHeight})) });
+      }, jsonData);
       console.log(result);
   
       if(result.resultCode === "OK_0000") {
@@ -213,7 +209,7 @@ const YieldCalculate: React.FC<Props> = ({
                       });
                       return;
                     }
-                    
+
                     setYielddata({
                       ...yielddata,
                       [item.name]: value,
@@ -281,10 +277,13 @@ const YieldCalculate: React.FC<Props> = ({
                     align: 'center',
                     render: (value, record) => (
                       <Checkbox
-                        checked={disk.filter(d=>d.id===value).length > 0 ? true : false}
+                        // checked={disk.filter(d=>d.id===value).length > 0 ? true : false}
                         name="board"
                         onChange={(e) => {
-                          handleCheckboxChange(value, record.brdW, record.brdH)
+                          if(e.target.checked)
+                            handleCheckboxChange(value, record.brdW, record.brdH);
+                          else 
+                            setDisk(disk.filter(f=>f.id !== value));
                         }}
                       />
                     )
@@ -403,7 +402,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return Math.floor(Number(record.layout?.yieldRatio ?? 0))
+                      return Math.floor(Number(record.layout?.yieldRatio ?? 0) * 100) / 100;
                     }
                   },
                 ],
