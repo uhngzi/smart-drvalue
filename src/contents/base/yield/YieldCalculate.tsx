@@ -141,7 +141,12 @@ const YieldCalculate: React.FC<Props> = ({
     //   }
     //   return null;
     // });
-    setDisk([ ...disk.filter(f=>f.id !== id), {id:id, diskWidth:w, diskHeight:h} ]);
+    const farr = disk.filter(f=>f.id !== id);
+    if(farr.length > 0) {
+      setDisk(farr);
+    } else {
+      setDisk([ ...farr, {id:id, diskWidth:w, diskHeight:h} ]);
+    }
   };
 
   const handleCalculdate = async () => {
@@ -200,9 +205,18 @@ const YieldCalculate: React.FC<Props> = ({
                   value={item.value ?? undefined}
                   type="number"
                   onChange={(e)=>{
+                    let { value } = e.target;
+                    if(item.name === "minYield" && Number(value ?? 0) > 100) {
+                      setYielddata({
+                        ...yielddata,
+                        [item.name]: 100,
+                      });
+                      return;
+                    }
+                    
                     setYielddata({
                       ...yielddata,
-                      [item.name]: e.target.value,
+                      [item.name]: value,
                     });
                   }}
                 />
@@ -325,7 +339,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 50,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.panel?.arrangeX;
+                      return Math.floor(Number(record.panel?.arrangeX ?? 0));
                     }
                   },
                   { title: 'Y',
@@ -334,7 +348,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 50,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.panel?.arrangeY;
+                      return Math.floor(Number(record.panel?.arrangeY ?? 0));
                     }
                   },
                   { title: '가로',
@@ -343,7 +357,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.panel?.width;
+                      return Math.floor(Number(record.panel?.width ?? 0));
                     }
                   },
                   { title: '세로',
@@ -352,7 +366,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.panel?.height;
+                      return Math.floor(Number(record.panel?.height ?? 0));
                     }
                   },
                   { title: '개수',
@@ -361,7 +375,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.panelCount;
+                      return Math.floor(Number(record.panelCount ?? 0));
                     }
                   },
                 ],
@@ -379,7 +393,7 @@ const YieldCalculate: React.FC<Props> = ({
                     width: 80,
                     align: 'center',
                     render: (_, record:yieldCalType) => {
-                      return record.kitCount;
+                      return Math.floor(Number(record.kitCount ?? 0));
                     }
                   },
                   {
