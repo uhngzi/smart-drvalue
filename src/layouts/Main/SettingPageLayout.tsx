@@ -16,13 +16,15 @@ interface Props {
     text: string;
     link: string;
   }[];
-
+  styles?: {
+    pd?: string
+  }
   menuTitle?: string;
 
   writeButtonHref?: string;
 }
 
-const SettingPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
+const SettingPageLayout: React.FC<Props> = ({ children, styles, menu, menuTitle }) => {
   const router = useRouter();
 
   useEffect(()=>{
@@ -60,7 +62,7 @@ const SettingPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
                 />
               </div>
             )}
-            <SettingContents>{children}</SettingContents>
+            <SettingContents padding={styles?.pd}>{children}</SettingContents>
           </div>
         </div>
       </div>

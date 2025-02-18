@@ -6,6 +6,7 @@ export type boardType = {
   brdH: number;
   brdType: string;
   brdDesc: string;
+  brdExtraInfo: string;
   createdAt?: Date | null;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
@@ -17,14 +18,15 @@ export const newDataBoardType = ():boardType => {
     brdH: 0,
     brdType: '',
     brdDesc: '',
+    brdExtraInfo: '',
   }
 }
 
 export const boardReq = () => {
   return [
-    { field: 'brdType', label: '유형' },
-    { field: 'brdDesc', label: '설명' },
-    { field: 'brdW', label: '폭' },
-    { field: 'brdH', label: '높이' },
+    { field: 'brdType', label: '원판유형' },
+    { field: 'brdDesc', label: '원판명' },
+    { field: 'brdW', label: '가로' },
+    { field: 'brdH', label: '세로' },
   ]
 }

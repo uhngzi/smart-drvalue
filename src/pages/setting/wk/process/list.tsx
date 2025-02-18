@@ -159,6 +159,7 @@ const WkProcessGroupListPage: React.FC & {
 
       if(result.resultCode === "OK_0000") {
         showToast("등록 완료", "success");
+        refetch();
       } else {
         showToast("등록 실패", "error");
       }
@@ -184,7 +185,7 @@ const WkProcessGroupListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="p-20">
+        <div className="p-20 h-[900px] h-full">
           <CustomTree
             data={treeData}
             handleDataChange={handleTreeDataChange}
