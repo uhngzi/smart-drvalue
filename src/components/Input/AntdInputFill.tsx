@@ -11,6 +11,7 @@ interface Props {
   type?: string;
   defaultValue?: string;
   readonly?: boolean;
+  disabled?: boolean;
 }
 
 const AntdInputFill: React.FC<Props> = ({
@@ -22,6 +23,7 @@ const AntdInputFill: React.FC<Props> = ({
   type,
   defaultValue,
   readonly,
+  disabled,
 }) => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
@@ -62,6 +64,7 @@ const AntdInputFill: React.FC<Props> = ({
         type={type}
         defaultValue={defaultValue}
         readOnly={readonly}
+        disabled={disabled}
       />
     </AntdInputStyled>
   )

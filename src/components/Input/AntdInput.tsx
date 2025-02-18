@@ -14,6 +14,7 @@ interface Props {
   readonly?: boolean;
   onPressEnter?: () => void;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
+  disabled?:boolean,
 }
 
 const AntdInput = forwardRef<InputRef, Props>((
@@ -28,6 +29,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     readonly,
     onPressEnter,
     onKeyDown,
+    disabled,
   },
   ref
 ) => {
@@ -72,6 +74,7 @@ const AntdInput = forwardRef<InputRef, Props>((
         onKeyDown={onKeyDown}
         readOnly={readonly}
         ref={ref}
+        disabled={disabled}
       />
     </AntdInputStyled>
   );
