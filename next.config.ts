@@ -58,6 +58,8 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['115.68.221.100'], // 추가한 도메인
   },
+
+  generateBuildId: async () => Date.now().toString(),
 };
 
 export default nextConfig;
