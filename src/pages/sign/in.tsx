@@ -62,10 +62,10 @@ const SignInPage: React.FC & {
   };
 
   return (
-    <div className="w-[400px] flex flex-col gap-40">
+    <div className="w-[400px] flex flex-col gap-40 justify-center min-h-[300px]">
       <div className="flex flex-col gap-5 h-center">
         <span className="font-bold leading-[26px] tracking-[-0.16px]" style={{color:'#999999'}}>무한 성장을 위한 확장이 필수인 시대,</span>
-        <span className="leading-[36.8px] tracking-[-0.32px]" style={gradientStyle}>GrowX</span>
+        <span className="leading-[1.2] tracking-[-0.32px]" style={gradientStyle}>GrowX</span>
       </div>
       <div className="flex flex-col gap-10">
         <div className="pl-18 flex gap-20 h-center rounded-8 h-[56px]" style={{border:'1px solid #D9D9D9'}}>
