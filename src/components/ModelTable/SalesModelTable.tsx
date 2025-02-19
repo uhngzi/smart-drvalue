@@ -3,7 +3,7 @@ import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 import AntdInput from "../Input/AntdInput";
 import AntdSelect from "../Select/AntdSelect";
 import { useBase } from "@/data/context/BaseContext";
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import { RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import { Button, InputRef } from "antd";
 import FullChip from "../Chip/FullChip";
 import AntdTable from "../List/AntdTable";
@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import { salesOrderModelClmn } from "./Column";
 import { patchAPI } from "@/api/patch";
+import ModelHead from "./ModelHead";
 
 interface Props {
   data: salesOrderProcuctCUType[]
@@ -20,6 +21,7 @@ interface Props {
   selectId: string;
   newFlag: boolean;
   setDeleted: React.Dispatch<SetStateAction<boolean>>;
+  inputRef: RefObject<InputRef[]>;
 }
 
 const SalesModelTable:React.FC<Props> = ({
@@ -28,19 +30,12 @@ const SalesModelTable:React.FC<Props> = ({
   selectId,
   newFlag,
   setDeleted,
+  inputRef,
 }) => {
-  const [newProducts, setNewProducts] = useState<salesOrderProcuctCUType[]>([]);
-  // 초기값 설정
-  useEffect(()=>{ if(data.length > 0)   setNewProducts(data); }, [data]);
-
-  // 첫 모델명 ref
-  const inputRef = useRef<InputRef>(null);
-
   // 디폴트 값 가져오기
   const { 
     boardSelectList,
     metarialSelectList,
-    surfaceSelectList,
     unitSelectList,
     vcutSelectList,
     outSelectList,
@@ -95,94 +90,20 @@ const SalesModelTable:React.FC<Props> = ({
       // 삭제되지 않은 모델만 가져오기
       .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
       .map((model:salesOrderProcuctCUType, index:number) => (
-        <div className="flex flex-col gap-16" key={model.id}>
-          <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
-            <div className="h-full h-center gap-10 p-10">
-              <p className="h-center justify-end">발주 모델명</p>
-              <AntdInput
-                ref={index === 0 ? inputRef : null}
-                value={model.orderTit}
-                className="w-[180px!important]" styles={{ht:'32px'}}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderTit', e.target.value)}
-                readonly={selectId === model.id ? !newFlag : undefined}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-              <p className="h-center justify-end">고객측 관리번호</p>
-              <AntdInput 
-                value={model.prtOrderNo}
-                className="w-[180px!important]" styles={{ht:'32px'}}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value)}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-              <AntdSelect
-                options={[
-                  {value:ModelStatus.NEW,label:'신규'},
-                  {value:ModelStatus.REPEAT,label:'반복'},
-                  {value:ModelStatus.MODIFY,label:'수정'},
-                ]}
-                value={model.modelStatus}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'modelStatus', e)}
-                className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-            </div>
-            <div className="w-1 h-60" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
-            <div className="h-full h-center gap-10 p-10">
-              <p className="h-center justify-end">원판 </p>
-              <AntdSelect
-                options={boardSelectList}
-                value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}
-                className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-              <p className="h-center justify-end">제조사 </p>
-              <AntdInput 
-                value={model.currPrdInfo?.mnfNm}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value)}
-                className="w-[120px!important]" styles={{ht:'32px'}}
-                readonly={selectId === model.id ? !newFlag : undefined}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-              <p className="h-center justify-end">재질 </p>
-              <AntdSelect
-                options={metarialSelectList}
-                value={model.currPrdInfo.material?.id ?? metarialSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}
-                className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-            </div>
-            <div className="w-1 h-60" style={{borderLeft:"0.3px solid #B9B9B9"}}/>
-            <div className="h-full h-center gap-10 p-10">
-              <p className="h-center justify-end">납기</p>
-              <AntdDatePicker
-                value={model.orderPrdDueDt}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
-                suffixIcon={'cal'}
-                styles={{bw:'0',bg:'none', pd:"0"}}
-                placeholder=""
-              />
-              <p className="h-center justify-end">수량 </p>
-              <AntdInput 
-                value={model.orderPrdCnt}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
-                className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-                readonly={selectId === model.id ? !newFlag : undefined}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-              <p className="h-center justify-end">견적단가 </p>
-              <AntdInput 
-                value={model.orderPrdPrice}
-                onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
-                className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-                readonly={selectId === model.id ? !newFlag : undefined}
-                disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-              />
-            </div>
-            <div className="flex-1 flex jutify-end">
-            </div>
-          </div>
+        <div
+          key={model.id}
+          className="flex flex-col gap-16"
+        >
+          <ModelHead
+            type="order"
+            model={model}
+            handleModelDataChange={handleModelDataChange}
+            boardSelectList={boardSelectList}
+            metarialSelectList={metarialSelectList}
+            selectId=""
+            newFlag={false}
+            inputRef={inputRef}
+          />
           <div className="flex flex-col ">
             <AntdTable
               columns={salesOrderModelClmn(

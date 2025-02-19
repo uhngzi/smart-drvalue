@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
-import { Button, Steps } from "antd";
+import { Button, InputRef, Steps } from "antd";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
@@ -50,8 +50,8 @@ const OrderAddLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   const { me } = useUser();
-  const { showToast, ToastContainer } = useToast();
   const { models } = useModels();
+  const { showToast, ToastContainer } = useToast();
 
   // 스탭 저장 변수
   const [ stepCurrent, setStepCurrent ] = useState<number>(0);
@@ -135,24 +135,25 @@ const OrderAddLayout = () => {
         hotGrade: data.hotGrade ?? HotGrade.NORMAL,
         files: data.files.map((file) => { return file.storageId }),
       });
-      setNewProducts(data.products
-        .filter((prd:salesOrderProductRType) => prd.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
-        .map((prd: salesOrderProductRType) => ({
-          id: prd.id,
-          currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
-          modelStatus: prd.modelStatus,
-          orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
-          // orderNo: prd.orderNo,
-          orderTit: prd.orderTit,
-          prtOrderNo: prd.prtOrderNo,
-          orderPrdRemark: prd.orderPrdRemark,
-          orderPrdCnt: prd.orderPrdCnt,
-          orderPrdUnitPrice: prd.orderPrdUnitPrice,
-          orderPrdPrice: prd.orderPrdPrice,
-          orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
-          orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
-          orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
-          disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
+      const prdArr = data.products.filter(f => f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED);
+
+      setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
+        id: prd.id,
+        index: prdArr.length - index,
+        currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
+        modelStatus: prd.modelStatus,
+        orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
+        // orderNo: prd.orderNo,
+        orderTit: prd.orderTit,
+        prtOrderNo: prd.prtOrderNo,
+        orderPrdRemark: prd.orderPrdRemark,
+        orderPrdCnt: prd.orderPrdCnt,
+        orderPrdUnitPrice: prd.orderPrdUnitPrice,
+        orderPrdPrice: prd.orderPrdPrice,
+        orderPrdDueReqDt: prd.orderPrdDueReqDt ? dayjs(prd.orderPrdDueReqDt, 'YYYY-MM-DD') : null,
+        orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
+        orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
+        disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
       })));
       // 자동으로 스탭2
       setStepCurrent(1);
@@ -282,6 +283,47 @@ const OrderAddLayout = () => {
     }));
   }, [newProducts]);
 
+  // 모델 추가 시 새 모델로 부드럽게 자동 이동 후 자동 포커스
+  const inputRef = useRef<InputRef[]>([]);
+  const [viewKey, setViewKey] = useState<number | null>(null);
+  useEffect(()=>{
+    console.log(inputRef, inputRef.current)
+    if(viewKey && inputRef.current.length > 0) {
+      const targetInput = inputRef.current[viewKey];
+      if (targetInput.input) {
+        targetInput.input.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+        });
+
+        // 스크롤 후 포커스 되기 위함
+        setTimeout(() => {
+          targetInput.focus();
+        }, 300);
+      }
+    }
+  }, [viewKey]);
+
+  // 스탭 변경 시 해당 스탭으로 부드럽게 자동 이동
+  const stepRef = useRef<HTMLDivElement[]>([]);
+  useEffect(()=>{
+    if(stepRef.current) {
+      stepRef.current[stepCurrent].scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+      
+      // 모델 등록일 경우 맨 위에 있는 모델로 자동 포커싱
+      if(stepCurrent === 1) {
+        // 스크롤 후 포커싱 되기 위함
+        setTimeout(() => {
+          const targetInput = inputRef.current[newProducts.length];
+          targetInput.focus();
+        }, 400);
+      }
+    }
+  }, [stepCurrent])
+
   return (
   <div className="h-center gap-20">
     <div className="w-[calc(100vw-100px)]">
@@ -293,15 +335,21 @@ const OrderAddLayout = () => {
       {/* 왼쪽 컨텐츠 */}
       <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto">
         {/* 고객 발주 컨텐츠 */}
-        <SalesOrderContent
-          csList={csList}
-          formData={formData}
-          setFormData={setFormData}
-          fileList={fileList}
-          setFileList={setFileList}
-          fileIdList={fileIdList}
-          setFileIdList={setFileIdList}
-        />
+        <div
+          className="flex"
+          // 스크롤 자동을 위해 ref 추가
+          ref={el => {if(el)  stepRef.current[0] = el;}}
+        >
+          <SalesOrderContent
+            csList={csList}
+            formData={formData}
+            setFormData={setFormData}
+            fileList={fileList}
+            setFileList={setFileList}
+            fileIdList={fileIdList}
+            setFileIdList={setFileIdList}
+          />
+        </div>
 
         {/* 담당자 컨텐츠 */}
         <CsMngContent
@@ -352,7 +400,14 @@ const OrderAddLayout = () => {
 
         {/* 모델 컨텐츠 */}
       { stepCurrent > 0 &&
-        <div className="flex w-full relative pl-10">
+        <div
+          className="flex w-full relative pl-10"
+          ref={el => {
+            if (el) {
+              stepRef.current[1] = el;
+            }
+          }}
+        >
           <div className="w-full">
             <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
               <div><LabelMedium label="모델 등록"/></div>
@@ -363,15 +418,22 @@ const OrderAddLayout = () => {
                 selectId=""
                 newFlag={false}
                 setDeleted={setDeleted}
+                // detailRef={modelRef}
+                inputRef={inputRef}
               />
               {/* 버튼(아래 컨텐츠들) 부분은 아직 미수정... */}
               <div className="w-full h-1 border-t-1"/>
                 <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
                   onClick={() => {
                     setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                      {
+                        ...newDataSalesOrderProductCUType(),
+                        id:'new-'+prev.length+1,
+                        index: newProducts.length+1
+                      },
                       ...prev,
-                      {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
                     ]);
+                    setViewKey(newProducts.length+1);
                   }}
                 >
                 <SplusIcon/>
@@ -381,7 +443,14 @@ const OrderAddLayout = () => {
                 <Button
                   className="w-109 h-32 rounded-6"
                   onClick={()=>{
-                    setStepCurrent(0);
+                    stepRef.current[0].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'end',
+                    });
+                    // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
+                    setTimeout(()=>{
+                      setStepCurrent(0);
+                    }, 400)
                   }}
                 >
                   <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계

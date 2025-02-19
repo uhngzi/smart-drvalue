@@ -8,34 +8,40 @@ import { postAPI } from '@/api/post';
 import { patchAPI } from '@/api/patch';
 import dayjs from 'dayjs';
 
-import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
+import FullChip from '@/components/Chip/FullChip';
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
 import AntdSelect from "@/components/Select/AntdSelect";
 import AddDrawer from '@/contents/sayang/model/add/AddDrawer';
+import AntdAlertModal from '@/components/Modal/AntdAlertModal';
+import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { modelReq, orderModelType } from "@/data/type/sayang/models";
-import { BaseProvider, useBase } from '@/data/context/BaseContext';
+import { useBase } from '@/data/context/BaseContext';
+import { useModels } from '@/data/context/ModelContext';
+import { 
+  changeModelAddNewModel,
+  changeModelAddTemp
+} from '@/data/type/sayang/changeData';
+
 import useToast from '@/utils/useToast';
+import { validReq } from '@/utils/valid';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
-import { ModelProvider, useModels } from '@/data/context/ModelContext';
-import { changeModelAddNewModel, changeModelAddTemp } from '@/data/type/sayang/changeData';
-import { validReq } from '@/utils/valid';
-import AntdAlertModal, { AlertType } from '@/components/Modal/AntdAlertModal';
-import FullChip from '@/components/Chip/FullChip';
+import ModelHead from '@/components/ModelTable/ModelHead';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
-  const { showToast, ToastContainer } = useToast();
   const router = useRouter();
   const { id:orderId } = router.query;
+
+  const { showToast, ToastContainer } = useToast();
   
   // 디폴트 값 가져오기
   const { 
@@ -75,29 +81,22 @@ const SayangModelAddPage: React.FC & {
     enabled: !!orderId,
   });
 
-  // 첫 접속 시 자동 포커스를 위한 Flag
-  const [focusInitialized, setFocusInitialized] = useState(false);
-
-  // 첫 모델명 ref
-  const inputRef = useRef<InputRef>(null);
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      const arr = (queryData?.data.data ?? []).map((d:orderModelType, index:number) => ({
+      const rdata:orderModelType[] = queryData.data.data ?? [];
+
+      const arr = rdata.map((d:orderModelType, index:number) => ({
         ...d,
-        // model: 
-        tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",  // 임시 저장된 값 파싱해서 가져오기
         index: (queryData?.data?.data?.length ?? 0) - index,
         completed: d.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? true : false,
+        // 고객 발주 모델 파싱
+        currPrdInfo: JSON.parse(d.currPrdInfo ?? ""),
+        // 임시저장 모델 파싱
+        tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",
       }));
-      console.log('arr', arr);
       setData(arr);
       setDataLoading(false);
-
-      if (!focusInitialized && inputRef.current) {
-        inputRef.current.focus(); // 포커스 설정
-        setFocusInitialized(true); // 이후 실행 방지
-      }
     }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
@@ -106,7 +105,7 @@ const SayangModelAddPage: React.FC & {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectTabDrawer, setSelectTabDrawer] = useState<number>(1);
 
-  // 임시 함수
+  // 임시 함수 (삭제 추가해야 됨)
   function deleteModel(idx: number) {
     setData(data.filter((f:any) => f.id !== idx));
   }
@@ -120,7 +119,9 @@ const SayangModelAddPage: React.FC & {
     // 데이터를 복사
     const updatedData = data.map((item) => {
       if (item.id === id) {
-        const keys = name.split("."); // ['model', 'a']
+        // 키 값이 객체일 경우 키값 분해
+        // ex. orderModel.prdNm > orderModel 안에 "prdNm"에 접근해야 함
+        const keys = name.split(".");
         const updatedItem = { ...item };
   
         // 마지막 키를 제외한 객체 탐색
@@ -272,6 +273,29 @@ const SayangModelAddPage: React.FC & {
   const [newFlag, setNewFlag] = useState<boolean>(true);
   const [selectId, setSelectId] = useState<string | null>(null);
 
+  // 모델명 Ref
+  const inputRef = useRef<InputRef[]>([]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (inputRef.current.length > 0 && inputRef.current[0]?.input) {
+        const targetInput = inputRef.current[0];
+        targetInput.input?.focus();
+        
+        // 포커스 후 삭제
+        observer.disconnect();
+      }
+    });
+
+    // DOM 변경 감지 시작
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => observer.disconnect();
+  }, [inputRef]);
+
   if (modelsLoading || dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
@@ -287,13 +311,24 @@ const SayangModelAddPage: React.FC & {
         <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
         { !dataLoading &&
         data
-        .filter(f=>f.model?.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        // 모델이 폐기 됐을 경우 필터링
         .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
         .map((model:orderModelType, index:number) => (
           <div className="flex flex-col gap-16" key={model.id}
             // style={model.completed?{background:"#F8F8F8"}:{}}
           >
-            <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
+            <ModelHead
+              type="match"
+              model={model}
+              handleModelDataChange={handleModelDataChange}
+              boardSelectList={boardSelectList}
+              metarialSelectList={metarialSelectList}
+              selectId={selectId ?? ""}
+              newFlag={newFlag}
+              inputRef={inputRef}
+              index={index}
+            />
+            {/* <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
               <div className="h-full h-center gap-10 p-10">
                 <p className="h-center justify-end">발주명</p>
                 <AntdInput 
@@ -371,7 +406,7 @@ const SayangModelAddPage: React.FC & {
                   <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
               }
               </div>
-            </div>
+            </div> */}
             <div className="flex flex-col ">
               <AntdTable
                 columns={sayangModelWaitAddClmn(
