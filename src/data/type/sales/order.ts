@@ -183,6 +183,8 @@ export type salesOrderProcuctCUType = {
   orderPrdDueDt?: Date | Dayjs | null;
   orderPrdHotGrade: HotGrade | null;
   disabled?: boolean;
+  index?: number;
+  completed?: boolean;
 }
 
 // 고객발주 내 모델 초기값 생성

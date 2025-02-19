@@ -18,6 +18,7 @@ const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -53,7 +54,6 @@ const SayangModelWaitPage: React.FC & {
       setTotalData(queryData?.data.total ?? 0);
       setDataLoading(false);
     }
-
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
@@ -85,7 +85,6 @@ const SayangModelWaitPage: React.FC & {
           loading={dataLoading}
         />
       </List>
-
 
       <PrtDrawer
         open={drawerOpen}

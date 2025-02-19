@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
-import OrderAddPage from "@/contents/sales/order/add/OrderAdd";
+import OrderAddLayout from "@/contents/sales/order/add/OrderAdd";
 
 let title = "";
 
@@ -15,7 +15,7 @@ const AddPage: React.FC & {
 
   return (
     type === "order" ?
-    <OrderAddPage />
+    <OrderAddLayout />
     :
     <div>견적 등록 페이지</div>
   );

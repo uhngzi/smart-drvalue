@@ -45,7 +45,7 @@ export const salesOrderModelClmn = (
     render: (value:any, record:any, index:number) => (
       <>
         <div className="h-[50%] w-[100%] v-h-center ">
-        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{index+1}</p>
+        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
         </div>
         <div className="h-[50%] w-[100%] v-h-center">
         {

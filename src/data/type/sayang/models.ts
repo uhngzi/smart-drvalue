@@ -11,7 +11,7 @@ export type orderModelType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   id: string;
-  currPrdInfo?: string;
+  currPrdInfo?: any;
   tempPrdInfo?: any;
   modelStatus?: ModelStatus;
   orderDt?: string;
