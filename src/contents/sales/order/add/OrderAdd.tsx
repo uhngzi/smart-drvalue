@@ -13,6 +13,7 @@ import { DividerH } from "@/components/Divider/Divider";
 import SalesModelTable from "@/components/ModelTable/SalesModelTable";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelList from "@/contents/base/model/ModelList";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 import {
   partnerMngRType,
@@ -47,8 +48,6 @@ import { useModels } from "@/data/context/ModelContext";
 
 import SalesOrderContent from "./SalesOrderContent";
 import CsMngContent from "./CsMngContent";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import { set } from "lodash";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -65,7 +64,7 @@ const OrderAddLayout = () => {
   const [ fileList, setFileList ] = useState<any[]>([]);
   const [ fileIdList, setFileIdList ] = useState<string[]>([]);
   // 모델 저장 변수
-  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([newDataSalesOrderProductCUType()]);
+  const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([{ ...newDataSalesOrderProductCUType(), id: "new-1", index: 1 }]);
   // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
   // 우측 탭 클릭 시 필요 변수
@@ -84,7 +83,8 @@ const OrderAddLayout = () => {
   }, [id]);
   
   useEffect(()=>{
-    if(orderId) {
+    // 수정일 경우에만 실행...
+    if(orderId && !(id+"").includes("new")) {
       fetchDetail();
     }
   }, [orderId])
@@ -124,8 +124,8 @@ const OrderAddLayout = () => {
   }, [formData.partnerId])
   // ----------- 거래처 데이터 세팅 ----------- 끝
 
-  // ---------- 수정 시 데이터 세팅 ----------- 시작
-  const fetchDetail = async () => {
+  // -------- 수정 시 디테일 데이터 세팅 -------- 시작
+  const fetchDetail = async (modelId?: string) => {
     const result = await getAPI({
       type: 'core-d1',
       utype: 'tenant/',
@@ -135,7 +135,7 @@ const OrderAddLayout = () => {
     if(result.resultCode === "OK_0000") {
       const data = result.data.data as salesOrderDetailRType;
       setFormData({
-        id: data.id,
+        id: data?.id,
         partnerId: data.prtInfo.prt.id,
         partnerManagerId: data.prtInfo.mng.id,
         orderName: data.orderNm,
@@ -147,6 +147,7 @@ const OrderAddLayout = () => {
         hotGrade: data.hotGrade ?? HotGrade.NORMAL,
         files: data.files.map((file) => { return file.storageId }),
       });
+
       const prdArr = data.products.filter(f => f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED);
 
       setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
@@ -171,15 +172,22 @@ const OrderAddLayout = () => {
       setStepCurrent(1);
     }
   }
-  // ---------- 수정 시 데이터 세팅 ----------- 끝
+  // -------- 수정 시 디테일 데이터 세팅 -------- 끝
 
-  // ------------ 신규 등록 함수 ------------- 시작
+  // ---------- 발주 신규 등록 함수 ----------- 시작
   const handleSubmitOrder = async (model: salesOrderProcuctCUType) => {
     const jsonData = changeOrderNew(formData, [model], me);
-    console.log(JSON.stringify(jsonData));
+    console.log('NEW !! ', JSON.stringify(jsonData));
+
+    // 발주 내 필수 값 입력 체크
+    const ordVal = validReq(jsonData, salesOrderReq());
+    if(!ordVal.isValid) {
+      showToast(ordVal.missingLabels+'은(는) 필수 입력입니다.', "error");
+      return;
+    }
 
     // 모델 내 필수 값 입력 체크
-    const prdVal = validReq(jsonData.products, salesOrderProcuctReq());
+    const prdVal = validReq(model, salesOrderProcuctReq());
     if(!prdVal.isValid) {
       showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
@@ -200,17 +208,20 @@ const OrderAddLayout = () => {
       setOrderId(entity?.id ?? "");
       // 수정 값도 변경
       setEdit(true);
+      // *********** 해당 프로덕트의 아이디를 찾아서 entity 내 product로 변경하는 작업 추가 필요 *********** (API 요청 상태)
+      // 그래야 등록 후 수정 시 에러 안 뜸
+      // 그리고 새로 고침 필요없이 값만 바꿔주면 돼서 다른 모델들도 저장 후에 안 날라가고 남아있음 (새로고침 하면 저장 안 된 모델들은 다 날라감)
     } else {
       const msg = result?.response?.data?.message;
       showToast(msg, "error");
     }
   }
-  // ------------ 신규 등록 함수 ------------- 끝
+  // ---------- 발주 신규 등록 함수 ----------- 끝
 
   // ------------ 모델 저장 함수 ------------- 시작
-  const handleEditOrder = async (product: salesOrderProcuctCUType) => {
-    const jsonData = changeOrderEdit({ ...formData, id: orderId}, [product], me);
-    console.log(JSON.stringify(jsonData));
+  const handleEditOrder = async (model: salesOrderProcuctCUType) => {
+    const jsonData = changeOrderEdit({ ...formData, id: orderId}, [model], me);
+    console.log('EDIT !! ', JSON.stringify(jsonData), model);
 
     // 발주 내 필수 값 입력 체크
     const ordVal = validReq(jsonData.order, salesOrderReq());
@@ -219,17 +230,10 @@ const OrderAddLayout = () => {
       return;
     }
 
-    // 모델 내 수정 필수 값 입력 체크
-    const prdValUp = validReq(jsonData.products.update, salesOrderProcuctReq());
-    if(!prdValUp.isValid) {
-      showToast(prdValUp.missingLabels+'은(는) 필수 입력입니다.', "error");
-      return;
-    }
-
-    // 모델 내 생성 필수 값 입력 체크
-    const prdValCr = validReq(jsonData.products.create, salesOrderProcuctReq());
-    if(!prdValCr.isValid) {
-      showToast(prdValCr.missingLabels+'은(는) 필수 입력입니다.', "error");
+    // 모델 내 필수 값 입력 체크
+    const prdVal = validReq(model, salesOrderProcuctReq());
+    if(!prdVal.isValid) {
+      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
       return;
     }
 
@@ -244,6 +248,7 @@ const OrderAddLayout = () => {
 
     if(result.resultCode === 'OK_0000') {
       showToast("저장 완료", "success");
+      console.log(result);
       fetchDetail();
     } else {
       console.log(result);
@@ -311,7 +316,6 @@ const OrderAddLayout = () => {
   const inputRef = useRef<InputRef[]>([]);
   const [viewKey, setViewKey] = useState<number | null>(null);
   useEffect(()=>{
-    console.log(inputRef, inputRef.current)
     if(viewKey && inputRef.current.length > 0) {
       const targetInput = inputRef.current[viewKey];
       if (targetInput.input) {
@@ -322,7 +326,7 @@ const OrderAddLayout = () => {
 
         // 스크롤 후 포커스 되기 위함
         setTimeout(() => {
-          targetInput?.focus();
+          targetInput?.input?.focus();
         }, 300);
       }
     }
@@ -342,7 +346,7 @@ const OrderAddLayout = () => {
         // 스크롤 후 포커싱 되기 위함
         setTimeout(() => {
           const targetInput = inputRef.current[newProducts.length];
-          targetInput.focus();
+          targetInput?.input?.focus();
         }, 400);
       }
     }
@@ -466,7 +470,22 @@ const OrderAddLayout = () => {
         >
           <div className="w-full">
             <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
-              <LabelMedium label="모델 등록"/>
+              <div className="v-between-h-center">
+                <LabelMedium label="모델 등록"/>
+                
+                {/* <Button
+                  className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                  onClick={()=>{
+                    if(edit) {
+                      handleEditOrder(newProducts);
+                    } else {
+                      handleSubmitOrder(newProducts);
+                    }
+                  }}
+                >
+                  <Arrow /> 전체 저장
+                </Button> */}
+              </div>
               <DividerH />
               <SalesModelTable
                 data={newProducts}

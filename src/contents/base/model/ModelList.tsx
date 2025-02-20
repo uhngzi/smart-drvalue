@@ -83,7 +83,8 @@ const ModelList:React.FC<Props> = ({
             currPrdInfo: { ...selectRecord },
             orderTit: selectRecord.prdNm,
             // 복사일 경우 수정, 그대로일 경우 반복
-            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT
+            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT,
+            modelId: selectRecord.id,
           };
           setProductsOrder?.(newData);
         }

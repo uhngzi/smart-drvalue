@@ -215,7 +215,6 @@ const ModelHead:React.FC<Props> = ({
             disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
           />
 
-          
           <Button
             className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
             onClick={handleSubmitOrderModel}

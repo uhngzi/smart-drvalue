@@ -127,6 +127,7 @@ const CsMngContent:React.FC<Props> = ({
       }}
       prtMngSuccessFn={(entity)=>{
         setCsMngList([...csMngList, {...entity} ]);
+        setFormData({ ...formData, partnerManagerId: entity.id });
       }}
     />
     </div>

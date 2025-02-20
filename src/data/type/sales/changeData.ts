@@ -12,23 +12,23 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
     orderName: formData.orderName,
     orderRepDt: new Date(),
     empId: me?.id ?? "1",
-    // products: newProducts.map((product:salesOrderProcuctCUType) => ({
-    //   customPartnerManagerId: formData.partnerManagerId,
-    //   currPrdInfo: product.currPrdInfo,
-    //   modelId: product.modelId,
-    //   modelStatus: product.modelStatus,
-    //   orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
-    //   // orderNo: index.toString(),
-    //   orderTit: product.orderTit,
-    //   prtOrderNo: product.prtOrderNo,
-    //   orderPrdRemark: product.orderPrdRemark,
-    //   orderPrdCnt: product.orderPrdCnt,
-    //   orderPrdUnitPrice: product.orderPrdUnitPrice,
-    //   orderPrdPrice: product.orderPrdPrice,
-    //   orderPrdDueReqDt: product.orderPrdDueReqDt,
-    //   orderPrdDueDt: product.orderPrdDueDt,
-    //   orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-    // }))
+    products: newProducts.map((product:salesOrderProcuctCUType) => ({
+      customPartnerManagerId: formData.partnerManagerId,
+      currPrdInfo: product.currPrdInfo,
+      modelId: product.modelId,
+      modelStatus: product.modelStatus,
+      orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+      // orderNo: index.toString(),
+      orderTit: product.orderTit,
+      prtOrderNo: product.prtOrderNo,
+      orderPrdRemark: product.orderPrdRemark,
+      orderPrdCnt: product.orderPrdCnt,
+      orderPrdUnitPrice: product.orderPrdUnitPrice,
+      orderPrdPrice: product.orderPrdPrice,
+      orderPrdDueReqDt: product.orderPrdDueReqDt,
+      orderPrdDueDt: product.orderPrdDueDt,
+      orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
+    }))
   } as salesOrderCUType;
 
   return jsonData;
@@ -70,6 +70,7 @@ export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrde
       update: newProducts.filter(f=>!f.id?.includes('new')).map((prd:salesOrderProcuctCUType, index:number) => ({
         id: prd.id,
         currPrdInfo: prd.currPrdInfo,
+        modelId: prd.modelId,
         modelStatus: prd.modelStatus,
         orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
         // orderNo: index.toString(),
