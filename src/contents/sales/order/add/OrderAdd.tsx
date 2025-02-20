@@ -410,7 +410,7 @@ const OrderAddLayout = () => {
         >
           <div className="w-full">
             <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
-              <div><LabelMedium label="모델 등록"/></div>
+              <LabelMedium label="모델 등록"/>
               <DividerH />
               <SalesModelTable
                 data={newProducts}
@@ -418,7 +418,6 @@ const OrderAddLayout = () => {
                 selectId=""
                 newFlag={false}
                 setDeleted={setDeleted}
-                // detailRef={modelRef}
                 inputRef={inputRef}
               />
               {/* 버튼(아래 컨텐츠들) 부분은 아직 미수정... */}
