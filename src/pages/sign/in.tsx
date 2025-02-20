@@ -29,7 +29,7 @@ const SignInPage: React.FC & {
   const [pwFocused, setPwFocused] = useState<boolean>(false);
 
   const [open, setOpen] = useState<boolean>(false);
-  const [type, setType] = useState<"success" | "error">("success");
+  const [msg, setMsg] = useState<string>("");
 
   const [signInForm, setSignInForm] = useState({
     id: '',
@@ -39,8 +39,8 @@ const SignInPage: React.FC & {
   const handleSignIn = async (id: string, pw: string) => {
     try {
       const response = await instance.post('auth/v1/login/tenant/basic', {
-        userId: 'test',
-        password: 'test1234',
+        userId: id,
+        password: pw,
       });
 
       const { data, resultCode } = response.data;
@@ -48,16 +48,15 @@ const SignInPage: React.FC & {
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
         router.push('/');
-        // setOpen(true);
-        // setType("success");
-        // console.log("ok", open, type);
       } else {
-        // setOpen(true);
-        // setType("error");
+        setOpen(true);
+        setMsg(response?.data?.message);
+        console.log(response.data.message);
       }
-    } catch (e) {
-      // setOpen(true);
-      // setType("error");
+    } catch (e:any) {
+      setOpen(true);
+      setMsg(e.toString());
+      console.log(e);
     }
   };
 
@@ -143,11 +142,9 @@ const SignInPage: React.FC & {
       <AntdAlertModal
         open={open}
         setOpen={setOpen}
-        title={type === "success" ? "로그인 성공" : "로그인 실패"}
-        contents={<div>메인으로 이동합니다.</div>}
-        type={type} 
-        onOk={()=>{router.push('/')}}
-        onCancle={()=>{setOpen(false)}}
+        title={"로그인 실패"}
+        contents={<div>로그인이 실패하였습니다.<br/>{msg}</div>}
+        type={"error"}
         hideCancel={true}
       />
     </div>
