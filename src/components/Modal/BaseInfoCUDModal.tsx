@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useRef, useState } from "react";
-import { Button, DatePicker, Input } from "antd";
+import { Button, DatePicker, Input, Select } from "antd";
 
 import Calendar from "@/assets/svg/icons/newcalendar.svg";
 import Search from "@/assets/svg/icons/s_search.svg";
@@ -10,10 +10,17 @@ import styled from "styled-components";
 import AntdEditModal from "./AntdEditModal";
 import AntdAlertModal from "./AntdAlertModal";
 
+interface Option {
+  value: string | number | boolean ;
+  label: string;
+}
+
 interface Item {
   name: string; // data를 처리할때 사용될 key값
   label?: string; // input 위에 표시될 label
   type: string; // input, date, address, custom
+  inputType?: string; // input의 type
+  option?: Option[]; // select의 option
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열 third: 3개씩 나열
   placeholder?: string; // input의 placeholder
   customhtml?: React.ReactNode;
@@ -137,10 +144,22 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       )}
                       {item.type === "input" && (
                         <Input 
+                          type={item.inputType || "text"}
+                          step={item.inputType === "number" ? 0.1 : 1}
+                          min={0}
                           key={data[item.name]}
                           defaultValue={data[item.name]}
                           onChange={(e) => setData(item.name, e.target.value)}
                           placeholder={item?.placeholder}
+                        />
+                      )}
+                      {item.type === "select" && (
+                        <Select 
+                          className="w-full"
+                          options={item.option}
+                          key={data[item.name]}
+                          defaultValue={data[item.name] || (item.option && item.option[0]?.value)}
+                          onChange={(value) => {setData(item.name, value)}}
                         />
                       )}
                       {item.type === "date" && (
