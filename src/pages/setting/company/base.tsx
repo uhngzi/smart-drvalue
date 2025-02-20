@@ -10,17 +10,20 @@ import PlaceHolderImg from "@/assets/png/placeholderImg.png";
 import Search from "@/assets/svg/icons/s_search.svg";
 
 import Image from "next/image";
-import { companyType } from "@/data/type/base/company";
+import { companyType, newDataCompanyType, setDataCompanyType } from "@/data/type/base/company";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
+import { patchAPI } from "@/api/patch";
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 const CompanyBaseListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
 
+  const [postalCode, setPostalCode] = useState<string>('');
   const [ dataLoading, setDataLoading ] = useState<boolean>(false);
-  const [ data, setData ] = useState<companyType | null>(null);
+  const [ data, setData ] = useState<companyType>(newDataCompanyType);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -50,8 +53,10 @@ const CompanyBaseListPage: React.FC & {
     const w: any = window;
     const d: any = w.daum;
     new d.Postcode({
-      oncomplete: function (data: any) {
-        onInputChange();
+      oncomplete: function (map: any) {
+        handleDataChange(map.address, 'address', 'select');
+        setPostalCode(map.zonecode);
+        // setData({...data, postalCode: map.zonecode});
       },
     }).open();
   };
@@ -80,16 +85,65 @@ const CompanyBaseListPage: React.FC & {
     {value:data?.detailAddress, name:'detailAddress', type:'input', widthType:'full'},
   ]
   const companyTaxMng = [
-      {value:data?.taxManagerName, name:'taxManagerName', label:'담당자명', type:'btnInput', widthType:'third'},
+      {value:data?.taxManagerName, name:'taxManagerName', label:'담당자명', type:'input', widthType:'third'},
       {value:data?.taxManagerEmail, name:'taxManagerEmail', label:'이메일', type:'input', widthType:'third'},
       {value:data?.taxManagerPhone, name:'taxManagerPhone', label:'전화번호', type:'input', widthType:'third'},
   ]
 
-  
+    // 결과 모달창을 위한 변수
+    const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+    const [ resultType, setResultType ] = useState<AlertType>('info');
+    const [ resultTitle, setResultTitle ] = useState<string>('');
+    const [ resultText, setResultText ] = useState<string>('');
+    function setResultFunc(type: AlertType, title: string, text: string) {
+      setResultOpen(true);
+      setResultType(type);
+      setResultTitle(title);
+      setResultText(text);
+    }
 
-  function onInputChange(){
-
+  const handleDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    if(type === "input" && typeof e !== "string") {
+      const { value } = e.target;
+      setData({...data, [name]: value});
+    } else if(type === "select") {
+      if(key) {
+        setData({...data, [name]: { 
+          ...((data as any)[name] || {}), // 기존 객체 값 유지
+          [key]: e.toString(), // 새로운 key 값 업데이트
+        }});
+      } else {
+        setData({...data, [name]: e});
+      }
+    }
   }
+
+  const handleSubmitNewData = async () => {
+      try {
+          const newData = setDataCompanyType({...data, postalCode});
+          const result = await patchAPI({
+            type: 'baseinfo',
+            utype: 'tenant/',
+            url: 'company-default/jsxcrud/update',
+            jsx: 'jsxcrud',
+            etc: true,
+          },'', newData);
+          console.log(result);
+  
+          if(result.resultCode === 'OK_0000') {
+            setResultFunc('success', '회사 정보 수정 성공', '회사 정보 수정이 완료되었습니다.');
+          } else {
+            setResultFunc('error', '회사 정보 수정 실패', '회사 정보 수정을 실패하였습니다.');
+          }
+      } catch(e) {
+        setResultFunc('error', '회사 정보 등록 실패', '회사 정보 등록을 실패하였습니다.');
+      }
+    }
 
   return (
     <>
@@ -98,11 +152,11 @@ const CompanyBaseListPage: React.FC & {
         <section className="flex flex-col gap-40">
           <div>
             <p className="text-18 font-bold pb-10 pl-10">회사 정보</p>
-            <CardInputList title="" styles={{gap:"gap-20"}} items={companyInfo} handleDataChange={onInputChange}/>
+            <CardInputList title="" styles={{gap:"gap-20"}} items={companyInfo} handleDataChange={handleDataChange}/>
           </div>
           <div>
             <p className="text-18 font-bold pb-10 pl-10">세금계산서 담당자</p>
-            <CardInputList title="" styles={{gap:"gap-20"}} items={companyTaxMng} handleDataChange={onInputChange}/>
+            <CardInputList title="" styles={{gap:"gap-20"}} items={companyTaxMng} handleDataChange={handleDataChange}/>
           </div>
           <div>
             <p className="text-18 font-bold pb-10 px-10 v-between-h-center">
@@ -120,7 +174,7 @@ const CompanyBaseListPage: React.FC & {
             </div>
           </div>
           <div className="h-[50px]">
-            <Button type="primary" size="large" onClick={()=>{}} 
+            <Button type="primary" size="large" onClick={handleSubmitNewData} 
               className="w-full flex h-center gap-8 !h-full" 
               style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
               <TrArrow/>
@@ -129,6 +183,19 @@ const CompanyBaseListPage: React.FC & {
           </div>
         </section>
       )}
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={resultTitle}
+        contents={resultText}
+        type={resultType} 
+        onOk={()=>{
+          refetch();
+          setResultOpen(false);
+        }}
+        hideCancel={true}
+        theme="base"
+      />
     </>
   )
 }
