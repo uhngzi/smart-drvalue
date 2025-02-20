@@ -45,10 +45,23 @@ const AntdInput = forwardRef<InputRef, Props>((
 
     // 숫자 타입일 때 0 이하 입력 제한
     if (type === "number") {
-      const numericValue = parseFloat(value.replace(/\D/g, ""));
-      if (numericValue < 0 || isNaN(numericValue)) {
-        return; // 0 이하 값 무시
+      // 숫자 이외의 값 제거 (공백, 특수문자, 문자)
+      const sanitizedValue = value.replace(/[^0-9.-]/g, ""); // 숫자와 '.', '-'만 허용
+      const numericValue = parseFloat(sanitizedValue);
+  
+      if (isNaN(numericValue) || numericValue < 0) {
+        return; // 숫자가 아니거나 0 미만이면 무시
       }
+  
+      // 새로운 이벤트로 value 전달
+      const newEvent = Object.assign({}, e, {
+        target: {
+          ...e.target,
+          value: Number(sanitizedValue).toLocaleString(),
+        },
+      });
+  
+      return onChange?.(newEvent);  
     }
 
     // 전달받은 onChange 핸들러 실행
@@ -68,7 +81,7 @@ const AntdInput = forwardRef<InputRef, Props>((
         onChange={handleInputChange}
         className={`${className}`}
         placeholder={placeholder}
-        type={type}
+        // type={type}
         defaultValue={defaultValue}
         onPressEnter={onPressEnter}
         onKeyDown={onKeyDown}
