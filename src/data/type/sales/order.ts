@@ -202,10 +202,6 @@ export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
     orderPrdDueReqDt: null,
     orderPrdDueDt: null,
     orderPrdHotGrade: null,
-    currPrdInfo: {
-      layer: 1,
-      thic: 1,
-    }
   }
 }
 

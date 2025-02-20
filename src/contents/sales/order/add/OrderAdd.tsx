@@ -200,15 +200,51 @@ const OrderAddLayout = () => {
     );
 
     if(result.resultCode === 'OK_0000') {
-      const entity = result.data.entity;
-      showToast("고객 발주가 완료되었습니다.", "success");
+      const entity = result.data.entity as salesOrderDetailRType;
+      if(entity) {
+        setFormData({
+          id: entity.id,
+          partnerId: entity.prtInfo.prt.id,
+          partnerManagerId: entity.prtInfo.mng.id,
+          orderName: entity.orderNm,
+          orderDt: dayjs(entity.orderDt, 'YYYY-MM-DD'),
+          orderRepDt: entity.orderRepDt,
+          orderTxt: entity.orderTxt,
+          totalOrderPrice: entity.totalOrderPrice,
+          empId: entity.emp.id,
+          hotGrade: entity.hotGrade ?? HotGrade.NORMAL,
+          files: entity.files?.map((file) => { return file.storageId }),
+        });
+      }
+      
+      
+      // 신규 발주 등록 후 등록중이던 기존 모델들은 냅둔 채 저장을 누른 모델에만 아이디 값이 저장 될 수 있게 변경해줌
+      // 이후는 수정 모드로 전환되어 발주 신규 등록이 아닌 모델 저장 함수로 들어가게 됨
+      const products = result.data.products as salesOrderProductRType[];
+      if(products.length > 0) {
+        const updateData = [ ...newProducts ];
+        const index = updateData.findIndex(f => f.id === model.id);
+        if(index > -1) {
+          updateData[index] = { 
+            ...products[0],
+            currPrdInfo: products[0]?.currPrdInfo.length ? JSON.parse(products[0].currPrdInfo ?? "") : {}
+          };
+
+          setNewProducts([
+            ...updateData.slice(0, index),
+            updateData[index],
+            ...updateData.slice(index + 1),
+          ]);
+          console.log(newProducts);
+        }
+      }
+
       // 이후 수정을 위해 새 아이디로 변경
       setOrderId(entity?.id ?? "");
-      // 수정 값도 변경
+      // 수정 모드로 전환
       setEdit(true);
-      // *********** 해당 프로덕트의 아이디를 찾아서 entity 내 product로 변경하는 작업 추가 필요 *********** (API 요청 상태)
-      // 그래야 등록 후 수정 시 에러 안 뜸
-      // 그리고 새로 고침 필요없이 값만 바꿔주면 돼서 다른 모델들도 저장 후에 안 날라가고 남아있음 (새로고침 하면 저장 안 된 모델들은 다 날라감)
+
+      showToast("고객 발주가 완료되었습니다.", "success");
     } else {
       const msg = result?.response?.data?.message;
       showToast(msg, "error");
