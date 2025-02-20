@@ -1,23 +1,20 @@
 import { SetStateAction, useEffect, useState } from "react";
-import { Dropdown, MenuProps, Radio, Space } from "antd";
+import { Radio } from "antd";
 import styled from "styled-components";
 
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import AntdInput from "@/components/Input/AntdInput";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { TabSmall } from "@/components/Tab/Tabs";
 
 import { modelsType, orderModelType } from "@/data/type/sayang/models";
+import { salesOrderDetailRType } from "@/data/type/sales/order";
 
-import Edit from "@/assets/svg/icons/edit.svg";
-import SearchIcon from "@/assets/svg/icons/s_search.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
 
-import ModelDrawerContent from "./ModelDrawerContent";
 import ModelList from "@/contents/base/model/ModelList";
+import CardList from "@/components/List/CardList";
 
 interface Props {
-  orderId: string | string[] | undefined;
+  order: salesOrderDetailRType;
   drawerOpen: boolean;
   setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
   selectTabDrawer: number;
@@ -29,11 +26,10 @@ interface Props {
   setSelectId: React.Dispatch<SetStateAction<string | null>>;
   modelData: modelsType[];
   setModelData: React.Dispatch<SetStateAction<modelsType[]>>;
-  modelDataLoading: boolean;
 }
 
 const AddDrawer:React.FC<Props> = ({
-  orderId,
+  order,
   drawerOpen,
   setDrawerOpen,
   selectTabDrawer,
@@ -45,60 +41,48 @@ const AddDrawer:React.FC<Props> = ({
   setSelectId,
   modelData,
   setModelData,
-  modelDataLoading,
 }) => {
-  const items = (record: any): MenuProps['items'] => [
-    {
-      label: <>복사하여 새로 등록</>,
-      key: 0,
-      onClick:()=>{
-        setAlertOpen(true);
-        setSelectMenuKey(0);
-        setSelectRecord(record);
-      },
-    },
-    {
-      label: <>그대로 등록</>,
-      key: 1,
-      onClick:()=>{
-        setAlertOpen(true);
-        setSelectMenuKey(1);
-        setSelectRecord(record);
-      }
-    },
-  ]
-  
-  const [searchModel, setSearchModel] = useState<string>('');
+  const [ drawerPrtItems, setDrawerPrtItems ] = useState<Array<any>>([]);
+  const [ drawerMngItems, setDrawerMngItems ] = useState<Array<any>>([]);
+
+  // 거래처 클릭 시 값이 변하고 Drawer 오픈
   useEffect(()=>{
-    setModelData(modelData.filter((f:modelsType) => f.prdNm.includes(searchModel)));
-  }, [searchModel]);
-
-  const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
-  const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
-
-  const handleSelectMenu = () => {
-    if(selectMenuKey===0)       setNewFlag(true);   // 복사하여 새로 등록
-    else if(selectMenuKey===1)  setNewFlag(false);  // 그대로 등록
-    else                        return ;
-    
-    if(selectRecord !== null) {
-      const newData = [...products];
-      const index = newData.findIndex((item) => selectId === item.id);
-      if (index > -1) {
-        newData[index] = { ...newData[index], model:{ ...selectRecord }, editModel: { ...selectRecord } };
-        setProducts(newData);
-      }
-      setAlertOpen(false);
-      setDrawerOpen(false);
-      setSelectMenuKey(null);
+    if(order.prtInfo.prt) {
+      setDrawerPrtItems([
+        { label: '거래처명', value: order.prtInfo?.prt?.prtNm ?? '-', widthType: 'full' },
+        { label: '거래처 식별코드', value: order.prtInfo?.prt?.prtRegCd ?? '-', widthType: 'half' },
+        { label: '거래처 축약명', value: order.prtInfo?.prt?.prtSnm ?? '-', widthType: 'half' },
+        { label: '거래처 영문명', value: order.prtInfo?.prt?.prtEngNm ?? '-', widthType: 'half' },
+        { label: '거래처 영문 축약명', value: order.prtInfo?.prt?.prtEngSnm ?? '-', widthType: 'half' },
+        { label: '사업자등록번호', value: order.prtInfo?.prt?.prtRegNo ?? '-', widthType: 'half' },
+        { label: '법인등록번호', value: order.prtInfo?.prt?.prtCorpRegNo ?? '-', widthType: 'half' },
+        { label: '업태', value: order.prtInfo?.prt?.prtBizType ?? '-', widthType: 'half' },
+        { label: '업종', value: order.prtInfo?.prt?.prtBizCate ?? '-', widthType: 'half' },
+        { label: '주소', value: `${order.prtInfo?.prt?.prtAddr ?? ''} ${order.prtInfo?.prt?.prtAddrDtl ?? ''}`, widthType: 'full' },
+        { label: '대표자명', value: order.prtInfo?.prt?.prtCeo ?? '-', widthType: 'half' },
+        { label: '전화번호', value: order.prtInfo?.prt?.prtTel ?? '-', widthType: 'half' },
+        { label: '팩스번호', value: order.prtInfo?.prt?.prtFax ?? '-', widthType: 'half' },
+        { label: '이메일', value: order.prtInfo?.prt?.prtEmail ?? '-', widthType: 'half' },
+      ]);
+    } else {
+      setDrawerPrtItems([]);
     }
-  }
-  
-  // 입력하려는 모델에 값이 있는지 체크
-  const [productChk, setProductChk] = useState<boolean>(false);
-  const [alertProductOpen, setAlertProductOpen] = useState<boolean>(false);
-  
+
+    if(order.prtInfo?.mng) {
+      setDrawerMngItems([
+        { label: '담당자명', value: order.prtInfo?.mng?.prtMngNm ?? '-', widthType: 'full' },
+        { label: '부서명', value: order.prtInfo?.mng?.prtMngDeptNm ?? '-', widthType: 'half' },
+        { label: '팀명', value: order.prtInfo?.mng?.prtMngTeamNm ?? '-', widthType: 'half' },
+        { label: '전화번호', value: order.prtInfo?.mng?.prtMngTel ?? '-', widthType: 'half' },
+        { label: '휴대번호', value: order.prtInfo?.mng?.prtMngMobile ?? '-', widthType: 'half' },
+        { label: '팩스번호', value: order.prtInfo?.mng?.prtMngFax ?? '-', widthType: 'half' },
+        { label: '이메일', value: order.prtInfo?.mng?.prtMngEmail ?? '-', widthType: 'half' },
+      ]);
+    } else {
+      setDrawerMngItems([]);
+    }
+  }, [order]);
+
   return (
     <>
       <AntdDrawer
@@ -107,16 +91,24 @@ const AddDrawer:React.FC<Props> = ({
         close={()=>{setDrawerOpen(false)}}
       >
         <div className="w-full px-20 py-30 flex flex-col gap-20">
-          <TabSmall
-            items={[
-              {key:1,text:'고객발주(요구)정보'},
-              {key:2,text:'모델목록'},
-            ]}
-            selectKey={selectTabDrawer}
-            setSelectKey={setSelectTabDrawer}
-          />
+          <div className="flex w-full v-between-h-center">
+            <TabSmall
+              items={[
+                {key:1,text:'고객 정보'},
+                {key:2,text:'모델 목록'},
+              ]}
+              selectKey={selectTabDrawer}
+              setSelectKey={setSelectTabDrawer}
+            />
+            <p className="cursor-pointer" onClick={()=>setDrawerOpen(false)}><Close/></p>
+          </div>
           { selectTabDrawer === 1 ?
-            <ModelDrawerContent orderId={orderId} />
+            <>
+              <CardList title="고객정보" 
+                items={drawerPrtItems}/>
+              <CardList title="담당자정보" 
+                items={drawerMngItems}/>
+            </>
             :
             <ModelList
               type="match"
@@ -129,145 +121,9 @@ const AddDrawer:React.FC<Props> = ({
               setNewFlag={setNewFlag}
               setDrawerOpen={setDrawerOpen}
             />
-            // <div className="flex flex-col gap-20">
-            //   <div className="flex h-70 py-20 border-b-1 border-line">
-            //     <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
-            //     <div
-            //       className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
-            //       onClick={()=>{}}
-            //     >
-            //       <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
-            //     </div>
-            //   </div>
-            //   <div className="">
-            //     { !modelDataLoading &&
-            //       <AntdTableEdit
-            //         columns={[
-            //           {
-            //             title: '모델명',
-            //             dataIndex: 'prdNm',
-            //             key: 'prdNm',
-            //             align: 'center',
-            //           },
-            //           {
-            //             title: 'Rev No',
-            //             dataIndex: 'prdRevNo',
-            //             key: 'prdRevNo',
-            //             align: 'center',
-            //           },
-            //           {
-            //             title: '층/두께',
-            //             dataIndex: 'thk',
-            //             key: 'thk',
-            //             align: 'center',
-            //             render: (value, record:modelsType) => (
-            //               <div className="w-full h-full v-h-center">
-            //                 {record.layerEm} / {value}
-            //               </div>
-            //             )
-            //           },
-            //           {
-            //             title: '동박두께',
-            //             dataIndex: 'copOut',
-            //             key: 'copOut',
-            //             align: 'center',
-            //             render: (value, record:modelsType) => (
-            //               <div className="w-full h-full v-h-center">
-            //                 {value+'외'} / {record.copIn+'내'}
-            //               </div>
-            //             )
-            //           },
-            //           {
-            //             title: '',
-            //             dataIndex: 'id',
-            //             key: 'id',
-            //             align: 'center',
-            //             render: (value, record) => (
-            //               <Dropdown trigger={['click']} menu={{ items:items(record) }}>
-            //                 <a onClick={(e) => e.preventDefault()}>
-            //                   <Space>
-            //                     <div 
-            //                       className="w-full h-full v-h-center cursor-pointer"
-            //                       onClick={()=>{}}
-            //                     >
-            //                       <p className="w-12 h-12 v-h-center"><Edit /></p>
-            //                     </div>
-            //                   </Space>
-            //                 </a>
-            //               </Dropdown>
-            //             )
-            //           },
-            //         ]}
-            //         data={modelData}
-            //         styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
-            //       /> }
-            //   </div>
-            // </div>
           }
         </div>
       </AntdDrawer>
-
-      <AntdAlertModal
-        open={alertOpen}
-        setOpen={setAlertOpen}
-        title={"등록할 모델의 관리번호 선택"}
-        contents={<div>
-          <CustomRadioGroup size="large" className="flex gap-20" value={selectId}>
-          {
-            products.filter(f=>!f.completed).map((p) => (
-              <Radio.Button
-                key={p.id}
-                value={p.id}
-                onClick={(e)=>{
-                  setSelectId(p.id);
-                  // 해당 모델에 입력된 값이 있을 경우
-                  if(p.editModel) setProductChk(true);
-                  console.log(p);
-                }}
-                className="!rounded-20 [border-inline-start-width:1px]"
-              >{p.prtOrderNo}</Radio.Button>
-            ))
-          }
-          </CustomRadioGroup>
-        </div>}
-        type={'info'} 
-        onCancle={()=>{
-          setAlertOpen(false);
-        }}
-        onOk={()=>{
-          // 해당 모델에 입력된 값이 있을 경우
-          if(productChk) {
-            setAlertOpen(false);
-            setAlertProductOpen(true);
-          } else {
-            handleSelectMenu();
-          }
-        }}
-        okText={'완료'}
-        cancelText={'취소'}
-      />
-
-      <AntdAlertModal
-        open={alertProductOpen}
-        setOpen={setAlertProductOpen}
-        title={"값이 이미 존재하는 모델입니다."}
-        contents={<div>
-          기존에 입력된 데이터가 있습니다.<br/>
-          입력된 데이터가 사라지고 모델의 정보로 입력됩니다.
-        </div>}
-        type={'warning'} 
-        onCancle={()=>{
-          setProductChk(false);
-          setAlertProductOpen(false);
-        }}
-        onOk={()=>{
-          setProductChk(false);
-          setAlertProductOpen(false);
-          handleSelectMenu();
-        }}
-        okText={'선택한 모델의 정보로 새로 입력할게요'}
-        cancelText={'취소할게요'}
-      />
     </>
   )
 }

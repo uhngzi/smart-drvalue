@@ -91,10 +91,7 @@ const ModelHead:React.FC<Props> = ({
           ]}
           value={model.modelStatus}
           onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'modelStatus', e);
-            else
-              handleModelDataChange(model.id ?? '', 'model.modelStatus', e)
+            handleModelDataChange(model.id ?? '', 'modelStatus', e);
           }}
           className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
           disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
@@ -115,7 +112,7 @@ const ModelHead:React.FC<Props> = ({
                   inputRef.current[index] = el;
                 }
               }}
-              value={(model as orderModelType).model?.prdNm}
+              value={(model as orderModelType).model?.prdNm ?? model.orderTit}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value)}
               className="w-[180px!important]" styles={{ht:'32px'}}
               readonly={read ? read : selectId === model.id ? !newFlag : undefined}
@@ -233,7 +230,7 @@ const ModelHead:React.FC<Props> = ({
       { type === 'match' && model.completed && 
         <FullChip label="확정" state="mint" className="!mr-20 !w-80 !h-30"/>
       }
-      { type === 'match' && (model as orderModelType).temp && 
+      { type === 'match' && !model.completed && (model as orderModelType).temp && 
         <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
       }
       </div>

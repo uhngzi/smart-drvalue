@@ -6,38 +6,40 @@ import { useRouter } from "next/router";
 import { getAPI } from "@/api/get";
 import { postAPI } from '@/api/post';
 import { patchAPI } from '@/api/patch';
-import dayjs from 'dayjs';
 
-import FullChip from '@/components/Chip/FullChip';
-import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
-import AntdSelect from "@/components/Select/AntdSelect";
+import ModelHead from '@/components/ModelTable/ModelHead';
 import AddDrawer from '@/contents/sayang/model/add/AddDrawer';
 import AntdAlertModal from '@/components/Modal/AntdAlertModal';
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
+import { TabSmall } from '@/components/Tab/Tabs';
+import { salesOrderModelReadClmn } from '@/components/ModelTable/Column';
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
-import { modelReq, orderModelType } from "@/data/type/sayang/models";
 import { useBase } from '@/data/context/BaseContext';
 import { useModels } from '@/data/context/ModelContext';
+import {
+  modelReq,
+  orderModelType
+} from "@/data/type/sayang/models";
 import { 
   changeModelAddNewModel,
   changeModelAddTemp
 } from '@/data/type/sayang/changeData';
+import { 
+  salesOrderDetailRType,
+  salesOrderProductRType
+} from '@/data/type/sales/order';
 
 import useToast from '@/utils/useToast';
 import { validReq } from '@/utils/valid';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
-import ModelHead from '@/components/ModelTable/ModelHead';
-import { salesOrderDetailRType, salesOrderProductRType } from '@/data/type/sales/order';
-import SalesModelTable from '@/components/ModelTable/SalesModelTable';
-import { TabSmall } from '@/components/Tab/Tabs';
-import { salesOrderModelClmn, salesOrderModelReadClmn } from '@/components/ModelTable/Column';
+
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -85,16 +87,12 @@ const SayangModelAddPage: React.FC & {
   });
   useEffect(()=>{
     if(!orderModelLoading && queryOrderModelData?.resultCode === "OK_0000") {
-      const omodels = ((queryOrderModelData.data?.data as salesOrderDetailRType)?.products ?? [])
-        .map((item:salesOrderProductRType) => ({
-          ...item,
-          currPrdInfo: item.currPrdInfo ? JSON.parse(item.currPrdInfo ?? "") : {}
-        })
-      );
-      console.log(
-        omodels,
-        (queryOrderModelData.data?.data as salesOrderDetailRType)?.products
-      );
+      const products = (queryOrderModelData.data?.data as salesOrderDetailRType)?.products;
+      const omodels = products.map((item:salesOrderProductRType, index:number) => ({
+        ...item,
+        index: products.length - index,
+        currPrdInfo: item.currPrdInfo ? JSON.parse(item.currPrdInfo ?? "") : {}
+      }));
       setOrderModels(omodels);
     }
   }, [queryOrderModelData])
@@ -160,7 +158,7 @@ const SayangModelAddPage: React.FC & {
         // 키 값이 객체일 경우 키값 분해
         // ex. orderModel.prdNm > orderModel 안에 "prdNm"에 접근해야 함
         const keys = name.split(".");
-        const updatedItem = { ...item };
+        const updatedItem = { ...item, temp: false };
   
         // 마지막 키를 제외한 객체 탐색
         const lastKey = keys.pop()!;
@@ -299,6 +297,18 @@ const SayangModelAddPage: React.FC & {
 
     if(resultPatch.resultCode === 'OK_0000') {
       showToast("확정저장 완료", "success");
+      const index = data.findIndex(f=>f.id === id);
+      if(index > -1) {
+        const updateData = data;
+        updateData[index] = { ...data[index], completed: true };
+
+        const newArray = [
+          ...updateData.slice(0, index),
+          updateData[index],
+          ...updateData.slice(index + 1)
+        ];
+        setData(newArray);
+      }
       handleSumbitTemp(id, false);
       setNewFlag(true);
       setResultOpen(true);
@@ -352,7 +362,7 @@ const SayangModelAddPage: React.FC & {
       setMatchTab(
         data.map((m, index)=>({
           key:index,
-          text: m.editModel?.prdNm ?? m.model?.prdNm ?? m.tempPrdInfo?.prdNm,
+          text: m.editModel?.prdNm ?? m.model?.prdNm ?? m.tempPrdInfo?.prdNm ?? m.orderTit,
         }))
       );
     }
@@ -534,7 +544,7 @@ const SayangModelAddPage: React.FC & {
       </div>
 
       <AddDrawer
-        orderId={orderId}
+        order={(queryOrderModelData?.data.data ?? {}) as salesOrderDetailRType}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
         selectTabDrawer={selectTabDrawer}
@@ -546,7 +556,6 @@ const SayangModelAddPage: React.FC & {
         setSelectId={setSelectId}
         modelData={models}
         setModelData={setModels}
-        modelDataLoading={modelsLoading}
       />
 
       <AntdAlertModal

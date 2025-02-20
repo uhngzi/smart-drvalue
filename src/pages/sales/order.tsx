@@ -44,11 +44,11 @@ import useToast from "@/utils/useToast";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 import AddOrderContents from "@/contents/sales/order/AddOrderContents";
 import { LabelMedium } from "@/components/Text/Label";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import { useRouter } from "next/router";
+import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
