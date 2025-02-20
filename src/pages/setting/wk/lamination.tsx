@@ -178,9 +178,9 @@ const WkLaminationListPage: React.FC & {
   }
 
   function modalClose(){
-      setNewOpen(false);
-      setNewData(newLaminationCUType);
-    }
+    setNewOpen(false);
+    setNewData(newLaminationCUType);
+  }
 
   return (
     <>

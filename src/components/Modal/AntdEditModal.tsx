@@ -74,8 +74,8 @@ const AntdEditModal: React.FC<Props> = ({
     >
       <div className="w-full flex-1 px-20 pb-20 overflow-y-auto relative">
         <div className="w-24 h-24 cursor-pointer absolute" style={{right: 30, top: 20}} onClick={onClose||(()=>setOpen(false))}>
-            <DeleteCircle />
-          </div>
+          <DeleteCircle />
+        </div>
         {contents}
       </div>
     </Modal>
