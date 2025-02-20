@@ -74,5 +74,5 @@ git pull
   개인 계정명
   개인 토큰
 yarn build
-pm2 gracefulReload 0
+pm2 restart 0
 ```

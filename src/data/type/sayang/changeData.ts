@@ -256,6 +256,7 @@ export const changeSayangTemp = (
         ...jsonData,
         prdGroup: {
           prdGrpNm: specData.specPrdGroupPrcs?.[0]?.prdGrpNm,
+          prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.id,
           data: specData.specPrdGroupPrcs && specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
             prcIdx: prc.id,
             order: prc.ordNo,
