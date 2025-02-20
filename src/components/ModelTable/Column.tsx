@@ -8,7 +8,7 @@ import {
   ModelTypeEm,
   SalesOrderStatus
 } from "@/data/type/enum";
-import { salesOrderProcuctCUType } from "@/data/type/sales/order";
+import { salesOrderProcuctCUType, salesOrderProductRType } from "@/data/type/sales/order";
 
 import AntdInputFill from "../Input/AntdInputFill";
 import AntdSelectFill from "../Select/AntdSelectFill";
@@ -771,6 +771,643 @@ export const salesOrderModelClmn = (
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+]
+
+export const salesOrderModelReadClmn = (
+  unitSelectList: selectType[],
+  vcutSelectList: selectType[],
+  outSelectList: selectType[],
+  smPrintSelectList: selectType[],
+  smColorSelectList: selectType[],
+  smTypeSelectList: selectType[],
+  mkPrintSelectList: selectType[],
+  mkColorSelectList: selectType[],
+  mkTypeSelectList: selectType[],
+  spPrintSelectList: selectType[],
+  spTypeSelectList: selectType[],
+): TableProps['columns'] => [
+  {
+    title: 'No',
+    width: 30,
+    dataIndex: 'id',
+    key: 'id',
+    align: 'center',
+    render: (value:any, record:any, index:number) => (
+      <>
+        <div className="h-[50%] w-[100%] v-h-center ">
+          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
+        </div>
+      </>
+    ),
+  },
+  {
+    title: 'Rev',
+    dataIndex: 'rev',
+    width: 80,
+    key: 'rev',
+    align: 'center',
+    children: [
+      {
+        title:'납품단위',
+        width: 80,
+        dataIndex: 'user',
+        key:'user',
+        align: 'center',
+        render: (value:any, record:any) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.prdRevNo}
+                className='!text-12'
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={unitSelectList}
+                value={record.currPrdInfo?.unit?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '층',
+    dataIndex: 'layer',
+    key: 'layer',
+    align: 'center',
+    children: [
+      {
+        title:'두께(T)',
+        width: 65,
+        dataIndex: 'thic_layer',
+        key:'thic_layer',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={generateFloorOptions()}
+                value={record.currPrdInfo?.layerEm}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.thk}
+                className='!text-12'
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: '동박두께',
+    width: 75,
+    dataIndex: 'dongback',
+    key: 'dongback',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 75,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.copOut}
+                className="!text-12" 
+                readonly={true}
+              /> 외
+            </div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.copIn}
+                className="!text-12" 
+                readonly={true}
+              />내
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '도금(㎛)',
+    width: 60,
+    dataIndex: 'dogeum',
+    key: 'dogeum',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 60,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pltThk}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.pltAlph}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '특수도금(㎛)',
+    width:110,
+    dataIndex: 'tDogeum',
+    key: 'tDogeum',
+    align: 'center',
+    children: [
+      {
+        title:'Ni Au',
+        width: 90,
+        dataIndex: 'tDogeum',
+        key:'tDogeum',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltNi}
+                className="!text-12"
+                readonly={true}
+              />
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltNiAlph}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltAu}
+                className="!text-12"
+                readonly={true}
+              />
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltAuAlph}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'S/M',
+    width:125,
+    dataIndex: 'sm',
+    key: 'sm',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smPrintSelectList} 
+                value={record.currPrdInfo?.smPrint?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smColorSelectList} 
+                value={record.currPrdInfo?.smColor?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={smTypeSelectList} 
+                value={record.currPrdInfo?.smType?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'M/K',
+    width:125,
+    dataIndex: 'mk',
+    key: 'mk',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkPrintSelectList}
+                value={record.currPrdInfo?.mkPrint?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkColorSelectList}
+                value={record.currPrdInfo?.mkColor?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={mkTypeSelectList}
+                value={record.currPrdInfo?.mkType?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '특수인쇄',
+    width:125,
+    dataIndex: 'tPrint',
+    key: 'tPrint',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 125,
+        dataIndex: '',
+        key:'',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={spPrintSelectList}
+                value={record.currPrdInfo?.spPrint?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={spTypeSelectList}
+                value={record.currPrdInfo?.spType?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
+                value={record.currPrdInfo?.modelTypeEm?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '외형가공',
+    width:90,
+    dataIndex: 'out',
+    key: 'out',
+    align: 'center',
+    children: [
+      {
+        title:'브이컷',
+        width:90,
+        dataIndex: 'vcut',
+        key: 'vcut',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={outSelectList} 
+                value={record.currPrdInfo?.aprType?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={[{value:false,label:'무'},{value:true,label:'유'}]}
+                value={record.currPrdInfo?.vcutYn ?? false}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={vcutSelectList}
+                value={record.currPrdInfo?.vcutType?.id}
+                styles={{fs:'12px'}}
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '도면번호',
+    width:100,
+    dataIndex: 'doNum',
+    key: 'doNum',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width:100,
+        dataIndex: 'doNum',
+        key: 'doNum',
+        align: 'center',
+        render: (_, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.doNum}
+                className='w-[100px] !text-12'
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: 'PCS',
+    width:50,
+    dataIndex: 'pcs',
+    key: 'pcs',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'pcsSize_xy',
+        key: 'pcsSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pcsL}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pcsW}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'KIT',
+    width:50,
+    dataIndex: 'kit',
+    key: 'kit',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'kitSize_xy',
+        key: 'kitSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitL}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitW}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'PNL',
+    width:50,
+    dataIndex: 'pnl',
+    key: 'pnl',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:50,
+        dataIndex: 'pnlSize_xy',
+        key: 'pnlSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlL}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlW}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: '연조KIT',
+    width:55,
+    dataIndex: 'arkit',
+    key: 'arkit',
+    align: 'center',
+    children:[
+      {
+        title: '연조PNL',
+        width:100,
+        dataIndex: 'arpnl',
+        key: 'arpnl',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.currPrdInfo?.ykitL}
+                className="!text-12"
+                readonly={true}
+              />
+              <AntdInputFill
+                value={record.currPrdInfo?.ykitW}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass+" gap-3"}>
+              <AntdInputFill
+                value={record.currPrdInfo?.ypnlL}
+                className="!text-12"
+                readonly={true}
+              />
+              <AntdInputFill
+                value={record.currPrdInfo?.ypnlW}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'KIT/PCS',
+    width:50,
+    dataIndex: 'kitpcs',
+    key: 'kitpcs',
+    align: 'center',
+    children:[
+      {
+        title: 'PNL/KIT',
+        width:50,
+        dataIndex: 'pnlkit',
+        key: 'pnlkit',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitPcs}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlKit}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'STH/PNL',
+    width:50,
+    dataIndex: 'sthpnl',
+    key: 'sthpnl',
+    align: 'center',
+    children:[
+      {
+        title: 'STH/PCS',
+        width:50,
+        dataIndex: 'sthpcs',
+        key: 'sthpcs',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.sthPnl}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.sthPcs}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pinCnt}
+                className="!text-12"
+                readonly={true}
               />
             </div>
           </div>

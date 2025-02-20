@@ -16,7 +16,7 @@ import { patchAPI } from "@/api/patch";
 import ModelHead from "./ModelHead";
 
 interface Props {
-  data: salesOrderProcuctCUType[]
+  data: salesOrderProcuctCUType[];
   setData: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
   selectId: string | null;
   newFlag: boolean;

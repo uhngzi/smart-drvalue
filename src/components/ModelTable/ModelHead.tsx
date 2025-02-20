@@ -24,6 +24,7 @@ const Divider:React.FC = () => {
 
 interface Props {
   type: 'order' | 'match';
+  read?: boolean;
   model: orderModelType | salesOrderProcuctCUType;
   handleModelDataChange: (id: string, name: string, value: any) => void;
   selectId: string | null;
@@ -37,6 +38,7 @@ interface Props {
 
 const ModelHead:React.FC<Props> = ({
   type,
+  read,
   model,
   handleModelDataChange,
   selectId,
@@ -64,7 +66,7 @@ const ModelHead:React.FC<Props> = ({
             if(type === 'order')
               handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
           }}
-          readonly={type === 'order' ? selectId === model.id ? !newFlag : undefined : true}
+          readonly={type === 'order' ? read ? true : selectId === model.id ? !newFlag : undefined : true}
           className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
           disabled={model.completed}
         />
@@ -76,7 +78,7 @@ const ModelHead:React.FC<Props> = ({
             if(type === 'order')
               handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
           }}
-          readonly={type === "order" ? false : true}
+          readonly={type === "order" ? read : true}
           className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
           disabled={model.completed}
         />
@@ -96,6 +98,7 @@ const ModelHead:React.FC<Props> = ({
           }}
           className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
           disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
+          readonly={read}
         />
       </div>
 
@@ -115,7 +118,7 @@ const ModelHead:React.FC<Props> = ({
               value={(model as orderModelType).model?.prdNm}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value)}
               className="w-[180px!important]" styles={{ht:'32px'}}
-              readonly={selectId === model.id ? !newFlag : undefined}
+              readonly={read ? read : selectId === model.id ? !newFlag : undefined}
               disabled={model.completed}
             />
           </>
@@ -137,6 +140,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.board.id', e)
           }}
           className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+          readonly={read}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
         />
 
@@ -153,7 +157,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
           }}
           className="w-[120px!important]" styles={{ht:'32px'}}
-          readonly={selectId === model.id ? !newFlag : undefined}
+          readonly={read ? read : selectId === model.id ? !newFlag : undefined}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
         />
 
@@ -174,6 +178,7 @@ const ModelHead:React.FC<Props> = ({
           }}
           className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          readonly={read}
         />
       </div>
 
@@ -181,14 +186,14 @@ const ModelHead:React.FC<Props> = ({
 
       <div className="h-full h-center gap-10 p-10">
         <Label label="납기" />
-        { type === 'match' &&
+        { (read || type === 'match') &&
           <p className="h-center justify-end">{
             model.orderPrdDueDt ?
             dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null
           }</p>
         }
         
-        { type === 'order' && <>
+        { (!read && type === 'order') && <>
           <AntdDatePicker
             value={model.orderPrdDueDt}
             onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}

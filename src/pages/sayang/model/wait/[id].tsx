@@ -34,6 +34,10 @@ import { validReq } from '@/utils/valid';
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import ModelHead from '@/components/ModelTable/ModelHead';
+import { salesOrderDetailRType, salesOrderProductRType } from '@/data/type/sales/order';
+import SalesModelTable from '@/components/ModelTable/SalesModelTable';
+import { TabSmall } from '@/components/Tab/Tabs';
+import { salesOrderModelClmn, salesOrderModelReadClmn } from '@/components/ModelTable/Column';
 
 const SayangModelAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -61,6 +65,40 @@ const SayangModelAddPage: React.FC & {
     spTypeSelectList,
   } = useBase();
   const { models, setModels, modelsLoading, refetchModels } = useModels();
+
+  // ------------- 발주 데이터 세팅 ------------- 시작
+  const [orderModels, setOrderModels] = useState<salesOrderProductRType[]>([]);
+  const { data:queryOrderModelData, isLoading:orderModelLoading } = useQuery({
+    queryKey: ['sales-order/detail/jsxcrud/one', orderId],
+    queryFn: async () => {
+      try {
+        return getAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: `sales-order/detail/jsxcrud/one/${orderId}`
+        });
+      } catch (e) {
+        return;
+      }
+    },
+    enabled: !!orderId,
+  });
+  useEffect(()=>{
+    if(!orderModelLoading && queryOrderModelData?.resultCode === "OK_0000") {
+      const omodels = ((queryOrderModelData.data?.data as salesOrderDetailRType)?.products ?? [])
+        .map((item:salesOrderProductRType) => ({
+          ...item,
+          currPrdInfo: item.currPrdInfo ? JSON.parse(item.currPrdInfo ?? "") : {}
+        })
+      );
+      console.log(
+        omodels,
+        (queryOrderModelData.data?.data as salesOrderDetailRType)?.products
+      );
+      setOrderModels(omodels);
+    }
+  }, [queryOrderModelData])
+  // ------------- 발주 데이터 세팅 ------------- 끝
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -296,6 +334,30 @@ const SayangModelAddPage: React.FC & {
     return () => observer.disconnect();
   }, [inputRef]);
 
+  const [orderModelsSelect, setOrderModelsSelect] = useState<number>(0);
+  const [orderTab, setOrderTab] = useState<{key:number, text:string}[]>([]);
+  useEffect(()=>{
+    if(orderModels.length > 0) {
+      setOrderTab(
+        orderModels.map((m, index)=>({
+          key:index,
+          text:m.orderTit,
+        }))
+      );
+    }
+  }, [orderModels])
+  const [matchTab, setMatchTab] = useState<{key:number, text:string}[]>([]);
+  useEffect(()=>{
+    if(data.length > 0) {
+      setMatchTab(
+        data.map((m, index)=>({
+          key:index,
+          text: m.editModel?.prdNm ?? m.model?.prdNm ?? m.tempPrdInfo?.prdNm,
+        }))
+      );
+    }
+  }, [data])
+
   if (modelsLoading || dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
@@ -308,82 +370,147 @@ const SayangModelAddPage: React.FC & {
         className="gap-20 flex"
         style={{minWidth:1600}}
       >
-        <div className="border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40" style={{width:'calc(100% - 100px)', height:'calc(100vh - 192px)'}}>
-        { !dataLoading &&
-        data
-        // 모델이 폐기 됐을 경우 필터링
-        .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
-        .map((model:orderModelType, index:number) => (
-          <div className="flex flex-col gap-16" key={model.id}
-            // style={model.completed?{background:"#F8F8F8"}:{}}
-          >
-            <ModelHead
-              type="match"
-              model={model}
-              handleModelDataChange={handleModelDataChange}
-              boardSelectList={boardSelectList}
-              metarialSelectList={metarialSelectList}
-              selectId={selectId ?? ""}
-              newFlag={newFlag}
-              inputRef={inputRef}
-              index={index}
-            />
-            
-            <div className="flex flex-col ">
-              <AntdTable
-                columns={sayangModelWaitAddClmn(
-                  deleteModel,
-                  surfaceSelectList,
-                  unitSelectList,
-                  vcutSelectList,
-                  outSelectList,
-                  smPrintSelectList,
-                  smColorSelectList,
-                  smTypeSelectList,
-                  mkPrintSelectList,
-                  mkColorSelectList,
-                  mkTypeSelectList,
-                  spPrintSelectList,
-                  spTypeSelectList,
-                  handleModelDataChange,
-                  newFlag,
-                  selectId,
-                )}
-                data={[model]}
-                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
-                tableProps={{split:'none'}}
-              />
-            </div>
-            { !model.completed ?
-            <div className="w-full h-32 flex justify-end gap-5">
-              <FullOkButtonSmall
-                click={()=>{
-                  if(!model.modelStatus) {
-                    showToast("모델 선택", "error");
-                    return;
-                  }
+        {/* 테이블 */}
+        <div className="w-[calc(100vw-100px)] flex flex-col gap-40">
+          {/* 고객 발주 목록 */}
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+            {
+              orderModels
+              .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+              .map((model:salesOrderProductRType, index:number) => (
+                orderModelsSelect === index &&
+                <>
+                  <TabSmall
+                    items={orderTab}
+                    selectKey={orderModelsSelect}
+                    setSelectKey={setOrderModelsSelect}
+                  />
 
-                  //그대로 등록일 경우에는 바로 확정만 진행
-                  if(!newFlag && selectId === model.id) {
-                    handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
-                    return;
-                  }
-                  handleSubmit(model.id);
-                }}
-                label="확정저장"
-              />
-              <Button variant="outlined" color="primary"
-                onClick={()=>{
-                  handleSumbitTemp(model.id, true);
-                }}
-              >임시저장</Button>
-            </div> : 
-            <div className="w-full h-32 flex justify-end gap-5">
-              {/* <FullChip label="확정 완료" state="mint" /> */}
-            </div>}
+                  <ModelHead
+                    type="order"
+                    read={true}
+                    model={model}
+                    handleModelDataChange={handleModelDataChange}
+                    boardSelectList={boardSelectList}
+                    metarialSelectList={metarialSelectList}
+                    selectId={selectId ?? ""}
+                    newFlag={newFlag}
+                    inputRef={inputRef}
+                    index={index}
+                  />
+                
+                  <div className="flex flex-col ">
+                    <AntdTable
+                      columns={salesOrderModelReadClmn(
+                        unitSelectList,
+                        vcutSelectList,
+                        outSelectList,
+                        smPrintSelectList,
+                        smColorSelectList,
+                        smTypeSelectList,
+                        mkPrintSelectList,
+                        mkColorSelectList,
+                        mkTypeSelectList,
+                        spPrintSelectList,
+                        spTypeSelectList,
+                      )}
+                      data={[model]}
+                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+                      tableProps={{split:'none'}}
+                    />
+                  </div>
+                </>
+              ))
+            }
           </div>
-        ))}
+          
+          {/* 수주 탭 */}
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+          { !dataLoading && data
+            // 모델이 폐기 됐을 경우 필터링
+            .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+            .map((model:orderModelType, index:number) => (
+              orderModelsSelect === index &&
+              <div className="flex flex-col gap-16" key={model.id}
+                // style={model.completed?{background:"#F8F8F8"}:{}}
+              >
+                <TabSmall
+                  items={matchTab}
+                  selectKey={orderModelsSelect}
+                  setSelectKey={setOrderModelsSelect}
+                />
+
+                <ModelHead
+                  type="match"
+                  model={model}
+                  handleModelDataChange={handleModelDataChange}
+                  boardSelectList={boardSelectList}
+                  metarialSelectList={metarialSelectList}
+                  selectId={selectId ?? ""}
+                  newFlag={newFlag}
+                  inputRef={inputRef}
+                  index={index}
+                />
+                
+                <div className="flex flex-col ">
+                  <AntdTable
+                    columns={sayangModelWaitAddClmn(
+                      deleteModel,
+                      surfaceSelectList,
+                      unitSelectList,
+                      vcutSelectList,
+                      outSelectList,
+                      smPrintSelectList,
+                      smColorSelectList,
+                      smTypeSelectList,
+                      mkPrintSelectList,
+                      mkColorSelectList,
+                      mkTypeSelectList,
+                      spPrintSelectList,
+                      spTypeSelectList,
+                      handleModelDataChange,
+                      newFlag,
+                      selectId,
+                    )}
+                    data={[model]}
+                    styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+                    tableProps={{split:'none'}}
+                  />
+                </div>
+                { !model.completed ?
+                <div className="w-full h-32 flex justify-end gap-5">
+                  <FullOkButtonSmall
+                    click={()=>{
+                      if(!model.modelStatus) {
+                        showToast("모델 선택", "error");
+                        return;
+                      }
+
+                      //그대로 등록일 경우에는 바로 확정만 진행
+                      if(!newFlag && selectId === model.id) {
+                        handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
+                        return;
+                      }
+                      handleSubmit(model.id);
+                    }}
+                    label="확정저장"
+                  />
+                  <Button variant="outlined" color="primary"
+                    onClick={()=>{
+                      handleSumbitTemp(model.id, true);
+                    }}
+                  >임시저장</Button>
+                </div> : 
+                <div className="w-full h-32 flex justify-end gap-5">
+                  {/* <FullChip label="확정 완료" state="mint" /> */}
+                </div>}
+              </div>
+            ))
+          }
+          </div>
         </div>
+
+        {/* 우측 탭 */}
         <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 192px)'}} key="contents-tab">
           <div 
             className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
