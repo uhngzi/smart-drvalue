@@ -13,6 +13,7 @@ interface Props {
   styles?: componentsStylesType;
   value?: any;
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
+  readonly?: boolean;
 }
 
 const AntdSelectFill : React.FC<Props> = ({ 
@@ -24,6 +25,7 @@ const AntdSelectFill : React.FC<Props> = ({
   styles,
   value,
   onChange,
+  readonly,
 }) => {
 
   return (
@@ -34,6 +36,7 @@ const AntdSelectFill : React.FC<Props> = ({
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
       $fs={styles?.fs?styles.fs:'14px'}
       $pd={styles?.pd?styles.pd:'0 11px'}
+      $readOnly={readonly ?? false}
     >
       <Select
         value={value}
@@ -41,9 +44,10 @@ const AntdSelectFill : React.FC<Props> = ({
         className={`w-full rounded-0 ${className}`}
         options={options}
         defaultValue={defaultValue}
-        disabled={disabled}
+        disabled={disabled ?? readonly}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
+        style={readonly?{color:"#222222 !important"}:{}}
       />
     </AndtSelectStyled>
   )
@@ -56,6 +60,7 @@ const AndtSelectStyled = styled.div<{
   $bc: string;
   $fs: string;
   $pd: string;
+  $readOnly: boolean;
 }>`
   width: fit-content;
   display: contents;
@@ -76,6 +81,19 @@ const AndtSelectStyled = styled.div<{
     font-size: ${({ $fs }) => $fs} !important;
     padding: ${({ $pd }) => $pd} !important;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+    ${({ $readOnly }) =>
+      $readOnly &&
+      `
+      color: #222222 !important;
+    `}
+  }
+
+  .ant-select-selection-item {
+    ${({ $readOnly }) =>
+      $readOnly &&
+      `
+      color: #222222 !important;
+    `}
   }
 `
 

@@ -14,6 +14,7 @@ interface Props {
   styles?: componentsStylesType;
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
+  readonly?: boolean,
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -26,6 +27,7 @@ const AntdSelect : React.FC<Props> = ({
   value,
   onChange,
   onKeyDown,
+  readonly,
 }) => {
 
   return (
@@ -35,6 +37,7 @@ const AntdSelect : React.FC<Props> = ({
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D9D9D9'}
       $pd={styles?.pd?styles.pd:'0 11px'}
+      $readOnly={readonly ?? false}
     >
       <Select
         value={value}
@@ -42,7 +45,7 @@ const AntdSelect : React.FC<Props> = ({
         className={`w-full ${className}`}
         options={options}
         defaultValue={defaultValue}
-        disabled={disabled}
+        disabled={disabled ?? readonly}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         onKeyDown={onKeyDown}
@@ -57,6 +60,7 @@ const AndtSelectStyled = styled.div<{
   $bw: string;
   $bc: string;
   $pd: string;
+  $readOnly: boolean;
 }>`
   width: fit-content;
   display: contents;
@@ -74,6 +78,19 @@ const AndtSelectStyled = styled.div<{
     padding: ${({ $pd }) => $pd} !important;
     border-radius: 2px;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+    ${({ $readOnly }) =>
+      $readOnly &&
+      `
+      color: #222222 !important;
+    `}
+  }
+
+  .ant-select-selection-item {
+    ${({ $readOnly }) =>
+      $readOnly &&
+      `
+      color: #222222 !important;
+    `}
   }
 `
 
