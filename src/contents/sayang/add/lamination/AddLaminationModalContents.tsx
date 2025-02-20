@@ -25,6 +25,7 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import SpecSourceRow from "./SpecSourceRow";
 import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
+import { patchAPI } from "@/api/patch";
 
 interface Props {
   defaultLayerEm?: LayerEm;
@@ -211,7 +212,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   };
   // ---------- 적층 구조 드래그 함수 ---------- 끝
 
-  // ------------ 편집 저장 시 함수 ----------- 시작
+  // ------------ 임시 저장 시 함수 ----------- 시작
   const handleSubmitSaveSource = async () => {
     try {
       const jsonData = {
@@ -232,7 +233,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        showToast("라이브러리 생성 완료", "success");
+        showToast("임시 저장", "success");
         const entity = result.data.entity as specLaminationType;
         setSpecSources([...specSources, {...entity}]);
         // 생성 후 라이브러리 자동 선택
@@ -246,7 +247,33 @@ const AddLaminationModalContents: React.FC<Props> = ({
       console.log("CATCH ERROR :: ", e);
     }
   }
-  // ------------ 편집 저장 시 함수 ----------- 끝
+  // ------------ 임시 저장 시 함수 ----------- 끝
+
+  // ------------ 확정 저장 시 함수 ----------- 시작
+  const handleSubmitSaveSourceCf = async () => {
+    try {
+      if(selectSource?.id) {
+        const result = await patchAPI({
+          type: 'core-d1', 
+          utype: 'tenant/',
+          url: `spec/lamination-source/default/confirm/${selectSource.id}`,
+          jsx: 'default',
+          etc: true,
+        }, selectSource.id);
+  
+        if(result.resultCode === 'OK_0000') {
+          showToast("확정 저장", "success");
+          specSourcesRefetch();
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ------------ 확정 저장 시 함수 ----------- 끝
 
   // -------------- 선택 시 함수 ------------- 시작
   const [submitFlag, setSubmitFlag] = useState<boolean>(false);
@@ -260,19 +287,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
       setSubmitFlag(true);
       console.log(detailData, select);
     }
-    // 확정을 어떻게 진행할지 미정이라서 일단.. 새 라이브러리 생성 후 편집 저장은... 보류...
-    // else {
-    //   // 새로 라이브러리 생성...
-    //   handleSubmitSaveSource();
-    //   if(select) {
-    //     // 받아 온 값으로 라이브러리 저장
-    //     setDetailData({
-    //       ...detailData,
-    //       specLamination: { id: select },
-    //     });
-    //     handleSumbitTemp();
-    //   }
-    // }
   }
   useEffect(()=>{
     if(submitFlag) {
@@ -290,10 +304,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
           <div className="w-96 h-24 flex v-h-center">
             <div
               onClick={()=>
-                setSelectSpecLamiFilter({
-                  ...selectSpecLamiFilter,
-                  cf: 1,
-                })
+                setSelectSpecLamiFilter({...selectSpecLamiFilter, cf: 1})
               }
               className="w-42 v-h-center cursor-pointer"
               style={selectSpecLamiFilter.cf ? 
@@ -301,14 +312,11 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 {border:"1px solid #D5D5D5"}
               }
             >
-                확정
+              확정
             </div>
             <div 
               onClick={()=>
-                setSelectSpecLamiFilter({
-                  ...selectSpecLamiFilter,
-                  cf: 0,
-                })
+                setSelectSpecLamiFilter({...selectSpecLamiFilter, cf: 0})
               }
               className="w-55 v-h-center cursor-pointer"
               style={!selectSpecLamiFilter.cf ? 
@@ -450,22 +458,41 @@ const AddLaminationModalContents: React.FC<Props> = ({
             </div>
           </div>
           <div className="w-full v-h-center gap-10">
-            <Button
-              className="h-32 rounded-6"
-              onClick={()=>{
-                handleSubmitSelectSource();
-              }}
-            >
-              <p className="w-16 h-16 text-[#222222]"><Check /></p> 선택
-            </Button>
-            <Button
-              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-              onClick={()=>{
-                handleSubmitSaveSource();
-              }}
-            >
-              <Arrow /> 편집 저장
-            </Button>
+            {
+              selectSpecLamiFilter.cf === 1 ?
+              <Button
+                className="h-32 rounded-6"
+                onClick={()=>{
+                  handleSubmitSelectSource();
+                }}
+              >
+                <p className="w-16 h-16 text-[#222222]"><Check /></p> 선택
+              </Button>
+              : <>
+              <Button
+                className="h-32 rounded-6"
+                onClick={()=>{
+                  handleSubmitSaveSource();
+                }}
+              >
+                임시 저장
+              </Button>
+              <Button
+                className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                onClick={()=>{
+                  console.log(selectSource);
+                  if(selectSource) {
+                    handleSubmitSaveSourceCf();
+                  } else {
+                    handleSubmitSaveSource();
+                    handleSubmitSaveSourceCf();
+                  }
+                }}
+              >
+                <Arrow /> 확정 저장
+              </Button>
+              </>
+            }
           </div>
         </div>
         <div className="w-24 h-center flex-col gap-5">
@@ -521,7 +548,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
               </div>
             </div>
           </div>
-          <div className="h-[480px] overflow-y-auto text-12">
+          <div className="h-[440px] overflow-y-auto text-12">
             <div className="h-40 bg-back v-between-h-center">
               <p className="w-70 v-h-center">재질</p>
               <p className="w-56 v-h-center">동박</p>
@@ -542,6 +569,15 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 />
               ))
             }
+          </div>
+          <div className="w-full v-h-center gap-10">
+            <Button
+              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+              onClick={()=>{
+              }}
+            >
+              구성 요소 추가
+            </Button>
           </div>
         </div>
       </div>

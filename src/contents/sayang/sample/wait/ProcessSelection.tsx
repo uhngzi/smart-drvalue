@@ -277,6 +277,11 @@ const ProcessSelection: React.FC<Props> = ({
               switcherIcon={null}
               checkedKeys={selectedKeys}
               onCheck={(_, info) => {
+                if(!selectPrdGrp?.id) {
+                  showToast("제품군을 선택해주세요.", "error");
+                  return;
+                }
+                
                 const id = info.node.key.toString();
                 if(info.checked) {  // 체크가 안 되어 있을 경우 값 추가
                   setDataLoading(true);
@@ -299,6 +304,11 @@ const ProcessSelection: React.FC<Props> = ({
                 }
               }}
               onClick={(_, info) => {
+                if(!selectPrdGrp?.id) {
+                  showToast("제품군을 선택해주세요.", "error");
+                  return;
+                }
+
                 if(info.children) {
                   let addArr = selectPrc;
                   info.children.map((child:any) => {

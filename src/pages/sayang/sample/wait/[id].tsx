@@ -112,6 +112,9 @@ const SayangSampleAddPage: React.FC & {
   // ------------ 필요 데이터 세팅 ------------ 끝
 
   // ------------ 세부 데이터 세팅 ------------ 시작
+  const [prcNotice, setPrcNotice] = useState<string>("");
+  const [camNotice, setCamNotice] = useState<string>("");
+
   const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<specType>({});
   const { data:queryData, isLoading, refetch } = useQuery<
@@ -135,6 +138,8 @@ const SayangSampleAddPage: React.FC & {
       const rdata = queryData?.data?.data as specType;
       setDetailData(rdata);
       setAddModelFlag(false);
+      setPrcNotice(rdata.prcNotice ?? "");
+      setCamNotice(rdata.camNotice ?? "");
       setTimeout(() => {
         setDetailDataLoading(false);
       }, 200);
@@ -169,6 +174,14 @@ const SayangSampleAddPage: React.FC & {
     if(!temp) handleSumbitTemp();
   }, [detailData])
   // ------------ 세부 데이터 세팅 ------------ 끝
+
+  useEffect(()=>{
+    setDetailData({
+      ...detailData,
+      prcNotice: prcNotice,
+      camNotice: camNotice,
+    });
+  }, [prcNotice, camNotice]);
 
   // 모델의 값 변경 시 실행 함수
   const handleModelDataChange = (
@@ -226,7 +239,6 @@ const SayangSampleAddPage: React.FC & {
       if(result.resultCode === 'OK_0000') {
         if(temp) {
           showToast("임시저장 완료", "success");
-          setTemp(true);
           refetch();
         }
 
@@ -235,12 +247,6 @@ const SayangSampleAddPage: React.FC & {
           refetch();
           setAddModelFlag(false);
         }
-        // else {
-        //   router.push({
-        //     pathname: '/sayang/sample/wait',
-        //     query: { id: detailData.id, text: detailData.specNo },
-        //   });
-        // }
       } else {
         const msg = result?.response?.data?.message;
         showToast(msg, "error");
@@ -357,7 +363,12 @@ const SayangSampleAddPage: React.FC & {
         <div className="w-full flex gap-40">
           <div className="min-w-[550px] flex-grow-[44]">
             {/* 전달 사항 */}
-            <MessageContents />
+            <MessageContents
+              prcNotice={prcNotice}
+              setPrcNotice={setPrcNotice}
+              camNotice={camNotice}
+              setCamNotice={setCamNotice}
+            />
           </div>
           <div className="min-w-[400px] flex-grow-[32]">
             {/* 배열 도면 */}

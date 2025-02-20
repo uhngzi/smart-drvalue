@@ -39,7 +39,7 @@ const SayangSampleListPage: React.FC & {
   // ------------ 대기중 리스트 데이터 세팅 ------------ 시작
   const [paginationWait, setPaginationWait] = useState({
     current: 1,
-    size: 10,
+    size: 8,
   });
   const handlePageWaitChange = (page: number) => {
     setPaginationWait({ ...paginationWait, current: page });
@@ -80,20 +80,12 @@ const SayangSampleListPage: React.FC & {
   // ------------ 대기중 리스트 데이터 세팅 ------------ 끝
 
   // ------------ 등록중 리스트 데이터 세팅 ------------ 시작
-  const [paginationIng, setPaginationIng] = useState({
-    current: 1,
-    size: 100,
-  });
-  const handlePageIngChange = (page: number) => {
-    setPaginationIng({ ...paginationIng, current: page });
-  };
   const [ingDataLoading, setIngDataLoading] = useState<boolean>(true);
-  const [ingTotalData, setIngTotalData] = useState<number>(0);
   const [ingData, setIngData] = useState<specType[]>([]);
   const { data:queryIngData, isLoading:ingLoading } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['spec/jsxcrud/many/by-model-status/spec-registering-only', paginationIng],
+    queryKey: ['spec/jsxcrud/many/by-model-status/spec-registering-only'],
     queryFn: async () => {
       setIngDataLoading(true);
       setIngData([]);
@@ -115,7 +107,6 @@ const SayangSampleListPage: React.FC & {
         // index: (Number(queryIngData?.data.total) ?? (queryIngData.data.data ?? 0).length) - idx,
       }))
       setIngData(arr);
-      setIngTotalData(queryIngData?.data.total ?? 0);
     }
   }, [queryIngData, models]);
   // ------------ 등록중 리스트 데이터 세팅 ------------ 끝
@@ -197,14 +188,10 @@ const SayangSampleListPage: React.FC & {
   return (
     <div className="flex flex-col gap-20">
       <div>
-        <ListPagination 
-          pagination={paginationIng}
-          totalData={ingData.length}
-          onChange={handlePageIngChange}
-        />
+        <p className="w-full h-center justify-end pt-30 pb-10">총 {ingData.length}건</p>
         <List>
           <AntdTableEdit
-            columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, paginationIng, router)}
+            columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, router)}
             data={ingData}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={ingDataLoading}
