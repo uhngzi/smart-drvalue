@@ -18,10 +18,11 @@ import ModelHead from "./ModelHead";
 interface Props {
   data: salesOrderProcuctCUType[]
   setData: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
-  selectId: string;
+  selectId: string | null;
   newFlag: boolean;
   setDeleted: React.Dispatch<SetStateAction<boolean>>;
   inputRef: RefObject<InputRef[]>;
+  handleSubmitOrderModel: (model:salesOrderProcuctCUType) => void;
 }
 
 const SalesModelTable:React.FC<Props> = ({
@@ -31,6 +32,7 @@ const SalesModelTable:React.FC<Props> = ({
   newFlag,
   setDeleted,
   inputRef,
+  handleSubmitOrderModel,
 }) => {
   // 디폴트 값 가져오기
   const { 
@@ -100,9 +102,10 @@ const SalesModelTable:React.FC<Props> = ({
             handleModelDataChange={handleModelDataChange}
             boardSelectList={boardSelectList}
             metarialSelectList={metarialSelectList}
-            selectId=""
+            selectId={selectId}
             newFlag={false}
             inputRef={inputRef}
+            handleSubmitOrderModel={() => handleSubmitOrderModel(model)}
           />
           <div className="flex flex-col ">
             <AntdTable

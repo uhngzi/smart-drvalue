@@ -56,7 +56,7 @@ export const salesUserOrderClmn = (
   },
   {
     title: '대기 모델 수',
-    width: 70,
+    width: 90,
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',

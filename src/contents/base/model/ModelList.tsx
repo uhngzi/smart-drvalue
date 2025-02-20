@@ -9,17 +9,19 @@ import SearchIcon from "@/assets/svg/icons/s_search.svg";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 import styled from "styled-components";
-import { SalesOrderStatus } from "@/data/type/enum";
+import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 
 interface Props {
   type: 'order' | 'match';
   models: modelsType[];
   setModels: React.Dispatch<SetStateAction<modelsType[]>>;
-  selectId: string;
-  setSelectId: React.Dispatch<SetStateAction<string>>;
+  selectId: string | null;
+  setSelectId: React.Dispatch<SetStateAction<string | null>>;
   products: orderModelType[] | salesOrderProcuctCUType[];
-  setProducts: React.Dispatch<SetStateAction<orderModelType[] | salesOrderProcuctCUType[]>>;
+  setProductsOrder?: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
+  setProductsMatch?: React.Dispatch<SetStateAction<orderModelType[]>>;
   setNewFlag: React.Dispatch<SetStateAction<boolean>>;
+  setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const ModelList:React.FC<Props> = ({
@@ -29,8 +31,10 @@ const ModelList:React.FC<Props> = ({
   selectId,
   setSelectId,
   products,
-  setProducts,
+  setProductsOrder,
+  setProductsMatch,
   setNewFlag,
+  setDrawerOpen,
 }) => {
   const items = (record: any): MenuProps['items'] => [
     {
@@ -53,9 +57,11 @@ const ModelList:React.FC<Props> = ({
     },
   ]
 
+  const [fmodel, setFmodel] = useState<modelsType[]>([]);
+  useEffect(()=>{ setFmodel(models); }, [models]);
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
-    setModels(models.filter((f:modelsType) => f.prdNm.includes(searchModel)));
+    setFmodel(models.filter((f:modelsType) => f.prdNm.includes(searchModel)));
   }, [searchModel]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -72,19 +78,36 @@ const ModelList:React.FC<Props> = ({
         const newData = [...products] as salesOrderProcuctCUType[];
         const index = newData.findIndex((item) => selectId === item.id);
         if (index > -1) {
-          newData[index] = { ...newData[index], currPrdInfo: { ...selectRecord } };
-          setProducts(newData);
+          newData[index] = {
+            ...newData[index],
+            currPrdInfo: { ...selectRecord },
+            orderTit: selectRecord.prdNm,
+            // 복사일 경우 수정, 그대로일 경우 반복
+            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT
+          };
+          setProductsOrder?.(newData);
         }
       } else {
         const newData = [...products] as orderModelType[];
         const index = newData.findIndex((item) => selectId === item.id);
         if (index > -1) {
-          newData[index] = { ...newData[index], model:{ ...selectRecord }, editModel: { ...selectRecord } };
-          setProducts(newData);
+          newData[index] = { 
+            ...newData[index],
+            // 저장 될 모델 값
+            model:{ ...selectRecord },
+            // 입력한 모델 값
+            editModel: { ...selectRecord },
+            // 복사일 경우 수정, 그대로일 경우 반복
+            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT
+          };
+          setProductsMatch?.(newData);
         }
       }
       setAlertOpen(false);
       setSelectMenuKey(null);
+
+      if(!productChk)
+        setDrawerOpen(false);
     }
   }
   
@@ -98,7 +121,6 @@ const ModelList:React.FC<Props> = ({
         <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
         <div
           className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
-          onClick={()=>{}}
         >
           <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
         </div>
@@ -125,7 +147,7 @@ const ModelList:React.FC<Props> = ({
               align: 'center',
               render: (value, record:modelsType) => (
                 <div className="w-full h-full v-h-center">
-                  {record.layerEm} / {value}
+                  {record.layerEm.replace("L","")} / {value}
                 </div>
               )
             },
@@ -161,7 +183,7 @@ const ModelList:React.FC<Props> = ({
               )
             },
           ]}
-          data={models}
+          data={fmodel}
           styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
         />
       </div>
@@ -220,14 +242,15 @@ const ModelList:React.FC<Props> = ({
           입력된 데이터가 사라지고 모델의 정보로 입력됩니다.
         </div>}
         type={'warning'} 
-        onCancle={()=>{
-          setProductChk(false);
-          setAlertProductOpen(false);
-        }}
         onOk={()=>{
           setProductChk(false);
           setAlertProductOpen(false);
           handleSelectMenu();
+          setDrawerOpen(false);
+        }}
+        onCancle={()=>{
+          setProductChk(false);
+          setAlertProductOpen(false);
         }}
         okText={'선택한 모델의 정보로 새로 입력할게요'}
         cancelText={'취소할게요'}

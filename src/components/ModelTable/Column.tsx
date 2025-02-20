@@ -54,18 +54,22 @@ export const salesOrderModelClmn = (
           // :
             <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
               onClick={()=>{
-                const updateData = newProducts;
-                const index = newProducts.findIndex(f=> f.id === value);
-                if(index > -1) {
-                  updateData[index] = { ...updateData[index], disabled: true };
-
-                  const newArray = [
-                    ...updateData.slice(0, index),
-                    updateData[index],
-                    ...updateData.slice(index + 1)
-                  ];
-                  setNewProducts(newArray);
-                  setDeleted(true);
+                if(value.includes("new")) {
+                  setNewProducts(newProducts.filter(f => f.id !== value));
+                } else {
+                  const updateData = newProducts;
+                  const index = newProducts.findIndex(f=> f.id === value);
+                  if(index > -1) {
+                    updateData[index] = { ...updateData[index], disabled: true };
+  
+                    const newArray = [
+                      ...updateData.slice(0, index),
+                      updateData[index],
+                      ...updateData.slice(index + 1)
+                    ];
+                    setNewProducts(newArray);
+                    setDeleted(true);
+                  }
                 }
               }}
             >

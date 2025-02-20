@@ -14,6 +14,7 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import SearchIcon from "@/assets/svg/icons/s_search.svg";
 
 import ModelDrawerContent from "./ModelDrawerContent";
+import ModelList from "@/contents/base/model/ModelList";
 
 interface Props {
   orderId: string | string[] | undefined;
@@ -117,80 +118,91 @@ const AddDrawer:React.FC<Props> = ({
           { selectTabDrawer === 1 ?
             <ModelDrawerContent orderId={orderId} />
             :
-            <div className="flex flex-col gap-20">
-              <div className="flex h-70 py-20 border-b-1 border-line">
-                <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
-                <div
-                  className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
-                  onClick={()=>{}}
-                >
-                  <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
-                </div>
-              </div>
-              <div className="">
-                { !modelDataLoading &&
-                  <AntdTableEdit
-                    columns={[
-                      {
-                        title: '모델명',
-                        dataIndex: 'prdNm',
-                        key: 'prdNm',
-                        align: 'center',
-                      },
-                      {
-                        title: 'Rev No',
-                        dataIndex: 'prdRevNo',
-                        key: 'prdRevNo',
-                        align: 'center',
-                      },
-                      {
-                        title: '층/두께',
-                        dataIndex: 'thk',
-                        key: 'thk',
-                        align: 'center',
-                        render: (value, record:modelsType) => (
-                          <div className="w-full h-full v-h-center">
-                            {record.layerEm} / {value}
-                          </div>
-                        )
-                      },
-                      {
-                        title: '동박두께',
-                        dataIndex: 'copOut',
-                        key: 'copOut',
-                        align: 'center',
-                        render: (value, record:modelsType) => (
-                          <div className="w-full h-full v-h-center">
-                            {value+'외'} / {record.copIn+'내'}
-                          </div>
-                        )
-                      },
-                      {
-                        title: '',
-                        dataIndex: 'id',
-                        key: 'id',
-                        align: 'center',
-                        render: (value, record) => (
-                          <Dropdown trigger={['click']} menu={{ items:items(record) }}>
-                            <a onClick={(e) => e.preventDefault()}>
-                              <Space>
-                                <div 
-                                  className="w-full h-full v-h-center cursor-pointer"
-                                  onClick={()=>{}}
-                                >
-                                  <p className="w-12 h-12 v-h-center"><Edit /></p>
-                                </div>
-                              </Space>
-                            </a>
-                          </Dropdown>
-                        )
-                      },
-                    ]}
-                    data={modelData}
-                    styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
-                  /> }
-              </div>
-            </div>
+            <ModelList
+              type="match"
+              models={modelData}
+              setModels={setModelData}
+              products={products}
+              setProductsMatch={setProducts}
+              selectId={selectId ?? ""}
+              setSelectId={setSelectId}
+              setNewFlag={setNewFlag}
+              setDrawerOpen={setDrawerOpen}
+            />
+            // <div className="flex flex-col gap-20">
+            //   <div className="flex h-70 py-20 border-b-1 border-line">
+            //     <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
+            //     <div
+            //       className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
+            //       onClick={()=>{}}
+            //     >
+            //       <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
+            //     </div>
+            //   </div>
+            //   <div className="">
+            //     { !modelDataLoading &&
+            //       <AntdTableEdit
+            //         columns={[
+            //           {
+            //             title: '모델명',
+            //             dataIndex: 'prdNm',
+            //             key: 'prdNm',
+            //             align: 'center',
+            //           },
+            //           {
+            //             title: 'Rev No',
+            //             dataIndex: 'prdRevNo',
+            //             key: 'prdRevNo',
+            //             align: 'center',
+            //           },
+            //           {
+            //             title: '층/두께',
+            //             dataIndex: 'thk',
+            //             key: 'thk',
+            //             align: 'center',
+            //             render: (value, record:modelsType) => (
+            //               <div className="w-full h-full v-h-center">
+            //                 {record.layerEm} / {value}
+            //               </div>
+            //             )
+            //           },
+            //           {
+            //             title: '동박두께',
+            //             dataIndex: 'copOut',
+            //             key: 'copOut',
+            //             align: 'center',
+            //             render: (value, record:modelsType) => (
+            //               <div className="w-full h-full v-h-center">
+            //                 {value+'외'} / {record.copIn+'내'}
+            //               </div>
+            //             )
+            //           },
+            //           {
+            //             title: '',
+            //             dataIndex: 'id',
+            //             key: 'id',
+            //             align: 'center',
+            //             render: (value, record) => (
+            //               <Dropdown trigger={['click']} menu={{ items:items(record) }}>
+            //                 <a onClick={(e) => e.preventDefault()}>
+            //                   <Space>
+            //                     <div 
+            //                       className="w-full h-full v-h-center cursor-pointer"
+            //                       onClick={()=>{}}
+            //                     >
+            //                       <p className="w-12 h-12 v-h-center"><Edit /></p>
+            //                     </div>
+            //                   </Space>
+            //                 </a>
+            //               </Dropdown>
+            //             )
+            //           },
+            //         ]}
+            //         data={modelData}
+            //         styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+            //       /> }
+            //   </div>
+            // </div>
           }
         </div>
       </AntdDrawer>

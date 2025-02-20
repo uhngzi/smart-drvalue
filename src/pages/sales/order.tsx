@@ -428,7 +428,7 @@ const SalesUserPage: React.FC & {
             setOrderDrawer,
             router,
           )}
-          data={data}
+          data={data.filter(f => !f.isDiscard)}
           styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
         />
