@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { InputRef } from "antd";
+import { Button, InputRef } from "antd";
 import { RefObject } from "react";
 
 import { selectType } from "@/data/type/componentStyles";
@@ -11,6 +11,8 @@ import FullChip from "../Chip/FullChip";
 import AntdInput from "../Input/AntdInput";
 import AntdSelect from "../Select/AntdSelect";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
+
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center justify-end">{label}</p>
@@ -24,12 +26,13 @@ interface Props {
   type: 'order' | 'match';
   model: orderModelType | salesOrderProcuctCUType;
   handleModelDataChange: (id: string, name: string, value: any) => void;
-  selectId: string;
+  selectId: string | null;
   newFlag: boolean;
   boardSelectList: selectType[];
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
+  handleSubmitOrderModel?: () => void;
 }
 
 const ModelHead:React.FC<Props> = ({
@@ -42,9 +45,8 @@ const ModelHead:React.FC<Props> = ({
   metarialSelectList,
   inputRef,
   index,
+  handleSubmitOrderModel,
 }) => {
-  const readonly = type === 'order' ? false : true;
-
   return (
     <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
       <div className="h-full h-center gap-10 p-10">
@@ -62,7 +64,7 @@ const ModelHead:React.FC<Props> = ({
             if(type === 'order')
               handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
           }}
-          readonly={readonly}
+          readonly={type === 'order' ? selectId === model.id ? !newFlag : undefined : true}
           className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
           disabled={model.completed}
         />
@@ -74,7 +76,7 @@ const ModelHead:React.FC<Props> = ({
             if(type === 'order')
               handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
           }}
-          readonly={readonly}
+          readonly={type === "order" ? false : true}
           className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
           disabled={model.completed}
         />
@@ -93,7 +95,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.modelStatus', e)
           }}
           className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-          disabled={model.completed}
+          disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
         />
       </div>
 
@@ -152,7 +154,7 @@ const ModelHead:React.FC<Props> = ({
           }}
           className="w-[120px!important]" styles={{ht:'32px'}}
           readonly={selectId === model.id ? !newFlag : undefined}
-          disabled={model.completed}
+          disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
         />
 
         <Label label="재질" />
@@ -195,23 +197,31 @@ const ModelHead:React.FC<Props> = ({
             placeholder=""
           />
 
-          <Label label="수량" />
+          <Label label="수주 수량" />
           <AntdInput 
             value={model.orderPrdCnt}
             onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
             className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-            readonly={selectId === model.id ? !newFlag : undefined}
+            // readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
           />
 
-          <Label label="견적단가" />
+          <Label label="수주 금액" />
           <AntdInput 
             value={model.orderPrdPrice}
             onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
             className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-            readonly={selectId === model.id ? !newFlag : undefined}
+            // readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
           />
+
+          
+          <Button
+            className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+            onClick={handleSubmitOrderModel}
+          >
+            <Arrow /> 모델 저장
+          </Button>
         </>}
       </div>
 
