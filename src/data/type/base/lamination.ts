@@ -19,6 +19,7 @@ export type laminationRType = {
 }
 
 export type laminationCUType = {
+  id?: string;
   lamDtlTypeEm: LamDtlTypeEm | null;
   matCd: string;
   matThk: number;
@@ -27,6 +28,20 @@ export type laminationCUType = {
   lamDtlThk: number;
   lamDtlRealThk: number;
   useYn: boolean;
+}
+
+export const setLaminationCUType = (data: any):laminationCUType => {
+  return {
+    id: data.id,
+    lamDtlTypeEm: data.lamDtlTypeEm,
+    matCd: data.matCd,
+    matThk: data.matThk,
+    copOut: data.copOut,
+    copIn: data.copIn,
+    lamDtlThk: data.lamDtlThk,
+    lamDtlRealThk: data.lamDtlRealThk,
+    useYn: data.useYn,
+  }
 }
 
 export const newLaminationCUType  = ():laminationCUType => {

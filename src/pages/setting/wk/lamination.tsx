@@ -3,15 +3,21 @@ import { postAPI } from "@/api/post";
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AddContents from "@/contents/base/wk/lamination/AddContents";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { laminationCUType, laminationRType, newLaminationCUType } from "@/data/type/base/lamination";
+import { laminationCUType, laminationRType, newLaminationCUType, setLaminationCUType } from "@/data/type/base/lamination";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useState } from "react";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+import { MOCK } from "@/utils/Mock";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
 
 const WkLaminationListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -65,6 +71,14 @@ const WkLaminationListPage: React.FC & {
     // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<AlertType>('info');
+  const [ resultTitle, setResultTitle ] = useState<string>('');
+  const [ resultText, setResultText ] = useState<string>('');
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    setResultType(type);
+    setResultTitle(title);
+    setResultText(text);
+  }
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
@@ -91,33 +105,82 @@ const WkLaminationListPage: React.FC & {
     }
   }
     //등록 버튼 함수
-  const handleSubmitNewData = async () => {
+  const handleSubmitNewData = async (data: any) => {
     try {
-      console.log(newData);
-      const result = await postAPI({
+      console.log(data);
+      if(data?.id){
+        const id = data.id;
+        delete data.id;
+
+        const result = await patchAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: 'lamination-source',
+          jsx: 'jsxcrud'
+        },id, data);
+        console.log(result);
+
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          setResultFunc('success', '적층 구조 수정 성공', '적층 구조 수정이 완료되었습니다.');
+        } else {
+          setNewOpen(false);
+          setResultFunc('error', '적층 구조 수정 실패', '적층 구조 수정을 실패하였습니다.');
+        }
+
+      }else{
+        const result = await postAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: 'lamination-source',
+          jsx: 'jsxcrud'
+        }, newData);
+        console.log(result);
+  
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          setResultFunc('success', '적층 구조 등록 성공', '적층 구조 등록이 완료되었습니다.');
+        } else {
+          setNewOpen(false);
+          setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
+        }
+      }
+    } catch(e) {
+      setNewOpen(false);
+      setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
+    }
+  }
+  // ----------- 신규 데이터 끝 -----------
+
+  const handleDataDelete = async (id: string) => {
+    try {
+      const result = await deleteAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
         url: 'lamination-source',
-        jsx: 'jsxcrud'
-      }, newData);
+        jsx: 'jsxcrud'},
+        id,
+      );
       console.log(result);
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
-        setResultOpen(true);
-        setResultType('success');
+        setResultFunc('success', '삭제 성공', '적층 구조 삭제가 완료되었습니다.');
       } else {
         setNewOpen(false);
-        setResultOpen(true);
-        setResultType('error');
+        setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
       }
-    } catch(e) {
+    }
+    catch(e) {
       setNewOpen(false);
-      setResultOpen(true);
-      setResultType('error');
+      setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
     }
   }
-  // ----------- 신규 데이터 끝 -----------
+
+  function modalClose(){
+      setNewOpen(false);
+      setNewData(newLaminationCUType);
+    }
 
   return (
     <>
@@ -148,6 +211,17 @@ const WkLaminationListPage: React.FC & {
               dataIndex: 'lamDtlTypeEm',
               key: 'lamDtlTypeEm',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full justify-center h-center cursor-pointer"
+                  onClick={()=>{
+                    setNewData(setLaminationCUType(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.lamDtlTypeEm}
+                </div>
+              )
             },
             {
               title: '재질',
@@ -155,6 +229,17 @@ const WkLaminationListPage: React.FC & {
               dataIndex: 'matCd',
               key: 'matCd',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer"
+                  onClick={()=>{
+                    setNewData(setLaminationCUType(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.matCd}
+                </div>
+              )
             },
             {
               title: '재질두께',
@@ -204,8 +289,18 @@ const WkLaminationListPage: React.FC & {
           />
         </div>
       </>}
+
+      <BaseInfoCUDModal
+        title={{name: `적층구조 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        open={newOpen} 
+        setOpen={setNewOpen} 
+        onClose={() => modalClose()}
+        items={MOCK.laminationItems.CUDPopItems} 
+        data={newData}
+        onSubmit={handleSubmitNewData}
+        onDelete={handleDataDelete}/>
         
-      <AntdModal
+      {/* <AntdModal
         title={"거래처 등록"}
         open={newOpen}
         setOpen={setNewOpen}
@@ -279,13 +374,13 @@ const WkLaminationListPage: React.FC & {
           setNewOpen(false);
           setNewData(newLaminationCUType);
         }}
-      />
+      /> */}
 
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "success" ? "적층 구조 등록 성공" : "적층 구조 등록 실패"}
-        contents={resultType === "success" ? <div>적층 구조 등록이 완료되었습니다.</div> : <div>적층 구조 등록이 실패하였습니다.</div>}
+        title={resultTitle}
+        contents={resultText}
         type={resultType} 
         onOk={()=>{
           refetch();
@@ -300,7 +395,7 @@ const WkLaminationListPage: React.FC & {
 }
 
 WkLaminationListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'80px'}}>{page}</SettingPageLayout>
 )
 
 export default WkLaminationListPage;

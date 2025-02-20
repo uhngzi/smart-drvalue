@@ -242,13 +242,13 @@ const WkBoardListPage: React.FC & {
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full h-center cursor-pointer"
+                  className="w-full h-full h-center justify-center cursor-pointer"
                   onClick={()=>{
                     setAddData(setDataBoardType(record));
                     setAddOpen(true);
                   }}
                 >
-                  {record.prtNm}
+                  {record.brdType}
                 </div>
               )
             },
