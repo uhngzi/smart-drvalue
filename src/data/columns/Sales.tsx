@@ -2,7 +2,7 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
-import { FinalGlbStatus, HotGrade, ModelStatus } from '../type/enum';
+import { FinalGlbStatus, HotGrade, ModelStatus, SalesOrderStatus } from '../type/enum';
 import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
@@ -47,13 +47,6 @@ export const salesUserOrderClmn = (
     )
   },
   {
-    title: '고객코드',
-    width: 120,
-    dataIndex: 'prtInfo.prt.prtRegCd',
-    key: 'prtInfo.prt.prtRegCd',
-    align: 'center',
-  },
-  {
     title: '발주명',
     width: 360,
     dataIndex: 'orderNm',
@@ -62,13 +55,13 @@ export const salesUserOrderClmn = (
     cellAlign: 'left',
   },
   {
-    title: '모델수',
+    title: '대기 모델 수',
     width: 70,
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',
     render: (_:any, record:salesOrderRType) => {
-      return record?.products?.length;
+      return record?.products?.filter(f=>f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED).length;
     }
   },
   {
