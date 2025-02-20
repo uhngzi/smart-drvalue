@@ -6,9 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
-import { autoHyphenBusinessLicense } from "@/utils/formatBusinessHyphen";
+import { autoHyphenBusinessLicense, autoHyphenCorpRegNo } from "@/utils/formatBusinessHyphen";
 
-import { partnerCUType, partnerRType, newDataPartnerType } from "@/data/type/base/partner";
+import { partnerCUType, partnerRType, newDataPartnerType, setDataPartnerType } from "@/data/type/base/partner";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
@@ -18,6 +18,12 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AddContents from "@/contents/base/client/AddContents";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import { MOCK } from "@/utils/Mock";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
 
 const ClientCuListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -75,55 +81,66 @@ const ClientCuListPage: React.FC & {
     // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<AlertType>('info');
+  const [resultTitle, setResultTitle] = useState<string>('');
+  const [resultText, setResultText] = useState<string>('');
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
   const [ newData, setNewData ] = useState<partnerCUType>(newDataPartnerType);
-    //값 변경 함수
-  const handleDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-  ) => {
-    if(typeof e === "string") {
-      if(type === "date") {
-        setNewData({...newData, [name]: dayjs(e).format('YYYY-MM-DD')});
-      } else {
-        if (name === "emp") {
-          setNewData({
-            ...newData,
-            emp: { id: e },
-          });
-        } else {
-          setNewData({...newData, [name]: e});
-        }
-      }
-    } else {
-      const { value } = e.target;
-      setNewData({...newData, [name]: value});
-    }
-  }
-    //등록 버튼 함수
-  const handleSubmitNewData = async () => {
+  
+    //버튼 함수
+  const handleSubmitNewData = async (data: partnerCUType) => {
     try {
-      console.log(newData);
-      const result = await postAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'biz-partner',
-        jsx: 'jsxcrud'},
-        { ...newData, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
-      );
-      console.log(result);
-
-      if(result.resultCode === 'OK_0000') {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType('success');
-      } else {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType('error');
+      if(data?.id){
+        const id = data.id;
+        delete data.id;
+        const result = await patchAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'biz-partner',
+          jsx: 'jsxcrud'},
+          id,
+          { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
+        );
+        console.log(result);
+  
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          setResultOpen(true);
+          setResultType('success');
+          setResultTitle("거래처 수정 성공");
+          setResultText("거래처 수정이 완료되었습니다.");
+        } else {
+          setNewOpen(false);
+          setResultOpen(true);
+          setResultType('error');
+          setResultTitle("거래처 수정 실패");
+          setResultText("거래처 수정을 실패하였습니다.");
+        }
+      }else{
+        const result = await postAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'biz-partner',
+          jsx: 'jsxcrud'},
+          
+          { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
+        );
+        console.log(result);
+  
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          setResultOpen(true);
+          setResultType('success');
+          setResultTitle("거래처 등록 성공");
+          setResultText("거래처 등록이 완료되었습니다.");
+        } else {
+          setNewOpen(false);
+          setResultOpen(true);
+          setResultType('error');
+          setResultTitle("거래처 등록 실패");
+          setResultText("거래처 등록을 실패하였습니다.");
+        }
       }
     } catch(e) {
       setNewOpen(false);
@@ -132,6 +149,45 @@ const ClientCuListPage: React.FC & {
     }
   }
   // ----------- 신규 데이터 끝 -----------
+
+  const handleDataDelete = async (id: string) => {
+    try {
+      const result = await deleteAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner',
+        jsx: 'jsxcrud'},
+        id,
+      );
+      console.log(result);
+
+      if(result.resultCode === 'OK_0000') {
+        setNewOpen(false);
+        setResultOpen(true);
+        setResultType('success');
+        setResultTitle("거래처 삭제 성공");
+        setResultText("거래처 삭제가 완료되었습니다.");
+      } else {
+        setNewOpen(false);
+        setResultOpen(true);
+        setResultType('error');
+        setResultTitle("거래처 삭제 실패");
+        setResultText("거래처 삭제를 실패하였습니다.");
+      }
+    }
+    catch(e) {
+      setNewOpen(false);
+      setResultOpen(true);
+      setResultType('error');
+      setResultTitle("거래처 삭제 실패");
+      setResultText("거래처 삭제를 실패하였습니다.");
+    }
+  }
+
+  function modalClose(){
+    setNewOpen(false);
+    setNewData(newDataPartnerType);
+  }
 
   return (
     <>
@@ -158,9 +214,34 @@ const ClientCuListPage: React.FC & {
               align: 'center',
             },
             {
-              title: '고객명',
+              title: '거래처명',
               dataIndex: 'prtNm',
               key: 'prtNm',
+              align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center cursor-pointer"
+                  onClick={()=>{
+                    setNewData(setDataPartnerType(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.prtNm}
+                </div>
+              )
+            },
+            {
+              title: '식별코드',
+              width: 130,
+              dataIndex: 'prtTypeEm',
+              key: 'prtTypeEm',
+              align: 'center',
+            },
+            {
+              title: '축약명',
+              width: 130,
+              dataIndex: 'prtSnm',
+              key: 'prtSnm',
               align: 'center',
             },
             {
@@ -171,10 +252,10 @@ const ClientCuListPage: React.FC & {
               align: 'center',
             },
             {
-              title: '코드',
+              title: '영문축약',
               width: 130,
-              dataIndex: 'prtRegCd',
-              key: 'prtRegCd',
+              dataIndex: 'prtEngSnm',
+              key: 'prtEngSnm',
               align: 'center',
             },
             {
@@ -186,6 +267,18 @@ const ClientCuListPage: React.FC & {
               render: (value:string) => (
                 <div className="w-full h-full v-h-center">
                   {autoHyphenBusinessLicense(value)}
+                </div>
+              )
+            },
+            {
+              title: '법인등록번호',
+              width: 200,
+              dataIndex: 'prtCorpRegNo',
+              key: 'prtCorpRegNo',
+              align: 'center',
+              render: (value:string) => (
+                <div className="w-full h-full v-h-center">
+                  {autoHyphenCorpRegNo(value)}
                 </div>
               )
             },
@@ -203,10 +296,52 @@ const ClientCuListPage: React.FC & {
               key: 'prtBizCate',
               align: 'center',
             },
+            {
+              title: '주소',
+              width: 200,
+              dataIndex: 'prtAddr',
+              key: 'prtAddr',
+              align: 'center',
+            },
+            {
+              title: '상세주소',
+              width: 200,
+              dataIndex: 'prtAddrDtl',
+              key: 'prtAddrDtl',
+              align: 'center',
+            },
+            {
+              title: '대표자명',
+              width: 200,
+              dataIndex: 'prtCeo',
+              key: 'prtCeo',
+              align: 'center',
+            },
+            {
+              title: '전화번호',
+              width: 200,
+              dataIndex: 'prtTel',
+              key: 'prtTel',
+              align: 'center',
+            },
+            {
+              title: '팩스번호',
+              width: 200,
+              dataIndex: 'prtFax',
+              key: 'prtFax',
+              align: 'center',
+            },
+            {
+              title: '이메일',
+              width: 200,
+              dataIndex: 'prtEmail',
+              key: 'prtEmail',
+              align: 'center',
+            },
           ]}
           data={data}
         />
-
+        
         <div className="w-full h-100 v-h-center">
           <AntdPagination
             current={pagination.current}
@@ -216,8 +351,17 @@ const ClientCuListPage: React.FC & {
           />
         </div>
       </>}
+      <BaseInfoCUDModal 
+        title={{name: `거래처 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        open={newOpen} 
+        setOpen={setNewOpen} 
+        onClose={() => modalClose()}
+        items={MOCK.clientItems.CUDPopItems} 
+        data={newData}
+        onSubmit={handleSubmitNewData}
+        onDelete={handleDataDelete}/>
         
-      <AntdModal
+      {/* <AntdModal
         title={"거래처 등록"}
         open={newOpen}
         setOpen={setNewOpen}
@@ -235,13 +379,13 @@ const ClientCuListPage: React.FC & {
           setNewOpen(false);
           setNewData(newDataPartnerType);
         }}
-      />
+      /> */}
 
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "success" ? "거래처 등록 성공" : "거래처 등록 실패"}
-        contents={resultType === "success" ? <div>거래처 등록이 완료되었습니다.</div> : <div>거래처 등록이 실패하였습니다.</div>}
+        title={resultTitle}
+        contents={resultText}
         type={resultType} 
         onOk={()=>{
           refetch();
@@ -256,7 +400,7 @@ const ClientCuListPage: React.FC & {
 }
 
 ClientCuListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'70px'}}>{page}</SettingPageLayout>
 )
 
 export default ClientCuListPage;

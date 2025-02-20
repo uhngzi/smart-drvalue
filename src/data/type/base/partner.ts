@@ -30,6 +30,7 @@ export type partnerRType = {
 }
 
 export type partnerCUType = {
+  id?: string
   prtTypeEm: PrtTypeEm | null;
   prtNm: string;
   prtRegCd: number | null;
@@ -50,6 +51,29 @@ export type partnerCUType = {
   emp?: { id?: string; };
 }
 
+export const setDataPartnerType = (data:any):partnerCUType => {
+  return {
+    id: data.id,
+    prtTypeEm: (data.prtTypeEm as PrtTypeEm) || null,
+    prtNm: data.prtNm || "",
+    prtRegCd: data.prtRegCd ?? null,
+    prtSnm: data.prtSnm || "",
+    prtEngNm: data.prtEngNm || "",
+    prtEngSnm: data.prtEngSnm || "",
+    prtRegNo: data.prtRegNo || "",
+    prtCorpRegNo: data.prtCorpRegNo || "",
+    prtBizType: data.prtBizType || "",
+    prtBizCate: data.prtBizCate || "",
+    prtAddr: data.prtAddr || "",
+    prtAddrDtl: data.prtAddrDtl || "",
+    prtZip: data.prtZip || "",
+    prtCeo: data.prtCeo || "",
+    prtTel: data.prtTel || "",
+    prtFax: data.prtFax || "",
+    prtEmail: data.prtEmail || "",
+    emp: data.emp ? { id: data.emp.id } : undefined, // emp가 null이면 undefined
+  };
+}
 export const newDataPartnerType = ():partnerCUType => {
   return {
     prtTypeEm: null,

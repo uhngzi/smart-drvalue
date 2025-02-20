@@ -4,14 +4,20 @@ import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import CardInputList from "@/components/List/CardInputList";
 import AntdModal from "@/components/Modal/AntdModal";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { boardReq, boardType, newDataBoardType } from "@/data/type/base/board";
+import { boardReq, boardType, newDataBoardType, setDataBoardType } from "@/data/type/base/board";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+import { MOCK } from "@/utils/Mock";
+import { deleteAPI } from "@/api/delete";
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 
 const WkBoardListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -30,7 +36,7 @@ const WkBoardListPage: React.FC & {
     setPagination({ ...pagination, current: page });
   };
 
-  const [addData, setAddData] = useState<boardType | null>(null);
+  const [addData, setAddData] = useState<boardType>(newDataBoardType);
   const [ data, setData ] = useState<Array<boardType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
@@ -72,10 +78,21 @@ const WkBoardListPage: React.FC & {
         setAddData(prev => ({...prev, [name]: value} as boardType));
       }
     }
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    setResultType(type);
+    setResultTitle(title);
+    setResultText(text);
+  }
 
 
-    // 결과 모달창을 위한 변수
+  // 결과 모달창을 위한 변수
+  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+  const [ resultType, setResultType ] = useState<AlertType>('info');
+  const [resultTitle, setResultTitle] = useState<string>('');
+  const [resultText, setResultText] = useState<string>('');
   const { showToast, ToastContainer } = useToast();
+
   const regBoard = async () => {
     const val = validReq(addData, boardReq());
     if(!val.isValid) {
@@ -105,47 +122,93 @@ const WkBoardListPage: React.FC & {
   }
   
     // 수정 함수
-  const handleSubmit = async () => {
+  const handleSubmit = async (data: boardType) => {
     try {
-      const newData = data[editIndex];
-      console.log(newData);
-      
+      if(data?.id){
+        const id = data.id;
+        delete data.id;
         const result = await patchAPI({
           type: 'baseinfo',
           utype: 'tenant/',
           url: 'board',
           jsx: 'jsxcrud'
         },
-        newData.id || '',
-        {
-          brdType: newData?.brdType,
-          brdDesc: newData?.brdDesc,
-          brdW: newData?.brdW,
-          brdH: newData?.brdH,
-        } as boardType);
-
+        id,
+        data);
+  
         if(result.resultCode === 'OK_0000') {
-          showToast("수정 완료", "success");
+          setAddOpen(false);
+          setResultFunc('success', '수정 성공', '원판정보 수정이 완료되었습니다');
         } else {
-          showToast(result?.response?.data?.message, "error");
+          setAddOpen(false);
+          setResultFunc('error', '수정 실패', '원판정보 수정을 실패하였습니다.');
         }
       
       refetch();
-      setEditIndex(-1);
+      }else{
+        const val = validReq(addData, boardReq());
+        if(!val.isValid) {
+          showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
+          return;
+        }
+
+        const result = await postAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'board',
+          jsx: 'jsxcrud'
+        }, data);
+
+        if(result.resultCode === 'OK_0000') {
+          setAddOpen(false);
+          setResultFunc('success', '등록 성공', '원판정보 등록되었습니다.');
+        } else {
+          setAddOpen(false);
+          setResultFunc('success', '등록 실패', '원판정보 등록을 실패하였습니다.');
+        }
+        refetch();
+        setAddOpen(false);
+      }
+      // const newData = data[editIndex];
+      // console.log(newData);
+      
     } catch(e) {
       showToast("원판 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.", "error");
-
       refetch();
-      setEditIndex(-1);
     }
   }
 
-  // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
-  useEffect(()=>{
-    if(editIndex > -1) {
-      handleSubmit();
+  const handleDataDelete = async (id: string) => {
+      try {
+        const result = await deleteAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'board',
+          jsx: 'jsxcrud'},
+          id,
+        );
+        console.log(result);
+  
+        if(result.resultCode === 'OK_0000') {
+          setAddOpen(false);
+          setResultFunc('success', '삭제 성공', '원판정보 삭제가 완료되었습니다.');
+        } else {
+          setAddOpen(false);
+          setResultFunc('error', '삭제 실패', '원판정보 삭제를 실패하였습니다.');
+        }
+      }
+      catch(e) {
+        setAddOpen(false);
+        setResultFunc('error', '삭제 실패', '원판정보 삭제를 실패하였습니다.');
+      }
     }
-  }, [data])
+
+  // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
+
+  function modalClose(){
+    setAddOpen(false);
+    setAddData(newDataBoardType);
+  }
   
   return (
     <>
@@ -177,7 +240,17 @@ const WkBoardListPage: React.FC & {
               dataIndex: 'brdType',
               key: 'brdType',
               align: 'center',
-              editable: true,
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center cursor-pointer"
+                  onClick={()=>{
+                    setAddData(setDataBoardType(record));
+                    setAddOpen(true);
+                  }}
+                >
+                  {record.prtNm}
+                </div>
+              )
             },
             {
               title: '원판설명',
@@ -185,7 +258,6 @@ const WkBoardListPage: React.FC & {
               dataIndex: 'brdDesc',
               key: 'brdDesc',
               align: 'center',
-              editable: true,
             },
             {
               title: 'W',
@@ -193,7 +265,6 @@ const WkBoardListPage: React.FC & {
               dataIndex: 'brdW',
               key: 'brdW',
               align: 'center',
-              editable: true,
               inputType: 'number',
             },
             {
@@ -202,7 +273,6 @@ const WkBoardListPage: React.FC & {
               dataIndex: 'brdH',
               key: 'brdW',
               align: 'center',
-              editable: true,
               inputType: 'number',
             },
           ]}
@@ -211,7 +281,16 @@ const WkBoardListPage: React.FC & {
           setEditIndex={setEditIndex}
         />
       </>}
-      <AntdModal
+      <BaseInfoCUDModal
+        title={{name: `원판 ${addData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        open={addOpen} 
+        setOpen={setAddOpen} 
+        onClose={() => modalClose()}
+        items={MOCK.wkBoardItems.CUDPopItems} 
+        data={addData}
+        onSubmit={handleSubmit}
+        onDelete={handleDataDelete}/>
+      {/* <AntdModal
         title="원판 등록"
         width={500}
         open={addOpen}
@@ -236,6 +315,20 @@ const WkBoardListPage: React.FC & {
             </div>
           </div>
         }
+      /> */}
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={resultTitle}
+        contents={resultText}
+        type={resultType} 
+        onOk={()=>{
+          refetch();
+          setResultOpen(false);
+          setAddData(newDataBoardType);
+        }}
+        hideCancel={true}
+        theme="base"
       />
       <ToastContainer/>
     </>
