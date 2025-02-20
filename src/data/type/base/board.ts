@@ -21,6 +21,16 @@ export const newDataBoardType = ():boardType => {
     brdExtraInfo: '',
   }
 }
+export const setDataBoardType = (data: any):boardType => {
+  return {
+    id: data.id,
+    brdW: data.brdW,
+    brdH: data.brdH,
+    brdType: data.brdType,
+    brdDesc: data.brdDesc,
+    brdExtraInfo: data.brdExtraInfo,
+  }
+}
 
 export const boardReq = () => {
   return [
