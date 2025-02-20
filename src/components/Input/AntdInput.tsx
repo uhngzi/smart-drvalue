@@ -34,37 +34,38 @@ const AntdInput = forwardRef<InputRef, Props>((
   ref
 ) => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const { value } = e.target;
-
+    let { value } = e.target;
+    
     // 빈 문자열 허용
-    if(value === "") {
-      // 전달받은 onChange 핸들러 실행
+    if (value === "") {
       onChange?.(e);
       return;
     }
-
-    // 숫자 타입일 때 0 이하 입력 제한
+    
+    // 숫자 타입일 경우
     if (type === "number") {
-      // 숫자 이외의 값 제거 (공백, 특수문자, 문자)
-      const sanitizedValue = value.replace(/[^0-9.-]/g, ""); // 숫자와 '.', '-'만 허용
+      // 입력값에서 콤마를 제거한 후 숫자, 소수점, 음수 부호만 남김
+      const sanitizedValue = value
+        .replace(/,/g, "")
+        .replace(/[^0-9.-]/g, "");
       const numericValue = parseFloat(sanitizedValue);
   
+      // 숫자가 아니거나 0 미만이면 무시
       if (isNaN(numericValue) || numericValue < 0) {
-        return; // 숫자가 아니거나 0 미만이면 무시
+        return;
       }
   
-      // 새로운 이벤트로 value 전달
+      // onChange에 전달할 때는 포맷팅 없이 저장 (콤마 제거된 값)
       const newEvent = Object.assign({}, e, {
         target: {
           ...e.target,
-          value: Number(sanitizedValue).toLocaleString(),
+          value: sanitizedValue,
         },
       });
-  
-      return onChange?.(newEvent);  
+      return onChange?.(newEvent);
     }
-
-    // 전달받은 onChange 핸들러 실행
+  
+    // 숫자 타입이 아닐 경우 원본 이벤트 전달
     onChange?.(e);
   };
 
@@ -77,7 +78,12 @@ const AntdInput = forwardRef<InputRef, Props>((
       className={`${className}`}
     >
       <Input
-        value={value}
+        // 숫자 타입이면 내부 값은 숫자 그대로 저장되지만 화면에는 콤마 포맷팅 적용
+        value={
+          type === "number" && value !== undefined && value !== ""
+            ? Number(value).toLocaleString()
+            : value
+        }
         onChange={handleInputChange}
         className={`${className}`}
         placeholder={placeholder}

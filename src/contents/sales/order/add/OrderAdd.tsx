@@ -67,8 +67,6 @@ const OrderAddLayout = () => {
   const [ newProducts, setNewProducts ] = useState<salesOrderProcuctCUType[]>([{ ...newDataSalesOrderProductCUType(), id: "new-1", index: 1 }]);
   // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
-  // 우측 탭 클릭 시 필요 변수
-  const [ open, setOpen ] = useState<boolean>(false);
 
   // id가 NEW일 경우 생성, 아닐 경우 수정
   const [orderId, setOrderId] = useState<string>("");
