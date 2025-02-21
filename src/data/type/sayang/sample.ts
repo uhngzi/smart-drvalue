@@ -124,6 +124,13 @@ export type specPrdGroupPrcs = {
   process?: processRType;
   ordNo?: number;
   prcWkRemark?: string;
+  productLinesGroup?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    name?: string;
+  },
 }
 
 export type yieldInputType = {

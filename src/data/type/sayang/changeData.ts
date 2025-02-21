@@ -251,15 +251,14 @@ export const changeSayangTemp = (
         specPad: model.specPad,
       })),
     }
-    if(specData.specPrdGroupPrcs?.[0]?.prdGrpNm){
-      console.log(specData.specPrdGroupPrcs)
+    if(specData?.specPrdGroupPrcs && specData.specPrdGroupPrcs.length > 0){
       jsonData = { 
         ...jsonData,
         prdGroup: {
           prdGrpNm: specData.specPrdGroupPrcs?.[0]?.prdGrpNm,
-          // prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.id,
-          data: specData.specPrdGroupPrcs && specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
-            prcIdx: prc.id,
+          prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id,
+          data: specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
+            prcIdx: prc.process?.id,
             order: prc.ordNo,
             prcWkRemark: prc.prcWkRemark
           }))
