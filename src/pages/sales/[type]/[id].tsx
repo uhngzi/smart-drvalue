@@ -22,7 +22,7 @@ const AddPage: React.FC & {
 };
 
 AddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout title={title}>{page}</PopRegLayout>
+  <PopRegLayout title={title}>{title === "" ? <></>: page}</PopRegLayout>
 );
 
 export default AddPage;

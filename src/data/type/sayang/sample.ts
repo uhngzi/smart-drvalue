@@ -162,8 +162,8 @@ export const yieldInputReq = () => {
     { field : 'kitHeight', label: 'Kit 높이' },
     { field : 'kitGapX', label: 'Kit 간격 X' },
     { field : 'kitGapY', label: 'Kit 간격 Y' },
-    { field : 'kitArrangeX', label: 'Kit 배치 X' },
-    { field : 'kitArrangeY', label: 'Kit 배치 Y' },
+    // { field : 'kitArrangeX', label: 'Kit 배치 X' },
+    // { field : 'kitArrangeY', label: 'Kit 배치 Y' },
     { field : 'marginLongSide', label: '긴쪽 여분' },
     { field : 'marginShortSide', label: '짧은쪽 여분' },
   ]

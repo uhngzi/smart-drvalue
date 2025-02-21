@@ -24,27 +24,10 @@ interface Props {
   menuTitle: string;
 
   writeButtonHref?: string;
+  bg?: string;
 }
 
-const items: MenuProps['items'] = [
-  {
-    label: <span className="text-12">Excel</span>,
-    key: '1',
-    icon: <Image src={Excel} alt="Excel" width={16} height={16} />,
-  },
-  {
-    label: <span className="text-12">Print</span>,
-    key: '2',
-    icon: <Image src={Print} alt="Print" width={16} height={16} />,
-  },
-]
-
-const menuProps = {
-  items,
-  // onClick: handleMenuClick,
-};
-
-const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
+const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
   const router = useRouter();
 
   useEffect(()=>{
@@ -61,7 +44,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
     else          setWidth(240);
   }, [collapsed])
   
-
+  console.log(bg);
   return (
     <div className="flex" key="mainPageLayout">
       <div>
@@ -76,7 +59,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle }) => {
         <MainHeader title={menuTitle} />
 
         <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
-          <Contents padding="10px 30px 20px 30px">
+          <Contents padding="10px 30px 20px 30px" bg={bg} >
             {menu && (
               <TabLarge
                 items={menu}
