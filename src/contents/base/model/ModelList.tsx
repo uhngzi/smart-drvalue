@@ -69,10 +69,10 @@ const ModelList:React.FC<Props> = ({
   const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
 
   const handleSelectMenu = () => {
-    if(selectMenuKey===0)       setNewFlag(true);   // 복사하여 새로 등록
-    else if(selectMenuKey===1)  setNewFlag(false);  // 그대로 등록
-    else                        return ;
-    
+    if(selectMenuKey===0)   setNewFlag(true);   // 복사하여 등록
+    if(selectMenuKey===1)   setNewFlag(false);  // 그대로 등록
+    console.log(selectMenuKey);
+
     if(selectRecord !== null) {
       if(type === 'order') {
         const newData = [...products] as salesOrderProcuctCUType[];
@@ -83,7 +83,7 @@ const ModelList:React.FC<Props> = ({
             currPrdInfo: { ...selectRecord },
             orderTit: selectRecord.prdNm,
             // 복사일 경우 수정, 그대로일 경우 반복
-            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT,
+            modelStatus: selectMenuKey === 1 ? ModelStatus.REPEAT : ModelStatus.MODIFY,
             modelId: selectRecord.id,
           };
           setProductsOrder?.(newData);
@@ -99,7 +99,7 @@ const ModelList:React.FC<Props> = ({
             // 입력한 모델 값
             editModel: { ...selectRecord },
             // 복사일 경우 수정, 그대로일 경우 반복
-            modelStatus: selectMenuKey === 0 ? ModelStatus.MODIFY : ModelStatus.REPEAT
+            modelStatus: selectMenuKey === 1 ? ModelStatus.REPEAT : ModelStatus.MODIFY,
           };
           setProductsMatch?.(newData);
         }
@@ -222,6 +222,7 @@ const ModelList:React.FC<Props> = ({
           setAlertOpen(false);
         }}
         onOk={()=>{
+          console.log('ok');
           // 해당 모델에 입력된 값이 있을 경우
           if(productChk) {
             setAlertOpen(false);

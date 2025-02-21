@@ -41,6 +41,7 @@ import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Category from "@/assets/svg/icons/category.svg";
+import Edit from '@/assets/svg/icons/memo.svg';
 
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
@@ -343,7 +344,28 @@ const OrderAddLayout = () => {
       showToast("폐기 실패", "error");
     }
   }
-  // ------------ 모델 삭제 함수 ------------- 끝
+  // ------------ 발주 폐기 함수 ------------- 끝
+
+  // ------------ 발주 수정 함수 ------------- 시작
+  const handleEditOrderMain = async () => {
+    console.log(orderId, JSON.stringify(formData));
+    
+    const result = await patchAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: `sales-order/default/update/${orderId}`,
+      jsx: 'default',
+      etc: true,
+    }, orderId, { ...formData, id: undefined });
+
+    if(result.resultCode === "OK_0000") {
+      showToast("발주 수정 완료", "success");
+    } else {
+      const msg = result.response?.data?.message;
+      showToast(msg, "error");
+    }
+  }
+  // ------------ 발주 폐기 함수 ------------- 끝
 
   // --------- 자동 포커스 및 스크롤 ----------- 시작
     // 모델 추가 시 새 모델로 부드럽게 자동 이동 후 자동 포커스
@@ -407,10 +429,10 @@ const OrderAddLayout = () => {
   const [selectId, setSelectId] = useState<string | null>(null);
   // 그대로 등록일 경우 false, 복사하여 등록일 경우 true
   const [newFlag, setNewFlag] = useState<boolean>(true);
+  useEffect(()=>{console.log('new :: ',newFlag)}, [newFlag]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "">("");
-
   return (
   <div className="h-center gap-20">
     <div className="w-[calc(100vw-100px)]">
@@ -449,23 +471,24 @@ const OrderAddLayout = () => {
 
         {/* 발주 하단 버튼 */}
         <div className="w-full h-50 v-between-h-center">
-          <Button 
-            className="w-109 h-32 rounded-6"
-            style={{color:"#444444E0"}}
-            onClick={() => {
-              setFormData(newDataSalesOrderCUType());
-              stepRef.current[0].scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-              });
-              setTimeout(()=>{
-                setStepCurrent(0);
-              }, 400)
-            }}
-          >
-            <Close/> 취소
-          </Button>
           {stepCurrent < 1 ?
+          <>
+            <Button 
+              className="w-109 h-32 rounded-6"
+              style={{color:"#444444E0"}}
+              onClick={() => {
+                setFormData(newDataSalesOrderCUType());
+                stepRef.current[0].scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+                setTimeout(()=>{
+                  setStepCurrent(0);
+                }, 400)
+              }}
+            >
+              <Close/> 취소
+            </Button>
             <Button 
               className="w-109 h-32 bg-point1 text-white rounded-6"
               style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
@@ -479,22 +502,33 @@ const OrderAddLayout = () => {
               }}
             >
               <Arrow />다음 단계
-            </Button> :
-            <Button
-              className="w-109 h-32 rounded-6"
-              onClick={()=>{
-                stepRef.current[0].scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'end',
-                });
-                // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
-                setTimeout(()=>{
-                  setStepCurrent(0);
-                }, 400)
-              }}
-            >
-              <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
             </Button>
+          </> : <>
+              <div className="flex"></div>
+              {/* <Button
+                className="w-109 h-32 rounded-6"
+                onClick={()=>{
+                  stepRef.current[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                  });
+                  // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
+                  setTimeout(()=>{
+                    setStepCurrent(0);
+                  }, 400)
+                }}
+              >
+                <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
+              </Button> */}
+              <Button
+                className="w-109 h-32 rounded-6"
+                onClick={()=>{
+                  handleEditOrderMain();
+                }}
+              >
+                <p className="w-16 h-16 text-[#222222]"><Edit /></p> 수정
+              </Button>
+            </>
             }
         </div>
 

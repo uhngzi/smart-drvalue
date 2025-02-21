@@ -47,7 +47,7 @@ const AddDrawer:React.FC<Props> = ({
 
   // 거래처 클릭 시 값이 변하고 Drawer 오픈
   useEffect(()=>{
-    if(order.prtInfo.prt) {
+    if(order?.prtInfo?.prt) {
       setDrawerPrtItems([
         { label: '거래처명', value: order.prtInfo?.prt?.prtNm ?? '-', widthType: 'full' },
         { label: '거래처 식별코드', value: order.prtInfo?.prt?.prtRegCd ?? '-', widthType: 'half' },

@@ -4,6 +4,7 @@ import AntdInput from "@/components/Input/AntdInput";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { LabelMedium, LabelThin } from "@/components/Text/Label";
 import AntdDragger from "@/components/Upload/AntdDragger";
+import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 import { partnerRType } from "@/data/type/base/partner";
 import { selectType } from "@/data/type/componentStyles";
 import { HotGrade } from "@/data/type/enum";
@@ -37,10 +38,10 @@ const SalesOrderContent: React.FC<Props> = ({
   }, [fileIdList]);
 
   return (
-    <div className="w-full flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
+    <div className="w-full min-h-[650px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
       <LabelMedium label="고객발주 등록" />
       <DividerH />
-      <div className="w-full h-[421px] h-center gap-30 overflow-auto">
+      <div className="w-full h-[550px] h-center gap-30 overflow-auto">
         <div className="flex flex-col w-[222px] h-full gap-24">
           <div className="flex flex-col gap-8">
             <LabelThin label="고객"/>
@@ -92,10 +93,21 @@ const SalesOrderContent: React.FC<Props> = ({
               styles={{ht:'36px'}}
             />
           </div>
+          <div className="flex flex-col gap-8">
+            <LabelThin label="첨부파일"/>
+            <div className="w-full h-[150px]">
+              <AntdDraggerSmall
+                fileList={fileList}
+                setFileList={setFileList}
+                fileIdList={fileIdList}
+                setFileIdList={setFileIdList}
+                mult={true}
+              />
+            </div>
+          </div>
         </div>
         
         <DividerV />
-
 
         <div className="flex-1 h-full flex flex-col gap-24">
           <div className="flex flex-col gap-8">
@@ -118,19 +130,8 @@ const SalesOrderContent: React.FC<Props> = ({
                 setFormData({...formData, orderTxt:value});
               }}
               className="rounded-2"
+              style={{height:400}}
             />
-          </div>
-          <div className="flex flex-col gap-8">
-            <LabelThin label="첨부파일"/>
-            <div className="w-full h-[150px]">
-              <AntdDragger
-                fileList={fileList}
-                setFileList={setFileList}
-                fileIdList={fileIdList}
-                setFileIdList={setFileIdList}
-                mult={true}
-              />
-            </div>
           </div>
         </div>
       </div>

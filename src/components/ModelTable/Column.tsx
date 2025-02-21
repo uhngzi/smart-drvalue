@@ -37,50 +37,6 @@ export const salesOrderModelClmn = (
   selectId: string | null,
 ): TableProps['columns'] => [
   {
-    title: 'No',
-    width: 30,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value:any, record:any, index:number) => (
-      <>
-        <div className="h-[50%] w-[100%] v-h-center ">
-        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
-        </div>
-        <div className="h-[50%] w-[100%] v-h-center">
-        {
-          record.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_COMPLETED &&
-          // <FullChip label="확정완료" state="mint" className="" />
-          // :
-            <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
-              onClick={()=>{
-                if(value.includes("new")) {
-                  setNewProducts(newProducts.filter(f => f.id !== value));
-                } else {
-                  const updateData = newProducts;
-                  const index = newProducts.findIndex(f=> f.id === value);
-                  if(index > -1) {
-                    updateData[index] = { ...updateData[index], disabled: true };
-  
-                    const newArray = [
-                      ...updateData.slice(0, index),
-                      updateData[index],
-                      ...updateData.slice(index + 1)
-                    ];
-                    setNewProducts(newArray);
-                    setDeleted(true);
-                  }
-                }
-              }}
-            >
-              <p className="w-16 h-16"><Trash /></p>
-            </div>
-        }
-        </div>
-      </>
-    ),
-  },
-  {
     title: 'Rev',
     dataIndex: 'rev',
     width: 80,
@@ -204,10 +160,10 @@ export const salesOrderModelClmn = (
     align: 'center',
     children: [
       {
-        title:'',
+        title:'핀 수',
         width: 60,
-        dataIndex: '',
-        key:'',
+        dataIndex: 'pin',
+        key:'pin',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
@@ -225,6 +181,16 @@ export const salesOrderModelClmn = (
               <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pltAlph', e.target.value)}
+                className="!text-12"
+                type="number"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pinCnt}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pinCnt', e.target.value)}
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
@@ -423,7 +389,7 @@ export const salesOrderModelClmn = (
               <AntdSelectFill 
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
                 value={record.currPrdInfo?.modelTypeEm?.id ?? "sample"}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.modelTypeEm?.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.modelTypeEm.id', e)}
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
@@ -763,16 +729,6 @@ export const salesOrderModelClmn = (
                 disabled={record.completed}
               />
             </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.pinCnt}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pinCnt', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-              />
-            </div>
           </div>
         )
       },
@@ -918,10 +874,10 @@ export const salesOrderModelReadClmn = (
     align: 'center',
     children: [
       {
-        title:'',
+        title:'핀 수',
         width: 60,
-        dataIndex: '',
-        key:'',
+        dataIndex: 'pin',
+        key:'pin',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
@@ -935,6 +891,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
+                className="!text-12"
+                readonly={true}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pinCnt}
                 className="!text-12"
                 readonly={true}
               />
@@ -1399,13 +1362,6 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.sthPcs}
-                className="!text-12"
-                readonly={true}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.pinCnt}
                 className="!text-12"
                 readonly={true}
               />

@@ -1,20 +1,15 @@
-import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
-import { salesOrderProcuctCUType } from "@/data/type/sales/order";
-import AntdInput from "../Input/AntdInput";
-import AntdSelect from "../Select/AntdSelect";
-import { useBase } from "@/data/context/BaseContext";
-import { RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { RefObject, SetStateAction } from "react";
 import { Button, InputRef } from "antd";
-import FullChip from "../Chip/FullChip";
-import AntdTable from "../List/AntdTable";
-import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
-import FullOkButtonSmall from "../Button/FullOkButtonSmall";
-import dayjs from "dayjs";
-import AntdDatePicker from "../DatePicker/AntdDatePicker";
-import { salesOrderModelClmn } from "./Column";
-import { patchAPI } from "@/api/patch";
-import ModelHead from "./ModelHead";
 
+import { SalesOrderStatus } from "@/data/type/enum";
+import { salesOrderProcuctCUType } from "@/data/type/sales/order";
+import { useBase } from "@/data/context/BaseContext";
+
+import AntdTable from "../List/AntdTable";
+import SalesModelHead from "./SalesModelHead";
+import { salesOrderModelClmn } from "./Column";
+
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 interface Props {
   data: salesOrderProcuctCUType[];
   setData: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
@@ -86,26 +81,45 @@ const SalesModelTable:React.FC<Props> = ({
     setData(updatedData); // 상태 업데이트
   }; 
 
+  const handleDelete = (model:salesOrderProcuctCUType) => {
+    if(model?.id?.includes("new")) {
+      setData(data.filter(f => f.id !== model.id));
+    } else {
+      const updateData = data;
+      const index = data.findIndex(f=> f.id === model.id);
+      if(index > -1) {
+        updateData[index] = { ...updateData[index], disabled: true };
+
+        const newArray = [
+          ...updateData.slice(0, index),
+          updateData[index],
+          ...updateData.slice(index + 1)
+        ];
+        setData(newArray);
+        setDeleted(true);
+      }
+    }
+  }
+
   return (
-    <div className="w-full border-1 bg-white  border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+    <div className="gap-40 flex flex-col overflow-auto">
     { data.length > 0 && data
       // 삭제되지 않은 모델만 가져오기
       .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
       .map((model:salesOrderProcuctCUType, index:number) => (
         <div
           key={model.id}
-          className="flex flex-col gap-16"
+          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15"
         >
-          <ModelHead
-            type="order"
+          <SalesModelHead
             model={model}
             handleModelDataChange={handleModelDataChange}
             boardSelectList={boardSelectList}
             metarialSelectList={metarialSelectList}
             selectId={selectId}
-            newFlag={false}
+            newFlag={newFlag}
             inputRef={inputRef}
-            handleSubmitOrderModel={() => handleSubmitOrderModel(model)}
+            handleDelete={handleDelete}
           />
           <div className="flex flex-col ">
             <AntdTable
@@ -129,9 +143,17 @@ const SalesModelTable:React.FC<Props> = ({
                 selectId,
               )}
               data={[model]}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
               tableProps={{split:'none'}}
             />
+          </div>
+          <div className="w-full h-center justify-end py-15">
+            <Button
+              className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+              onClick={()=>handleSubmitOrderModel(model)}
+            >
+              <Arrow /> 모델 저장
+            </Button>
           </div>
         </div>
       ))

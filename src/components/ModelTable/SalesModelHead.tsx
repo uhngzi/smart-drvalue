@@ -1,16 +1,17 @@
-import dayjs from "dayjs";
-import { Button, InputRef } from "antd";
+import { Dropdown, InputRef, Space } from "antd";
 import { RefObject } from "react";
+import dayjs from "dayjs";
 
 import { selectType } from "@/data/type/componentStyles";
-import { orderModelType } from "@/data/type/sayang/models";
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 
-import FullChip from "../Chip/FullChip";
 import AntdInput from "../Input/AntdInput";
 import AntdSelect from "../Select/AntdSelect";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
+
+import Edit from "@/assets/svg/icons/edit.svg";
+import Trash from "@/assets/svg/icons/trash.svg";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center justify-end">{label}</p>
@@ -21,9 +22,8 @@ const Divider:React.FC = () => {
 }
 
 interface Props {
-  type: 'order' | 'match';
   read?: boolean;
-  model: orderModelType | salesOrderProcuctCUType;
+  model: salesOrderProcuctCUType;
   handleModelDataChange: (id: string, name: string, value: any) => void;
   selectId: string | null;
   newFlag: boolean;
@@ -31,11 +31,10 @@ interface Props {
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
-  handleSubmitOrderModel?: () => void;
+  handleDelete?: (model:salesOrderProcuctCUType) => void;
 }
 
-const ModelHead:React.FC<Props> = ({
-  type,
+const SalesModelHead:React.FC<Props> = ({
   read,
   model,
   handleModelDataChange,
@@ -44,40 +43,40 @@ const ModelHead:React.FC<Props> = ({
   boardSelectList,
   metarialSelectList,
   inputRef,
-  index,
-  handleSubmitOrderModel,
+  handleDelete,
 }) => {
   return (
-    <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
+    <div className="w-full min-h-60 h-center">
       <div className="h-full h-center gap-10 p-10">
-        <Label label={type === 'order' ? "발주 모델명" :"발주명"}/>
+        { !read &&
+          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
+        }
+
+        <Label label="수주 모델명" />
         <AntdInput
           ref={el => {
             // 자동 스크롤 & 포커싱을 위해 Ref 추가
-            const m = model as salesOrderProcuctCUType;
-            if(type === 'order' && el &&inputRef && inputRef.current && m.index) {
-              inputRef.current[m.index] = el;
+            if(el &&inputRef && inputRef.current && model.index) {
+              inputRef.current[model.index] = el;
             }
           }}
           value={model.orderTit}
           onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
+            handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
           }}
-          readonly={type === 'order' ? read ? true : selectId === model.id ? !newFlag : undefined : true}
-          className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
+          readonly={read ? true : selectId === model.id ? !newFlag : undefined}
+          className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
           disabled={model.completed}
         />
 
-        <Label label={type === 'order'? "고객측 관리번호" : "관리번호"}/>
+        <Label label="고객측 관리번호" />
         <AntdInput
           value={model.prtOrderNo}
           onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
+            handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
           }}
-          readonly={type === "order" ? read : true}
-          className="w-[180px!important]" styles={{ht:'32px', bg:type==='order'?'#FFF':'#F5F5F5'}}
+          readonly={read}
+          className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
           disabled={model.completed}
         />
 
@@ -100,40 +99,11 @@ const ModelHead:React.FC<Props> = ({
       <Divider />
       
       <div className="h-full h-center gap-10 p-10">
-        { type === 'match' &&
-          <>
-            <Label label="모델명" />
-            <AntdInput
-              ref={el => {
-                // 자동 스크롤 & 포커싱을 위해 Ref 추가
-                if(el && inputRef && inputRef.current && index !== undefined) {
-                  inputRef.current[index] = el;
-                }
-              }}
-              value={(model as orderModelType).model?.prdNm ?? model.orderTit}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value)}
-              className="w-[180px!important]" styles={{ht:'32px'}}
-              readonly={read ? read : selectId === model.id ? !newFlag : undefined}
-              disabled={model.completed}
-            />
-          </>
-        }
-
         <Label label="원판" />
         <AntdSelect
           options={boardSelectList}
-          value={(type === 'match' ?
-              ((model as orderModelType).model?.board?.id ?? model.currPrdInfo?.board?.id) :
-              model.currPrdInfo?.board?.id
-            ) ??
-            boardSelectList?.[0]?.value
-          }
-          onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e);
-            else
-              handleModelDataChange(model.id ?? '', 'model.board.id', e)
-          }}
+          value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
           className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
           readonly={read}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
@@ -141,16 +111,8 @@ const ModelHead:React.FC<Props> = ({
 
         <Label label="제조사" />
         <AntdInput 
-          value={type === 'match' ?
-            ((model as orderModelType).model?.mnfNm ?? model.currPrdInfo?.mnfNm) :
-            model.currPrdInfo?.mnfNm
-          }
-          onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);
-            else
-              handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
-          }}
+          value={model.currPrdInfo?.mnfNm}
+          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
           className="w-[120px!important]" styles={{ht:'32px'}}
           readonly={read ? read : selectId === model.id ? !newFlag : undefined}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
@@ -159,18 +121,8 @@ const ModelHead:React.FC<Props> = ({
         <Label label="재질" />
         <AntdSelect
           options={metarialSelectList}
-          value={(type === 'match' ?
-              ((model as orderModelType).model?.material?.id ?? model.currPrdInfo?.material?.id) :
-              model.currPrdInfo?.material?.id
-            ) ??
-            metarialSelectList?.[0]?.value
-          }
-          onChange={(e)=>{
-            if(type === 'order')
-              handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e);
-            else
-              handleModelDataChange(model.id ?? '', 'model.material.id', e)
-          }}
+          value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
+          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
           className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
           disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           readonly={read}
@@ -181,14 +133,8 @@ const ModelHead:React.FC<Props> = ({
 
       <div className="h-full h-center gap-10 p-10">
         <Label label="납기" />
-        { (read || type === 'match') &&
-          <p className="h-center justify-end">{
-            model.orderPrdDueDt ?
-            dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null
-          }</p>
-        }
-        
-        { (!read && type === 'order') && <>
+        { read && <>{dayjs(model.orderPrdDueDt).format("YYYY-MM-DD")}</> }
+        { !read && <>
           <AntdDatePicker
             value={model.orderPrdDueDt}
             onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
@@ -216,17 +162,27 @@ const ModelHead:React.FC<Props> = ({
           />
         </>}
       </div>
-
-      <div className="flex-1 flex jutify-end">
-      { type === 'match' && model.completed && 
-        <FullChip label="확정" state="mint" className="!mr-20 !w-80 !h-30"/>
+      {
+        !read &&
+        <Dropdown trigger={['click']} menu={{ items:[{
+          label: <div className="text-[red] h-center gap-5">
+            <p className="w-16 h-16"><Trash /></p>
+            삭제
+          </div>,
+          key: 0,
+          onClick:()=>{handleDelete?.(model)}}
+        ]}}>
+          <a onClick={(e) => e.preventDefault()}>
+            <Space>
+              <div className="w-24 h-24 cursor-pointer v-h-center">
+                <p className="w-16 h-16"><Edit/></p>
+              </div>
+            </Space>
+          </a>
+        </Dropdown>
       }
-      { type === 'match' && !model.completed && (model as orderModelType).temp && 
-        <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
-      }
-      </div>
     </div>
   )
 }
 
-export default ModelHead;
+export default SalesModelHead;
