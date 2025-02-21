@@ -14,7 +14,7 @@ import FullOkButton from "@/components/Button/FullOkButton";
 import DefaultFilter from "@/components/Filter/DeafultFilter";
 import FullSubButton from "@/components/Button/FullSubButton";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import ArrayContents from "@/contents/sayang/add/ArrayContents";
+import ArrayContents from "@/contents/sayang/add/array/ArrayContents";
 import CutSizeContents from "@/contents/sayang/add/CutSizeContents";
 import MessageContents from "@/contents/sayang/add/MessageContents";
 import LaminationContents from "@/contents/sayang/add/LaminationContents";

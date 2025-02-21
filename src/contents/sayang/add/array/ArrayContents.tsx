@@ -2,11 +2,11 @@ import ArrayIcon from "@/assets/svg/icons/array.svg";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
-import YieldCalculate from "@/contents/base/yield/YieldCalculate";
 import { boardType } from "@/data/type/base/board";
 import { yieldInputType } from "@/data/type/sayang/sample";
 import { Button } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import SayangYieldCalculate from "./YieldCalculate";
 
 interface Props {
   board: boardType[];
@@ -20,6 +20,14 @@ const ArrayContents: React.FC<Props> = ({
 
   const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
+
+  const [kit, setKit] = useState<{id:string, x:number, y:number}[]>([{id:"new-0", x:0, y:0}]);
+  useEffect(()=>{
+    if(!yieldPopOpen) {
+      setKit([{id:"new-0", x:0, y:0}]);
+    }
+  }, [yieldPopOpen])
+
 
   return (
     <div className="w-full flex flex-col gap-20">
@@ -125,15 +133,17 @@ const ArrayContents: React.FC<Props> = ({
       <AntdModal
         open={yieldPopOpen}
         setOpen={setYieldPopOpen}
-        width={1540}
+        width={960}
         title="원판수율계산"
         contents={
-        <YieldCalculate
+        <SayangYieldCalculate
           board={board}
           yielddata={yielddata}
           setYielddata={setYielddata}
           disk={disk}
           setDisk={setDisk}
+          kit={kit}
+          setKit={setKit}
         />}
         onClose={()=>{
           setYieldPopOpen(false);
