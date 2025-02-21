@@ -164,7 +164,7 @@ const ProcessSelection: React.FC<Props> = ({
     setSelectPrc(selectPrdPrcGrp);
   }
 
-  // 편집 저장을 눌렀을 경우 실행
+  // 공정 저장을 눌렀을 경우 실행
   const handleSubmit = async () => {
     try {
       if(!selectPrdGrp) {
@@ -211,11 +211,13 @@ const ProcessSelection: React.FC<Props> = ({
   // 디플트 값 세팅
   useEffect(()=>{
     if((detailData.specPrdGroupPrcs ?? []).length > 0) {
-      // 제품군 그룹 아이디가 없어서 일단 보류..
-      // const group = dataProcessGrp.find(f=> f.prcGrpNm === detailData.specPrdGroupPrcs?.[0].prdGrpNm);
-      // console.log(group, detailData.specPrdGroupPrcs);
-      // selectPrdGrp
-
+      // 제품군 디폴트 선택
+      const rdata = prdGrpQueryData?.data.data as productLinesGroupRType[];
+      const prc = rdata?.find(f=> f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id);
+      if(prc) {
+        setSelectPrdGrp(prc);
+      }
+      
       // 스팩 내 선택된 공정 추가
       let defaultPrc = [] as processRType[];
       let defaultKey = [] as string[];
@@ -228,7 +230,7 @@ const ProcessSelection: React.FC<Props> = ({
       setSelectPrc(defaultPrc);
       setSelectedKeys(defaultKey);
     }
-  }, [detailData.specPrdGroupPrcs]);
+  }, [detailData.specPrdGroupPrcs, prdGrpQueryData]);
 
   return (
     <div className="w-full h-full h-center gap-10">
@@ -374,7 +376,7 @@ const ProcessSelection: React.FC<Props> = ({
               handleSubmit();
             }}
           >
-            <Arrow /> 편집 저장
+            <Arrow /> 공정 저장
           </Button>
         </div>
       </div>
