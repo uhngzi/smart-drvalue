@@ -19,19 +19,21 @@ import AntdDatePicker from "../DatePicker/AntdDatePicker"
 
 interface Props {
   data: treeType[];
-  handleDataChange: (
-    type:'main' | 'child',
-    id:string,
-    value:string,
-    parentsId?: string,
-  ) => void;
+  // handleDataChange: (
+  //   type:'main' | 'child',
+  //   id:string,
+  //   value:string,
+  //   parentsId?: string,
+  // ) => void;
+  onSubmit: (newData : any) => void;
 }
 
 
 
 const CustomTree:React.FC<Props> = ({
   data,
-  handleDataChange,
+  // handleDataChange,
+  onSubmit,
 }) => {
 
   const customEditItems = (id: string) => (
@@ -52,25 +54,57 @@ const CustomTree:React.FC<Props> = ({
   const newInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(()=>{
-    if(data.length > 0) {
+    console.log(data)
+    // if(data.length > 0) {
       setFocusId(null);
       setList(data);
-    }
+    // }
   }, [data])
+
   useEffect(() => {
     const hasNewItem = list.some(item => 
       item.id.includes('new') || 
       (item.children?.some(child => child.id.includes('new')))
     );
-    console.log(hasNewItem)
     if (hasNewItem && newInputRef.current) {
       newInputRef.current.focus();
     }
   }, [list]);
-
   const [focusId, setFocusId] = useState<string | null>(null);
   const [selectId, setSelectId] = useState<String[]>([]);
   const [hoverId, setHoverId] = useState<string | null>(null);
+
+  const handleDataChange = async (
+    type:'main'|'child',
+    id:string,
+    value:string,
+    parentsId?: string,
+  ) => {
+    console.log(type, id, value, parentsId)
+    setList((prev) => {
+      if(type === 'main'){
+        return [
+          ...prev.filter(item => !item.id.includes('new')), 
+          { id: `temp${list.length}`, label:value, children:[], open:true }
+        ];
+      } else {
+        const newList = prev.map((item) => {
+          if(item.id === parentsId){
+            return {
+              ...item,
+              children: [
+                ...(item.children ?? []).filter(item => !item.id.includes('new')),
+                { id: `temp${item.children?.length}`, label:value }
+              ],
+            };
+          }
+          return item;
+        });
+        return newList;
+      }
+    });
+    
+  }
 
   const handleSelect = (item: any) => {
     const selectId = [item.id, ...item.children?.map((child: any) => child.id) || []];
@@ -245,7 +279,15 @@ const CustomTree:React.FC<Props> = ({
                   }}
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
-                  { item.open ? <CaretDownFilled onClick={()=>handleShowList(item.id)} /> : <CaretUpFilled onClick={()=>handleShowList(item.id)} />}
+                  { item.open ? (
+                    <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                      <CaretDownFilled />
+                    </Button>
+                    ) : (
+                      <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                        <CaretUpFilled />
+                      </Button>
+                    )}
                   <span className="flex-1 text-left">{item.label}</span>
                   {!selectId.includes(item.id) ? (
                     <div className={`${item.id === hoverId ? 'visible' : 'invisible'}`}>
@@ -347,7 +389,7 @@ const CustomTree:React.FC<Props> = ({
         }
       </div>
     </div>
-    <div className="py-10 ">
+    <div className="pt-20 pb-10 ">
       {selectId.length > 0 ? (
         <div className="w-full justify-center flex h-center gap-8">
           <span style={{color:'#00000073'}} className="mr-20">{selectId.length}개 선택됨</span>
@@ -361,7 +403,7 @@ const CustomTree:React.FC<Props> = ({
           </Tooltip>
         </div>
       ) : (
-      <Button type="primary" size="large" onClick={()=>{}} 
+      <Button type="primary" size="large" onClick={()=>{onSubmit(list)}} 
         className="w-full flex h-center gap-8 !h-[50px] " 
         style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
         <span>저장하기</span>

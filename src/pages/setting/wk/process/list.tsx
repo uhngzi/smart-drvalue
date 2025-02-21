@@ -188,7 +188,8 @@ const WkProcessGroupListPage: React.FC & {
         <div className="p-20 h-[900px] h-full">
           <CustomTree
             data={treeData}
-            handleDataChange={handleTreeDataChange}
+            // handleDataChange={handleTreeDataChange}
+            onSubmit={()=>{}}
           />
         </div>
 
