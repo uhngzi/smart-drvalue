@@ -39,6 +39,7 @@ import { validReq } from '@/utils/valid';
 
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
+import SalesModelHead from '@/components/ModelTable/SalesModelHead';
 
 
 const SayangModelAddPage: React.FC & {
@@ -389,27 +390,28 @@ const SayangModelAddPage: React.FC & {
               .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
               .map((model:salesOrderProductRType, index:number) => (
                 orderModelsSelect === index &&
-                <>
+                <div
+                  key={index}
+                  className="flex flex-col gap-15"
+                >
                   <TabSmall
                     items={orderTab}
                     selectKey={orderModelsSelect}
                     setSelectKey={setOrderModelsSelect}
                   />
 
-                  <ModelHead
-                    type="order"
-                    read={true}
-                    model={model}
-                    handleModelDataChange={handleModelDataChange}
-                    boardSelectList={boardSelectList}
-                    metarialSelectList={metarialSelectList}
-                    selectId={selectId ?? ""}
-                    newFlag={newFlag}
-                    inputRef={inputRef}
-                    index={index}
-                  />
-                
-                  <div className="flex flex-col ">
+                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
+                    <SalesModelHead
+                      read={true}
+                      model={model}
+                      handleModelDataChange={handleModelDataChange}
+                      boardSelectList={boardSelectList}
+                      metarialSelectList={metarialSelectList}
+                      selectId={selectId ?? ""}
+                      newFlag={newFlag}
+                      inputRef={inputRef}
+                      index={index}
+                    />
                     <AntdTable
                       columns={salesOrderModelReadClmn(
                         unitSelectList,
@@ -425,11 +427,11 @@ const SayangModelAddPage: React.FC & {
                         spTypeSelectList,
                       )}
                       data={[model]}
-                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
                       tableProps={{split:'none'}}
                     />
                   </div>
-                </>
+                </div>
               ))
             }
           </div>
