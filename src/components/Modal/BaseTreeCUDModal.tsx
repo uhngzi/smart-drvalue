@@ -10,6 +10,7 @@ import styled from "styled-components";
 import AntdEditModal from "./AntdEditModal";
 import AntdAlertModal from "./AntdAlertModal";
 import CustomTree from "../Tree/CustomTree";
+import { treeType } from "@/data/type/componentStyles";
 
 interface CardInputListProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface CardInputListProps {
   onClose: () => void;
   popWidth?: number;
   title: {name: string, icon?: React.ReactNode};
+  data: treeType[] | [];
   onSubmit: (newData: any) => void;
   onDelete: (id: string) => void;
   styles?: {
@@ -43,17 +45,59 @@ interface CardInputListProps {
  */
 
 const BaseTreeCUDModal: React.FC<CardInputListProps> = (
-  {open, setOpen, onClose, popWidth, title, onSubmit, onDelete, styles}: CardInputListProps
+  {open, setOpen, onClose, popWidth, title, data, onSubmit, onDelete, styles}: CardInputListProps
 ): JSX.Element => {
   
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
+  const [treeData, setTreeData] = useState<treeType[]>([]);
+
+  useEffect(() => {
+    setTreeData(data);
+  },[data]);
+
+  function treeSubmit(list: any){
+    console.log(list)
+    onSubmit('')
+  }
+
+  const handleTreeDataChange = async (
+    type:'main'|'child',
+    id:string,
+    value:string,
+    parentsId?: string,
+  ) => {
+    console.log(type, id, value, parentsId)
+    setTreeData((prev) => {
+      if(type === 'main'){
+        console.log([...prev, { id: `temp${treeData.length}`, label:value, children:[], open:true }])
+        return [...prev, { id: `temp${treeData.length}`, label:value, children:[], open:true }];
+      } else {
+        const newList = prev.map((item) => {
+          if(item.id === parentsId){
+            return {
+              ...item,
+              children: [...item.children ?? [], { id: `temp${item.children?.length}`, label:value }],
+            };
+          }
+          return item;
+        });
+        return newList;
+      }
+    });
+    
+  }
+
+  function closeModal(){
+    // setTreeData([]);
+    onClose();
+  }
 
   return (
     <AntdEditModal
       open={open}
       width={popWidth || 600}
       setOpen={setOpen}
-      onClose={onClose}
+      onClose={closeModal}
       contents={
         <div className="px-5 pt-25 h-[900px] h-full flex flex-col gap-30">
           <div className="w-full flex justify-between items-center h-[24px]">
@@ -64,8 +108,9 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
           </div>
           <section className="rounded-lg bg-white border border-[#D9D9D9] p-20">
             <CustomTree
-              data={[]}
-              handleDataChange={() => {}}
+              data={treeData}
+              // handleDataChange={handleTreeDataChange}
+              onSubmit={treeSubmit}
             />
           </section>
         </div>
