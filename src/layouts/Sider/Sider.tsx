@@ -175,6 +175,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               icon: <p className={iconClassNm}><Setting /></p>,
               onClick:() => {
                 router.push('/setting');
+                sessionStorage.setItem('prevUrl', router.pathname);
               }
               // children: [
               //   {
