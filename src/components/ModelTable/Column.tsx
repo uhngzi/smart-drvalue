@@ -388,8 +388,8 @@ export const salesOrderModelClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
-                value={record.currPrdInfo?.modelTypeEm?.id ?? "sample"}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.modelTypeEm.id', e)}
+                value={record.currPrdInfo?.modelTypeEm ?? "sample"}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.modelTypeEm', e)}
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />
@@ -788,7 +788,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={unitSelectList}
-                value={record.currPrdInfo?.unit?.id}
+                value={record.currPrdInfo?.unit?.id ?? unitSelectList[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -815,7 +815,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={generateFloorOptions()}
-                value={record.currPrdInfo?.layerEm}
+                value={record.currPrdInfo?.layerEm ?? "L1"}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -969,7 +969,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={smPrintSelectList} 
-                value={record.currPrdInfo?.smPrint?.id}
+                value={record.currPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -977,7 +977,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={smColorSelectList} 
-                value={record.currPrdInfo?.smColor?.id}
+                value={record.currPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -985,7 +985,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={smTypeSelectList} 
-                value={record.currPrdInfo?.smType?.id}
+                value={record.currPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -1013,7 +1013,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={mkPrintSelectList}
-                value={record.currPrdInfo?.mkPrint?.id}
+                value={record.currPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -1021,7 +1021,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={mkColorSelectList}
-                value={record.currPrdInfo?.mkColor?.id}
+                value={record.currPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -1029,7 +1029,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill
                 options={mkTypeSelectList}
-                value={record.currPrdInfo?.mkType?.id}
+                value={record.currPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
                 styles={{fs:'12px'}}
                 readonly={true}
               />
@@ -1073,7 +1073,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
-                value={record.currPrdInfo?.modelTypeEm?.id}
+                value={record.currPrdInfo?.modelTypeEm ?? "sample"}
                 styles={{fs:'12px'}}
                 readonly={true}
               />

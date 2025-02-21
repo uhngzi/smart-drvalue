@@ -38,7 +38,7 @@ const SayangSampleStatPage: React.FC & {
   // --------------- 리스트 데이터 세팅 -------------- 시작
   const [pagination, setPagination] = useState({
     current: 1,
-    size: 100,
+    size: 10,
   });
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
@@ -124,12 +124,6 @@ const SayangSampleStatPage: React.FC & {
     </div>
   )
 }
-
-const CustomRadioGroup = styled(Radio.Group)`
-  .ant-radio-button-wrapper::before {
-    display: none !important;
-  }
-`;
 
 SayangSampleStatPage.layout = (page: React.ReactNode) => (
   <ModelPageLayout

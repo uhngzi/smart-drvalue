@@ -50,7 +50,7 @@ const SayangModelAddPage: React.FC & {
 
   const { showToast, ToastContainer } = useToast();
   
-  // 디폴트 값 가져오기
+  // 베이스 값 가져오기
   const { 
     boardSelectList,
     metarialSelectList,
@@ -132,6 +132,7 @@ const SayangModelAddPage: React.FC & {
         // 임시저장 모델 파싱
         tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",
       }));
+      console.log(arr);
       setData(arr);
       setDataLoading(false);
     }
@@ -279,7 +280,7 @@ const SayangModelAddPage: React.FC & {
     }
   }
 
-    // 결과 모달창을 위한 변수
+  // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
 
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
@@ -345,25 +346,30 @@ const SayangModelAddPage: React.FC & {
     return () => observer.disconnect();
   }, [inputRef]);
 
-  const [orderModelsSelect, setOrderModelsSelect] = useState<number>(0);
-  const [orderTab, setOrderTab] = useState<{key:number, text:string}[]>([]);
+  const [orderModelsSelect, setOrderModelsSelect] = useState<string>("");
+  const [orderTab, setOrderTab] = useState<{key:string, text:string}[]>([]);
   useEffect(()=>{
     if(orderModels.length > 0) {
       setOrderTab(
-        orderModels.map((m, index)=>({
-          key:index,
-          text:m.orderTit,
+        orderModels
+        .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        .map((m)=>({
+          key:m.id,
+          text:m.prtOrderNo,
         }))
       );
+      if(orderModelsSelect === "")  setOrderModelsSelect(orderModels[0].id);
     }
   }, [orderModels])
-  const [matchTab, setMatchTab] = useState<{key:number, text:string}[]>([]);
+  const [matchTab, setMatchTab] = useState<{key:string, text:string}[]>([]);
   useEffect(()=>{
     if(data.length > 0) {
       setMatchTab(
-        data.map((m, index)=>({
-          key:index,
-          text: m.editModel?.prdNm ?? m.model?.prdNm ?? m.tempPrdInfo?.prdNm ?? m.orderTit,
+        data
+        .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+        .map((m)=>({
+          key: m.id,
+          text: m.prtOrderNo ?? "",
         }))
       );
     }
@@ -385,21 +391,20 @@ const SayangModelAddPage: React.FC & {
         <div className="w-[calc(100vw-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
           <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+            <TabSmall
+              items={orderTab}
+              selectKey={orderModelsSelect}
+              setSelectKey={setOrderModelsSelect}
+            />
             {
               orderModels
               .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
               .map((model:salesOrderProductRType, index:number) => (
-                orderModelsSelect === index &&
+                orderModelsSelect === model.id &&
                 <div
                   key={index}
                   className="flex flex-col gap-15"
                 >
-                  <TabSmall
-                    items={orderTab}
-                    selectKey={orderModelsSelect}
-                    setSelectKey={setOrderModelsSelect}
-                  />
-
                   <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
                     <SalesModelHead
                       read={true}
@@ -438,20 +443,19 @@ const SayangModelAddPage: React.FC & {
           
           {/* 수주 탭 */}
           <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+            <TabSmall
+              items={matchTab}
+              selectKey={orderModelsSelect}
+              setSelectKey={setOrderModelsSelect}
+            />
           { !dataLoading && data
             // 모델이 폐기 됐을 경우 필터링
             .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
             .map((model:orderModelType, index:number) => (
-              orderModelsSelect === index &&
+              orderModelsSelect === model.id &&
               <div className="flex flex-col gap-16" key={model.id}
                 // style={model.completed?{background:"#F8F8F8"}:{}}
               >
-                <TabSmall
-                  items={matchTab}
-                  selectKey={orderModelsSelect}
-                  setSelectKey={setOrderModelsSelect}
-                />
-
                 <ModelHead
                   type="match"
                   model={model}

@@ -133,7 +133,8 @@ const SalesModelHead:React.FC<Props> = ({
 
       <div className="h-full h-center gap-10 p-10">
         <Label label="납기" />
-        { read && <>{dayjs(model.orderPrdDueDt).format("YYYY-MM-DD")}</> }
+        { read && model.orderPrdDueDt ?
+          dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null}
         { !read && <>
           <AntdDatePicker
             value={model.orderPrdDueDt}
