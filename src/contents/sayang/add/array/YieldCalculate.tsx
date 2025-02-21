@@ -216,7 +216,10 @@ const SayangYieldCalculate: React.FC<Props> = ({
             <div className="flex-1 h-full overflow-y-auto flex flex-col gap-15">
               {
                 kit.map((item, index) => (
-                  <div className="w-full h-[145px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14">
+                  <div
+                    key={item.id}
+                    className="w-full h-[145px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14"
+                  >
                     <div className="w-full v-between-h-center">
                       <div className="h-center gap-3">
                         KIT
