@@ -358,7 +358,12 @@ const SayangModelAddPage: React.FC & {
           text:m.prtOrderNo,
         }))
       );
-      if(orderModelsSelect === "")  setOrderModelsSelect(orderModels[0].id);
+      if(orderModelsSelect === "")
+        setOrderModelsSelect(
+          orderModels
+          .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)?.
+          [0].id
+        );
     }
   }, [orderModels])
   const [matchTab, setMatchTab] = useState<{key:string, text:string}[]>([]);

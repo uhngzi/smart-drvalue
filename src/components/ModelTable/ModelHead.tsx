@@ -108,9 +108,20 @@ const ModelHead:React.FC<Props> = ({
                   inputRef.current[index] = el;
                 }
               }}
-              value={(model as orderModelType).model?.prdNm ?? (model as orderModelType)?.tempPrdInfo?.prdNm ?? model.orderTit}
+              value={
+                // 임시저장된 값과 저장된 모델의 값이 있고,
+                (model as orderModelType).tempPrdInfo.prdNm && (model as orderModelType).model?.prdNm
+                  // 모델의 값이 반복이 아닐 경우
+                  && (model as orderModelType).modelStatus !== ModelStatus.REPEAT
+                  // 임시저장된 값과 저장된 모델이 다르다면
+                  && (model as orderModelType).model?.prdNm !== (model as orderModelType)?.tempPrdInfo?.prdNm ? 
+                  // 임시저장된 값을 우선시 함
+                  (model as orderModelType)?.tempPrdInfo?.prdNm :
+                (model as orderModelType).model?.prdNm ?? (model as orderModelType)?.tempPrdInfo?.prdNm ?? model.orderTit
+              }
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value);
+                handleModelDataChange(model.id ?? '', 'editModel.prdNm', e.target.value);
               }}
               className="w-[180px!important]" styles={{ht:'32px'}}
               readonly={read ? read : selectId === model.id ? !newFlag : undefined}
