@@ -564,19 +564,19 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     render: (value:any,_,index:number) => (
       <>
-        <div className="h-[33%] w-[100%] v-h-center ">
+        <div className="h-[50%] w-[100%] v-h-center ">
           <Checkbox id={value}/>
         </div>
-        <div className="h-[34%] w-[100%] v-h-center ">
+        <div className="h-[50%] w-[100%] v-h-center ">
           <p className="w-24 h-24 bg-back rounded-6 v-h-center">
             {index+1}
           </p>
         </div>
-        <div className="h-[33%] w-[100%] v-h-center">
+        {/* <div className="h-[33%] w-[100%] v-h-center">
           <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer">
             <p className="w-16 h-16"><Trash /></p>
           </div>
-        </div>
+        </div> */}
       </>
     ),
   },
@@ -1687,8 +1687,8 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
-                value={record.editModel?.modelTypeEm?.id ?? record.model?.modelTypeEm?.id ?? record.tempPrdInfo?.modelTypeEm?.id ?? record.currPrdInfo?.modelTypeEm?.id ?? "sample"}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.modelTypeEm?.id', e)}
+                value={record.editModel?.modelTypeEm ?? record.model?.modelTypeEm ?? record.tempPrdInfo?.modelTypeEm ?? record.currPrdInfo?.modelTypeEm ?? "sample"}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.modelTypeEm', e)}
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
               />

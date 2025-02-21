@@ -22,6 +22,7 @@ import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 interface Props {
+  open: boolean;
   detailData: specType;
 }
 
@@ -147,11 +148,11 @@ const ProcessSelection: React.FC<Props> = ({
   });
   // ---------- 제품군 그룹 데이터 세팅 ---------- 끝
 
-  // 선택한 제품군 그룹
+  // 제품군 그룹 선택값
   const [ selectPrdGrp, setSelectPrdGrp ] = useState<productLinesGroupRType | null>(null);
   // 선택한 제품군의 공정들
   const [ selectPrdPrcGrp, setSelectPrdPrcGrp ] = useState<processRType[]>([]);
-  // 선택한 공정들 (저장될 값)
+  // 사용자가 선택한 공정들 (저장될 값 / 공정을 임의로 추가, 삭제할 수 있으므로 따로 저장)
   const [ selectPrc, setSelectPrc ] = useState<processRType[]>([]);
 
   // 제품군 그룹 선택 후 공정 변경 시 실행 함수

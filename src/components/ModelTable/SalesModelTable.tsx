@@ -29,7 +29,7 @@ const SalesModelTable:React.FC<Props> = ({
   inputRef,
   handleSubmitOrderModel,
 }) => {
-  // 디폴트 값 가져오기
+  // 베이스 값 가져오기
   const { 
     boardSelectList,
     metarialSelectList,

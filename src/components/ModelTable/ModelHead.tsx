@@ -108,8 +108,10 @@ const ModelHead:React.FC<Props> = ({
                   inputRef.current[index] = el;
                 }
               }}
-              value={(model as orderModelType).tempPrdInfo?.prdNm ?? model.orderTit}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', e.target.value)}
+              value={(model as orderModelType).model?.prdNm ?? (model as orderModelType)?.tempPrdInfo?.prdNm ?? model.orderTit}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value);
+              }}
               className="w-[180px!important]" styles={{ht:'32px'}}
               readonly={read ? read : selectId === model.id ? !newFlag : undefined}
               disabled={model.completed}
@@ -121,7 +123,7 @@ const ModelHead:React.FC<Props> = ({
         <AntdSelect
           options={boardSelectList}
           value={(type === 'match' ?
-              ((model as orderModelType).model?.board?.id ?? model.currPrdInfo?.board?.id) :
+              ((model as orderModelType).model?.board?.id ?? (model as orderModelType).tempPrdInfo?.board?.id) :
               model.currPrdInfo?.board?.id
             ) ??
             boardSelectList?.[0]?.value
@@ -140,7 +142,7 @@ const ModelHead:React.FC<Props> = ({
         <Label label="제조사" />
         <AntdInput 
           value={type === 'match' ?
-            ((model as orderModelType).model?.mnfNm ?? model.currPrdInfo?.mnfNm) :
+            ((model as orderModelType).model?.mnfNm ?? (model as orderModelType).tempPrdInfo?.mnfNm ?? model.currPrdInfo?.mnfNm) :
             model.currPrdInfo?.mnfNm
           }
           onChange={(e)=>{
@@ -158,7 +160,7 @@ const ModelHead:React.FC<Props> = ({
         <AntdSelect
           options={metarialSelectList}
           value={(type === 'match' ?
-              ((model as orderModelType).model?.material?.id ?? model.currPrdInfo?.material?.id) :
+              ((model as orderModelType).tempPrdInfo?.material?.id ?? (model as orderModelType).model?.material?.id ?? model.currPrdInfo?.material?.id) :
               model.currPrdInfo?.material?.id
             ) ??
             metarialSelectList?.[0]?.value

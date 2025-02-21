@@ -224,7 +224,7 @@ const SayangSampleListPage: React.FC & {
             >
               {
                 ingData.map((data:specType, index:number)=> (
-                  <Radio.Button className="!rounded-20 [border-inline-start-width:1px]"
+                  <Radio.Button className="!rounded-20 [border-inline-start-width:1px] !w-fit"
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
@@ -280,6 +280,17 @@ const SayangSampleListPage: React.FC & {
 }
 
 const CustomRadioGroup = styled(Radio.Group)`
+  display: flex;
+  flex-wrap: wrap; /* 자동 줄 바꿈 */
+  gap: 10px; /* 간격 유지 */
+  justify-content: center; /* 중앙 정렬 */
+
+  .ant-radio-button-wrapper {
+    flex: 1 1 auto; /* 크기 자동 조절 */
+    min-width: 100px; /* 최소 너비 설정 */
+    text-align: center;
+  }
+
   .ant-radio-button-wrapper::before {
     display: none !important;
   }

@@ -1,8 +1,10 @@
+import { Dayjs } from "dayjs";
+
 export type filterType = {
-  writeDt: Date | null;
+  writeDt: Date | Dayjs | null;
   writer: string;
-  approveDt: Date | null;
+  approveDt: Date | Dayjs | null;
   approver: string;
-  confirmDt: Date | null;
+  confirmDt: Date | Dayjs | null;
   confirmPer: string;
 }

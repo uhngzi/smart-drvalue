@@ -35,6 +35,11 @@ interface Props {
   baseLamination: laminationRType[],
   baseLaminationLoading: boolean;
   color: string[];
+  mainLamination: laminationRType[];
+  setMainLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
+  submitFlag: boolean;
+  setSubmitFlag: React.Dispatch<SetStateAction<boolean>>;
+  setLamNo: React.Dispatch<SetStateAction<string>>;
 }
 
 const AddLaminationModalContents: React.FC<Props> = ({
@@ -45,6 +50,11 @@ const AddLaminationModalContents: React.FC<Props> = ({
   baseLamination,
   baseLaminationLoading,
   color,
+  mainLamination,
+  setMainLamination,
+  submitFlag,
+  setSubmitFlag,
+  setLamNo,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -60,7 +70,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   // 라이브러리 필터 값 선택
   const [ selectLamiEm, setSeletLamiEm ] = useState<'cf' | 'pp' | 'ccl'>('cf');
   const [ selectSpecLamiFilter, setSelectSpecLamiFilter ] = useState<{
-    layer?: LayerEm,
+    layer?: LayerEm | "",
     oz?: 'cf' | 'pp' | 'ccl',
     thk?: number,
     cf?: number,
@@ -120,7 +130,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
   }
 
   useEffect(()=>{
-    if(select && selectSource && typeof selectSource.specDetail !== "string") {
+    // 확정된 라이브러리를 선택한 상태에서 값을 변경하면 새로 라이브러리를 추가해줘야 하므로 기존 선택된 라이브러리는 취소됨
+    if(selectSpecLamiFilter.cf === 1 && select && selectSource && typeof selectSource.specDetail !== "string") {
       // 기존 라이브러리가 있는데 편집을 할 경우 select가 취소되어야 함
       // 1. 구성요소 추가로 인한 길이의 값이 달라짐
       // 2. CF의 값이 달라짐
@@ -201,8 +212,12 @@ const AddLaminationModalContents: React.FC<Props> = ({
     if(index === 0 || index === lamination.length - 1 ||
       draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1)  return;
 
-    setSelect(undefined);
-    setSelectSource(null);
+    // 확정된 라이브러리의 값을 변경할 경우 새 라이브러리로 생성되기 위해 선택 취소
+    if(selectSpecLamiFilter.cf === 1) {
+      setSelect(undefined);
+      setSelectSource(null);
+    }
+
     const updatedLamination = [...lamination];
     const [movedItem] = updatedLamination.splice(draggedItemIndex, 1); // 드래그한 항목 삭제
     updatedLamination.splice(index, 0, movedItem); // 새로운 위치에 삽입
@@ -210,10 +225,45 @@ const AddLaminationModalContents: React.FC<Props> = ({
     setLamination(updatedLamination);
     setDraggedItemIndex(null); // 드래그 상태 초기화
   };
-  // ---------- 적층 구조 드래그 함수 ---------- 끝
+  // ----------- 적층 구조 드래그 함수 ---------- 끝
+
+  // ----------- 라이브러리 수정 함수 ----------- 시작
+    // 기존에 매칭된 상태인데 라이브러리를 수정할 수 있나?... 일단 보류
+  const handleSubmitTemp = async () => {
+    try {
+      if(selectSource?.id){
+        const jsonData = {
+          specDetail: {
+            data: lamination.map((d:laminationRType ,idx:number)=> ({
+              index: idx,
+              specLamIdx: d.id,
+            }))
+          }
+        }
+        console.log(JSON.stringify(jsonData), selectSource.id);
+
+        const result = await patchAPI({
+          type: 'core-d1', 
+          utype: 'tenant/',
+          url: 'spec/lamination-source',
+          jsx: 'jsxcrud'
+        }, selectSource?.id, jsonData);
+
+        if(result.resultCode === 'OK_0000') {
+          showToast("라이브러리 수정 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ----------- 라이브러리 수정 함수 ----------- 끝
 
   // ------------ 임시 저장 시 함수 ----------- 시작
-  const handleSubmitSaveSource = async () => {
+  const handleSubmitSaveSource = async (cf:boolean) => {
     try {
       const jsonData = {
         specDetail: {
@@ -233,12 +283,15 @@ const AddLaminationModalContents: React.FC<Props> = ({
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        showToast("임시 저장", "success");
         const entity = result.data.entity as specLaminationType;
-        setSpecSources([...specSources, {...entity}]);
+        setSpecSources([...specSources, { ...entity, confirmYn: cf ? 1 : 0 }]);
         // 생성 후 라이브러리 자동 선택
-        setSelect(entity.id);
+        setSelect(entity?.id);
         setSelectSource(entity);
+        if(!cf) {
+          showToast("라이브러리 추가 완료", "success");
+          setSelectSpecLamiFilter({ ...selectSpecLamiFilter, cf:0, layer:"" });
+        } else      handleSubmitSaveSourceCf(true, entity);
       } else {
         const msg = result?.response?.data?.message;
         showToast(msg, "error");
@@ -250,20 +303,29 @@ const AddLaminationModalContents: React.FC<Props> = ({
   // ------------ 임시 저장 시 함수 ----------- 끝
 
   // ------------ 확정 저장 시 함수 ----------- 시작
-  const handleSubmitSaveSourceCf = async () => {
+  const handleSubmitSaveSourceCf = async (cf:boolean, entity?:any) => {
     try {
-      if(selectSource?.id) {
+      if(selectSource?.id || entity?.id) {
         const result = await patchAPI({
           type: 'core-d1', 
           utype: 'tenant/',
-          url: `spec/lamination-source/default/confirm/${selectSource.id}`,
+          url: `spec/lamination-source/default/confirm/${selectSource?.id ?? entity?.id}`,
           jsx: 'default',
           etc: true,
-        }, selectSource.id);
+        }, selectSource?.id ?? entity?.id);
   
         if(result.resultCode === 'OK_0000') {
-          showToast("확정 저장", "success");
-          specSourcesRefetch();
+          if(!cf) {
+            showToast("확정 저장", "success");
+            specSourcesRefetch();
+          } else {
+            setDetailData({
+              ...detailData,
+              specLamination: { id: select },
+            });
+            setLamNo(entity?.lamNo);
+            setSubmitFlag(true);
+          }
         } else {
           const msg = result?.response?.data?.message;
           showToast(msg, "error");
@@ -276,24 +338,25 @@ const AddLaminationModalContents: React.FC<Props> = ({
   // ------------ 확정 저장 시 함수 ----------- 끝
 
   // -------------- 선택 시 함수 ------------- 시작
-  const [submitFlag, setSubmitFlag] = useState<boolean>(false);
   const handleSubmitSelectSource = async () => {
-    // 기존 라이브러리로 선택할 경우
+    // 메인에 해당 라이브러리 보여주기
+    setMainLamination(lamination);
+    
+    // 선택된 라이브러리가 있을 경우
     if(select && selectSource) {
       setDetailData({
         ...detailData,
         specLamination: { id: select },
       });
+      setLamNo(selectSource?.lamNo ?? "");
       setSubmitFlag(true);
-      console.log(detailData, select);
+    } else {
+      // 선택된 라이브러리가 없을 경우
+      // 새 라이브러리 생성 후 해당 라이브러리 바로 확정한 뒤 메인 라이브러리의 값 임시 저장
+      handleSubmitSaveSource(true);
     }
+    console.log(selectSource);
   }
-  useEffect(()=>{
-    if(submitFlag) {
-      handleSumbitTemp();
-      setSubmitFlag(false);
-    }
-  }, [submitFlag])
   // -------------- 선택 시 함수 ------------- 끝
 
   return (
@@ -379,10 +442,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
               if(!selectSpecLamiFilter.layer) return true;
               else                            return source.layerEm === selectSpecLamiFilter.layer;
             })
-            // .filter((source:specLaminationType) => {
-            //   if(!selectSpecLamiFilter.oz)  return true;
-            //   else                          return source.specDetail?.data?.[0]?.
-            // })
             .filter((source:specLaminationType) => {
               if(!selectSpecLamiFilter.thk) return true;
               else                          return source.lamThk === selectSpecLamiFilter.thk
@@ -472,7 +531,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
               <Button
                 className="h-32 rounded-6"
                 onClick={()=>{
-                  handleSubmitSaveSource();
+                  handleSubmitSaveSource(false);
                 }}
               >
                 임시 저장
@@ -480,12 +539,10 @@ const AddLaminationModalContents: React.FC<Props> = ({
               <Button
                 className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                 onClick={()=>{
-                  console.log(selectSource);
-                  if(selectSource) {
-                    handleSubmitSaveSourceCf();
+                  if(selectSource?.id) {
+                    handleSubmitSaveSourceCf(false);
                   } else {
-                    handleSubmitSaveSource();
-                    handleSubmitSaveSourceCf();
+                    showToast("확정할 라이브러리를 선택해주세요.", "error");
                   }
                 }}
               >
@@ -570,15 +627,16 @@ const AddLaminationModalContents: React.FC<Props> = ({
               ))
             }
           </div>
-          <div className="w-full v-h-center gap-10">
+          {/* <div className="w-full v-h-center gap-10">
             <Button
               className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
               onClick={()=>{
+                handleSubmitSaveSource();
               }}
             >
               구성 요소 추가
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
       

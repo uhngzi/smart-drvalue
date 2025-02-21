@@ -44,6 +44,34 @@ export type orderModelType = {
     prt?: partnerRType;
     mng?: partnerMngRType;
   },
+  orderModel?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    currPrdInfo?: string;
+    tempPrdInfo?: string;
+    modelStatus?: string;
+    orderDt?: Date | Dayjs | null;
+    orderNo?: string;
+    orderTit?: string;
+    prtOrderNo?: string;
+    orderPrdRemark?: string;
+    orderPrdCnt?: number;
+    orderPrdUnitPrice?: number;
+    orderPrdPrice?: number;
+    orderPrdDueReqDt?: Date | Dayjs | null;
+    orderPrdDueDt?: Date | Dayjs | null;
+    orderPrdHotGrade?: HotGrade;
+    prtInfo?: {
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+      id?: string;
+      prt?: partnerRType | null;
+      mng?: partnerMngRType | null;
+    }
+  }
   order?: {
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;

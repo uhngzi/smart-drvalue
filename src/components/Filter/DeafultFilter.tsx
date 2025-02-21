@@ -16,7 +16,6 @@ const DefaultFilter: React.FC<Props> = ({
 }) => {
   return (
     <>
-    {/* <AntdInput value={filter.writer} onChange={(e)=> setFilter((prev => ({ ...prev, writer: e.target.value})))} className="w-[40px!important]"/> */}
       <FilterRound
         items={[
           {
@@ -35,7 +34,7 @@ const DefaultFilter: React.FC<Props> = ({
           {
             label:'작성자',
             className:'w-[120px]',
-            content:<p className="w-40 font-medium">홍길동</p>
+            content:<p className="w-40 font-medium">{filter.writer}</p>
           },
           {
             label:'승인일',
@@ -53,7 +52,7 @@ const DefaultFilter: React.FC<Props> = ({
           {
             label:'승인자',
             className:'w-[120px]',
-            content:<p className="w-40 font-medium">홍길동</p>
+            content:<p className="w-40 font-medium">{filter.approver}</p>
           },
           {
             label:'확정일',
@@ -73,8 +72,7 @@ const DefaultFilter: React.FC<Props> = ({
             className:'w-[175px]',
             content:
             <AntdInput 
-              // value={filter.confirmPer} 
-              value={"홍길동"}
+              value={filter.confirmPer}
               onChange={(e)=> setFilter((prev => ({ ...prev, confirmPer: e.target.value})))} 
               className="w-[60px!important] font-medium" 
               styles={{bw:'0', bg:'none'}}

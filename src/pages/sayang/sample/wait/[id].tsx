@@ -1,53 +1,56 @@
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { Button, Spin } from "antd";
+import { Button, Skeleton, Spin } from "antd";
 import { useRouter } from "next/router";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
 
 import AntdTable from "@/components/List/AntdTable";
-import CutSizeContents from "@/contents/sayang/add/CutSizeContents";
-import LaminationContents from "@/contents/sayang/add/LaminationContents";
-import MessageContents from "@/contents/sayang/add/MessageContents";
-import ArrayContents from "@/contents/sayang/add/ArrayContents";
 import AntdModal from "@/components/Modal/AntdModal";
-import ProcessSelection from "@/contents/sayang/sample/wait/ProcessSelection";
-import DefaultFilter from "@/components/Filter/DeafultFilter";
 import FullOkButton from "@/components/Button/FullOkButton";
+import DefaultFilter from "@/components/Filter/DeafultFilter";
 import FullSubButton from "@/components/Button/FullSubButton";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import ArrayContents from "@/contents/sayang/add/ArrayContents";
+import CutSizeContents from "@/contents/sayang/add/CutSizeContents";
+import MessageContents from "@/contents/sayang/add/MessageContents";
+import LaminationContents from "@/contents/sayang/add/LaminationContents";
+import ProcessSelection from "@/contents/sayang/sample/wait/ProcessSelection";
 
 import Models from "@/assets/svg/icons/sales.svg";
 import Prc from "@/assets/svg/icons/data.svg";
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
+import useToast from "@/utils/useToast";
+
 import { filterType } from "@/data/type/filter";
-import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
-import { modelsType } from "@/data/type/sayang/models";
-import { apiGetResponseType } from "@/data/type/apiResponse";
 import { useBase } from "@/data/context/BaseContext";
-import { changeSayangTemp } from "@/data/type/sayang/changeData";
-import { specModelType, specType } from "@/data/type/sayang/sample";
+import { useUser } from "@/data/context/UserContext";
+import { modelsType } from "@/data/type/sayang/models";
+import { useModels } from "@/data/context/ModelContext";
+import { processRType } from "@/data/type/base/process";
 import { selectType } from "@/data/type/componentStyles";
 import { commonCodeRType } from "@/data/type/base/common";
-import { useModels } from "@/data/context/ModelContext";
-
-import useToast from "@/utils/useToast";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import { patchAPI } from "@/api/patch";
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
+import { changeSayangTemp } from "@/data/type/sayang/changeData";
+import { productLinesGroupRType } from "@/data/type/base/product";
+import { specModelType, specType } from "@/data/type/sayang/sample";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { id, match, model, status } = router.query;
-
   const { showToast, ToastContainer } = useToast();
-
   const { models, modelsLoading } = useModels();
+  const { me } = useUser();
 
-  // 디폴트 값 가져오기
+  // 베이스 값 가져오기
   const { 
     board,
     surfaceSelectList,
@@ -63,6 +66,18 @@ const SayangSampleAddPage: React.FC & {
     spPrintSelectList,
     spTypeSelectList,
   } = useBase();
+
+  // 결재
+  const [filter, setFilter] = useState<filterType>({
+    writeDt: null,
+    writer: '',
+    approveDt: null,
+    approver: '',
+    confirmDt: null,
+    confirmPer: '',
+  });
+  // 결재 펼치기
+  const [approval, setApproval] = useState<boolean>(false);
 
   // ------------ 필요 데이터 세팅 ------------ 시작
     const [ul1SelectList, setUl1TypeSelectList] = useState<selectType[]>([]);
@@ -137,18 +152,22 @@ const SayangSampleAddPage: React.FC & {
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
       setDetailData(rdata);
-      setAddModelFlag(false);
       setPrcNotice(rdata.prcNotice ?? "");
       setCamNotice(rdata.camNotice ?? "");
       setTimeout(() => {
         setDetailDataLoading(false);
       }, 200);
+      // 작성일 : 생성 시기
+      setFilter({ ...filter, writeDt: dayjs(rdata.createdAt), writer: me?.userName ?? "", })
     }
   }, [queryData]);
 
-    // 모델 조합 시 실행
+  // 모델 조합일 경우 임시저장 실행
+  const [matchId, setMatchId] = useState<string>("");
   useEffect(()=>{
-    if(!detailDataLoading && !modelsLoading && !!model && !!status) {
+    if(!detailDataLoading && !modelsLoading && !!model && models.length > 0 && matchId === "") {
+      // 재실행 방지를 위해 matchId를 넣어줌
+      setMatchId(match+"");
       const matchModel = models.find(d => d.id === model) as modelsType;
       const specModels = detailData.specModels ?? [];
       setDetailData({
@@ -157,24 +176,25 @@ const SayangSampleAddPage: React.FC & {
           {
             ...matchModel,
             id: undefined,
-            unit: { id: matchModel.unit?.id },
-            board: { id: matchModel.board.id },
+            unit: { id: matchModel?.unit?.id },
+            board: { id: matchModel?.board.id },
             matchId: match,
             glbStatus: { id: status },
           } as specModelType,
           ...specModels,
         ]
       });
+      // 임시저장 toast가 뜨지 않기 위해 false를 넣어줌 (이외에는 전부 true)
       setTemp(false);
     }
   }, [detailDataLoading, model, models])
 
-    // 모델 조합 후 자동 임시 저장
-  useEffect(()=>{
+  useEffect(()=>{ 
     if(!temp) handleSumbitTemp();
-  }, [detailData])
+  }, [matchId])
   // ------------ 세부 데이터 세팅 ------------ 끝
 
+  // ------------ 제조/캠 전달사항 ------------ 시작
   useEffect(()=>{
     setDetailData({
       ...detailData,
@@ -182,8 +202,9 @@ const SayangSampleAddPage: React.FC & {
       camNotice: camNotice,
     });
   }, [prcNotice, camNotice]);
-
-  // 모델의 값 변경 시 실행 함수
+  // ------------ 제조/캠 전달사항 ------------ 끝
+  
+  // ----------- 모델 값 변경 함수 ------------ 시작
   const handleModelDataChange = (
     id?: string,
     name?: string,
@@ -219,12 +240,12 @@ const SayangSampleAddPage: React.FC & {
       setDetailData({...detailData, specModels:updatedData}); // 상태 업데이트
     }
   };
-
+  // ------------ 모델 값 변경 함수 ----------- 끝
+  
+  // --------------- 임시 저장  ------------- 시작
+    // 조합일 경우 알림이 뜨지 않게 하기 위한 flag
   const [temp, setTemp] = useState<boolean>(true);
-  const [addModelFlag, setAddModelFlag] = useState<boolean>(false);
-
-  // 임시저장 시 실행
-  const handleSumbitTemp = async () => {
+  const handleSumbitTemp = async (main?:boolean) => {
     try {
       const jsonData = changeSayangTemp("re", detailData);
 
@@ -239,14 +260,16 @@ const SayangSampleAddPage: React.FC & {
       if(result.resultCode === 'OK_0000') {
         if(temp) {
           showToast("임시저장 완료", "success");
-          refetch();
         }
+        // temp 값 초기화
         setTemp(true);
 
-        if(addModelFlag) {
-          router.push(`/sayang/sample/wait/${id}`);
-          refetch();
-          setAddModelFlag(false);
+        // 모델 추가 시 임시 저장 후 메인으로 이동
+        if(main) {
+          router.push({
+            pathname:'/sayang/sample/wait',
+            query: {id: id, text: detailData.specNo}
+          });
         }
       } else {
         const msg = result?.response?.data?.message;
@@ -256,7 +279,9 @@ const SayangSampleAddPage: React.FC & {
       console.log('CATCH ERROR : ', e);
     }
   }
-
+  // --------------- 임시 저장 --------------- 끝
+  
+  // --------------- 확정 저장 --------------- 시작
   const handleSubmitConfirm = async () => {
     try {
       const result = await patchAPI({
@@ -277,28 +302,42 @@ const SayangSampleAddPage: React.FC & {
       console.log("CATCH ERROR :: ", e);
     }
   }
+  // --------------- 확정 저장 --------------- 끝
   
-  const [filter, setFilter] = useState<filterType>({
-    writeDt: null,
-    writer: '',
-    approveDt: null,
-    approver: '',
-    confirmDt: null,
-    confirmPer: '',
-  });
-
-  // 공정 지정 팝업
+  // --------------- 공정 지정 --------------- 시작
+    // 공정 지정 팝업
   const [open, setOpen] = useState<boolean>(false);
-  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  // --------------- 공정 지정 --------------- 끝
 
-  // 필터 펼치기
-  const [approval, setApproval] = useState<boolean>(false);
+  // 결과창
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<"cf" | "">("");
 
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
-      { detailDataLoading && <Spin tip="loading..." /> }
+      { detailDataLoading && <>
+        <div className="bg-white rounded-14 p-30 pt-70 flex flex-col overflow-auto gap-20 w-full h-[400px]">
+          <Skeleton.Node active className="!w-full !h-full" />
+        </div>
+        <div className="flex bg-white rounded-14 p-30 gap-40 w-full h-[430px]">
+          <div className="min-w-[300px]">
+            <Skeleton.Node active className="!w-full !h-full" />
+          </div>
+          <div className="w-full flex gap-40">
+            <div className="min-w-[300px] flex-grow-[44]">
+              <Skeleton.Node active className="!w-full !h-full" />
+            </div>
+            <div className="min-w-[400px] flex-grow-[32]">
+              <Skeleton.Node active className="!w-full !h-full" />
+            </div>
+            <div className="min-w-[300px] flex-grow-[24]">
+              <Skeleton.Node active className="!w-full !h-full" />
+            </div>
+          </div>
+        </div>
+      </>}
       { !detailDataLoading && <>
-      <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20">
+      <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20 w-full">
         <div className="v-between-h-center">
           <div className="flex">
             <Button type="text" icon={<DoubleRightOutlined/>} className="!bg-[#F5F6FA] !h-32" style={{border:'1px solid #D9D9D9'}} onClick={() => setApproval(prev =>!prev)}>결재</Button>
@@ -308,9 +347,8 @@ const SayangSampleAddPage: React.FC & {
             <Button
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{
-                setAddModelFlag(true);
-                setAddModelFlag(false);
-                handleSumbitTemp();
+                setTemp(false);
+                handleSumbitTemp(true);
               }}
             >모델추가</Button>
             <Button
@@ -348,7 +386,7 @@ const SayangSampleAddPage: React.FC & {
           />
         </div>
       </div>
-      <div className="flex bg-white rounded-14 p-30 gap-40">
+      <div className="flex bg-white rounded-14 p-30 gap-40 w-full">
         <div className="min-w-[300px]">
           {/* 적층 구조 */}
           <LaminationContents
@@ -356,13 +394,12 @@ const SayangSampleAddPage: React.FC & {
             detailData={detailData}
             setDetailData={setDetailData}
             handleSumbitTemp={()=>{
-              setTemp(true);
               handleSumbitTemp();
             }}
           />
         </div>
         <div className="w-full flex gap-40">
-          <div className="min-w-[550px] flex-grow-[44]">
+          <div className="min-w-[300px] flex-grow-[44]">
             {/* 전달 사항 */}
             <MessageContents
               prcNotice={prcNotice}
@@ -400,11 +437,11 @@ const SayangSampleAddPage: React.FC & {
         title={"공정 지정"}
         contents={
         <ProcessSelection
+          open={open}
           detailData={detailData}
         />}
         width={1050}
         onClose={()=>{
-          refetch();
           setOpen(false);
         }}
       />
@@ -412,12 +449,23 @@ const SayangSampleAddPage: React.FC & {
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={"사양 확정 완료"}
-        contents={<div>사양 확정에 성공하였습니다.</div>}
-        type="success"
+        title={
+          resultType === "cf"? "사양 확정 완료" :
+          ""
+        }
+        contents={
+          resultType === "cf" ? <div>사양 확정에 성공하였습니다.</div> :
+          <></>
+        }
+        type={
+          resultType === "cf" ? "success" :
+          "success"
+        }
         onOk={()=>{
-          setResultOpen(false);
-          router.push('/sayang/sample/wait');
+          if(resultType === "cf") {
+            setResultOpen(false);
+            router.push('/sayang/sample/wait');
+          }
         }}
         hideCancel={true}
         okText="목록으로 이동"

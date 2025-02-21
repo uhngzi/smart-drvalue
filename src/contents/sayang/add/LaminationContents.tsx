@@ -64,7 +64,12 @@ const LaminationContents: React.FC<Props> = ({
   // ------------ 베이스 데이터 세팅 ----------- 끝
 
   const [lamination, setLamination] = useState<laminationRType[]>([]);
+  const [submitFlag, setSubmitFlag] = useState<boolean>(false);
+  const [lamNo, setLamNo] = useState<string>("");
+
   useEffect(()=>{
+    if(submitFlag)  return;
+
     setLamination([]);
     if(detailData.specLamination && typeof detailData.specLamination?.specDetail === "string"  && !baseLaminationLoading){
       const detail = JSON.parse(detailData.specLamination?.specDetail?.toString() ?? "");
@@ -77,6 +82,13 @@ const LaminationContents: React.FC<Props> = ({
     }
   }, [detailData.specLamination, baseLaminationLoading]);
 
+  useEffect(()=>{
+    if(submitFlag) {
+      handleSumbitTemp();
+      setSubmitFlag(false);
+    }
+  }, [submitFlag])
+
   // 구성 요소에 따른 색상
   const color = ['#CEE4B3','#F1F4F9','#7551E933','#F5D9B1','#F5B1A1'];
 
@@ -86,7 +98,7 @@ const LaminationContents: React.FC<Props> = ({
         <TitleIcon title="적층구조" icon={<MessageOn />}/>
       </div>
       <div className="w-full flex v-between-h-center h-24 text-14">
-        <span>코드 : {detailData.specLamination?.lamNo}</span>
+        <span>코드 : {detailData.specLamination?.lamNo ?? lamNo}</span>
         <Button size="small" onClick={()=>setOpen(true)}><span className="w-16 h-16"><Memo/></span>선택</Button>
       </div>
 
@@ -122,6 +134,11 @@ const LaminationContents: React.FC<Props> = ({
           baseLamination={baseLamination}
           baseLaminationLoading={baseLaminationLoading}
           color={color}
+          mainLamination={lamination}
+          setMainLamination={setLamination}
+          submitFlag={submitFlag}
+          setSubmitFlag={setSubmitFlag}
+          setLamNo={setLamNo}
         />}
         width={1044}
       />

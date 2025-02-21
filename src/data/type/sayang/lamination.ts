@@ -3,9 +3,9 @@ import { LayerEm } from "../enum";
 
 export type specLaminationType = {
   id?: string;
-  lamNo?: string | number;
+  lamNo?: string;
   layerEm?: LayerEm;
-  confirmYn?: boolean;
+  confirmYn?: boolean | 0 | 1;
   lamThk?: number
   lamRealThk?: number;
   specDetail?: string | {
