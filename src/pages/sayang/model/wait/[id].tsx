@@ -449,7 +449,7 @@ const SayangModelAddPage: React.FC & {
           {/* 수주 탭 */}
           <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
             <TabSmall
-              items={matchTab}
+              items={orderTab}
               selectKey={orderModelsSelect}
               setSelectKey={setOrderModelsSelect}
             />
