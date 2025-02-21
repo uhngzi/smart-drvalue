@@ -65,21 +65,21 @@ const SettingSider: React.FC<Props> = ({ }) => {
     },
     {
       key: 'hr',
-      title:'hr',
+      title:'hr/user',
       label: '인사',
       icon: <p className={iconClassNm}><Hr /></p>,
-      children: [
-        {
-          key: 'hr/user',
-          title: 'hr/user',
-          label: '인사 · 구성원',
-        },
-        {
-          key: 'hr/confirm',
-          title: 'hr/confirm',
-          label: '승인정채',
-        },
-      ]
+      // children: [
+      //   {
+      //     key: 'hr/user',
+      //     title: 'hr/user',
+      //     label: '인사 · 구성원',
+      //   },
+      //   {
+      //     key: 'hr/confirm',
+      //     title: 'hr/confirm',
+      //     label: '승인정채',
+      //   },
+      // ]
     },
     {
       type: 'divider',

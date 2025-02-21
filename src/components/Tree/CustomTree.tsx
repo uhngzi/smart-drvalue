@@ -12,7 +12,7 @@ import BlueCheck from "@/assets/svg/icons/blue_check.svg"
 import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import { treeType } from "@/data/type/componentStyles"
-import { Button, Dropdown, MenuProps, Switch } from "antd"
+import { Button, Dropdown, MenuProps, Switch, Tooltip } from "antd"
 import AntdInput from "../Input/AntdInput"
 import dayjs from "dayjs"
 import AntdDatePicker from "../DatePicker/AntdDatePicker"
@@ -34,14 +34,14 @@ const CustomTree:React.FC<Props> = ({
   handleDataChange,
 }) => {
 
-  const customEditItems = () => (
+  const customEditItems = (id: string) => (
     <div className="flex flex-col gap-12 px-16 py-9 bg-white rounded-8" style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
       <div className="relative h-center mb-10"><AntdInput className="w-[120px]" /> <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span></div>
       <div className="flex h-center justify-between">
         <span className="flex text-12  gap-5"><CloseEye/>숨기기</span>
         <Switch size="small"/>
       </div>
-      <Button type="text" className="justify-start p-0 h-center gap-5 text-12" onClick={()=>handleDeleteList('')}>
+      <Button type="text" className="justify-start p-0 h-center gap-5 text-12" onClick={()=>handleDeleteList([id])}>
         <Trash/>삭제
       </Button>
     </div>
@@ -72,8 +72,14 @@ const CustomTree:React.FC<Props> = ({
   const [selectId, setSelectId] = useState<String[]>([]);
   const [hoverId, setHoverId] = useState<string | null>(null);
 
-  const handleSelect = (id: string) => {
-    setSelectId(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
+  const handleSelect = (item: any) => {
+    const selectId = [item.id, ...item.children?.map((child: any) => child.id) || []];
+    console.log(selectId)
+    setSelectId(prev =>
+      prev.some(selectedId => selectId.includes(selectedId))
+        ? prev.filter(selectedId => !selectId.includes(selectedId))
+        : [...prev, ...selectId]
+    );
   };
   const handleFocus = (id: string) => {
     console.log(id, focusId)
@@ -119,8 +125,19 @@ const CustomTree:React.FC<Props> = ({
     ));
   }
 
-  const handleDeleteList = (id: string) => {
-    setList(list.filter((l) => l.id !== id));
+  const handleDeleteList = (idList: string[]) => {
+    const list = idList.length > 0 ? idList : selectId;
+    const removeItemById = (items: any) => {
+      return items
+        .filter((item: any) => !list.includes(item.id)) // 현재 리스트에서 ID 일치하는 항목 삭제
+        .map((item: any) => ({
+          ...item,
+          children: item.children ? removeItemById(item.children) : undefined // children도 검사하여 삭제
+        }));
+    };
+  
+    setList(prevList => removeItemById(prevList));
+    setSelectId([])
   }
   
   const handleChangeList = (id: string, value: string) => {
@@ -226,7 +243,7 @@ const CustomTree:React.FC<Props> = ({
                     MozTransition: 'none',
                     OTransition: 'none',
                   }}
-                  onClick={() => handleSelect(item.id)}
+                  onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
                   { item.open ? <CaretDownFilled onClick={()=>handleShowList(item.id)} /> : <CaretUpFilled onClick={()=>handleShowList(item.id)} />}
                   <span className="flex-1 text-left">{item.label}</span>
@@ -236,7 +253,7 @@ const CustomTree:React.FC<Props> = ({
                         <Plus/>
                       </Button>
                       <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                        <Dropdown trigger={['click']} dropdownRender={customEditItems}>
+                        <Dropdown trigger={['click']} dropdownRender={() => customEditItems(item.id)}>
                           <a onClick={(e) => e.preventDefault()}>
                               <div 
                                 className="w-full h-full v-h-center cursor-pointer"
@@ -287,7 +304,7 @@ const CustomTree:React.FC<Props> = ({
                       )
                     }else{
                       return(
-                        <Button type="text" className={`w-full h-40 h-center pl-25 gap-10 ${selectId.includes(item.id) ? 'bg-[#f3faff]' : ''}`} key={child.id} 
+                        <Button type="text" className={`w-full h-40 h-center pl-25 gap-10 ${selectId.includes(child.id) ? 'bg-[#f3faff]' : ''}`} key={child.id} 
                           style={{
                             transition: 'none',
                             animation: 'none',
@@ -295,14 +312,14 @@ const CustomTree:React.FC<Props> = ({
                             MozTransition: 'none',
                             OTransition: 'none',
                           }}
-                          onClick={() => handleSelect(child.id)}
+                          onClick={() => handleSelect(child)}
                           onMouseEnter={() => setHoverId(child.id)} onMouseLeave={() => setHoverId(null)}>
                           <div className="w-5 h-5 bg-[#ddd] rounded-50" />
                           <span className="flex-1 text-left">{child.label}</span>
                           {!selectId.includes(child.id) ? (
                             <div className={`${child.id === hoverId ? 'visible' : 'invisible'}`}>
                               <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                                <Dropdown trigger={['click']} dropdownRender={customEditItems}>
+                                <Dropdown trigger={['click']} dropdownRender={() => customEditItems(child.id)}>
                                   <a onClick={(e) => e.preventDefault()}>
                                       <div 
                                         className="w-full h-full v-h-center cursor-pointer"
@@ -330,12 +347,26 @@ const CustomTree:React.FC<Props> = ({
         }
       </div>
     </div>
-    <div className="py-10">
+    <div className="py-10 ">
+      {selectId.length > 0 ? (
+        <div className="w-full justify-center flex h-center gap-8">
+          <span style={{color:'#00000073'}} className="mr-20">{selectId.length}개 선택됨</span>
+          <Button size="large" className="!w-[170px] !h-[50px]" style={{color:'#DF2C2C'}} onClick={() => handleDeleteList([])}>삭제</Button>
+          <Button size="large" className="!w-[170px] !h-[50px] bg-[#EEEEEEA6]" style={{color:'#444444'}}>숨기기</Button>
+          <Tooltip title="이동">
+            <Button size="large" className="!h-[50px] bg-[#EEEEEEA6]"><Edit/></Button>
+          </Tooltip>
+          <Tooltip title="취소">
+            <Button size="large" className="!h-[50px] bg-[#EEEEEEA6]" onClick={() => setSelectId([])}><Close/></Button>
+          </Tooltip>
+        </div>
+      ) : (
       <Button type="primary" size="large" onClick={()=>{}} 
         className="w-full flex h-center gap-8 !h-[50px] " 
         style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
         <span>저장하기</span>
       </Button>
+      )}
     </div>
     </section>
   )
