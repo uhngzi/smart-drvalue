@@ -113,10 +113,12 @@ const OrderAddLayout = () => {
       const data = cs?.data.data as partnerRType[];
       const mng = data.find((cu:partnerRType) => cu.id === formData.partnerId)?.managers;
       setCsMngList(mng ?? []);
-      if (mng && mng.length > 0) {
-        // 담당자가 있을 경우 첫번째 담당자 자동 세팅
+      if(mng && mng.length > 0) {
+        // 수정 시 값이 설정되어 있을 경우 return
+        if(mng.find(f => f.id === formData.partnerManagerId)) return;
+        // 거래처가 변경되었거나 신규일 경우 첫번째 담당자 자동 세팅
         setFormData({...formData, partnerManagerId:mng[0].id});
-      }else{
+      } else {
         setFormData({...formData, partnerManagerId:''});
       }
     }
@@ -172,7 +174,7 @@ const OrderAddLayout = () => {
     }
   }
   // -------- 수정 시 디테일 데이터 세팅 -------- 끝
-
+  
   // ---------- 발주 신규 등록 함수 ----------- 시작
   const handleSubmitOrder = async (model: salesOrderProcuctCUType) => {
     const jsonData = changeOrderNew(formData, [model], me);
