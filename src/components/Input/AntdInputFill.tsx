@@ -90,7 +90,7 @@ const AntdInputFill: React.FC<Props> = ({
         value={
           type === "number" && value !== undefined && value !== ""
           // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
-          && value.toString()[value.toString().length - 1] !== "."
+          && value?.toString()[value?.toString().length - 1] !== "."
             ? Number(value).toLocaleString()
             : value
         }
