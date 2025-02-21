@@ -27,13 +27,29 @@ const AntdInputRound: React.FC<Props> = ({
       onChange?.(e);
       return;
     }
-    
+
     // 숫자 타입일 경우
     if (type === "number") {
-      // 입력값에서 콤마를 제거한 후 숫자, 소수점, 음수 부호만 남김
+      // 입력값에서 콤마를 제거한 후 숫자, 소수점 부호만 남김
       const sanitizedValue = value
         .replace(/,/g, "")
-        .replace(/[^0-9.-]/g, "");
+        .replace(/[^0-9.]/g, "");
+      
+        console.log(sanitizedValue.split(".").length);
+      
+      // 마지막에 소수점이 올 때 숫자로 변환하지 않고 소수점 입력도 하기 위함 :: ex) 1. 일 경우 허용
+      if(sanitizedValue[sanitizedValue.length-1] === "."
+        // 소수점이 2개 이상일 경우 허용하지 않기 위함 ex) 1.5. 일 경우 허용 안함
+        && sanitizedValue.split(".").length < 3) {
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: sanitizedValue,
+          },
+        });
+        return onChange?.(newEvent);
+      }
+
       const numericValue = parseFloat(sanitizedValue);
   
       // 숫자가 아니거나 0 미만이면 무시
@@ -45,12 +61,12 @@ const AntdInputRound: React.FC<Props> = ({
       const newEvent = Object.assign({}, e, {
         target: {
           ...e.target,
-          value: sanitizedValue,
+          value: numericValue,
         },
       });
       return onChange?.(newEvent);
     }
-  
+    
     // 숫자 타입이 아닐 경우 원본 이벤트 전달
     onChange?.(e);
   };
@@ -67,6 +83,8 @@ const AntdInputRound: React.FC<Props> = ({
         // 숫자 타입이면 내부 값은 숫자 그대로 저장되지만 화면에는 콤마 포맷팅 적용
         value={
           type === "number" && value !== undefined && value !== ""
+          // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
+          && value.toString()[value.toString().length - 1] !== "."
             ? Number(value).toLocaleString()
             : value
         }
