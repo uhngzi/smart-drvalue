@@ -453,11 +453,17 @@ const OrderAddLayout = () => {
             className="w-109 h-32 rounded-6"
             style={{color:"#444444E0"}}
             onClick={() => {
-              setAlertType("cancle");
-              setAlertOpen(true);
+              setFormData(newDataSalesOrderCUType());
+              stepRef.current[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+              setTimeout(()=>{
+                setStepCurrent(0);
+              }, 400)
             }}
           >
-            <Close/> 발주 폐기
+            <Close/> 취소
           </Button>
           {stepCurrent < 1 ?
             <Button 
@@ -604,7 +610,8 @@ const OrderAddLayout = () => {
       type={alertType === "discard" ? "success" : "warning"}
       title={
         alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
-        alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
+        // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
+        alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
         alertType === "discard" ? "고객 발주 폐기 성공" : ""
       }
       contents={

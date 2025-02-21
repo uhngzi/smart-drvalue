@@ -46,7 +46,7 @@ export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrde
       orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
       orderRepDt: formData.orderRepDt,
       orderTxt: formData.orderTxt,
-      empId: me?.id,
+      empId: me?.id ?? "1",
       hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
       files: formData.files,
     },

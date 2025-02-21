@@ -252,11 +252,12 @@ export const changeSayangTemp = (
       })),
     }
     if(specData.specPrdGroupPrcs?.[0]?.prdGrpNm){
+      console.log(specData.specPrdGroupPrcs)
       jsonData = { 
         ...jsonData,
         prdGroup: {
           prdGrpNm: specData.specPrdGroupPrcs?.[0]?.prdGrpNm,
-          prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.id,
+          // prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.id,
           data: specData.specPrdGroupPrcs && specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
             prcIdx: prc.id,
             order: prc.ordNo,
