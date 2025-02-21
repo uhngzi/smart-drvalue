@@ -31,7 +31,6 @@ interface Props {
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
-  handleSubmitOrderModel?: () => void;
 }
 
 const ModelHead:React.FC<Props> = ({
@@ -45,7 +44,6 @@ const ModelHead:React.FC<Props> = ({
   metarialSelectList,
   inputRef,
   index,
-  handleSubmitOrderModel,
 }) => {
   return (
     <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
@@ -110,8 +108,8 @@ const ModelHead:React.FC<Props> = ({
                   inputRef.current[index] = el;
                 }
               }}
-              value={(model as orderModelType).model?.prdNm ?? model.orderTit}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value)}
+              value={(model as orderModelType).tempPrdInfo?.prdNm ?? model.orderTit}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', e.target.value)}
               className="w-[180px!important]" styles={{ht:'32px'}}
               readonly={read ? read : selectId === model.id ? !newFlag : undefined}
               disabled={model.completed}
