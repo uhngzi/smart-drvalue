@@ -17,7 +17,7 @@ import { modelsMatchRType, modelsType } from '../type/sayang/models';
 import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { specModelType, specType } from '../type/sayang/sample';
-import { generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
+import { FinalGlbStatus, generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
 
 export const specStatusClmn = (
   totalData: number,
@@ -1174,20 +1174,13 @@ export const sayangModelWaitClmn = (
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
 ): CustomColumn[] => [
   {
-    title: '대기',
-    width: 80,
+    title: 'No',
+    width: 50,
     dataIndex: 'index',
     key: 'index',
     align: 'center',
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
-  // {
-  //   title: '관리No',
-  //   width: 120,
-  //   dataIndex: 'orderNo',
-  //   key: 'orderNo',
-  //   align: 'center',
-  // },
   {
     title: '업체명/코드',
     width: 150,
@@ -1211,26 +1204,22 @@ export const sayangModelWaitClmn = (
   },
   {
     title: '고객발주(요구)명',
+    minWidth: 150,
     dataIndex: 'orderNm',
     key: 'orderNm',
     align: 'center',
-    render: (value) => (
-      <div className="text-left">{value}</div>
-    )
+    cellAlign: 'left',
   },
   {
-    title: '모델수',
-    width: 70,
+    title: '대기 모델 수',
+    width: 100,
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',
-    render: (_:any, record:salesOrderRType) => {
-      return record?.products?.length;
-    }
   },
   {
-    title: '업체담당',
-    width: 100,
+    title: '업체 담당',
+    width: 120,
     dataIndex: 'prtInfo.mng.prtMngNm',
     key: 'prtInfo.mng.prtMngNm',
     align: 'center',
@@ -1269,34 +1258,45 @@ export const sayangModelWaitClmn = (
   },
   {
     title: '영업담당',
-    width: 100,
+    width: 120,
     dataIndex: 'emp.name',
     key: 'emp.name',
     align: 'center',
   },
   {
-    title: '발주(요구)접수일',
-    width: 150,
-    dataIndex: 'orderRepDt',
-    key: 'orderRepDt',
-    align: 'center',
-  },
-  {
     title: '발주일',
-    width: 150,
+    width: 130,
     dataIndex: 'orderDt',
     key: 'orderDt',
     align: 'center',
   },
   {
     title: '모델등록',
-    width: 150,
+    width: 90,
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value) => (
+    render: (value, record) => (
       <div className="w-full h-full v-h-center">
-        <div 
+        { record.isDiscard ? (
+          <FullChip label="폐기" />
+        ) : record.finalGlbStatus === FinalGlbStatus.COMPLETED ? (
+          <FullChip label="완료" />
+        ): record.finalGlbStatus === FinalGlbStatus.WAITING ? (
+          <FullChip label="대기" state="yellow" 
+            click={()=>{
+              router.push(`/sayang/model/wait/${value}`);
+            }}
+          />
+        ) : record.finalGlbStatus === FinalGlbStatus.REGISTERING ? (
+          <FullChip
+            label="등록중" state="mint" 
+            click={()=>{
+              router.push(`/sayang/model/wait/${value}`);
+            }}
+          />
+        ) : ( <></> )}
+        {/* <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
           onClick={()=>{
             router.push(`/sayang/model/wait/${value}`);
@@ -1304,7 +1304,7 @@ export const sayangModelWaitClmn = (
           }}
         >
           <p className="w-18 h-18"><Edit /></p>
-        </div>
+        </div> */}
       </div>
     )
   },
