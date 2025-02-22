@@ -217,8 +217,6 @@ const PrtDrawer: React.FC<Props> = ({
         open={open}
         close={onClose ? onClose : ()=>setOpen(false)}
         width={600}
-        maskClosable={false}
-        mask={false}
       >
         <div className="flex flex-col gap-15 p-20 !pr-5">
           <div className="flex w-full justify-end cursor-pointer" onClick={() => setOpen(false)}><Close/></div>
