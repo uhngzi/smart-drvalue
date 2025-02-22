@@ -22,6 +22,7 @@ interface Props {
   setProductsMatch?: React.Dispatch<SetStateAction<orderModelType[]>>;
   setNewFlag: React.Dispatch<SetStateAction<boolean>>;
   setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
+  partnerId?: string;
 }
 
 const ModelList:React.FC<Props> = ({
@@ -35,6 +36,7 @@ const ModelList:React.FC<Props> = ({
   setProductsMatch,
   setNewFlag,
   setDrawerOpen,
+  partnerId,
 }) => {
   const items = (record: any): MenuProps['items'] => [
     {
@@ -61,8 +63,11 @@ const ModelList:React.FC<Props> = ({
   useEffect(()=>{ setFmodel(models); }, [models]);
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
-    setFmodel(models.filter((f:modelsType) => f.prdNm.includes(searchModel)));
-  }, [searchModel]);
+    setFmodel(models
+      .filter((f:modelsType) => f.partner.id.includes(partnerId ?? ""))
+      .filter((f:modelsType) => f.prdNm.includes(searchModel))
+    );
+  }, [searchModel, partnerId]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
@@ -71,7 +76,7 @@ const ModelList:React.FC<Props> = ({
   const handleSelectMenu = () => {
     if(selectMenuKey===0)   setNewFlag(true);   // 복사하여 등록
     if(selectMenuKey===1)   setNewFlag(false);  // 그대로 등록
-    console.log(selectMenuKey);
+    
 
     if(selectRecord !== null) {
       if(type === 'order') {
@@ -117,6 +122,7 @@ const ModelList:React.FC<Props> = ({
   // 입력하려는 모델에 값이 있는지 체크
   const [productChk, setProductChk] = useState<boolean>(false);
   const [alertProductOpen, setAlertProductOpen] = useState<boolean>(false);
+  const [alertType, setAlertType] = useState<"in" | "miss" | "">("");
 
   return (
     <div className="flex flex-col gap-20">
@@ -211,7 +217,6 @@ const ModelList:React.FC<Props> = ({
                   if(type === 'match' && (p as orderModelType).editModel) setProductChk(true);
                   // 고객 발주에서 해당 모델에 입력된 값이 있을 경우
                   else if(type === 'order' && p.currPrdInfo)              setProductChk(true);
-                  console.log(p);
                 }}
                 className="!rounded-20 [border-inline-start-width:1px]"
               >{p.prtOrderNo}</Radio.Button>
@@ -224,13 +229,29 @@ const ModelList:React.FC<Props> = ({
           setAlertOpen(false);
         }}
         onOk={()=>{
-          console.log('ok');
-          // 해당 모델에 입력된 값이 있을 경우
-          if(productChk) {
-            setAlertOpen(false);
-            setAlertProductOpen(true);
-          } else {
-            handleSelectMenu();
+          const selectP = products.find(f=>f.id === selectId);
+          if(selectP) {
+            if(selectP.modelStatus === ModelStatus.REPEAT && selectMenuKey === 0) {
+            // 반복인데 복사하여 새로 등록을 선택한 경우 실패
+              setAlertOpen(false);
+              setAlertProductOpen(true);
+              setAlertType("miss");
+              return;
+            } else if(selectP.modelStatus === ModelStatus.MODIFY && selectMenuKey === 1) {
+            // 수정인데 그대로 등록을 선택한 경우 실패
+              setAlertOpen(false);
+              setAlertProductOpen(true);
+              setAlertType("miss");
+              return;
+            }
+            // 해당 모델에 입력된 값이 있을 경우
+            if(productChk) {
+              setAlertOpen(false);
+              setAlertProductOpen(true);
+              setAlertType("in");
+            } else {
+              handleSelectMenu();
+            }
           }
         }}
         okText={'완료'}
@@ -240,23 +261,42 @@ const ModelList:React.FC<Props> = ({
       <AntdAlertModal
         open={alertProductOpen}
         setOpen={setAlertProductOpen}
-        title={"값이 이미 존재하는 모델입니다."}
-        contents={<div>
-          기존에 입력된 데이터가 있습니다.<br/>
-          입력된 데이터가 사라지고 모델의 정보로 입력됩니다.
-        </div>}
+        title={
+          alertType === "in" ? "값이 이미 존재하는 모델입니다." :
+          alertType === "miss" ? 
+            selectMenuKey === 0 ? "복사하여 등록 실패" : "그대로 등록 실패" :
+          ""
+        }
+        contents={
+          alertType === "in" ? <div>
+            기존에 입력된 데이터가 있습니다.<br/>
+            입력된 데이터가 사라지고 모델의 정보로 입력됩니다.
+          </div> :
+          alertType === "miss" ?
+            selectMenuKey === 0 ?
+              <div>반복일 경우 그대로 등록만 가능합니다.</div> :
+              <div>수정일 경우 복사하여 새로 등록만 가능합니다.</div> :
+          <></>
+        }
         type={'warning'} 
         onOk={()=>{
           setProductChk(false);
           setAlertProductOpen(false);
-          handleSelectMenu();
-          setDrawerOpen(false);
+          if(alertType !== "miss") {
+            handleSelectMenu();
+            setDrawerOpen(false);
+          }
         }}
         onCancle={()=>{
           setProductChk(false);
           setAlertProductOpen(false);
         }}
-        okText={'선택한 모델의 정보로 새로 입력할게요'}
+        hideCancel={alertType === "miss" ? true : false}
+        okText={
+          alertType === "in" ? '선택한 모델의 정보로 새로 입력할게요' :
+          alertType === "miss" ? "확인" :
+          ""
+        }
         cancelText={'취소할게요'}
       />
     </div>

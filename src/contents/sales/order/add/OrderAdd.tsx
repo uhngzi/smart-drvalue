@@ -188,7 +188,7 @@ const OrderAddLayout = () => {
 
       setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
         id: prd.id,
-        index: prdArr.length - index,
+        index: index,
         currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
         modelStatus: prd.modelStatus,
         orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
@@ -690,12 +690,12 @@ const OrderAddLayout = () => {
                     <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
                       onClick={() => {
                         setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                          ...prev,
                           {
                             ...newDataSalesOrderProductCUType(),
                             id:'new-'+prev.length+1,
                             index: newProducts.length+1
                           },
-                          ...prev,
                         ]);
                         setViewKey(newProducts.length+1);
                       }}
@@ -743,6 +743,7 @@ const OrderAddLayout = () => {
               setSelectId={setSelectId}
               setNewFlag={setNewFlag}
               setDrawerOpen={setModelDrawerOpen}
+              partnerId={formData.partnerId}
             />
           </div>
         </AntdDrawer>

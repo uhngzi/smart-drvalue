@@ -14,6 +14,8 @@ interface Props {
   value?: any;
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
   readonly?: boolean;
+  placeholder?: string;
+  tabIndex?: number;
 }
 
 const AntdSelectFill : React.FC<Props> = ({ 
@@ -26,6 +28,8 @@ const AntdSelectFill : React.FC<Props> = ({
   value,
   onChange,
   readonly,
+  placeholder,
+  tabIndex,
 }) => {
 
   return (
@@ -49,6 +53,8 @@ const AntdSelectFill : React.FC<Props> = ({
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         style={readonly?{color:"#222222 !important"}:{}}
         dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        placeholder={placeholder}
+        tabIndex={tabIndex}
       />
     </AndtSelectStyled>
   )

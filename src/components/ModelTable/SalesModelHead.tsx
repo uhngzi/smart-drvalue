@@ -90,7 +90,7 @@ const SalesModelHead:React.FC<Props> = ({
           onChange={(e)=>{
             handleModelDataChange(model.id ?? '', 'modelStatus', e);
           }}
-          className="w-[54px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+          className="w-[54px!important]" styles={{ht:'36px', bw:'1px', bc:'#FAAD14', pd:'0'}}
           disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
           readonly={read}
         />
@@ -141,7 +141,9 @@ const SalesModelHead:React.FC<Props> = ({
             onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
             suffixIcon={'cal'}
             styles={{bw:'0',bg:'none', pd:"0"}}
+            className="!w-[106px]"
             placeholder=""
+            afterDate={new Date()}
           />
 
           <Label label="수주 수량" />
