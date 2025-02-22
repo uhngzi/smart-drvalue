@@ -59,3 +59,21 @@ body {
 .ant-drawer-content-wrapper {
   box-shadow: none !important;
 }
+
+.filter-container {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.filter-container.open {
+  max-height: 200px; /* 적당한 값 설정 (DefaultFilter 크기에 맞게 조정) */
+  opacity: 1;
+}
+
+.filter-container.close {
+  max-height: 0;
+  opacity: 0;
+}
+

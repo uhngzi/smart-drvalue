@@ -96,11 +96,12 @@ const LaminationContents: React.FC<Props> = ({
     <div className="flex flex-col gap-20">
       <div className="v-between-h-center">
         <TitleIcon title="적층구조" icon={<MessageOn />}/>
-      </div>
-      <div className="w-full flex v-between-h-center h-24 text-14">
-        <span>코드 : {detailData.specLamination?.lamNo ?? lamNo}</span>
         <Button size="small" onClick={()=>setOpen(true)}><span className="w-16 h-16"><Memo/></span>선택</Button>
       </div>
+      { (detailData.specLamination?.lamNo ?? lamNo) &&
+      <div className="w-full flex v-between-h-center h-24 text-14">
+        <span>코드 : {detailData.specLamination?.lamNo ?? lamNo}</span>
+      </div>}
 
       <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
         {

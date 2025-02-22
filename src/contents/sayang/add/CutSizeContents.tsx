@@ -2,11 +2,11 @@ import Cut from "@/assets/svg/icons/cut.svg";
 import TitleIcon from "@/components/Text/TitleIcon";
 
 interface Props {
-
+  specNo: string;
 }
 
 const CutSizeContents: React.FC<Props> = ({
-
+  specNo,
 }) => {
   return (
     <div className="w-full flex flex-col gap-20">
@@ -26,9 +26,9 @@ const CutSizeContents: React.FC<Props> = ({
       </div>
 
       <div className="w-full h-[165px] flex flex-col gap-10">
-        <div className="w-full h-32 v-h-center text-white bg-point1 rounded-6 cursor-pointer">
+        {/* <div className="w-full h-32 v-h-center text-white bg-point1 rounded-6 cursor-pointer">
           사양 편집/확정
-        </div>
+        </div> */}
         <div className="w-full h-32 v-h-center text-white bg-point1 rounded-6 cursor-pointer">
           LOT 생성
         </div>
@@ -36,7 +36,7 @@ const CutSizeContents: React.FC<Props> = ({
           승인원 작성
         </div>
         <div className="w-full h-40 v-h-center rounded-6 border-2 border-point1 font-semibold cursor-pointer text-18 font-bold">
-          S24-L2601
+          {specNo}
         </div>
       </div>
     </div>

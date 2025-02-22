@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { SetStateAction, useEffect, useState } from "react";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { specType } from "@/data/type/sayang/sample";
@@ -57,6 +57,17 @@ const AddLaminationModalContents: React.FC<Props> = ({
   setLamNo,
 }) => {
   const { showToast, ToastContainer } = useToast();
+
+  useEffect(()=>{
+    console.log(detailData.specLamination);
+    if(detailData.specLamination) {
+      setSelect(detailData.specLamination.id);
+      const detail = typeof detailData?.specLamination?.specDetail === "string"
+        && JSON.parse(detailData?.specLamination?.specDetail);
+      setSelectSource({ ...detailData.specLamination, specDetail: detail});
+      setLamination(mainLamination);
+    }
+  }, [detailData.specLamNo])
 
   // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
@@ -117,9 +128,22 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const [lamination, setLamination] = useState<laminationRType[]>([]);
 
   // 라이브러리 선택 시 구성 요소 보여주는 함수
-  const handleSelectSource = () => {
+  const handleSelectSource = (selectedSource?:specLaminationType) => {
     let arr = [] as laminationRType[];
-    if(selectSource && typeof selectSource.specDetail !== "string") {
+    if(selectedSource) {
+      const specDetail = selectedSource.specDetail as {
+        data?: {
+            index: number;
+            specLamIdx: string;
+        }[]
+      };
+      specDetail.data?.map((detail) => {
+        const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
+        if(item)  arr.push(item);
+      });
+      setLamination(arr);
+      setSelect(selectedSource.id);
+    } else if(selectSource && typeof selectSource.specDetail !== "string") {
       selectSource.specDetail?.data?.map((detail) => {
         const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
         if(item)  arr.push(item);
@@ -455,16 +479,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 index={index}
                 isSelected={select === source.id}
                 onSelect={(selectedSource) => {
-                  if (select === selectedSource.id) {
+                  console.log("click");
+                  if (select && select === selectedSource.id) {
+                    console.log("ii");
                     setSelect(undefined);
                     setLamination([]);
                   } else {
                     setSelectSource(selectedSource);
-                    if(lamination.length > 0) {
+                    if(selectSpecLamiFilter.cf === 0 && lamination.length > 0) {
                       setResultOpen(true);
                       setResultType("sel");
                     } else {
-                      handleSelectSource()
+                      handleSelectSource(selectedSource)
                     }
                   }
                 }}
@@ -476,7 +502,14 @@ const AddLaminationModalContents: React.FC<Props> = ({
       <div className="min-w-[665px] h-[612px] v-h-center gap-5">
         <div className="min-w-[298px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
           <div className="v-between-h-center h-40 w-full mb-20">
-            <LabelMedium label="적층구조 라이브러리 구성/편집"/>
+            <div style={{ position: "relative", zIndex: 9999 }}>
+              <Tooltip
+                title="마우스 Drag & Drop으로 순서 변경"
+                getPopupContainer={() => document.body}
+              >
+                <LabelMedium label="적층구조 라이브러리 구성/편집" />
+              </Tooltip>
+            </div>
             <div
               className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
               onClick={()=>{
@@ -549,20 +582,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
               </Button>
               </>
             }
-          </div>
-        </div>
-        <div className="w-24 h-center flex-col gap-5">
-          <div 
-            className="w-24 h-24 rounded-4 v-h-center cursor-pointer bg-point3 text-white"
-            onClick={()=>{}}
-          >
-            {'<'}
-          </div>
-          <div 
-            className="w-24 h-24 rounded-4 v-h-center cursor-pointer border-1 border-line bg-white"
-            onClick={()=>{}}
-          >
-            {'>'}
           </div>
         </div>
         <div className="min-w-[333px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
@@ -642,12 +661,12 @@ const AddLaminationModalContents: React.FC<Props> = ({
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "sel" ? "편집중인 라이브러리가 존재합니다." :"OZ는 하나만 추가할 수 있습니다."}
-        contents={resultType === "sel" ? <div>해당 적층구조 라이브러리의 구성으로 변경하시겠습니까?</div> : <div>선택하신 OZ로 변경하시겠습니까?</div>}
+        title={resultType === "sel" ? "편집중인 라이브러리가 저장되지 않은 상태입니다." :"OZ는 하나만 추가할 수 있습니다."}
+        contents={resultType === "sel" ? <div>변경된 내용을 저장하지 않고 선택한 라이브러리로 변경하시겠습니까?</div> : <div>선택하신 OZ로 변경하시겠습니까?</div>}
         type="warning"
         onOk={()=>{
           if(resultType === "sel") {
-            handleSelectSource();
+            handleSelectSource(selectSource ?? {});
           } else {
             if(result) {
               const newLami = lamination.slice(1, -1);

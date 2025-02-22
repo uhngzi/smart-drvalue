@@ -143,8 +143,9 @@ const SayangSampleListPage: React.FC & {
   const [record, setRecord] = useState<modelsMatchRType>();
     // 리스트 내 사양 등록 클릭 시 팝업 발생
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
-    if(ingData.length > 0) {
-      setRecord(record);
+    setRecord(record);
+    
+    if(ingData.filter(f=>f.specModels?.[0].layerEm === record?.model?.layerEm).length > 0) {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       setSayangRegOpen(true);
     } else {

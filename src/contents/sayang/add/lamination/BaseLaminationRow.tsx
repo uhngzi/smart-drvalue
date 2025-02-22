@@ -12,10 +12,6 @@ interface BaseLaminationRowProps {
 
 const items: MenuProps['items'] = [
   {
-    label: <>편집</>,
-    key: 0,
-  },
-  {
     label: <>맨 위에 추가</>,
     key: 1,
   },

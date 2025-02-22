@@ -273,7 +273,9 @@ const SayangSampleAddPage: React.FC & {
         }
       } else {
         const msg = result?.response?.data?.message;
-        showToast(msg, "error");
+        setResultMsg(msg);
+        setResultType("error");
+        setResultOpen(true);
       }
     } catch (e) {
       console.log('CATCH ERROR : ', e);
@@ -294,9 +296,12 @@ const SayangSampleAddPage: React.FC & {
       
       if(result.resultCode === "OK_0000") {
         setResultOpen(true);
+        setResultType("cf");
       } else {
         const msg = result?.response?.data?.message;
-        showToast(msg, "error");
+        setResultMsg(msg);
+        setResultType("error");
+        setResultOpen(true);
       }
     } catch (e) {
       console.log("CATCH ERROR :: ", e);
@@ -311,7 +316,34 @@ const SayangSampleAddPage: React.FC & {
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"cf" | "">("");
+  const [resultType, setResultType] = useState<"cf" | "error" | "">("");
+  const [resultMsg, setResultMsg] = useState<string>("");
+
+  // 로딩 후 결재창 보여주기
+  const [animate, setAnimate] = useState<boolean>(false);
+  useEffect(() => {
+    if(!detailDataLoading) {
+      setApproval(true);
+      setAnimate(true);
+
+      const timer = setTimeout(() => {
+        setAnimate(false);
+        setTimeout(() => setApproval(false), 300); // 0.3초 후에 완전히 닫힘
+      }, 1000); // 1초 후 닫힘
+  
+      return () => clearTimeout(timer); // 클린업 함수
+    }
+  }, [detailDataLoading]);
+
+  const toggleApproval = () => {
+    if (approval) {
+      setAnimate(false); // 먼저 애니메이션을 종료
+      setTimeout(() => setApproval(false), 300); // 애니메이션이 끝난 후 제거
+    } else {
+      setApproval(true);
+      setTimeout(() => setAnimate(true), 10); // 애니메이션 활성화
+    }
+  };
 
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
@@ -340,8 +372,18 @@ const SayangSampleAddPage: React.FC & {
       <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20 w-full">
         <div className="v-between-h-center">
           <div className="flex">
-            <Button type="text" icon={<DoubleRightOutlined/>} className="!bg-[#F5F6FA] !h-32" style={{border:'1px solid #D9D9D9'}} onClick={() => setApproval(prev =>!prev)}>결재</Button>
-            {approval && (<DefaultFilter filter={filter} setFilter={setFilter} />)}
+            <Button 
+              type="text"
+              icon={<DoubleRightOutlined/>}
+              className="!bg-[#F5F6FA] !h-32"
+              style={{border:'1px solid #D9D9D9'}}
+              onClick={toggleApproval}
+            >
+                결재
+            </Button>
+            <div className={`filter-container ${animate ? "open" : "close"}`}>
+              {approval && <DefaultFilter filter={filter} setFilter={setFilter} />}
+            </div>
           </div>
           <div className="h-center gap-20">
             <Button
@@ -416,7 +458,9 @@ const SayangSampleAddPage: React.FC & {
           </div>
           <div className="min-w-[300px] flex-grow-[24]">
             {/* 재단 사이즈 */}
-            <CutSizeContents />
+            <CutSizeContents
+              specNo={detailData.specNo ?? ""}
+            />
           </div>
         </div>
       </div>
@@ -451,24 +495,31 @@ const SayangSampleAddPage: React.FC & {
         setOpen={setResultOpen}
         title={
           resultType === "cf"? "사양 확정 완료" :
+          resultType === "error"? "요청 실패" :
           ""
         }
         contents={
-          resultType === "cf" ? <div>사양 확정에 성공하였습니다.</div> :
-          <></>
+          resultType === "cf" ? <div className="h-40">사양 확정에 성공하였습니다.</div> :
+          resultType === "error" ? <div className="h-40">{resultMsg}</div> :
+          <div className="h-40"></div>
         }
         type={
           resultType === "cf" ? "success" :
+          resultType === "error" ? "error" :
           "success"
         }
         onOk={()=>{
+          setResultOpen(false);
           if(resultType === "cf") {
-            setResultOpen(false);
             router.push('/sayang/sample/wait');
           }
         }}
         hideCancel={true}
-        okText="목록으로 이동"
+        okText={
+          resultType === "cf" ? "목록으로 이동" :
+          resultType === "error" ? "확인" :
+          "목록으로 이동"
+        }
       />
 
       <ToastContainer />
