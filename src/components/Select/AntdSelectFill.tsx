@@ -48,6 +48,7 @@ const AntdSelectFill : React.FC<Props> = ({
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         style={readonly?{color:"#222222 !important"}:{}}
+        dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
       />
     </AndtSelectStyled>
   )

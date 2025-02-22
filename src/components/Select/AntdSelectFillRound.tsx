@@ -37,6 +37,7 @@ const AntdSelectFillRound : React.FC<Props> = ({
         disabled={disabled}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
+        dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
       />
     </AndtSelectStyled>
   )
