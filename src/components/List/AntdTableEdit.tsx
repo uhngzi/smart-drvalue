@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import styled from "styled-components";
 import { get, set } from "lodash";
 import React, { Key, SetStateAction, useEffect, useState } from "react";
-import { ConfigProvider, Table, Form, DatePicker, Switch, Modal } from "antd";
+import { ConfigProvider, Table, Form, DatePicker, Switch, Modal, Tooltip } from "antd";
 import { ColumnGroupType, ColumnsType, ColumnType } from "antd/es/table";
 import koKR from "antd/locale/ko_KR";
 
@@ -120,6 +120,7 @@ const EditableCell: React.FC<
 
 // 컬럼 커스텀
 export type CustomColumn = ColumnType<any>
+  & { tooltip?: string }                                              // 헤더 툴팁
   & { cellAlign?: 'center' | 'left' | 'right' }                       // 셀의 위치
   & { editable?: boolean }                                            // 수정 가능 여부
   & { editType?: 'input' | 'select' | 'date' | 'toggle' | 'none' }    // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
@@ -320,10 +321,16 @@ const AntdTableEdit: React.FC<Props> = ({
           inputType: column.inputType,
           selectOptions: column.selectOptions,
           selectValue: get(record, column.selectValue),
+          tooltip: column.tooltip,
           // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
           onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
         }),
         ...column,
+        title: column.tooltip ? (
+          <Tooltip title={column.tooltip} placement="top">
+            <span>{typeof column.title === "string" ? column.title : ""}</span>
+          </Tooltip>
+        ) as React.ReactNode : column.title,
       };
     } else {
       // 수정 모드가 아닐 때
@@ -361,7 +368,12 @@ const AntdTableEdit: React.FC<Props> = ({
             }
           },
           // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
-          ...column
+          ...column,
+          title: column.tooltip ? (
+            <Tooltip title={column.tooltip} placement="top">
+              <span>{typeof column.title === "string" ? column.title : ""}</span>
+            </Tooltip>
+          ) as React.ReactNode : column.title,
         };
       }
     
@@ -397,6 +409,7 @@ const AntdTableEdit: React.FC<Props> = ({
           inputType: column.inputType,
           selectOptions: column.selectOptions,
           selectValue: get(record, column.selectValue),
+          tooltip: column.tooltip,
           // 값 변경 시 실행되는 함수   ** 값 저장 아님
           onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
         }),

@@ -47,8 +47,11 @@ export const specStatusClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
+    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="text-left cursor-pointer"
+      <div
+        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
+        // className="text-left cursor-pointer"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
@@ -408,8 +411,10 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
+    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
-      <div className="text-left cursor-pointer"
+      <div 
+        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
         onClick={()=>{
           setPartnerData(record.orderModel?.prtInfo.prt ?? null);
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
@@ -1189,8 +1194,10 @@ export const sayangModelWaitClmn = (
     dataIndex: 'prtInfo.prtNm',
     key: 'prtInfo.prtNm',
     align: 'center',
+    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
-      <div className="text-left cursor-pointer"
+      <div
+        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
         onClick={()=>{
           setPartnerData(record.prtInfo.prt);
           setPartnerMngData(record.prtInfo.mng);

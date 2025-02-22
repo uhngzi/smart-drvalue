@@ -10,6 +10,7 @@ import { partnerMngRType, partnerRType } from '../type/base/partner';
 import Trash from "@/assets/svg/icons/s_trash.svg";
 import { SetStateAction } from 'react';
 import { NextRouter } from 'next/router';
+import { Tooltip } from 'antd';
 
 export const salesUserOrderClmn = (
   totalData: number,
@@ -34,9 +35,10 @@ export const salesUserOrderClmn = (
     dataIndex: 'prtInfo.prt.prtNm',
     key: 'prtNm',
     align: 'center',
+    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-full h-center cursor-pointer jutify-left"
+        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt);
           setPartnerMngData(record?.prtInfo?.mng);
