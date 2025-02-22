@@ -564,6 +564,7 @@ const SayangModelAddPage: React.FC & {
         setSelectId={setSelectId}
         modelData={models}
         setModelData={setModels}
+        partnerId={data?.[0]?.prtInfo?.prt?.id ?? ""}
       />
 
       <AntdAlertModal

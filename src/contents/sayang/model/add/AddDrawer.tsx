@@ -26,6 +26,7 @@ interface Props {
   setSelectId: React.Dispatch<SetStateAction<string | null>>;
   modelData: modelsType[];
   setModelData: React.Dispatch<SetStateAction<modelsType[]>>;
+  partnerId: string;
 }
 
 const AddDrawer:React.FC<Props> = ({
@@ -41,6 +42,7 @@ const AddDrawer:React.FC<Props> = ({
   setSelectId,
   modelData,
   setModelData,
+  partnerId,
 }) => {
   const [ drawerPrtItems, setDrawerPrtItems ] = useState<Array<any>>([]);
   const [ drawerMngItems, setDrawerMngItems ] = useState<Array<any>>([]);
@@ -120,6 +122,7 @@ const AddDrawer:React.FC<Props> = ({
               setSelectId={setSelectId}
               setNewFlag={setNewFlag}
               setDrawerOpen={setDrawerOpen}
+              partnerId={partnerId}
             />
           }
         </div>

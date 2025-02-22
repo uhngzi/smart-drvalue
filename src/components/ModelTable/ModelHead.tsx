@@ -139,16 +139,29 @@ const ModelHead:React.FC<Props> = ({
 
       <div className="h-full h-center gap-10 p-10">
         <Label label="납기" />
-        <p className="h-center justify-end">{
+        <AntdDatePicker
+          value={model?.tempPrdInfo.orderPrdDueDt ?? model.orderPrdDueDt}
+          onChange={(e)=>{
+            handleModelDataChange(model.id ?? '', 'tempPrdInfo.orderPrdDueDt', e)
+            // handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)
+          }}
+          suffixIcon={'cal'}
+          styles={{bw:'0',bg:'none', pd:"0"}}
+          className="!w-[106px]"
+          placeholder=""
+          afterDate={new Date()}
+        />
+        {/* <p className="h-center justify-end">{
           model.orderPrdDueDt ?
           dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null
-        }</p>
+        }</p> */}
       </div>
 
       <div className="flex-1 flex jutify-end">
-      { model.completed && 
+      { model.completed && <>
         <FullChip label="확정" state="mint" className="!mr-20 !w-80 !h-30"/>
-      }
+        <p className="h-center">저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}</p>
+      </>}
       { !model.completed && (model as orderModelType).temp && 
         <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
       }
