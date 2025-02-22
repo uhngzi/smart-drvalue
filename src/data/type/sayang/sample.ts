@@ -134,22 +134,22 @@ export type specPrdGroupPrcs = {
 }
 
 export type yieldInputType = {
-  minPanelLength?: number;
+  minPanelLength?: number | string;
   disks?: {
     diskWidth: number;
     diskHeight: number;
   }[];
   diskWidth?: number;
   diskHeight?: number;
-  minYield?: number;
-  kitWidth?: number;
-  kitHeight?: number;
-  kitGapX?: number;
-  kitGapY?: number;
-  kitArrangeX?: number;
-  kitArrangeY?: number;
-  marginLongSide?: number;
-  marginShortSide?: number;
+  minYield?: number | string;
+  kitWidth?: number | string;
+  kitHeight?: number | string;
+  kitGapX?: number | string;
+  kitGapY?: number | string;
+  kitArrangeX?: number | string;
+  kitArrangeY?: number | string;
+  marginLongSide?: number | string;
+  marginShortSide?: number | string;
 }
 
 export const yieldInputReq = () => {

@@ -9,6 +9,7 @@ import { Button, Checkbox } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import Calculate from "@/assets/svg/icons/calculate.svg";
+import Print from "@/assets/svg/icons/print.svg";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTable from "@/components/List/AntdTable";
 import { validReq } from "@/utils/valid";
@@ -47,14 +48,20 @@ const SalesArrayPage: React.FC & {
   });
   // ------------ 필요 데이터 세팅 ------------ 끝
 
-  const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
+  const [yielddata, setYielddata] = useState<yieldInputType | null>({
+    minPanelLength: "200.0",
+    minYield: "80.0",
+    kitWidth: "280.0",
+    kitHeight: "218.0",
+    kitGapX: "5.0",
+    kitGapY: "5.0",
+    marginLongSide: 20,
+    marginShortSide: 10,
+  });
 
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
-
   const [calLoading, setCalLoading] = useState<boolean>(false);
-
   const [yieldTableData, setYieldTableData] = useState<yieldCalType[]>([]);
-
   useEffect(()=>{
     if(yielddata === null) {
       setYieldTableData([]);
@@ -187,7 +194,11 @@ const SalesArrayPage: React.FC & {
           ))}
           </div>
         </div>
-        <div className="w-full h-center justify-end">
+        <div className="w-full h-center justify-end gap-20">
+          <Button className="v-h-center">
+            <span className='w-16 h-16 text-[#222222]'><Print/></span>
+            <span>인쇄</span>
+          </Button>
           <Button type="primary" className="v-h-center" onClick={calculdate}>
             <span className='w-16 h-16'><Calculate/></span>
             <span>계산</span>
