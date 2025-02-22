@@ -117,11 +117,9 @@ const SayangYieldCalculate: React.FC<Props> = ({
         url:'board-yield-calc/default/calculate/auto/multi-board',
         etc: true,
       }, jsonData);
-      console.log(result);
   
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as yieldCalType[];
-        console.log(rdata, result.data);
         setYieldTableData(rdata);
         setCalLoading(false);
       } else {
@@ -236,7 +234,6 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           key: 0,
                           onClick: () => {
                             setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0} ])
-                            console.log(kit);
                           }
                         },
                         {

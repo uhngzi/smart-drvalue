@@ -143,7 +143,6 @@ const OrderAddLayout = () => {
         
         { ...data, prtTypeEm: 'cs'}
       );
-      console.log(result);
 
       if(result.resultCode === 'OK_0000') {
         csRefetch();
@@ -273,7 +272,6 @@ const OrderAddLayout = () => {
             updateData[index],
             ...updateData.slice(index + 1),
           ]);
-          console.log(newProducts);
         }
       }
 

@@ -70,7 +70,6 @@ const ClientCuListPage: React.FC & {
       }
 
       setDataLoading(false);
-      console.log(result.data);
       return result;
     },
     enabled: !!type // type이 존재할 때만 쿼리 실행
@@ -102,7 +101,6 @@ const ClientCuListPage: React.FC & {
           id,
           { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
         );
-        console.log(result);
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
@@ -126,7 +124,6 @@ const ClientCuListPage: React.FC & {
           
           { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
         );
-        console.log(result);
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
@@ -159,7 +156,6 @@ const ClientCuListPage: React.FC & {
         jsx: 'jsxcrud'},
         id,
       );
-      console.log(result);
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);

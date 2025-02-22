@@ -32,8 +32,6 @@ const PopRegLayout: React.FC<Props> = ({ children, title, head = true }) => {
     else          setWidth(240);
   }, [collapsed])
 
-  console.log(children);
-
   return (
     <div className="flex" key="mainPageLayout">
       <BaseProvider>

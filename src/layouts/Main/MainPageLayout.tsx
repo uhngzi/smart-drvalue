@@ -44,7 +44,6 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
     else          setWidth(240);
   }, [collapsed])
   
-  console.log(bg);
   return (
     <div className="flex" key="mainPageLayout">
       <div>

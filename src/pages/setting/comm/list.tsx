@@ -40,7 +40,6 @@ const CommonListPage: React.FC & {
       }
 
       setDataLoading(false);
-      console.log(result.data);
       return result;
     },
   });
@@ -79,7 +78,6 @@ const CommonListPage: React.FC & {
       }
 
       setDataLoading(false);
-      console.log(result.data);
       return result;
     },
   });
@@ -88,7 +86,6 @@ const CommonListPage: React.FC & {
   const handleSubmit = async () => {
     try {
       const newData = data[editIndex];
-      console.log(newData);
       
       if(newData.id?.includes('new')){
         const val = validReq(newData, commonCodeGrpReq());
@@ -173,7 +170,6 @@ const CommonListPage: React.FC & {
       } else {
         console.log('error:', result.response);
       }
-      console.log(result.data);
       return result;
     },
     enabled: !!selectedRowKeys
@@ -183,7 +179,6 @@ const CommonListPage: React.FC & {
 const handleSubmitCode = async () => {
   try {
     const newData = dataCode[editIndexCode];
-    console.log('code : ', newData);
     
     if(newData.id?.includes('new')){
       const val = validReq(newData, commonCodeReq());

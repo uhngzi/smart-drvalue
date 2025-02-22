@@ -56,7 +56,6 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
   },[data]);
 
   function treeSubmit(list: any){
-    console.log(list)
     onSubmit('')
   }
 
@@ -66,10 +65,8 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
     value:string,
     parentsId?: string,
   ) => {
-    console.log(type, id, value, parentsId)
     setTreeData((prev) => {
       if(type === 'main'){
-        console.log([...prev, { id: `temp${treeData.length}`, label:value, children:[], open:true }])
         return [...prev, { id: `temp${treeData.length}`, label:value, children:[], open:true }];
       } else {
         const newList = prev.map((item) => {

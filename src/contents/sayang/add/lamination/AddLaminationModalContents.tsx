@@ -355,7 +355,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
       // 새 라이브러리 생성 후 해당 라이브러리 바로 확정한 뒤 메인 라이브러리의 값 임시 저장
       handleSubmitSaveSource(true);
     }
-    console.log(selectSource);
   }
   // -------------- 선택 시 함수 ------------- 끝
 

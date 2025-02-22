@@ -132,7 +132,6 @@ const SayangModelAddPage: React.FC & {
         // 임시저장 모델 파싱
         tempPrdInfo: d.tempPrdInfo ? JSON.parse(d.tempPrdInfo) : "",
       }));
-      console.log(arr);
       setData(arr);
       setDataLoading(false);
     }
@@ -285,7 +284,6 @@ const SayangModelAddPage: React.FC & {
 
   // 확정저장 시 실행되는 함수 ("그대로 등록"은 위 submit 거치지 않고 바로 들어옴)
   const handleConfirm = async (id: string, modelId: string, modelStatus:ModelStatus) => {
-    console.log('confirm', id, modelId);
     const resultPatch = await patchAPI({
       type: 'core-d1',
       utype: 'tenant/',

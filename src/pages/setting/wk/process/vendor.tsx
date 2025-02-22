@@ -237,7 +237,6 @@ const WkProcessVendorListPage: React.FC & {
   // ----------- 신규 데이터 끝 -----------
 
   const handleCheck = (e: CheckboxChangeEvent) => {
-    console.log(e);
   }
 
   return (

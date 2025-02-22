@@ -68,8 +68,6 @@ const SayangModelStatPage: React.FC & {
       setDataLoading(false);
     }
   }, [queryData]);
-
-  useEffect(()=>{console.log(data)},[data]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   // 리스트 내 거래처
@@ -151,7 +149,6 @@ const SayangModelStatPage: React.FC & {
         cellAlign: item.cellAlign,
       }))
     if(key === 1) { // 엑셀 다운로드
-      console.log(clmn);
       exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "excel", showToast);
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "print", showToast);

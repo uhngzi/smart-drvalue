@@ -256,7 +256,6 @@ const SalesUserPage: React.FC & {
     );
 
     if(result.resultCode === 'OK_0000') {
-      console.log('ok');
       refetch();
       setOpen(false);
       handleCloseOrder();
@@ -315,7 +314,6 @@ const SalesUserPage: React.FC & {
       // handleCloseOrder();
       showToast("고객 발주 수정이 완료되었습니다.", "success");
     } else {
-      console.log(result);
       const msg = result?.response?.data?.message;
       // setOpen(false);
       // handleCloseOrder();
@@ -369,7 +367,6 @@ const SalesUserPage: React.FC & {
   const [deleted, setDeleted] = useState<boolean>(false);
   const handleDelete = async () => {
     const deletedData = newProducts.filter(f => f.disabled)
-    console.log(deletedData);
 
     if(deletedData.length > 0 && deletedData[0].id) {
       deletedData.map(async (item) => {
@@ -414,7 +411,6 @@ const SalesUserPage: React.FC & {
         cellAlign: item.cellAlign,
       }))
     if(key === 1) { // 엑셀 다운로드
-      console.log(clmn);
       exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast);
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);

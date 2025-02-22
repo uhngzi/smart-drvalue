@@ -189,7 +189,6 @@ const SayangSampleListPage: React.FC & {
         cellAlign: item.cellAlign,
       }))
     if(key === 1) { // 엑셀 다운로드
-      console.log(clmn);
       exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);
     } else {        // 프린트
       exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);

@@ -61,8 +61,6 @@ const SalesArrayPage: React.FC & {
     }
   }, [yielddata]);
 
-  useEffect(()=>{console.log(yieldTableData)}, [yieldTableData])
-
   const items = [
     {tabIndex:1,value:yielddata?.minYield, name:'minYield', label:'최저 수율', type:'input', widthType:'full'},
     {tabIndex:3,value:yielddata?.kitWidth, name:'kitWidth', label:'Kit긴쪽길이', type:'input', widthType:'full'},
@@ -95,7 +93,6 @@ const SalesArrayPage: React.FC & {
         return;
       } 
 
-      console.log(disks);
       const jsonData = { ...yielddata, disks: disks };
       console.log(JSON.stringify(jsonData));
 
@@ -108,11 +105,9 @@ const SalesArrayPage: React.FC & {
         url:'board-yield-calc/default/calculate/auto/multi-board',
         etc: true,
       }, jsonData);
-      console.log(result);
   
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as yieldCalType[];
-        console.log(rdata, result.data);
         setYieldTableData(rdata);
         setCalLoading(false);
       } else {

@@ -77,7 +77,6 @@ const AntdDraggerSmall: React.FC<Props> = ({
         });
         setFileList(prev => [...prev, info.file]);
         setFileIdList(prev => [...prev, ...filesNm]);
-        console.log(info, info.file);
       }
     },
   };

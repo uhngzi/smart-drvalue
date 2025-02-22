@@ -60,7 +60,6 @@ const EditableCell: React.FC<
                   }
                 }}
                 onOpenChange={(open) => {
-                  console.log(open, value);
                   if (open && !value) {
                     onFieldChange(new Date());
                   }

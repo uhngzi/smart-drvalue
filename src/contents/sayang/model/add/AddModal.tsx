@@ -154,7 +154,6 @@ const AddModal: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const { id } = router.query;
-  console.log(id);
   const [ full, setFull ] = useState<boolean>(false);
   
   const useStyle = createStyles(({ }) => ({
@@ -300,10 +299,8 @@ const AddModal: React.FC<Props> = ({
   ) => {
     if(typeof e === "string") {
       const parsedDate = new Date(e);
-      console.log(e, parsedDate);
     } else {
       const { value } = e.target;
-      console.log(value);
     }
   }
   

@@ -86,7 +86,6 @@ const SayangModelWaitPage: React.FC & {
           cellAlign: item.cellAlign,
         }))
       if(key === 1) { // 엑셀 다운로드
-        console.log(clmn);
         exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "excel", showToast);
       } else {        // 프린트
         exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "print", showToast);

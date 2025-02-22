@@ -156,7 +156,6 @@ const YieldCalculate: React.FC<Props> = ({
       } 
 
       const jsonData = { ...yielddata, disks:disk.map(d=>({diskWidth:d.diskWidth,diskHeight:d.diskHeight})) };
-      console.log(JSON.stringify(jsonData));
 
       setCalLoading(true);
       const result = await postAPI({
@@ -166,11 +165,9 @@ const YieldCalculate: React.FC<Props> = ({
         url:'board-yield-calc-default/default/calculate/auto/multi-board',
         etc: true,
       }, jsonData);
-      console.log(result);
   
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as yieldCalType[];
-        console.log(rdata, result.data);
         setYieldTableData(rdata);
         setCalLoading(false);
       } else {

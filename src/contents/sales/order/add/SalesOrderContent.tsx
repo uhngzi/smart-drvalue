@@ -53,10 +53,6 @@ const SalesOrderContent: React.FC<Props> = ({
   // 높이 변경을 감지하기 위한 변수
   const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
 
-  useEffect(()=>{
-    console.log(formData.partnerId);
-  }, [formData.partnerId])
-
   return (
     <div className="w-full min-h-[650px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
       <LabelMedium label="고객발주 등록" />

@@ -51,12 +51,10 @@ const SignInPage: React.FC & {
       } else {
         setOpen(true);
         setMsg(response?.data?.message);
-        console.log(response.data.message);
       }
     } catch (e:any) {
       setOpen(true);
       setMsg(e?.toString());
-      console.log(e);
     }
   };
 

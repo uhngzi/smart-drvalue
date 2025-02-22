@@ -43,8 +43,6 @@ const AntdInputFill: React.FC<Props> = ({
         .replace(/,/g, "")
         .replace(/[^0-9.]/g, "");
       
-        console.log(sanitizedValue.split(".").length);
-      
       // 마지막에 소수점이 올 때 숫자로 변환하지 않고 소수점 입력도 하기 위함 :: ex) 1. 일 경우 허용
       if(sanitizedValue[sanitizedValue.length-1] === "."
         // 소수점이 2개 이상일 경우 허용하지 않기 위함 ex) 1.5. 일 경우 허용 안함

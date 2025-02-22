@@ -528,7 +528,7 @@ export const sayangSampleWaitClmn = (
       <div className="w-full h-full v-h-center">
         <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? ''); console.log(record);}}
+          onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '');}}
         >
           <p className="w-18 h-18"><Edit /></p>
         </div>

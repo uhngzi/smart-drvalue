@@ -54,7 +54,6 @@ const CustomTree:React.FC<Props> = ({
   const newInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(()=>{
-    console.log(data)
     // if(data.length > 0) {
       setFocusId(null);
       setList(data);
@@ -80,7 +79,6 @@ const CustomTree:React.FC<Props> = ({
     value:string,
     parentsId?: string,
   ) => {
-    console.log(type, id, value, parentsId)
     setList((prev) => {
       if(type === 'main'){
         return [
@@ -108,7 +106,6 @@ const CustomTree:React.FC<Props> = ({
 
   const handleSelect = (item: any) => {
     const selectId = [item.id, ...item.children?.map((child: any) => child.id) || []];
-    console.log(selectId)
     setSelectId(prev =>
       prev.some(selectedId => selectId.includes(selectedId))
         ? prev.filter(selectedId => !selectId.includes(selectedId))
@@ -116,7 +113,6 @@ const CustomTree:React.FC<Props> = ({
     );
   };
   const handleFocus = (id: string) => {
-    console.log(id, focusId)
     if(id === focusId){
       setFocusId(null);
     } else{
