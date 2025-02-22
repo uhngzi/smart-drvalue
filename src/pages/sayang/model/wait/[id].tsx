@@ -462,7 +462,6 @@ const SayangModelAddPage: React.FC & {
                 // style={model.completed?{background:"#F8F8F8"}:{}}
               >
                 <ModelHead
-                  type="match"
                   model={model}
                   handleModelDataChange={handleModelDataChange}
                   boardSelectList={boardSelectList}

@@ -98,6 +98,8 @@ const ModelList:React.FC<Props> = ({
             model:{ ...selectRecord },
             // 입력한 모델 값
             editModel: { ...selectRecord },
+            // 임시저장 될 값
+            tempPrdInfo: { ...selectRecord },
             // 복사일 경우 수정, 그대로일 경우 반복
             modelStatus: selectMenuKey === 1 ? ModelStatus.REPEAT : ModelStatus.MODIFY,
           };
