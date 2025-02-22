@@ -52,11 +52,22 @@ const AntdInput = forwardRef<InputRef, Props>((
       const sanitizedValue = value
         .replace(/,/g, "")
         .replace(/[^0-9.]/g, "");
-      
+
       // 마지막에 소수점이 올 때 숫자로 변환하지 않고 소수점 입력도 하기 위함 :: ex) 1. 일 경우 허용
       if(sanitizedValue[sanitizedValue.length-1] === "."
         // 소수점이 2개 이상일 경우 허용하지 않기 위함 ex) 1.5. 일 경우 허용 안함
         && sanitizedValue.split(".").length < 3) {
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: sanitizedValue,
+          },
+        });
+        return onChange?.(newEvent);
+      }
+
+      // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
+      if(sanitizedValue.slice(-2) === ".0") {
         const newEvent = Object.assign({}, e, {
           target: {
             ...e.target,
@@ -86,7 +97,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     // 숫자 타입이 아닐 경우 원본 이벤트 전달
     onChange?.(e);
   };
-
+  
   return (
     <AntdInputStyled
       $ht={styles?.ht ? styles.ht : "32px"}
@@ -101,7 +112,10 @@ const AntdInput = forwardRef<InputRef, Props>((
           type === "number" && value !== undefined && value !== ""
           // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
           && value?.toString()[value?.toString().length - 1] !== "."
-            ? Number(value).toLocaleString()
+          ?
+          // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
+          value.toString().slice(-2) === ".0" ? value :
+          Number(value).toLocaleString()
             : value
         }
         onChange={handleInputChange}

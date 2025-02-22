@@ -50,6 +50,17 @@ const AntdInputRound: React.FC<Props> = ({
         return onChange?.(newEvent);
       }
 
+      // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
+      if(sanitizedValue.slice(-2) === ".0") {
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: sanitizedValue,
+          },
+        });
+        return onChange?.(newEvent);
+      }
+
       const numericValue = parseFloat(sanitizedValue);
   
       // 숫자가 아니거나 0 미만이면 무시
@@ -85,7 +96,10 @@ const AntdInputRound: React.FC<Props> = ({
           type === "number" && value !== undefined && value !== ""
           // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
           && value?.toString()[value?.toString().length - 1] !== "."
-            ? Number(value).toLocaleString()
+          ?
+          // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
+          value.toString().slice(-2) === ".0" ? value :
+          Number(value).toLocaleString()
             : value
         }
         onChange={handleInputChange}
