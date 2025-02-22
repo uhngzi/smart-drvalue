@@ -88,6 +88,7 @@ const AntdInputRound: React.FC<Props> = ({
       $bg={styles?.bg?styles.bg:'none'}
       $bw={styles?.bw?styles.bw:'1px'}
       $bc={styles?.bc?styles.bc:'#D9D9D9'}
+      $type={type ?? "string"}
       className={`${className}`}
     >
       <Input
@@ -117,6 +118,7 @@ const AntdInputStyled = styled.div<{
   $bg: string;
   $bw: string;
   $bc: string;
+  $type: string;
 }>`
   width: 100%;
   height: ${({ $ht }) => $ht} !important;
@@ -127,6 +129,7 @@ const AntdInputStyled = styled.div<{
     border-width: ${({ $bw }) => $bw} !important;
     border-color: ${({ $bc }) => $bc} !important;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+    text-align: ${({ $type }) => ($type === "number" ? "right" : "left")} !important;
   }
 `
 
