@@ -10,8 +10,9 @@ const AddPage: React.FC & {
   const router = useRouter();
   const { type, id } = router.query;
 
-  title = type === "order" ? "고객 발주" : "견적";
-  title += id?.includes('new') ? " 등록" : " 수정";
+  title = type
+  ? `${type === "order" ? "고객 발주" : "견적"} ${id?.includes("new") ? "등록" : "수정"}`
+  : "로딩 중...";
 
   return (
     type === "order" ?
@@ -22,7 +23,7 @@ const AddPage: React.FC & {
 };
 
 AddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout title={title}>{page}</PopRegLayout>
+  <PopRegLayout head={false}>{page}</PopRegLayout>
 );
 
 export default AddPage;

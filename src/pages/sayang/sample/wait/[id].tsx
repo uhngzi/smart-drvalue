@@ -477,7 +477,7 @@ const SayangSampleAddPage: React.FC & {
 }
 
 SayangSampleAddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout title="사양등록">{page}</PopRegLayout>
+  <PopRegLayout title="사양 등록">{page}</PopRegLayout>
 );
 
 export default SayangSampleAddPage;

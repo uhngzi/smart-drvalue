@@ -9,12 +9,14 @@ import { ModelProvider } from "@/data/context/ModelContext";
 
 interface Props {
   children : React.ReactNode;
-  title: string;
+  title?: string;
   writeButtonHref?: string;
+  head?: boolean;
 }
 
-const PopRegLayout: React.FC<Props> = ({ children, title }) => {
+const PopRegLayout: React.FC<Props> = ({ children, title, head = true }) => {
   const router = useRouter();
+  const { id } = router.query;
 
   useEffect(()=>{
     // 로그인 안 했을 경우 로그인 페이지로 이동
@@ -30,6 +32,8 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
     else          setWidth(240);
   }, [collapsed])
 
+  console.log(children);
+
   return (
     <div className="flex" key="mainPageLayout">
       <BaseProvider>
@@ -44,18 +48,25 @@ const PopRegLayout: React.FC<Props> = ({ children, title }) => {
         }}
       >
         {/* <MainHeader title={menuTitle} /> */}
-        <div className="p-30 flex v-between-h-center">
-          <p className="text-20 fw-500 font-semibold">{title}</p>
-          <p 
-            className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
-            onClick={(()=>router.back())}
-          >
-            <Close />
-          </p>
-        </div>
-        <div className="w-full overflow-auto pl-20 pb-20">
-          {children}
-        </div>
+        { head && <>
+          <div className="p-30 flex v-between-h-center">
+            <p className="text-20 fw-500 font-semibold">{title}</p>
+            <p 
+              className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+              onClick={(()=>router.back())}
+            >
+              <Close />
+            </p>
+          </div>
+          <div className="w-full overflow-auto pl-20 pb-20">
+            {children}
+          </div>
+        </>}
+        { !head && <>
+          <div className="w-full">
+            {children}
+          </div>
+        </>}
       </div>
       </ModelProvider>
       </BaseProvider>
