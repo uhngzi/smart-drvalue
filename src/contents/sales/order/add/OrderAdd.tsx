@@ -33,7 +33,7 @@ import {
   salesOrderProductRType,
   salesOrderReq
 } from "@/data/type/sales/order";
-import { changeOrderEdit, changeOrderNew } from "@/data/type/sales/changeData";
+import { changeOrderEdit, changeOrderMainNew, changeOrderNew } from "@/data/type/sales/changeData";
 import { useUser } from "@/data/context/UserContext";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
@@ -348,6 +348,34 @@ const OrderAddLayout = () => {
   }
   // ------------ 발주 폐기 함수 ------------- 끝
 
+  // ------------ 발주 등록 함수 ------------- 시작
+  const handleAddOrderMain = async () => {
+    const jsonData = changeOrderMainNew({ ...formData, id: orderId}, me);
+    console.log(JSON.stringify(jsonData));
+
+    // 발주 내 필수 값 입력 체크
+    const ordVal = validReq(jsonData, salesOrderReq());
+    if(!ordVal.isValid) {
+      showToast(ordVal.missingLabels+'은(는) 필수 입력입니다.', "error");
+      return;
+    }
+    
+    const result = await postAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: 'sales-order',
+      jsx: 'default',
+    }, { ...jsonData, id: undefined });
+
+    if(result.resultCode === "OK_0000") {
+      showToast("발주 등록 완료", "success");
+    } else {
+      const msg = result.response?.data?.message;
+      showToast(msg, "error");
+    }
+  }
+  // ------------ 발주 등록 함수 ------------- 끝
+
   // ------------ 발주 수정 함수 ------------- 시작
   const handleEditOrderMain = async () => {
     console.log(orderId, JSON.stringify(formData));
@@ -367,11 +395,12 @@ const OrderAddLayout = () => {
       showToast(msg, "error");
     }
   }
-  // ------------ 발주 폐기 함수 ------------- 끝
+  // ------------ 발주 수정 함수 ------------- 끝
 
   // --------- 자동 포커스 및 스크롤 ----------- 시작
     // 모델 추가 시 새 모델로 부드럽게 자동 이동 후 자동 포커스
   const inputRef = useRef<InputRef[]>([]);
+  const [priceFlag, setPriceFlag] = useState<boolean>(false);
   const [viewKey, setViewKey] = useState<number | null>(null);
   useEffect(()=>{
     if(viewKey && inputRef.current.length > 0) {
@@ -382,12 +411,18 @@ const OrderAddLayout = () => {
           block: 'start',
         });
 
-        // 스크롤 후 포커스 되기 위함
-        setTimeout(() => {
-          targetInput?.input?.focus();
-        }, 300);
+        // 수주 금액을 클릭했을 땐 포커스 안함
+        if(!priceFlag) {
+          // 스크롤 후 포커스 되기 위함
+          setTimeout(() => {
+            targetInput?.input?.focus();
+          }, 300);
+        }
       }
     }
+    // 이동 후에는 초기화
+    setViewKey(null);
+    setPriceFlag(false);
   }, [viewKey]);
 
     // 스탭 변경 시 해당 스탭으로 부드럽게 자동 이동
@@ -434,256 +469,299 @@ const OrderAddLayout = () => {
   useEffect(()=>{console.log('new :: ',newFlag)}, [newFlag]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "">("");
-  return (
-  <div className="h-center gap-20">
-    <div className="w-[calc(100vw-100px)]">
-      {/* 스탭 */}
-      <div className="w-full h-80 p-30 v-between-h-center">
-        <Steps current={stepCurrent} items={[{title:'고객 발주 등록'}, {title:'고객 발주 모델 등록'}]} />
-      </div>
-      
-      {/* 왼쪽 컨텐츠 */}
-      <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto">
-        {/* 고객 발주 컨텐츠 */}
-        <div
-          className="flex"
-          // 스크롤 자동을 위해 ref 추가
-          ref={el => {if(el)  stepRef.current[0] = el;}}
-        >
-          <SalesOrderContent
-            csList={csList}
-            formData={formData}
-            setFormData={setFormData}
-            fileList={fileList}
-            setFileList={setFileList}
-            fileIdList={fileIdList}
-            setFileIdList={setFileIdList}
-          />
-        </div>
+  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "">("");
 
-        {/* 담당자 컨텐츠 */}
-        <CsMngContent
-          csMngList={csMngList}
-          setCsMngList={setCsMngList}
-          formData={formData}
-          setFormData={setFormData}
-          showToast={showToast}
-        />
+  return (<>
+    <div className="p-30 flex v-between-h-center">
+      <p className="text-20 fw-500 font-semibold">{ id?.includes("new") ? "고객 발주 등록" : "고객 발주 수정"}</p>
+      <p 
+        className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+        onClick={(()=>{
+          let flag = false;
+          //고객 발주를 저장하지 않았을 경우
+          if(id?.includes("new") && formData.id?.includes("new")) {
+            flag = true;
+          } else {
+            newProducts.map((prd) => {
+              if(prd.id?.includes("new")) {
+                flag = true;
+                return;
+              }
+            });
+          }
 
-        {/* 발주 하단 버튼 */}
-        <div className="w-full h-50 v-between-h-center">
-          {stepCurrent < 1 ?
-          <>
-            <Button 
-              className="w-109 h-32 rounded-6"
-              style={{color:"#444444E0"}}
-              onClick={() => {
-                setFormData(newDataSalesOrderCUType());
-                stepRef.current[0].scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                });
-                setTimeout(()=>{
-                  setStepCurrent(0);
-                }, 400)
-              }}
+          if(flag) {
+            setAlertOpen(true);
+            setAlertType("close");
+          } else {
+            router.push("/sales/order");
+          }
+        })}
+      >
+        <Close />
+      </p>
+    </div>
+    <div className="w-full overflow-auto pl-20 pb-20">
+      <div className="h-center gap-20">
+        <div className="w-[calc(100vw-100px)]">
+          {/* 스탭 */}
+          <div className="w-full h-80 p-30 v-between-h-center">
+            <Steps current={stepCurrent} items={[{title:'고객 발주'}, {title:'고객 발주 모델 등록'}]} />
+          </div>
+          
+          {/* 왼쪽 컨텐츠 */}
+          <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto">
+            {/* 고객 발주 컨텐츠 */}
+            <div
+              className="flex"
+              // 스크롤 자동을 위해 ref 추가
+              ref={el => {if(el)  stepRef.current[0] = el;}}
             >
-              <Close/> 취소
-            </Button>
-            <Button 
-              className="w-109 h-32 bg-point1 text-white rounded-6"
-              style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-              onClick={()=>{
-                const orderVal = validReq(formData, salesOrderReq());
-                if(!orderVal.isValid) {
-                  showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "error");
-                } else {
-                  setStepCurrent(1);
-                }
-              }}
-            >
-              <Arrow />다음 단계
-            </Button>
-          </> : <>
-              <div className="flex"></div>
-              {/* <Button
-                className="w-109 h-32 rounded-6"
-                onClick={()=>{
-                  stepRef.current[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end',
-                  });
-                  // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
-                  setTimeout(()=>{
-                    setStepCurrent(0);
-                  }, 400)
-                }}
-              >
-                <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
-              </Button> */}
-              <Button
-                className="w-109 h-32 rounded-6"
-                onClick={()=>{
-                  handleEditOrderMain();
-                }}
-              >
-                <p className="w-16 h-16 text-[#222222]"><Edit /></p> 수정
-              </Button>
-            </>
-            }
-        </div>
+              <SalesOrderContent
+                csList={csList}
+                formData={formData}
+                setFormData={setFormData}
+                fileList={fileList}
+                setFileList={setFileList}
+                fileIdList={fileIdList}
+                setFileIdList={setFileIdList}
+                setViewKey={setViewKey}
+                setPriceFlag={setPriceFlag}
+                newProducts={newProducts}
+              />
+            </div>
 
-        {/* 모델 컨텐츠 */}
-      { stepCurrent > 0 &&
-        <div
-          className="flex w-full relative pl-10"
-          ref={el => {
-            if (el) {
-              stepRef.current[1] = el;
-            }
-          }}
-        >
-          <div className="w-full">
-            <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
-              <div className="v-between-h-center">
-                <LabelMedium label="모델 등록"/>
-                
-                {/* <Button
-                  className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+            {/* 담당자 컨텐츠 */}
+            <CsMngContent
+              csMngList={csMngList}
+              setCsMngList={setCsMngList}
+              formData={formData}
+              setFormData={setFormData}
+              showToast={showToast}
+            />
+
+            {/* 발주 하단 버튼 */}
+            <div className="w-full h-50 v-between-h-center">
+              {stepCurrent < 1 ?
+              <>
+                <Button 
+                  className="w-109 h-32 rounded-6"
+                  style={{color:"#444444E0"}}
+                  onClick={() => {
+                    setFormData(newDataSalesOrderCUType());
+                    stepRef.current[0].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
+                    setTimeout(()=>{
+                      setStepCurrent(0);
+                    }, 400)
+                  }}
+                >
+                  <Close/> 취소
+                </Button>
+                <Button 
+                  className="w-109 h-32 bg-point1 text-white rounded-6"
+                  style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                   onClick={()=>{
-                    if(edit) {
-                      handleEditOrder(newProducts);
+                    const orderVal = validReq(formData, salesOrderReq());
+                    if(!orderVal.isValid) {
+                      showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "error");
                     } else {
-                      handleSubmitOrder(newProducts);
+                      setStepCurrent(1);
                     }
                   }}
                 >
-                  <Arrow /> 전체 저장
-                </Button> */}
-              </div>
-              <DividerH />
-              <SalesModelTable
-                data={newProducts}
-                setData={setNewProducts}
-                selectId={selectId}
-                newFlag={newFlag}
-                setDeleted={setDeleted}
-                inputRef={inputRef}
-                handleSubmitOrderModel={(model:salesOrderProcuctCUType)=>{
-                  if(edit) {
-                    handleEditOrder(model);
-                  } else {
-                    handleSubmitOrder(model);
-                  }
-                }}
-              />
-              <div className="w-full h-1 border-t-1"/>
-                <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                  onClick={() => {
-                    setNewProducts((prev: salesOrderProcuctCUType[]) =>[
-                      {
-                        ...newDataSalesOrderProductCUType(),
-                        id:'new-'+prev.length+1,
-                        index: newProducts.length+1
-                      },
-                      ...prev,
-                    ]);
-                    setViewKey(newProducts.length+1);
-                  }}
-                >
-                <SplusIcon/>
-                <span>모델 추가하기</span>
-              </div>
+                  <Arrow />다음 단계
+                </Button>
+              </> : <>
+                  <div className="flex"></div>
+                  {/* <Button
+                    className="w-109 h-32 rounded-6"
+                    onClick={()=>{
+                      stepRef.current[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'end',
+                      });
+                      // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
+                      setTimeout(()=>{
+                        setStepCurrent(0);
+                      }, 400)
+                    }}
+                  >
+                    <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
+                  </Button> */}
+                  <Button
+                    className="w-109 h-32 rounded-6"
+                    onClick={()=>{
+                      if(!edit)
+                        handleAddOrderMain();
+                      else
+                        handleEditOrderMain();
+                    }}
+                  >
+                    <p className="w-16 h-16 text-[#222222]"><Edit /></p> {edit ? "수정" : "발주 등록"}
+                  </Button>
+                </>
+                }
             </div>
-          </div>
-        </div> }
-      </div>
-    </div>
 
-    {/* 우측 탭 */}
-    <div className="min-w-[80px] w-[3%] h-[calc(100vh-192px)] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
-      <div 
-        className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
-        onClick={()=>{
-          setModelDrawerOpen(true);
-        }}
-      >
-        <p className="w-20 h-20"><Category /></p>
-      </div>
-    </div>
-
-    {/* 모델 목록 드로워 */}
-    <AntdDrawer
-      open={modelDrawerOpen}
-      close={()=>{setModelDrawerOpen(false);}}
-    >
-      <div className="w-full px-20 py-30 flex flex-col gap-20">
-        <div className="v-between-h-center">
-          <LabelMedium label="모델 목록" />
-          <div className="cursor-pointer" onClick={() => setModelDrawerOpen(false)}>
-            <Close/>
+            {/* 모델 컨텐츠 */}
+          { stepCurrent > 0 &&
+            <div
+              className="flex w-full relative pl-10"
+              ref={el => {
+                if (el) {
+                  stepRef.current[1] = el;
+                }
+              }}
+            >
+              <div className="w-full">
+                <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
+                  <div className="v-between-h-center">
+                    <LabelMedium label="모델 등록"/>
+                    
+                    {/* <Button
+                      className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                      onClick={()=>{
+                        if(edit) {
+                          handleEditOrder(newProducts);
+                        } else {
+                          handleSubmitOrder(newProducts);
+                        }
+                      }}
+                    >
+                      <Arrow /> 전체 저장
+                    </Button> */}
+                  </div>
+                  <DividerH />
+                  <SalesModelTable
+                    data={newProducts}
+                    setData={setNewProducts}
+                    selectId={selectId}
+                    newFlag={newFlag}
+                    setDeleted={setDeleted}
+                    inputRef={inputRef}
+                    handleSubmitOrderModel={(model:salesOrderProcuctCUType)=>{
+                      if(edit) {
+                        handleEditOrder(model);
+                      } else {
+                        handleSubmitOrder(model);
+                      }
+                    }}
+                  />
+                  <div className="w-full h-1 border-t-1"/>
+                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
+                      onClick={() => {
+                        setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                          {
+                            ...newDataSalesOrderProductCUType(),
+                            id:'new-'+prev.length+1,
+                            index: newProducts.length+1
+                          },
+                          ...prev,
+                        ]);
+                        setViewKey(newProducts.length+1);
+                      }}
+                    >
+                    <SplusIcon/>
+                    <span>모델 추가하기</span>
+                  </div>
+                </div>
+              </div>
+            </div> }
           </div>
         </div>
-        <ModelList
-          type="order"
-          models={models}
-          setModels={setModels}
-          products={newProducts}
-          setProductsOrder={setNewProducts}
-          selectId={selectId}
-          setSelectId={setSelectId}
-          setNewFlag={setNewFlag}
-          setDrawerOpen={setModelDrawerOpen}
+
+        {/* 우측 탭 */}
+        <div className="min-w-[80px] w-[3%] h-[calc(100vh-192px)] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
+          <div 
+            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+            onClick={()=>{
+              setModelDrawerOpen(true);
+            }}
+          >
+            <p className="w-20 h-20"><Category /></p>
+          </div>
+        </div>
+
+        {/* 모델 목록 드로워 */}
+        <AntdDrawer
+          open={modelDrawerOpen}
+          close={()=>{setModelDrawerOpen(false);}}
+        >
+          <div className="w-full px-20 py-30 flex flex-col gap-20">
+            <div className="v-between-h-center">
+              <LabelMedium label="모델 목록" />
+              <div className="cursor-pointer" onClick={() => setModelDrawerOpen(false)}>
+                <Close/>
+              </div>
+            </div>
+            <ModelList
+              type="order"
+              models={models}
+              setModels={setModels}
+              products={newProducts}
+              setProductsOrder={setNewProducts}
+              selectId={selectId}
+              setSelectId={setSelectId}
+              setNewFlag={setNewFlag}
+              setDrawerOpen={setModelDrawerOpen}
+            />
+          </div>
+        </AntdDrawer>
+
+        {/* 삭제 시 확인 모달창 */}
+        <AntdAlertModal
+          open={alertOpen}
+          setOpen={setAlertOpen}
+          type={alertType === "discard" ? "success" : "warning"}
+          title={
+            alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
+            // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
+            alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
+            alertType === "close" ? "아직 저장되지 않은 모델이 존재하거나 고객 발주 등록 이전입니다." :
+            alertType === "discard" ? "고객 발주 폐기 성공" : ""
+          }
+          contents={
+            alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
+            alertType === "cancle" ? <>해당 발주를 취소할 경우 하위에 등록된 모델도 폐기됩니다.<br/>정말 폐기하시겠습니까?</> :
+            alertType === "close" ? <>저장하지 않고 나가실 경우 저장되지 않은 값은 사라집니다.<br/>정말 나가시겠습니까?</> :
+            alertType === "discard" ? <>고객 발주 폐기가 완료되었습니다.</> : <></>
+          }
+          onOk={()=>{
+            if(alertType === "del") {
+              handleDelete();
+              setDeleted(false);
+            } else if(alertType === "cancle") {
+              handleDeleteOrder();
+            } else if(alertType === "discard" || alertType === "close") {
+              router.push('/sales/order');
+            }
+
+            setAlertOpen(false);
+          }}
+          onCancle={()=>{
+            setAlertOpen(false);
+            setDeleted(false);
+          }}
+          hideCancel={alertType === "discard" ? true : false}
+          okText={
+            alertType === "del" ? "네 삭제할래요" :
+            alertType === "cancle" ? "네 폐기할래요" :
+            alertType === "close" ? "그래도 나갈게요" :
+            alertType === "discard" ? "목록으로 이동" : ""
+          }
+          cancelText={
+            alertType === "del" ? "아니요 삭제 안할래요" :
+            alertType === "close" ? "아니요 이어서 작성할게요" :
+            alertType === "cancle" ? "아니요 폐기 안할래요" : ""}
         />
+
+        <ToastContainer />
       </div>
-    </AntdDrawer>
-
-    {/* 삭제 시 확인 모달창 */}
-    <AntdAlertModal
-      open={alertOpen}
-      setOpen={setAlertOpen}
-      type={alertType === "discard" ? "success" : "warning"}
-      title={
-        alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
-        // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
-        alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
-        alertType === "discard" ? "고객 발주 폐기 성공" : ""
-      }
-      contents={
-        alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
-        alertType === "cancle" ? <>해당 발주를 취소할 경우 하위에 등록된 모델도 폐기됩니다.<br/>정말 폐기하시겠습니까?</> :
-        alertType === "discard" ? <>고객 발주 폐기가 완료되었습니다.</> : <></>
-      }
-      onOk={()=>{
-        if(alertType === "del") {
-          handleDelete();
-          setDeleted(false);
-        } else if(alertType === "cancle") {
-          handleDeleteOrder();
-        } else if(alertType === "discard") {
-          router.push('/sales/order');
-        }
-        setAlertOpen(false);
-      }}
-      onCancle={()=>{
-        setAlertOpen(false);
-        setDeleted(false);
-      }}
-      hideCancel={alertType === "discard" ? true : false}
-      okText={
-        alertType === "del" ? "네 삭제할래요" :
-        alertType === "cancle" ? "네 폐기할래요" :
-        alertType === "discard" ? "목록으로 이동" : ""
-      }
-      cancelText={
-        alertType === "del" ? "아니요 삭제 안할래요" :
-        alertType === "cancle" ? "아니요 폐기 안할래요" : ""}
-    />
-
-    <ToastContainer />
-  </div>
-  )
+    </div>
+  </>)
 }
 
 export default OrderAddLayout;

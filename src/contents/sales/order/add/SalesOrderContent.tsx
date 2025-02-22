@@ -8,10 +8,10 @@ import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 import { partnerRType } from "@/data/type/base/partner";
 import { selectType } from "@/data/type/componentStyles";
 import { HotGrade } from "@/data/type/enum";
-import { salesOrderCUType } from "@/data/type/sales/order";
+import { salesOrderCUType, salesOrderProcuctCUType } from "@/data/type/sales/order";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
-import { SetStateAction, useEffect } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 
 interface Props {
   csList: selectType[];
@@ -21,6 +21,9 @@ interface Props {
   setFileList: React.Dispatch<SetStateAction<any[]>>;
   fileIdList: string[];
   setFileIdList: React.Dispatch<SetStateAction<string[]>>;
+  setViewKey: React.Dispatch<SetStateAction<number | null>>;
+  setPriceFlag: React.Dispatch<SetStateAction<boolean>>;
+  newProducts: salesOrderProcuctCUType[];
 }
 
 const SalesOrderContent: React.FC<Props> = ({
@@ -31,17 +34,26 @@ const SalesOrderContent: React.FC<Props> = ({
   setFileList,
   fileIdList,
   setFileIdList,
+  setViewKey,
+  setPriceFlag,
+  newProducts,
 }) => {
   // 첨부파일 변경 시 FORM에 세팅
   useEffect(()=>{
     setFormData({ ...formData, files:fileIdList });
   }, [fileIdList]);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
+
   return (
     <div className="w-full min-h-[650px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
       <LabelMedium label="고객발주 등록" />
       <DividerH />
-      <div className="w-full h-[550px] h-center gap-30 overflow-auto">
+      <div
+        className="w-full h-center gap-30 overflow-auto"
+        ref={el => {if(el)  ref.current = el;}}
+      >
         <div className="flex flex-col w-[222px] h-full gap-24">
           <div className="flex flex-col gap-8">
             <LabelThin label="고객"/>
@@ -65,6 +77,11 @@ const SalesOrderContent: React.FC<Props> = ({
               }}
               styles={{ht:'36px'}}
               type="number"
+              onClick={(e)=>{
+                setPriceFlag(true);
+                if(newProducts.length > 0)
+                  setViewKey(newProducts.length);
+              }}
             />
           </div>
           <div className="flex flex-col gap-8">
@@ -93,17 +110,16 @@ const SalesOrderContent: React.FC<Props> = ({
               styles={{ht:'36px'}}
             />
           </div>
-          <div className="flex flex-col gap-8">
-            <LabelThin label="첨부파일"/>
-            <div className="w-full h-[150px]">
-              <AntdDraggerSmall
-                fileList={fileList}
-                setFileList={setFileList}
-                fileIdList={fileIdList}
-                setFileIdList={setFileIdList}
-                mult={true}
-              />
-            </div>
+          <div className="flex flex-col gap-8 flex-1">
+            <AntdDraggerSmall
+              fileList={fileList}
+              setFileList={setFileList}
+              fileIdList={fileIdList}
+              setFileIdList={setFileIdList}
+              mult={true}
+              divRef={ref}
+              changeHeight={changeHeight}
+            />
           </div>
         </div>
         
@@ -131,6 +147,7 @@ const SalesOrderContent: React.FC<Props> = ({
               }}
               className="rounded-2"
               style={{height:400}}
+              onResize={(e)=>{setChangeHeight(e)}}
             />
           </div>
         </div>

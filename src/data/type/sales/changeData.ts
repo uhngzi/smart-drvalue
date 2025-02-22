@@ -3,6 +3,20 @@ import { salesOrderCUType, salesOrderProcuctCUType } from "./order";
 import { HotGrade } from "../enum";
 import { User, useUser } from "@/data/context/UserContext";
 
+// 영업 - 고객발주 내 고객 발주만 등록 시 신규 발주 값 변환
+export const changeOrderMainNew = (formData:salesOrderCUType, me:User | null):salesOrderCUType => {
+  const jsonData = {
+    ...formData,
+    hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
+    orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+    orderName: formData.orderName,
+    orderRepDt: new Date(),
+    empId: me?.id ?? "1",
+  } as salesOrderCUType;
+
+  return jsonData;
+}
+
 // 영업 - 고객발주 내 신규 발주 값 변환
 export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrderProcuctCUType[], me:User | null):salesOrderCUType => {
   const jsonData = {

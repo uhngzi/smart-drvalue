@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 
 import UploadIcon from '@/assets/svg/icons/upload.svg';
 import Klip from '@/assets/svg/icons/klip.svg';
@@ -21,6 +21,8 @@ interface Props {
 
   disabled?: boolean;
   mult?: boolean;
+  divRef?: RefObject<HTMLDivElement | null>;
+  changeHeight?: {width:number, height:number} | null;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -51,6 +53,8 @@ const AntdDraggerSmall: React.FC<Props> = ({
 
   disabled = false,
   mult = false,
+  divRef,
+  changeHeight,
 }) => {
   const UploadProp: UploadProps = {
     name: 'files',
@@ -87,8 +91,63 @@ const AntdDraggerSmall: React.FC<Props> = ({
     );
   };
 
+  const [height, setHeight] = useState<number>(0);
+  useEffect(()=>{
+    if(divRef?.current?.clientHeight) {
+      const divHeight = Number(divRef?.current?.clientHeight) - 444;
+      if(divHeight > 0) setHeight(divHeight);
+      else              setHeight(76);
+    }
+  }, [changeHeight])
+
   return (
     <>
+    <div
+      className="flex flex-col mt-20 overflow-y-auto"
+      style={{ height: fileList && fileList.length > 0 && divRef?.current?.clientHeight ? height : "auto" }}
+    >
+      { fileList && fileList?.map((file, idx) => (
+        <div className="h-center" key={idx}>
+          <p className="w-16 h-16 mr-8"><Klip /></p>
+          {/* 파일 이름/형식/사이즈 */}
+          <p 
+            className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
+            onClick={() => downloadFileByObjectName(fileIdList[idx])}
+          >
+            {sliceByDelimiter(file.name || '', '.', 'front')}.
+            {sliceByDelimiter(file.name || '', '.', 'back')}
+            {/* {Math.round(byteToKB(file.size || 0))}KB] */}
+          </p>
+
+          {/* 삭제 버튼 */}
+          {!disabled && (
+            <button
+              className="h-center cursor-pointer gap-2"
+              onClick={() => handleDeleteFile(idx)}
+            >
+              <p className="text-14 text-[#888888] w-16 h-16">
+                <Del />
+              </p>
+            </button>
+          )}
+
+          {/* 다운로드 버튼 */}
+          {/* <button
+            className="h-center cursor-pointer gap-2"
+            onClick={() => downloadFileByObjectName(fileIdList[idx])}
+          >
+            <p className="text-14 text-[#444444]">다운로드</p>
+            <Download />
+          </button> */}
+
+          {/* 바로보기 버튼 */}
+          {/* <button className="h-center cursor-pointer gap-2">
+            <p className="text-14 text-[#444444]">바로보기</p>
+            <OpenNewWindow color={'#444444'} strokeWidth={1} />
+          </button> */}
+        </div>
+      ))}
+    </div>
       <CustomDragger 
         {...UploadProp} 
         className="bg-white" 
@@ -100,7 +159,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
         }}
         action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}
       >
-        <div className={`h-40 flex-col v-h-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+        <div className={`h-40 flex-col v-h-center bg-point1 text-white ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
           <div className="h-center gap-5">
             <p className="w-24 h-24 v-h-center">
               <UploadIcon />
@@ -109,49 +168,6 @@ const AntdDraggerSmall: React.FC<Props> = ({
           </div>
         </div>
       </CustomDragger>
-      <div className="flex flex-col mt-20 min-h-80 max-h-[100px] overflow-y-auto">
-        {fileList?.map((file, idx) => (
-          <div className="h-center" key={idx}>
-            <p className="w-16 h-16 mr-8"><Klip /></p>
-            {/* 파일 이름/형식/사이즈 */}
-            <p 
-              className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
-              onClick={() => downloadFileByObjectName(fileIdList[idx])}
-            >
-              {sliceByDelimiter(file.name || '', '.', 'front')}.
-              {sliceByDelimiter(file.name || '', '.', 'back')}
-              {/* {Math.round(byteToKB(file.size || 0))}KB] */}
-            </p>
-
-            {/* 삭제 버튼 */}
-            {!disabled && (
-              <button
-                className="h-center cursor-pointer gap-2"
-                onClick={() => handleDeleteFile(idx)}
-              >
-                <p className="text-14 text-[#888888] w-16 h-16">
-                  <Del />
-                </p>
-              </button>
-            )}
-
-            {/* 다운로드 버튼 */}
-            {/* <button
-              className="h-center cursor-pointer gap-2"
-              onClick={() => downloadFileByObjectName(fileIdList[idx])}
-            >
-              <p className="text-14 text-[#444444]">다운로드</p>
-              <Download />
-            </button> */}
-
-            {/* 바로보기 버튼 */}
-            {/* <button className="h-center cursor-pointer gap-2">
-              <p className="text-14 text-[#444444]">바로보기</p>
-              <OpenNewWindow color={'#444444'} strokeWidth={1} />
-            </button> */}
-          </div>
-        ))}
-      </div>
     </>
   );
 };
