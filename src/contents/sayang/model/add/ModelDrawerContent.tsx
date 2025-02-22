@@ -99,19 +99,17 @@ const ModelDrawerContent: React.FC<Props> = ({
             <colgroup>
               <col style={{width:'auto'}}/>
               <col style={{width:'auto'}}/>
-              <col style={{width:'7%'}}/>
-              <col style={{width:'10%'}}/>
-              <col style={{width:'10%'}}/>
               <col style={{width:'17%'}}/>
+              <col style={{width:'10%'}}/>
+              <col style={{width:'20%'}}/>
             </colgroup>
             <thead>
               <tr>
                 <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>발주 모델명</th>
                 <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>관리번호</th>
-                <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>층</th>
-                <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>두께</th>
-                <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>수량</th>
                 <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>납기일</th>
+                <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>수량</th>
+                <th className="font-normal pb-8" style={{borderBottom: '1px solid #0000000F'}}>수주금액</th>
               </tr>
             </thead>
             <tbody>
@@ -119,10 +117,9 @@ const ModelDrawerContent: React.FC<Props> = ({
                 <tr key={idx}>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderTit}</td>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.prtOrderNo}</td>
-                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{JSON.parse(m.currPrdInfo)?.layer}</td>
-                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{JSON.parse(m.currPrdInfo)?.thic}</td>
-                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderPrdCnt}</td>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderPrdDueDt ? dayjs(m.orderPrdDueDt).format('YYYY-MM-DD') : null}</td>
+                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{Number(m.orderPrdCnt).toLocaleString()}</td>
+                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{Number(m.orderPrdPrice).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

@@ -50,15 +50,33 @@ export const salesUserOrderClmn = (
   },
   {
     title: '발주명',
-    width: 360,
+    minWidth: 150,
     dataIndex: 'orderNm',
     key: 'orderNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
+    render: (value:string, record:salesOrderRType) => (
+      <div
+        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1"
+        onClick={()=> {
+          if(!record.isDiscard && (record.finalGlbStatus === FinalGlbStatus.REGISTERING || record.finalGlbStatus === FinalGlbStatus.WAITING)) {
+            // 완료 및 폐기가 아닐 경우에는 페이지 이동
+            router.push(`/sales/order/${record.id}`);
+          } else {
+            // 완료 및 폐기 또는 unknown일 경우에는 드로워 세팅
+            setOrderId(record.id);
+            setOrderDrawer(true);
+          }  
+        }}
+      >
+        {value}
+      </div>
+    )
   },
   {
     title: '대기 모델 수',
-    width: 90,
+    width: 100,
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',
@@ -114,27 +132,32 @@ export const salesUserOrderClmn = (
   },
   {
     title: '발주접수일',
-    width: 150,
+    width: 130,
     dataIndex: 'orderRepDt',
     align: 'center',
     key: 'orderRepDt',
   },
   {
     title: '발주일',
-    width: 150,
+    width: 130,
     dataIndex: 'orderDt',
     align: 'center',
     key: 'orderDt',
   },
   {
     title: '모델등록',
-    width: 150,
+    width: 90,
     dataIndex: 'finalGlbStatus',
     key: 'finalGlbStatus',
     align: 'center',
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
-        { value === FinalGlbStatus.WAITING ? (
+        { record.isDiscard ? (
+           <FullChip label="폐기" click={()=>{
+            setOrderId(record.id);
+            setOrderDrawer(true);
+          }}/>
+        ): value === FinalGlbStatus.WAITING ? (
           <FullChip label="대기" state="yellow" 
             click={()=>{
               router.push(`/sales/order/${record.id}`);
@@ -155,7 +178,10 @@ export const salesUserOrderClmn = (
           />
          )
         : (
-           <FullChip label="폐기" click={()=>{}}/>
+           <FullChip label="폐기" click={()=>{
+            setOrderId(record.id);
+            setOrderDrawer(true);
+          }}/>
         )}
       </div>
     )
