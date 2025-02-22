@@ -13,22 +13,9 @@ interface Props {
     current: number;
     size: number;
   }
-  handleMenuClick?: () => void;
-  onChange?: (page: number) => void;
+  handleMenuClick?: (key:number) => void;
+  onChange?: (page: number, size: number) => void;
 }
-
-const items: MenuProps['items'] = [
-  {
-    label: <span className="text-12">Excel</span>,
-    key: '1',
-    icon: <Image src={Excel} alt="Excel" width={16} height={16} />,
-  },
-  {
-    label: <span className="text-12">Print</span>,
-    key: '2',
-    icon: <Image src={Print} alt="Print" width={16} height={16} />,
-  },
-]
 
 export const ListPagination: React.FC<Props> = ({
   totalData,
@@ -36,10 +23,28 @@ export const ListPagination: React.FC<Props> = ({
   handleMenuClick,
   onChange,
 }) => {
-  const menuProps = {
-    items,
-    onClick: handleMenuClick,
-  };
+  const items: MenuProps['items'] = [
+    {
+      label: <span className="text-12">엑셀 다운로드</span>,
+      key: 1,
+      icon: <Image src={Excel} alt="Excel" width={16} height={16} />,
+      onClick: ()=>{
+        handleMenuClick?.(1)
+      }
+    },
+    {
+      label: <span className="text-12">프린트</span>,
+      key: 2,
+      icon: <Image src={Print} alt="Print" width={16} height={16} />,
+      onClick: ()=>{handleMenuClick?.(2)}
+    },
+
+  ]
+  // 100개 이상일 경우 "전체 보기" 옵션 추가 (totalData와 비교)
+  const pageSizeOptions = ["10", "20", "50", "100"];
+  if (totalData > 100) {
+    pageSizeOptions.push(totalData.toString()); // "전체 보기" 옵션 추가
+  }
 
   return (
     <div className="flex w-full h-50 gap-20 justify-end items-center">
@@ -49,13 +54,21 @@ export const ListPagination: React.FC<Props> = ({
         defaultCurrent={1}
         current={pagination.current}
         total={totalData}
-        onChange={(page: number) => {
+        onChange={(page: number, size: number) => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          onChange?.(page);
+          onChange?.(page, size);
         }}
         pageSize={pagination.size}
+        showSizeChanger={true}
+        pageSizeOptions={pageSizeOptions}
+        locale={{ items_per_page: "건씩 보기" }}
       />
-      <Dropdown menu={menuProps} trigger={['click']} placement="bottomCenter" getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}>
+      <Dropdown
+        menu={{ items }}
+        trigger={['click']}
+        placement="bottomCenter"
+        getPopupContainer={() => document.body}
+      >
         <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
       </Dropdown>
     </div>
