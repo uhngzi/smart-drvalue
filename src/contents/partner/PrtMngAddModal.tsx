@@ -9,6 +9,7 @@ import { Button } from "antd";
 import { postAPI } from "@/api/post";
 import { partnerMngCUType, partnerMngRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
+import { patchAPI } from "@/api/patch";
 
 interface Props {
   open: boolean;
@@ -24,6 +25,7 @@ interface Props {
   partnerId: string;
   submitEndFn?: () => void;
   prtMngSuccessFn?: (entity:partnerMngRType) => void;
+  edit?: boolean;
 }
 
 const PrtMngAddModal:React.FC<Props> = ({
@@ -34,6 +36,7 @@ const PrtMngAddModal:React.FC<Props> = ({
   partnerId,
   submitEndFn,
   prtMngSuccessFn,
+  edit,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -71,6 +74,40 @@ const PrtMngAddModal:React.FC<Props> = ({
     }
   }
 
+  // 담당자 수정 시 실행 함수
+  const handleEditPrtMngData = async () => {
+    try {
+      const result = await patchAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner-mng',
+        jsx: 'jsxcrud'},
+        newPartnerMngData?.id ?? "",
+        { 
+          partner: { id: partnerId },
+          prtMngNm: newPartnerMngData?.prtMngNm,
+          prtMngDeptNm: newPartnerMngData?.prtMngDeptNm,
+          prtMngTeamNm: newPartnerMngData?.prtMngTeamNm,
+          prtMngTel: newPartnerMngData?.prtMngTel,
+          prtMngMobile: newPartnerMngData?.prtMngMobile,
+          prtMngFax: newPartnerMngData?.prtMngFax,
+          prtMngEmail: newPartnerMngData?.prtMngEmail, } as partnerMngCUType
+      );
+      
+      submitEndFn?.();
+      if(result.resultCode === "OK_0000") {
+        prtMngSuccessFn?.({} as partnerMngRType);
+
+        showToast("담당자가 성공적으로 수정되었습니다.", "success");
+      } else {
+        const msg = result?.response?.data?.message;
+        showToast(msg, "error");
+      }
+    } catch(e) {
+      console.log('catch error : ', e);
+    }
+  }
+
   return (
     <>
       <AntdEditModal
@@ -78,10 +115,14 @@ const PrtMngAddModal:React.FC<Props> = ({
         setOpen={setOpen}
         width={760}
         contents={<>
-          <CardInputList title="담당자 추가" 
+          <CardInputList title={edit ? "담당자 수정" : "담당자 추가"}
             titleIcon={<Bag/>}
             btnLabel={
-              <Button type="primary" size="large" onClick={handleSubmitPrtMngData}
+              <Button type="primary" size="large"
+                onClick={()=>{
+                  if(edit)  handleEditPrtMngData();
+                  else      handleSubmitPrtMngData();
+                }}
                 className="w-full flex h-center gap-8 !h-[50px]" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
@@ -97,7 +138,9 @@ const PrtMngAddModal:React.FC<Props> = ({
               {value:newPartnerMngData?.prtMngFax, name:'prtMngFax',label:'팩스번호', type:'input', widthType:'half'},
               {value:newPartnerMngData?.prtMngEmail, name:'prtMngEmail',label:'이메일', type:'input', widthType:'half'},
             ]}
-            handleDataChange={(e, name, type)=>handlePrtDataChange('mng', e, name, type)}
+            handleDataChange={(e, name, type)=>{
+              handlePrtDataChange('mng', e, name, type);
+            }}
           />
         </>}
       />

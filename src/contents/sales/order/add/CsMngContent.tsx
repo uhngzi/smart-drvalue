@@ -14,9 +14,12 @@ import Call from "@/assets/svg/icons/s_call.svg";
 import Mobile from "@/assets/svg/icons/mobile.svg";
 import Mail from "@/assets/svg/icons/mail.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import Bag from "@/assets/svg/icons/bag.svg";
 
 import { inputTel } from "@/utils/formatPhoneNumber";
 import { inputFax } from "@/utils/formatFax";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import { MOCK } from "@/utils/Mock";
 
 interface Props {
   csMngList: partnerMngRType[];
@@ -34,6 +37,7 @@ const CsMngContent:React.FC<Props> = ({
   showToast,
 }) => {
   // 담당자 추가 클릭 시 거래처 담당자 설정
+  const [ edit, setEdit ] = useState<boolean>(false);
   const [ newPrtMngOpen, setNewPrtMngOpen ] = useState<boolean>(false);
   const [ newPartnerMngData, setNewPartnerMngData ] = useState<partnerMngRType | null>(null);
 
@@ -110,7 +114,16 @@ const CsMngContent:React.FC<Props> = ({
           <LabelIcon label={mng.prtMngMobile} icon={<Mail />}/>
         </div>
         <div className="w-40 h-40 v-h-center">
-          <p className="w-24 h-24"><Edit /></p>
+          <p
+            className="w-24 h-24 cursor-pointer"
+            onClick={()=>{
+              setEdit(true);
+              setNewPartnerMngData({...mng});
+              setNewPrtMngOpen(true);
+            }}
+          >
+            <Edit />
+          </p>
         </div>
       </div>
     ))}
@@ -126,9 +139,26 @@ const CsMngContent:React.FC<Props> = ({
         setNewPartnerMngData(null);
       }}
       prtMngSuccessFn={(entity)=>{
-        setCsMngList([...csMngList, {...entity} ]);
-        setFormData({ ...formData, partnerManagerId: entity.id });
+        if(!edit) {
+          setCsMngList([...csMngList, {...entity} ]);
+          setFormData({ ...formData, partnerManagerId: entity.id });
+        } else {
+          const updateData = csMngList;
+          const index = updateData.findIndex(f=> f.id === newPartnerMngData?.id);
+          if(index > -1) {
+            updateData[index] = { ...updateData[index], ...newPartnerMngData };
+    
+            const newArray = [
+              ...updateData.slice(0, index),
+              updateData[index],
+              ...updateData.slice(index + 1)
+            ];
+            setCsMngList(newArray);
+          }
+        }
+        setEdit(false);
       }}
+      edit={edit}
     />
     </div>
   )

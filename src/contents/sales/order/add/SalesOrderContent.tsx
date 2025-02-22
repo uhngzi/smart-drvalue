@@ -1,3 +1,4 @@
+import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import { DividerH, DividerV } from "@/components/Divider/Divider";
 import AntdInput from "@/components/Input/AntdInput";
@@ -9,6 +10,7 @@ import { partnerRType } from "@/data/type/base/partner";
 import { selectType } from "@/data/type/componentStyles";
 import { HotGrade } from "@/data/type/enum";
 import { salesOrderCUType, salesOrderProcuctCUType } from "@/data/type/sales/order";
+import { AutoComplete } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
 import { SetStateAction, useEffect, useRef, useState } from "react";
@@ -24,6 +26,7 @@ interface Props {
   setViewKey: React.Dispatch<SetStateAction<number | null>>;
   setPriceFlag: React.Dispatch<SetStateAction<boolean>>;
   newProducts: salesOrderProcuctCUType[];
+  setAddPartner: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const SalesOrderContent: React.FC<Props> = ({
@@ -37,14 +40,22 @@ const SalesOrderContent: React.FC<Props> = ({
   setViewKey,
   setPriceFlag,
   newProducts,
+  setAddPartner,
 }) => {
   // 첨부파일 변경 시 FORM에 세팅
   useEffect(()=>{
     setFormData({ ...formData, files:fileIdList });
   }, [fileIdList]);
 
+  // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
+  // 전체 div의 크기를 가져오기 위한 변수
   const ref = useRef<HTMLDivElement>(null);
+  // 높이 변경을 감지하기 위한 변수
   const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
+
+  useEffect(()=>{
+    console.log(formData.partnerId);
+  }, [formData.partnerId])
 
   return (
     <div className="w-full min-h-[650px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
@@ -57,14 +68,13 @@ const SalesOrderContent: React.FC<Props> = ({
         <div className="flex flex-col w-[222px] h-full gap-24">
           <div className="flex flex-col gap-8">
             <LabelThin label="고객"/>
-            <AntdSelect 
-              options={csList}
+            <CustomAutoComplete
+              option={csList}
               value={formData.partnerId}
-              onChange={(e)=>{
-                const value = e+'';
-                setFormData({...formData, partnerId:value});
+              onChange={(value) => {
+                setFormData({...formData, partnerId: value});
               }}
-              styles={{ht:'36px'}}
+              handleAddData={()=>setAddPartner(true)}
             />
           </div>
           <div className="flex flex-col gap-8">

@@ -14,8 +14,11 @@ import SalesModelTable from "@/components/ModelTable/SalesModelTable";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelList from "@/contents/base/model/ModelList";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 
 import {
+  newDataPartnerType,
+  partnerCUType,
   partnerMngRType,
   partnerRType
 } from "@/data/type/base/partner";
@@ -35,6 +38,7 @@ import {
 } from "@/data/type/sales/order";
 import { changeOrderEdit, changeOrderMainNew, changeOrderNew } from "@/data/type/sales/changeData";
 import { useUser } from "@/data/context/UserContext";
+import { useModels } from "@/data/context/ModelContext";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -42,10 +46,11 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Edit from '@/assets/svg/icons/memo.svg';
+import Bag from "@/assets/svg/icons/bag.svg";
 
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
-import { useModels } from "@/data/context/ModelContext";
+import { MOCK } from "@/utils/Mock";
 
 import SalesOrderContent from "./SalesOrderContent";
 import CsMngContent from "./CsMngContent";
@@ -82,7 +87,7 @@ const OrderAddLayout = () => {
   }, [id]);
   
   useEffect(()=>{
-    // 수정일 경우에만 실행...
+    // 수정일 경우에만 실행
     if(orderId && !(id+"").includes("new")) {
       fetchDetail();
     }
@@ -92,7 +97,7 @@ const OrderAddLayout = () => {
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
   const [ csMngList, setCsMngList ] = useState<Array<partnerMngRType>>([]);
-  const { data:cs } = useQuery({
+  const { data:cs, refetch:csRefetch } = useQuery({
     queryKey: ["getClientCs"],
     queryFn: () => getPrtCsAPI(),
   });
@@ -124,6 +129,36 @@ const OrderAddLayout = () => {
     }
   }, [formData.partnerId])
   // ----------- 거래처 데이터 세팅 ----------- 끝
+  
+  // ----------- 거래처 데이터 등록 ----------- 시작
+  const [addPartner, setAddPartner] = useState<boolean>(false);
+  const [newPartner, setNewPartner] = useState<partnerCUType>(newDataPartnerType);
+  const handleSubmitNewData = async (data: partnerCUType) => {
+    try {
+      const result = await postAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'biz-partner',
+        jsx: 'jsxcrud'},
+        
+        { ...data, prtTypeEm: 'cs'}
+      );
+      console.log(result);
+
+      if(result.resultCode === 'OK_0000') {
+        csRefetch();
+        setAddPartner(false);
+        showToast("거래처 등록 완료", "success");
+        const entity = (result.data?.entity) as partnerRType;
+        setFormData({ ...formData, partnerId: entity.id });
+      } else {
+        console.log(result);
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ----------- 거래처 데이터 등록 ----------- 끝
 
   // -------- 수정 시 디테일 데이터 세팅 -------- 시작
   const fetchDetail = async (modelId?: string) => {
@@ -528,6 +563,7 @@ const OrderAddLayout = () => {
                 setViewKey={setViewKey}
                 setPriceFlag={setPriceFlag}
                 newProducts={newProducts}
+                setAddPartner={setAddPartner}
               />
             </div>
 
@@ -710,6 +746,21 @@ const OrderAddLayout = () => {
             />
           </div>
         </AntdDrawer>
+
+        {/* 거래처 등록 */}
+        <BaseInfoCUDModal 
+          title={{name: "거래처 등록", icon: <Bag/>}}
+          open={addPartner} 
+          setOpen={setAddPartner} 
+          onClose={() => {
+            setAddPartner(false);
+            setNewPartner(newDataPartnerType);
+          }}
+          items={MOCK.clientItems.CUDPopItems} 
+          data={newPartner}
+          onSubmit={handleSubmitNewData}
+          onDelete={()=>{}}
+        />
 
         {/* 삭제 시 확인 모달창 */}
         <AntdAlertModal
