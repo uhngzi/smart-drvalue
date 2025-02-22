@@ -16,6 +16,7 @@ interface Props {
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
   disabled?:boolean,
   onClick?: MouseEventHandler<HTMLInputElement>;
+  tabIndex?: number;
 }
 
 const AntdInput = forwardRef<InputRef, Props>((
@@ -32,6 +33,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     onKeyDown,
     disabled,
     onClick,
+    tabIndex,
   },
   ref
 ) => {
@@ -50,8 +52,6 @@ const AntdInput = forwardRef<InputRef, Props>((
       const sanitizedValue = value
         .replace(/,/g, "")
         .replace(/[^0-9.]/g, "");
-      
-        console.log(sanitizedValue.split(".").length);
       
       // 마지막에 소수점이 올 때 숫자로 변환하지 않고 소수점 입력도 하기 위함 :: ex) 1. 일 경우 허용
       if(sanitizedValue[sanitizedValue.length-1] === "."
@@ -115,6 +115,7 @@ const AntdInput = forwardRef<InputRef, Props>((
         ref={ref}
         disabled={disabled}
         onClick={onClick}
+        tabIndex={tabIndex}
       />
     </AntdInputStyled>
   );

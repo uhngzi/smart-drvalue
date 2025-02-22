@@ -14,6 +14,7 @@ interface Props {
   className?: string;
   styles?: componentsStylesType;
   placeholder?:string;
+  tabIndex?: number;
 }
 
 const AntdSelectRound : React.FC<Props> = ({ 
@@ -26,6 +27,7 @@ const AntdSelectRound : React.FC<Props> = ({
   className,
   styles,
   placeholder,
+  tabIndex,
 }) => {
 
   return (
@@ -46,6 +48,7 @@ const AntdSelectRound : React.FC<Props> = ({
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         placeholder={placeholder}
         dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        tabIndex={tabIndex}
       />
     </AndtSelectStyled>
   )

@@ -10,6 +10,7 @@ interface Props {
   styles?: componentsStylesType;
   placeholder?: string;
   type?: "string" | "number";
+  tabIndex?: number;
 }
 
 const AntdInputFillRound: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const AntdInputFillRound: React.FC<Props> = ({
   styles,
   placeholder,
   type,
+  tabIndex,
 }) => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let { value } = e.target;
@@ -95,6 +97,7 @@ const AntdInputFillRound: React.FC<Props> = ({
         className={`${className}`}
         placeholder={placeholder}
         // type={type}
+        tabIndex={tabIndex}
       />
     </AntdInputStyled>
   )

@@ -15,6 +15,7 @@ interface Props {
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
   readonly?: boolean,
+  tabIndex?: number;
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -28,6 +29,7 @@ const AntdSelect : React.FC<Props> = ({
   onChange,
   onKeyDown,
   readonly,
+  tabIndex,
 }) => {
 
   return (
@@ -50,6 +52,7 @@ const AntdSelect : React.FC<Props> = ({
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         onKeyDown={onKeyDown}
         dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        tabIndex={tabIndex}
       />
     </AndtSelectStyled>
   )

@@ -11,6 +11,7 @@ interface Props {
   loading?: boolean;
   className?: string;
   styles?: componentsStylesType;
+  tabIndex?: number;
 }
 
 const AntdSelectFillRound : React.FC<Props> = ({ 
@@ -20,6 +21,7 @@ const AntdSelectFillRound : React.FC<Props> = ({
   loading, 
   className,
   styles,
+  tabIndex,
 }) => {
 
   return (
@@ -38,6 +40,7 @@ const AntdSelectFillRound : React.FC<Props> = ({
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        tabIndex={tabIndex}
       />
     </AndtSelectStyled>
   )
