@@ -4,7 +4,7 @@ import { RefObject } from "react";
 
 import { selectType } from "@/data/type/componentStyles";
 import { orderModelType } from "@/data/type/sayang/models";
-import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
+import { ModelStatus, SalesOrderStatus, SpecStatus } from "@/data/type/enum";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 
 import FullChip from "../Chip/FullChip";
@@ -158,13 +158,23 @@ const ModelHead:React.FC<Props> = ({
       </div>
 
       <div className="flex-1 flex jutify-end">
-      { model.completed && <>
-        <FullChip label="확정" state="mint" className="!mr-20 !w-80 !h-30"/>
+      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING &&
+        <FullChip label="대기중" state="yellow" className="!mr-20 !w-80 !h-30"/>
+      }
+      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING &&
+        <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/>
+      }
+      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&<>
+        <FullChip label="확정" state="purple" className="!mr-20 !w-80 !h-30"/>
         <p className="h-center">저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}</p>
       </>}
-      { !model.completed && (model as orderModelType).temp && 
-        <FullChip label="임시저장" state="yellow" className="!mr-20 !w-80 !h-30"/>
+      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED &&
+        <FullChip label="폐기" className="!mr-20 !w-80 !h-30"/>
       }
+      { !model.completed && (model as orderModelType).temp && <>
+        <FullChip label="임시저장 완료" className="!mr-20 !w-100 !h-30"/>
+        <p className="h-center">임시저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")}</p>
+      </>}
       </div>
     </div>
   )
