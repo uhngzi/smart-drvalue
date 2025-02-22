@@ -47,7 +47,7 @@ export const specStatusClmn = (
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
-    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
+    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
         className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
@@ -408,10 +408,10 @@ export const sayangSampleWaitClmn = (
   {
     title: '업체명/코드',
     width: 120,
-    dataIndex: 'prtNm',
-    key: 'prtNm',
+    dataIndex: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
+    key: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
     align: 'center',
-    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
+    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
         className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
@@ -1191,10 +1191,10 @@ export const sayangModelWaitClmn = (
   {
     title: '업체명/코드',
     width: 150,
-    dataIndex: 'prtInfo.prtNm',
-    key: 'prtInfo.prtNm',
+    dataIndex: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
+    key: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
-    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
+    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
         className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"

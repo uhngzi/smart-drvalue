@@ -32,10 +32,10 @@ export const salesUserOrderClmn = (
   {
     title: '업체명/코드',
     width: 150,
-    dataIndex: 'prtInfo.prt.prtNm',
-    key: 'prtNm',
+    dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
-    tooltip: "업체명/코드을 클릭하면 고객정보를 볼 수 있어요",
+    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
         className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
@@ -80,9 +80,6 @@ export const salesUserOrderClmn = (
     dataIndex: 'modelCnt',
     key: 'modelCnt',
     align: 'center',
-    render: (_:any, record:salesOrderRType) => {
-      return record?.products?.filter(f=>f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED).length;
-    }
   },
   {
     title: '업체 담당',
