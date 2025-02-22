@@ -101,7 +101,7 @@ const AntdInputFillRound: React.FC<Props> = ({
           && value?.toString()[value?.toString().length - 1] !== "."
           ?
           // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
-          value.toString().slice(-2) === ".0" ? value :
+          value?.toString().slice(-2) === ".0" ? value :
           Number(value).toLocaleString()
             : value
         }
