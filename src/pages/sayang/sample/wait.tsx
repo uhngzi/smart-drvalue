@@ -136,14 +136,29 @@ const SayangSampleListPage: React.FC & {
   }>();
 
   useEffect(()=>{
-    if(id)
+    if(id) {
       setSelectedValue({...selectedValue, specId: id+"", text: text+"과(와) 조합하여 등록"});
+    }
   }, [id]);
 
   const [record, setRecord] = useState<modelsMatchRType>();
     // 리스트 내 사양 등록 클릭 시 팝업 발생
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
+
+    // 조합일 경우
+    if(id) {
+      const sd = ingData.find(f=>f.id === id);
+      console.log(sd, sd?.specModels?.[0]?.layerEm, record.model?.layerEm, sd?.specModels?.[0]?.layerEm !== record.model?.layerEm);
+      // 모델의 층이 다르면 선택할 수 없게 변경
+      if(sd?.specModels?.[0]?.layerEm !== record.model?.layerEm) {
+        setSelectedValue({matchId:matchId, modelId:modelId, statusId:statusId, specId: "", text: ""});
+      } else {
+        setSelectedValue({matchId:matchId, modelId:modelId, statusId:statusId, specId: id+"", text: text+"과(와) 조합하여 등록"});
+      }
+      setSayangRegOpen(true);
+      return;
+    }
     
     if(ingData.filter(f=>f.specModels?.[0].layerEm === record?.model?.layerEm).length > 0) {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});

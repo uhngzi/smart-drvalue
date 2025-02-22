@@ -20,6 +20,7 @@ import { specType } from "@/data/type/sayang/sample";
 import Star from "@/assets/svg/icons/star.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import AntdInput from "@/components/Input/AntdInput";
 
 interface Props {
   open: boolean;
@@ -224,7 +225,7 @@ const ProcessSelection: React.FC<Props> = ({
       let defaultKey = [] as string[];
       detailData.specPrdGroupPrcs?.map((item) => {
         if(item.process) {
-          defaultPrc.push(item.process);
+          defaultPrc.push({ ...item.process, remark: item.prcWkRemark });
           defaultKey.push(item.process.id);
         }
       });
@@ -235,7 +236,7 @@ const ProcessSelection: React.FC<Props> = ({
 
   return (
     <div className="w-full h-full h-center gap-10">
-      <div className="w-1/3 h-[700px] bg-white rounded-14 p-30 flex flex-col gap-20 border-[0.3px] border-line">
+      <div className="w-1/3 h-[650px] bg-white rounded-14 p-30 flex flex-col gap-20 border-[0.3px] border-line">
         <TitleModalSub title="선택 제품군의 공정 지정" />
         <div className="w-full flex flex-col gap-10">
           <div className="w-full h-32 h-center gap-10">
@@ -335,9 +336,9 @@ const ProcessSelection: React.FC<Props> = ({
           </TreeStyled>
         </div>
       </div>
-      <div className="w-2/3 h-[700px] bg-white rounded-14 p-30 gap-20 border-[0.3px] border-line">
+      <div className="w-2/3 h-[650px] bg-white rounded-14 p-30 gap-20 border-[0.3px] border-line">
         <TitleModalSub title="선택된 공정별 작업 방법" />
-        <div className="w-full h-[550px] flex flex-col gap-10 overflow-y-auto">
+        <div className="w-full h-[calc(100%-80px)] flex flex-col gap-10 overflow-y-auto">
           {
             dataProcessGrp.map((group:processGroupRType) => (
               group.processes?.map((process:processRType) => (
@@ -350,9 +351,23 @@ const ProcessSelection: React.FC<Props> = ({
                     </div>
                     <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{letterSpacing:-0.05}}>
                       <div className="flex-1 h-full h-center whitespace-pre-wrap">
-                        {
-                          selectPrc?.find(f=>f.id.includes(process.id))?.remark
-                        }
+                        <AntdInput
+                          value={selectPrc?.find(f=>f.id.includes(process.id))?.remark}
+                          onChange={(e)=>{
+                            const updateData = selectPrc;
+                            const index = updateData.findIndex(f=>f.id === process.id)
+                            if(index > -1) {
+                              updateData[index] = { ...updateData[index], remark: e.target.value };
+                      
+                              const newArray = [
+                                ...updateData.slice(0, index),
+                                updateData[index],
+                                ...updateData.slice(index + 1)
+                              ];
+                              setSelectPrc(newArray);
+                            }
+                          }}
+                        />
                       </div>
                       <div
                         className="w-32 h-32 rounded-50 bg-back v-h-center cursor-pointer"
@@ -370,7 +385,7 @@ const ProcessSelection: React.FC<Props> = ({
             ))
           }
         </div>
-        <div className="v-h-center mt-20">
+        <div className="v-h-center">
           <Button
             className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
             onClick={()=>{
@@ -407,7 +422,7 @@ const ProcessSelection: React.FC<Props> = ({
 
 const TreeStyled = styled.div`
   width: 100%;
-  height: 550px;
+  height: 480px;
   font-weight: 500;
   overflow-y: auto;
 

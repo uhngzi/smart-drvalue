@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { Button, Skeleton, Spin } from "antd";
+import { Button, Skeleton, Spin, Tooltip } from "antd";
 import { useRouter } from "next/router";
-import { DoubleRightOutlined } from "@ant-design/icons";
+import { CheckOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
@@ -393,13 +393,16 @@ const SayangSampleAddPage: React.FC & {
                 handleSumbitTemp(true);
               }}
             >모델추가</Button>
+            <Tooltip title="공정을 지정하세요">
             <Button
-              className="!border-[#444444]"
-              icon={<Prc className="w-16 h-16"/>}
+              className="!border-[#444444] !w-[107px]"
+              icon={ detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0 ? <CheckOutlined style={{color:"#4880FF"}}/> : <Prc className="w-16 h-16"/>}
               onClick={()=>{
                 setOpen(true);
               }}
+              style={detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0 ? {color:"#4880FF"}:{}}
             >공정지정</Button>
+            </Tooltip>
           </div>
         </div>
         <div>
