@@ -199,7 +199,7 @@ const WkProcessVendorListPage: React.FC & {
       if(key) {
         setNewData({...newData, [name]: { 
           ...((newData as any)[name] || {}), // 기존 객체 값 유지
-          [key]: e.toString(), // 새로운 key 값 업데이트
+          [key]: e?.toString(), // 새로운 key 값 업데이트
         }});
       } else {
         setNewData({...newData, [name]: e});

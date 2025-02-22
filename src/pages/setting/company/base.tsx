@@ -115,7 +115,7 @@ const CompanyBaseListPage: React.FC & {
       if(key) {
         setData({...data, [name]: { 
           ...((data as any)[name] || {}), // 기존 객체 값 유지
-          [key]: e.toString(), // 새로운 key 값 업데이트
+          [key]: e?.toString(), // 새로운 key 값 업데이트
         }});
       } else {
         setData({...data, [name]: e});

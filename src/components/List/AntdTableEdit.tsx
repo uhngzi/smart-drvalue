@@ -200,7 +200,7 @@ const AntdTableEdit: React.FC<Props> = ({
   useEffect(()=>{
     const updatedDataSource = (data ?? []).map((item: any, index: number) => ({
       ...item,
-      key: item.key ?? index.toString(),
+      key: item.key ?? index?.toString(),
     }));
 
     setDataSource(updatedDataSource);

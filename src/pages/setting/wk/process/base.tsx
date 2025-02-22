@@ -106,7 +106,7 @@ const WkProcessListPage: React.FC & {
       setNewData({...newData, [name]: value});
     } else if(type === "select") {
       if(key === 'prcGrpNm') {
-        setNewData({...newData, processGroup: {id: e.toString()}});
+        setNewData({...newData, processGroup: {id: e?.toString()}});
       } else {
         setNewData({...newData, [name]: e});
       }

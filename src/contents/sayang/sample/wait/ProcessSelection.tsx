@@ -285,7 +285,7 @@ const ProcessSelection: React.FC<Props> = ({
                   return;
                 }
                 
-                const id = info.node.key.toString();
+                const id = info.node.key?.toString();
                 if(info.checked) {  // 체크가 안 되어 있을 경우 값 추가
                   setDataLoading(true);
                   setSelectedKeys((prev:Array<string>) => [...prev, id]);
@@ -315,7 +315,7 @@ const ProcessSelection: React.FC<Props> = ({
                 if(info.children) {
                   let addArr = selectPrc;
                   info.children.map((child:any) => {
-                    const id = child.key.toString();
+                    const id = child.key?.toString();
                     if(selectedKeys.includes(id)) {
                       // 이미 자식의 키를 가지고 있는 경우 해당 자식의 키는 체크 해제
                       // ... 근데 만약에 2개를 이미 선택했고 전체를 선택하고 싶은 경우에는.. 미정...

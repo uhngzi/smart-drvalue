@@ -55,7 +55,7 @@ const SignInPage: React.FC & {
       }
     } catch (e:any) {
       setOpen(true);
-      setMsg(e.toString());
+      setMsg(e?.toString());
       console.log(e);
     }
   };

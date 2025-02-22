@@ -117,9 +117,9 @@ const PrtDrawer: React.FC<Props> = ({
 
     // 전화번호 형식인 필드들은 자동 하이픈 처리
     if(name.toLowerCase().includes("tel") || name.toLowerCase().includes("mobile")) {
-      value = inputTel(value.toString());
+      value = inputTel(value?.toString());
     } else if (name.toLowerCase().includes("fax")) {
-      value = inputFax(value.toString());
+      value = inputFax(value?.toString());
     }
 
     if(key) {

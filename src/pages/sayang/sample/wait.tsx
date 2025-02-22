@@ -232,13 +232,13 @@ const SayangSampleListPage: React.FC & {
                         setSelectedValue({
                           ...selectedValue,
                           specId: data.id,
-                          text: data.specNo ?? (ingData.length - index).toString(),
+                          text: data.specNo ?? (ingData.length - index)?.toString(),
                         });
                       // 재선택 시 취소
                       else  setSelectedValue({matchId:selectedValue?.matchId})
                     }}
                   >
-                    {data.specNo ?? (ingData.length - index).toString()}
+                    {data.specNo ?? (ingData.length - index)?.toString()}
                   </Radio.Button>
                 ))
               }
