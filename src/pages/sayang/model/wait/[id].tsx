@@ -40,6 +40,7 @@ import { validReq } from '@/utils/valid';
 import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import SalesModelHead from '@/components/ModelTable/SalesModelHead';
+import { LabelMedium } from '@/components/Text/Label';
 
 
 const SayangModelAddPage: React.FC & {
@@ -91,7 +92,7 @@ const SayangModelAddPage: React.FC & {
       const products = (queryOrderModelData.data?.data as salesOrderDetailRType)?.products;
       const omodels = products.map((item:salesOrderProductRType, index:number) => ({
         ...item,
-        index: products.length - index,
+        index: index + 1,
         currPrdInfo: item.currPrdInfo ? JSON.parse(item.currPrdInfo ?? "") : {}
       }));
       setOrderModels(omodels);
@@ -125,7 +126,7 @@ const SayangModelAddPage: React.FC & {
 
       const arr = rdata.map((d:orderModelType, index:number) => ({
         ...d,
-        index: (queryData?.data?.data?.length ?? 0) - index,
+        index: index + 1,
         completed: d.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? true : false,
         // 고객 발주 모델 파싱
         currPrdInfo: JSON.parse(d.currPrdInfo ?? ""),
@@ -393,12 +394,13 @@ const SayangModelAddPage: React.FC & {
         {/* 테이블 */}
         <div className="w-[calc(100vw-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-20">
             <TabSmall
               items={orderTab}
               selectKey={orderModelsSelect}
               setSelectKey={setOrderModelsSelect}
             />
+            <p className="w-full text-18 font-medium">고객발주 모델</p>
             {
               orderModels
               .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
@@ -445,12 +447,13 @@ const SayangModelAddPage: React.FC & {
           </div>
           
           {/* 수주 탭 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-40">
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-20">
             <TabSmall
               items={orderTab}
               selectKey={orderModelsSelect}
               setSelectKey={setOrderModelsSelect}
             />
+            <p className="w-full text-18 font-medium">모델 등록 및 확정</p>
           { !dataLoading && data
             // 모델이 폐기 됐을 경우 필터링
             .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)

@@ -151,7 +151,7 @@ export const salesOrderModelClmn = (
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+6}
-                />내
+              />내
             </div>
           </div>
         )

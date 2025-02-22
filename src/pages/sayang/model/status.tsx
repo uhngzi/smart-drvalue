@@ -193,10 +193,9 @@ const SayangModelStatPage: React.FC & {
           setModelDetail(null);
         }}
         width={600}
-        maskClosable={false}
-        mask={false}
       >
       <div className="flex flex-col gap-15 p-20 !pr-5">
+        <div className="flex justify-end cursor-pointer" onClick={() => { setModelOpen(false); setModelDetail(null); }}><Close/></div>
         {/* <div className="v-between-h-center">
           <TabSmall
             items={[
