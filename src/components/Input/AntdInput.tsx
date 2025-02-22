@@ -1,6 +1,6 @@
 import { componentsStylesType } from "@/data/type/componentStyles";
 import { Input, InputRef } from "antd";
-import { forwardRef } from "react";
+import { forwardRef, MouseEventHandler } from "react";
 import styled from "styled-components";
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
   onPressEnter?: () => void;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
   disabled?:boolean,
+  onClick?: MouseEventHandler<HTMLInputElement>;
 }
 
 const AntdInput = forwardRef<InputRef, Props>((
@@ -30,6 +31,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     onPressEnter,
     onKeyDown,
     disabled,
+    onClick,
   },
   ref
 ) => {
@@ -112,6 +114,7 @@ const AntdInput = forwardRef<InputRef, Props>((
         readOnly={readonly}
         ref={ref}
         disabled={disabled}
+        onClick={onClick}
       />
     </AntdInputStyled>
   );
