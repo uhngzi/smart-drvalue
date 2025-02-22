@@ -140,9 +140,11 @@ const SayangSampleListPage: React.FC & {
       setSelectedValue({...selectedValue, specId: id+"", text: text+"과(와) 조합하여 등록"});
   }, [id]);
 
+  const [record, setRecord] = useState<modelsMatchRType>();
     // 리스트 내 사양 등록 클릭 시 팝업 발생
-  function sayangPopOpen(matchId:string, modelId:string, statusId:string) {
+  function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     if(ingData.length > 0) {
+      setRecord(record);
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       setSayangRegOpen(true);
     } else {
@@ -246,7 +248,9 @@ const SayangSampleListPage: React.FC & {
               value={selectedValue?.specId}
             >
               {
-                ingData.map((data:specType, index:number)=> (
+                ingData
+                .filter(f=>f.specModels?.[0].layerEm === record?.model?.layerEm)
+                .map((data:specType, index:number)=> (
                   <Radio.Button className="!rounded-20 [border-inline-start-width:1px] !w-fit"
                     key={data.id}
                     value={data.id}
