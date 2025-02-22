@@ -1,7 +1,7 @@
 import { componentsStylesType } from "@/data/type/componentStyles";
 import { ConfigProvider, DatePicker } from "antd";
 import { DownOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import styled from "styled-components";
 import koKR from "antd/locale/ko_KR";
 
@@ -21,6 +21,7 @@ interface Props {
   styles?: componentsStylesType;
   suffixIcon?: null | "down" | "cal";
   defaultValue?: any;
+  afterDate?: Date | Dayjs | null;
 }
 
 const AntdDatePicker: React.FC<Props> = ({
@@ -36,7 +37,14 @@ const AntdDatePicker: React.FC<Props> = ({
   placeholder,
   styles,
   suffixIcon,
+  afterDate,
 }) => {
+  const minDate = afterDate ? dayjs(afterDate) : null;
+  
+  const disabledDate = (current: Dayjs) => {
+    return minDate ? current.isBefore(minDate, "day") : false;
+  }
+
   const datePresetsPre = [
     { label: "1일 전", value: dayjs().add(-1, "day") },
     { label: "7일 전", value: dayjs().add(-7, "day") },
@@ -84,10 +92,12 @@ const AntdDatePicker: React.FC<Props> = ({
         status={status}
         showTime={showTime}
         disabled={disabled}
+        disabledDate={disabledDate}
         presets={presets === "pre" ? datePresetsPre : presets === "post" ? datePresetsPost : []}
         placeholder={placeholder}
         suffixIcon={suffixIcon === "down" ? <DownOutlined /> : suffixIcon === "cal" ? <Calendar /> : null}
-        />
+        allowClear={false}
+      />
     </AntdDatePickerStyled>
     </ConfigProvider>
   );
@@ -109,6 +119,10 @@ const AntdDatePickerStyled = styled.div<{
     border-color: ${({ $bc }) => $bc};
     padding: ${({ $pd }) => $pd};
     font-family: "Spoqa Han Sans Neo", "sans-serif";
+  }
+  
+  & .ant-picker-clear {
+    display: none !important;
   }
 `;
 
