@@ -27,6 +27,7 @@ import { specType } from "@/data/type/sayang/sample";
 import useToast from "@/utils/useToast";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { postAPI } from "@/api/post";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 
 const SayangSampleStatPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -40,8 +41,8 @@ const SayangSampleStatPage: React.FC & {
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
   };
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
@@ -88,6 +89,22 @@ const SayangSampleStatPage: React.FC & {
     }
   }, [drawerOpen]);
   // ------------ 거래처 드로워 데이터 세팅 ------------ 끝
+  
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = specStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      console.log(clmn);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양현황", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양현황", "print", showToast);
+    }
+  }
 
   if (modelsLoading || dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
@@ -102,6 +119,7 @@ const SayangSampleStatPage: React.FC & {
           pagination={pagination}
           totalData={totalData}
           onChange={handlePageChange}
+          handleMenuClick={handlePageMenuClick}
         />
         <List>
           <AntdTableEdit
@@ -111,6 +129,12 @@ const SayangSampleStatPage: React.FC & {
             loading={dataLoading}
           />
         </List>
+        <ListPagination
+          pagination={pagination}
+          totalData={totalData}
+          onChange={handlePageChange}
+          handleMenuClick={handlePageMenuClick}
+        />
       </div>
 
       <PrtDrawer

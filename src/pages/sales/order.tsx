@@ -7,12 +7,12 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
+import XLSX from 'xlsx-js-style';
+import { saveAs } from "file-saver";
+import { useRouter } from "next/router";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
-import Back from "@/assets/svg/icons/back.svg";
-import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
-import DragHandle from "@/assets/svg/icons/dragHandlevert.svg";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -33,21 +33,18 @@ import {
   salesOrderReq, 
   salesOrderRType 
 } from "@/data/type/sales/order";
-import { salesUserOrderClmn, salesUserOrderModelClmn } from "@/data/columns/Sales";
+import { salesUserOrderClmn } from "@/data/columns/Sales";
 import { 
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
 
 import useToast from "@/utils/useToast";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import AddOrderContents from "@/contents/sales/order/AddOrderContents";
-import { LabelMedium } from "@/components/Text/Label";
-import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
-import { useRouter } from "next/router";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 
 const SalesUserPage: React.FC & {
@@ -65,11 +62,9 @@ const SalesUserPage: React.FC & {
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
   };
-  useEffect(()=>{console.log(pagination)},[pagination]);
-
   const [ data, setData ] = useState<Array<salesOrderRType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
     queryKey: ['salesUserPage', pagination],
@@ -88,7 +83,11 @@ const SalesUserPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading) {
-      setData(queryData?.data.data ?? []);
+      const arr = (queryData?.data?.data ?? []).map((item:salesOrderRType) => ({
+        ...item,
+        modelCnt: item.products?.filter(f=>f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED).length,
+      }))
+      setData(arr);
       setTotalData(queryData?.data.total ?? 0);
       setDataLoading(false);
     }
@@ -400,13 +399,34 @@ const SalesUserPage: React.FC & {
     }
   }, [deleted])
 
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = salesUserOrderClmn(
+      totalData,
+      setPartnerData,
+      setPartnerMngData,
+      pagination,
+      setOrderId,
+      setOrderDrawer,
+      router).map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      console.log(clmn);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);
+    }
+  }
+
   return (
     <>
       <ListTitleBtn 
         label="신규"
         onClick={()=>{
           router.push('/sales/order/new');
-          // setOpen(true)
         }}
         icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
       />
@@ -415,6 +435,7 @@ const SalesUserPage: React.FC & {
         pagination={pagination}
         totalData={totalData}
         onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
       />
 
       <List>
@@ -433,6 +454,13 @@ const SalesUserPage: React.FC & {
           loading={dataLoading}
         />
       </List>
+
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+      />
       
       {/* <AntdModalStep2
         open={open}

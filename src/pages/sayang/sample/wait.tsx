@@ -27,6 +27,7 @@ import { specType } from "@/data/type/sayang/sample";
 import useToast from "@/utils/useToast";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { postAPI } from "@/api/post";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -39,10 +40,10 @@ const SayangSampleListPage: React.FC & {
   // ------------ 대기중 리스트 데이터 세팅 ------------ 시작
   const [paginationWait, setPaginationWait] = useState({
     current: 1,
-    size: 8,
+    size: 10,
   });
-  const handlePageWaitChange = (page: number) => {
-    setPaginationWait({ ...paginationWait, current: page });
+  const handlePageWaitChange = (page: number, size: number) => {
+    setPaginationWait({ current: page, size: size });
   };
   const [waitDataLoading, setWaitDataLoading] = useState<boolean>(true);
   const [waitTotalData, setWaitTotalData] = useState<number>(0);
@@ -178,6 +179,22 @@ const SayangSampleListPage: React.FC & {
     }
   }
   // ---------- 등록 클릭 시 팝업 데이터 세팅 ----------- 끝
+    
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = sayangSampleWaitClmn(waitTotalData, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      console.log(clmn);
+      exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);
+    }
+  }
 
   if (modelsLoading || ingDataLoading || waitDataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
@@ -204,6 +221,7 @@ const SayangSampleListPage: React.FC & {
           pagination={paginationWait}
           totalData={waitTotalData}
           onChange={handlePageWaitChange}
+          handleMenuClick={handlePageMenuClick}
         />
         <List>
           <AntdTableEdit
@@ -213,6 +231,12 @@ const SayangSampleListPage: React.FC & {
             loading={waitDataLoading}
           />
         </List>
+        <ListPagination
+          pagination={paginationWait}
+          totalData={waitTotalData}
+          onChange={handlePageWaitChange}
+          handleMenuClick={handlePageMenuClick}
+        />
       </div>
       
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}

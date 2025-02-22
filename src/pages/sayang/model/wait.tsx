@@ -13,11 +13,14 @@ import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import useToast from "@/utils/useToast";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { showToast, ToastContainer } = useToast();
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -26,8 +29,8 @@ const SayangModelWaitPage: React.FC & {
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
   };
   const [data, setData] = useState<salesOrderRType[]>([]);
   const { data:queryData, isLoading } = useQuery({
@@ -50,7 +53,11 @@ const SayangModelWaitPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      setData(queryData?.data.data ?? []);
+      const arr = (queryData?.data.data ?? []).map((item:salesOrderRType) => ({
+        ...item,
+        modelCnt: item.products?.length,
+      }))
+      setData(arr);
       setTotalData(queryData?.data.total ?? 0);
       setDataLoading(false);
     }
@@ -69,6 +76,22 @@ const SayangModelWaitPage: React.FC & {
       setPartnerMngData(null);
     }
   }, [drawerOpen]);
+    
+    const handlePageMenuClick = (key:number)=>{
+      const clmn = sayangModelWaitClmn(totalData, router, pagination, setPartnerData, setPartnerMngData)
+        .map((item) => ({
+          title: item.title?.toString() as string,
+          dataIndex: item.dataIndex,
+          width: Number(item.width ?? item.minWidth ?? 0),
+          cellAlign: item.cellAlign,
+        }))
+      if(key === 1) { // 엑셀 다운로드
+        console.log(clmn);
+        exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "excel", showToast);
+      } else {        // 프린트
+        exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "print", showToast);
+      }
+    }
   
   return (
     <>
@@ -76,6 +99,7 @@ const SayangModelWaitPage: React.FC & {
         totalData={totalData} 
         pagination={pagination}
         onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
       />
       <List>
         <AntdTableEdit
@@ -85,6 +109,12 @@ const SayangModelWaitPage: React.FC & {
           loading={dataLoading}
         />
       </List>
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+      />
 
       <PrtDrawer
         open={drawerOpen}
@@ -93,6 +123,7 @@ const SayangModelWaitPage: React.FC & {
         partnerData={partnerData}
         partnerMngData={partnerMngData}
       />
+      <ToastContainer />
     </>
   );
 };

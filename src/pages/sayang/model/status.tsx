@@ -22,11 +22,14 @@ import { TabSmall } from "@/components/Tab/Tabs";
 import { ModelTypeEm } from "@/data/type/enum";
 import { InboxOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import useToast from "@/utils/useToast";
 
 const SayangModelStatPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { showToast, ToastContainer } = useToast();
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -35,8 +38,8 @@ const SayangModelStatPage: React.FC & {
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
   };
   const [data, setData] = useState<modelsType[]>([]);
   const { data:queryData, isLoading } = useQuery({
@@ -139,12 +142,29 @@ const SayangModelStatPage: React.FC & {
     }
   }, [modelDetail])
   
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = sayangModelStatusClmn(totalData, pagination, setPartnerData, setPartnerMngData, setModelDetail)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      console.log(clmn);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "print", showToast);
+    }
+  }
+  
   return (
     <>
       <ListPagination 
-        totalData={totalData} 
         pagination={pagination}
+        totalData={totalData} 
         onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
       />
       <List>
         <AntdTableEdit
@@ -154,6 +174,12 @@ const SayangModelStatPage: React.FC & {
           loading={dataLoading}
         />
       </List>
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+      />
 
       <PrtDrawer
         open={drawerOpen}
@@ -201,6 +227,7 @@ const SayangModelStatPage: React.FC & {
         } */}
       </div>
       </AntdDrawer>
+      <ToastContainer />
     </>
   );
 };
