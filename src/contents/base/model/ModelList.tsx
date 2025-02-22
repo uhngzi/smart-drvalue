@@ -234,14 +234,14 @@ const ModelList:React.FC<Props> = ({
             if(selectP.modelStatus === ModelStatus.REPEAT && selectMenuKey === 0) {
             // 반복인데 복사하여 새로 등록을 선택한 경우 실패
               setAlertOpen(false);
-              setAlertProductOpen(true);
               setAlertType("miss");
+              setAlertProductOpen(true);
               return;
             } else if(selectP.modelStatus === ModelStatus.MODIFY && selectMenuKey === 1) {
             // 수정인데 그대로 등록을 선택한 경우 실패
               setAlertOpen(false);
-              setAlertProductOpen(true);
               setAlertType("miss");
+              setAlertProductOpen(true);
               return;
             }
             // 해당 모델에 입력된 값이 있을 경우
