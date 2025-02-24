@@ -60,6 +60,24 @@ body {
   box-shadow: none !important;
 }
 
+.ant-pagination-options {
+  cursor: pointer !important;
+}
+
+.ant-pagination-options .ant-select-selection-search {
+  padding-inline-end: 0 !important;
+}
+
+.ant-pagination-options .ant-select-selection-item {
+  cursor: pointer !important;
+  padding-inline-end: 0 !important;
+}
+
+.ant-pagination-options .ant-select-suffix { 
+  color: white;
+  display: none;
+}
+
 /* 결제창 부드럽게 열고 닫기 */
 .filter-container {
   overflow: hidden;
