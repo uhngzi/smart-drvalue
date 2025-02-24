@@ -8,6 +8,7 @@ interface BaseLaminationRowProps {
   item: laminationRType;
   onMenuClick: (e: any, item: laminationRType) => void;
   index: number;
+  onDragEnd?: () => void;
 }
 
 const items: MenuProps['items'] = [
@@ -25,11 +26,22 @@ const items: MenuProps['items'] = [
   },
 ]
 
-const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick, index }) => {
+const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick, index, onDragEnd }) => {
+  // 오른쪽 아이템에서 드래그를 시작할 때, dataTransfer에 item 정보를 넣어준다.
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    // JSON 형태로 변환해서 저장
+    e.dataTransfer.setData("application/base-lamination", JSON.stringify(item));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
   return (
     <div
       key={item.id}
       className="w-full h-40 h-center border-b-1 border-[#0000006] text-center"
+      // 드래그 설정
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
     >
       <div className="w-70 h-40 v-h-center">{item.matCd}</div>
       <div className="w-56 px-8 py-8">{item.copOut}</div>

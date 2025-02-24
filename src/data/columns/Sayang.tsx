@@ -18,6 +18,7 @@ import { selectType } from '../type/componentStyles';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 import { specModelType, specType } from '../type/sayang/sample';
 import { FinalGlbStatus, generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
+import { CloseOutlined } from '@ant-design/icons';
 
 export const specStatusClmn = (
   totalData: number,
@@ -569,7 +570,10 @@ export const sayangSampleWaitAddClmn = (
     render: (value:any,_,index:number) => (
       <>
         <div className="h-[50%] w-[100%] v-h-center ">
-          <Checkbox id={value}/>
+          <p className="w-16 h-16 border-1 border-[#222222] v-h-center rounded-4 cursor-pointer">
+            <CloseOutlined style={{color:"#222222"}}/>
+          </p>
+          {/* <Checkbox id={value}/> */}
         </div>
         <div className="h-[50%] w-[100%] v-h-center ">
           <p className="w-24 h-24 bg-back rounded-6 v-h-center">
@@ -1292,34 +1296,33 @@ export const sayangModelWaitClmn = (
     align: 'center',
     render: (value, record) => (
       <div className="w-full h-full v-h-center">
-        { record.isDiscard ? (
-          <FullChip label="폐기" />
-        ) : record.finalGlbStatus === FinalGlbStatus.COMPLETED ? (
-          <FullChip label="완료" />
-        ): record.finalGlbStatus === FinalGlbStatus.WAITING ? (
-          <FullChip label="대기" state="yellow" 
-            click={()=>{
-              router.push(`/sayang/model/wait/${value}`);
-            }}
-          />
-        ) : record.finalGlbStatus === FinalGlbStatus.REGISTERING ? (
-          <FullChip
-            label="등록중" state="mint" 
-            click={()=>{
-              router.push(`/sayang/model/wait/${value}`);
-            }}
-          />
-        ) : ( <></> )}
-        {/* <div 
+        <div 
           className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{
-            router.push(`/sayang/model/wait/${value}`);
-            // setOrder
-          }}
+          onClick={()=>{router.push(`/sayang/model/wait/${value}`)}}
         >
           <p className="w-18 h-18"><Edit /></p>
-        </div> */}
+        </div>
       </div>
+      // <div className="w-full h-full v-h-center">
+      //   { record.isDiscard ? (
+      //     <FullChip label="폐기" />
+      //   ) : record.finalGlbStatus === FinalGlbStatus.COMPLETED ? (
+      //     <FullChip label="완료" />
+      //   ): record.finalGlbStatus === FinalGlbStatus.WAITING ? (
+      //     <FullChip label="대기" state="yellow" 
+      //       click={()=>{
+      //         router.push(`/sayang/model/wait/${value}`);
+      //       }}
+      //     />
+      //   ) : record.finalGlbStatus === FinalGlbStatus.REGISTERING ? (
+      //     <FullChip
+      //       label="등록중" state="mint" 
+      //       click={()=>{
+      //         router.push(`/sayang/model/wait/${value}`);
+      //       }}
+      //     />
+      //   ) : ( <></> )}
+      // </div>
     )
   },
 ]

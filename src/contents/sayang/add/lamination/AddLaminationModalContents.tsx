@@ -59,7 +59,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const { showToast, ToastContainer } = useToast();
 
   useEffect(()=>{
-    console.log(detailData.specLamination);
     if(detailData.specLamination) {
       setSelect(detailData.specLamination.id);
       const detail = typeof detailData?.specLamination?.specDetail === "string"
@@ -220,34 +219,108 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   // ---------- 적층 구조 드래그 함수 ---------- 시작
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleDragStart = (index: number) => {
     setDraggedItemIndex(index);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // 기본 동작인 drop 방지
+  // ★ 드래그가 종료될 때(유효/무효 상관없이) 플레이스홀더 없애기
+  const handleDragEnd = () => {
+    setDragOverIndex(null);
   };
 
-  const handleDrop = (index: number, item:laminationRType) => {
-    if (draggedItemIndex === null || draggedItemIndex === index) return;
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
 
-    // 맨 위 아래는 CF로 고정 되어있으므로 위치 변경 불가
-    if(index === 0 || index === lamination.length - 1 ||
-      draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1)  return;
+    // 1) 오른쪽(BaseLaminationRow)에서 드래그해 온 데이터인지 확인
+    const baseItemStr = e.dataTransfer.getData("application/base-lamination");
+    if (baseItemStr) {
+      // 오른쪽에서 온 새로 삽입 케이스
+      try {
+        const newItem = JSON.parse(baseItemStr) as laminationRType;
 
-    // 확정된 라이브러리의 값을 변경할 경우 새 라이브러리로 생성되기 위해 선택 취소
-    if(selectSpecLamiFilter.cf === 1) {
+        // 예) CF 검사
+        if (newItem.lamDtlTypeEm !== "cf" && lamination.length < 1) {
+          showToast("OZ를 먼저 선택해주세요.", "error");
+          return;
+        } else if (newItem.lamDtlTypeEm === "cf") {
+          if (lamination.length > 1) {
+            setResultOpen(true);
+            setResultType("oz");
+            setResult(newItem);
+            return;
+          } else {
+            // 맨 위/아래는 추가 못하도록 => if (dropIndex === 0 || dropIndex === lamination.length-1) return;
+            if (dropIndex === 0 || dropIndex === lamination.length - 1) {
+              showToast("맨 위/맨 아래에는 추가할 수 없습니다.", "error");
+              return;
+            }
+
+            // 원하시는 로직대로 삽입
+            setLamination((prev) => [
+              ...prev.slice(0, dropIndex),
+              newItem,
+              ...prev.slice(dropIndex),
+            ]);
+            return;
+          }
+        }
+
+        // CF 아닐 때
+        if (dropIndex === 0 || dropIndex === lamination.length - 1) {
+          showToast("맨 위/맨 아래에는 추가할 수 없습니다.", "error");
+          return;
+        }
+        setLamination((prev) => [
+          ...prev.slice(0, dropIndex),
+          newItem,
+          ...prev.slice(dropIndex),
+        ]);
+
+        if (selectSpecLamiFilter.cf === 1) {
+          setSelect(undefined);
+          setSelectSource(null);
+        }
+      } catch (error) {
+        console.error("JSON parse error: ", error);
+      } finally {
+        // ★ 드롭 후 플레이스홀더 제거
+        setDragOverIndex(null);
+      }
+      return;
+    }
+
+    // 2) 왼쪽 목록 내부 재정렬
+    if (draggedItemIndex === null || draggedItemIndex === dropIndex) {
+      // 드롭 실패 or 같은 위치 드롭
+      setDragOverIndex(null);
+      return;
+    }
+
+    // 맨 위/아래 고정 로직
+    if (dropIndex === 0 || dropIndex === lamination.length - 1 ||
+      draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1) {
+      showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
+      setDragOverIndex(null);
+      return;
+    }
+
+    // 확정 라이브러리 편집 시 select 해제
+    if (selectSpecLamiFilter.cf === 1) {
       setSelect(undefined);
       setSelectSource(null);
     }
 
-    const updatedLamination = [...lamination];
-    const [movedItem] = updatedLamination.splice(draggedItemIndex, 1); // 드래그한 항목 삭제
-    updatedLamination.splice(index, 0, movedItem); // 새로운 위치에 삽입
+    // 재정렬
+    const updated = [...lamination];
+    const [movedItem] = updated.splice(draggedItemIndex, 1);
+    updated.splice(dropIndex, 0, movedItem);
+    setLamination(updated);
 
-    setLamination(updatedLamination);
-    setDraggedItemIndex(null); // 드래그 상태 초기화
+    // 드롭 후 플레이스홀더 제거
+    setDragOverIndex(null);
+    setDraggedItemIndex(null);
   };
   // ----------- 적층 구조 드래그 함수 ---------- 끝
 
@@ -507,45 +580,83 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 title="마우스 Drag & Drop으로 순서 변경"
                 getPopupContainer={() => document.body}
               >
-                <LabelMedium label="적층구조 라이브러리 구성/편집" />
+                <span>
+                  <LabelMedium label="적층구조 라이브러리 구성/편집" />
+                </span>
               </Tooltip>
             </div>
             <div
               className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
               onClick={()=>{
-                setSelect(undefined);
-                setLamination([]);
+                setLamination(mainLamination);
+                setTimeout(()=>{
+                  setSelect(detailData?.specLamination?.id);
+                }, 100)
               }}
             >
-              <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
+              <Tooltip
+                title="편집 이전 상태로 초기화"
+                getPopupContainer={() => document.body}
+              >
+                <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
+              </Tooltip>
             </div>
           </div>
           <div className="h-[440px] overflow-y-auto">
             <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
-              {
-                Array.isArray(lamination) && lamination.length > 0 &&
-                lamination.map((item:laminationRType, index:number) => (
+              { Array.isArray(lamination) && lamination.length > 0 &&
+                lamination.map((item: laminationRType, i: number) => (
+                <div key={item.id + ":" + i} style={{ position: "relative" }}>
+                  {/* 드래그 시 내려놓을 위치 표시 */}
+                  {dragOverIndex === i && (
+                    <div
+                      style={{
+                        height: 10,
+                        backgroundColor: "#EBF3FF", // 원하는 색상
+                        border: "1px dashed #4880FF",
+                      }}
+                    />
+                  )}
+                  {/* 실제 아이템 영역 (드래그 이벤트들) */}
                   <div
-                    key={item.id+":"+index}
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={handleDragOver}
-                    onDrop={() => {
-                      handleDrop(index, item);
-                    }}
-                    style={{cursor:item.lamDtlTypeEm !== 'cf' ? "grab" : "no-drop"}}
                     draggable
+                    onDragStart={() => handleDragStart(i)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverIndex(i);
+                    }}
+                    onDrop={(e) => {
+                      handleDrop(e, i);
+                      setDragOverIndex(null); // 드롭하면 초기화
+                    }}
+                    onDragEnd={handleDragEnd}
+                    style={{
+                      cursor: item.lamDtlTypeEm !== "cf" ? "grab" : "no-drop",
+                    }}
                   >
                     <LaminationRow
-                      key={item.id+':'+index}
+                      key={item.id + ":" + i}
                       item={item}
-                      index={index}
+                      index={i}
                       color={color}
                       lamination={lamination}
                       setLamination={setLamination}
                     />
                   </div>
-                ))
-              }
+                </div>
+              ))}
+              <div
+                style={{ height: 26 }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverIndex(lamination.length);
+                }}
+                onDragEnd={handleDragEnd}
+                onDrop={(e) => {
+                  handleDrop(e, lamination.length);
+                  setDragOverIndex(null);
+                }}
+              />
             </div>
           </div>
           <div className="w-full v-h-center gap-10">
@@ -631,30 +742,28 @@ const AddLaminationModalContents: React.FC<Props> = ({
               <p className="w-56 v-h-center">실두께</p>
               <div className="w-34 v-h-center"><p className="w-16 h-16"><Edit/></p></div>
             </div>
+            <Tooltip
+              title="마우스 Drag & Drop으로 구성요소 추가"
+              getPopupContainer={() => document.body}
+            >
+            <div>
             {
               !baseLaminationLoading && baseLamination
                 .filter((f:laminationRType) => f.lamDtlTypeEm === selectLamiEm)
                 .map((item:laminationRType, index:number) => 
               (
-                <BaseLaminationRow
-                  key={item.id+':'+index}
-                  item={item}
-                  onMenuClick={handleMenuClick}
-                  index={index}
-                />
+                  <BaseLaminationRow
+                    key={item.id+':'+index}
+                    item={item}
+                    onMenuClick={handleMenuClick}
+                    index={index}
+                    onDragEnd={handleDragEnd}
+                    />
               ))
             }
+            </div>
+            </Tooltip>
           </div>
-          {/* <div className="w-full v-h-center gap-10">
-            <Button
-              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-              onClick={()=>{
-                handleSubmitSaveSource();
-              }}
-            >
-              구성 요소 추가
-            </Button>
-          </div> */}
         </div>
       </div>
       
