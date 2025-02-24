@@ -57,6 +57,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.prdRevNo', e.target.value)}
                 className='!text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
+                placeholder={"Rev No 입력"}
                 disabled={record.completed}
                 tabIndex={record.index*40+1}
               />
@@ -67,6 +68,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.unit?.id ?? unitSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.unit.id', e)}
                 styles={{fs:'12px'}}
+                placeholder={"단위 입력"}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
                 tabIndex={record.index*40+2}
               />
@@ -96,6 +98,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.layerEm ?? "L1"}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.layerEm', e)}
                 styles={{fs:'12px'}}
+                placeholder={"층 입력"}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
                 tabIndex={record.index*40+3}
               />
@@ -106,6 +109,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.thk', e.target.value)}
                 className='!text-12'
                 type="number"
+                placeholder={"두께 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+4}
@@ -137,10 +141,11 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.copOut', e.target.value)}
                 className="!text-12" 
                 type="number"
+                placeholder={"외층 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+5}
-                /> 외
+                />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
@@ -148,10 +153,11 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.copIn', e.target.value)}
                 className="!text-12" 
                 type="number"
+                placeholder={"내층 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+6}
-              />내
+              />
             </div>
           </div>
         )
@@ -179,6 +185,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pltThk', e.target.value)}
                 className="!text-12"
                 type="number"
+                placeholder={"도금 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+7}
@@ -190,6 +197,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pltAlph', e.target.value)}
                 className="!text-12"
                 type="number"
+                placeholder={"도금± 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+8}
@@ -201,6 +209,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pinCnt', e.target.value)}
                 className="!text-12"
                 type="number"
+                placeholder={"핀수 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+9}
@@ -256,7 +265,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
-                placeholder={"Ni+ 입력"}
+                placeholder={"Ni± 입력"}
                 tabIndex={record.index*40+11}
               />
               <AntdInputFill 
@@ -266,7 +275,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
-                placeholder={"Au+ 입력"}
+                placeholder={"Au± 입력"}
                 tabIndex={record.index*40+13}
               />
             </div>
@@ -510,6 +519,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.doNum}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.doNum', e.target.value)}
                 className='w-[100px] !text-12'
+                placeholder="도면번호 입력"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}
                 tabIndex={record.index*40+26}
