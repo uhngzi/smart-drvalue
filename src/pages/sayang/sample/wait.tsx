@@ -269,21 +269,25 @@ const SayangSampleListPage: React.FC & {
             >
               {
                 ingData
-                .filter(f=>f.specModels?.[0].layerEm === record?.model?.layerEm)
                 .map((data:specType, index:number)=> (
                   <Radio.Button className="!rounded-20 [border-inline-start-width:1px] !w-fit"
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
-                      if(selectedValue?.specId !== data.id)
-                        setSelectedValue({
-                          ...selectedValue,
-                          specId: data.id,
-                          text: data.specNo ?? (ingData.length - index)?.toString(),
-                        });
-                      // 재선택 시 취소
-                      else  setSelectedValue({matchId:selectedValue?.matchId})
+                      if(data.specModels?.[0].layerEm === record?.model?.layerEm) {
+                        showToast("같은 층의 모델만 조합하실 수 있습니다.", "error");
+                      } else {
+                        if(selectedValue?.specId !== data.id)
+                          setSelectedValue({
+                            ...selectedValue,
+                            specId: data.id,
+                            text: data.specNo ?? (ingData.length - index)?.toString(),
+                          });
+                        // 재선택 시 취소
+                        else  setSelectedValue({matchId:selectedValue?.matchId})
+                      }
                     }}
+                    disabled={data.specModels?.[0].layerEm !== record?.model?.layerEm}
                   >
                     {data.specNo ?? (ingData.length - index)?.toString()}
                   </Radio.Button>
@@ -291,6 +295,16 @@ const SayangSampleListPage: React.FC & {
               }
             </CustomRadioGroup>
             <LabelIcon label="등록 중인 사양의 관리No를 선택하여 조합으로 등록할 수 있습니다." icon={<Info/>}/>
+            {
+              id && selectedValue?.text === "" &&
+              <LabelIcon label={
+                "조합하려는 모델과 층이 다른 모델은 조합할 수 없습니다.\n"+
+                ingData.find(f=>f.id === id)?.specNo+" : "+ingData.find(f=>f.id === id)?.specModels?.[0].layerEm?.replace("L","")+"층 / "+
+                "현재 선택 모델 : "+record?.model?.layerEm.replace("L","")+"층"
+              }
+              icon={<Info/>} className="!text-[red]"
+              />
+            }
             <div className="flex gap-10 h-center">
               <Button icon={<Close/>} onClick={()=>{setSayangRegOpen(false)}}>취소</Button>
               <FullOkButtonSmall label={selectedValue?.text ? selectedValue.text+"과(와) 조합하여 사양 등록" : "신규 등록"}
