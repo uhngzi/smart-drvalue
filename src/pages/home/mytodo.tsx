@@ -3,11 +3,10 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { Empty } from "antd";
 import { useRouter } from "next/router";
 
-const HomePage: React.FC & {
+const HomeMyToDoPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-  console.log(router.pathname);
 
   return (
     <div className="h-[calc(100vh-192px)]">
@@ -26,7 +25,7 @@ const HomePage: React.FC & {
   )
 }
 
-HomePage.layout = (page: React.ReactNode) => (
+HomeMyToDoPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
     menuTitle="홈 피드"
   >
@@ -34,4 +33,4 @@ HomePage.layout = (page: React.ReactNode) => (
   </MainPageLayout>
 );
 
-export default HomePage;
+export default HomeMyToDoPage;

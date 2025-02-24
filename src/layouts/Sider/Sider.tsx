@@ -47,9 +47,9 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
 
   const items: ItemType<MenuItemType>[] = [
     {
-      key: '',
-      title:'',
-      label: '대시보드',
+      key: '/',
+      title:'/',
+      label: '홈 피드',
       icon: <p className={iconClassNm}><DashBoard /></p>,
     },
     {
