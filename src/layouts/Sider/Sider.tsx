@@ -108,29 +108,42 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       ]
     },
     {
-      key: 'wk',
-      title:'',
-      label: '생산',
-      icon: <p className={iconClassNm}><Wk /></p>
+      key: 'attd',
+      title:'attd',
+      label: '근태',
+      icon: <p className={iconClassNm}><Wk /></p>,
+      children: [
+        {
+          key: 'attd/secom',
+          title: 'attd/secom',
+          label: '근태',
+        },
+      ]
     },
-    {
-      key: 'buy',
-      title:'',
-      label: '구매',
-      icon: <p className={iconClassNm}><Buy /></p>
-    },
-    {
-      key: 'mng',
-      title:'',
-      label: '관리',
-      icon: <p className={iconClassNm}><Mng /></p>
-    },
-    {
-      key: 'kpi',
-      title:'',
-      label: 'KPI',
-      icon: <p className={iconClassNm}><Kpi /></p>
-    },
+    // {
+    //   key: 'wk',
+    //   title:'',
+    //   label: '생산',
+    //   icon: <p className={iconClassNm}><Wk /></p>
+    // },
+    // {
+    //   key: 'buy',
+    //   title:'',
+    //   label: '구매',
+    //   icon: <p className={iconClassNm}><Buy /></p>
+    // },
+    // {
+    //   key: 'mng',
+    //   title:'',
+    //   label: '관리',
+    //   icon: <p className={iconClassNm}><Mng /></p>
+    // },
+    // {
+    //   key: 'kpi',
+    //   title:'',
+    //   label: 'KPI',
+    //   icon: <p className={iconClassNm}><Kpi /></p>
+    // },
   ]
 
   const getOpenKeys = (path: string) => {
