@@ -22,7 +22,7 @@ import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdModal from "@/components/Modal/AntdModal";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
-import { LabelIcon } from "@/components/Text/Label";
+import { LabelIcon, LabelMedium } from "@/components/Text/Label";
 import { specType } from "@/data/type/sayang/sample";
 import useToast from "@/utils/useToast";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
@@ -222,7 +222,10 @@ const SayangSampleListPage: React.FC & {
   return (
     <div className="flex flex-col gap-20">
       <div>
-        <p className="w-full h-center justify-end pt-30 pb-10">총 {ingData.length}건</p>
+        <div className="v-between-h-center h-50 w-full">
+          <div><LabelMedium label="사양 등록중" /></div>
+          <p className="h-center">총 {ingData.length}건</p>
+        </div>
         <List>
           <AntdTableEdit
             columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, router)}
@@ -239,6 +242,7 @@ const SayangSampleListPage: React.FC & {
           totalData={waitTotalData}
           onChange={handlePageWaitChange}
           handleMenuClick={handlePageMenuClick}
+          title="사양 등록 대기"
         />
         <List>
           <AntdTableEdit

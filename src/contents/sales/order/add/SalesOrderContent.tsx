@@ -1,19 +1,19 @@
+import { SetStateAction, useEffect, useRef, useState } from "react";
+
 import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import { DividerH, DividerV } from "@/components/Divider/Divider";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdSelect from "@/components/Select/AntdSelect";
 import { LabelMedium, LabelThin } from "@/components/Text/Label";
-import AntdDragger from "@/components/Upload/AntdDragger";
 import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
-import { partnerRType } from "@/data/type/base/partner";
-import { selectType } from "@/data/type/componentStyles";
+
 import { HotGrade } from "@/data/type/enum";
+import { selectType } from "@/data/type/componentStyles";
 import { salesOrderCUType, salesOrderProcuctCUType } from "@/data/type/sales/order";
-import { AutoComplete } from "antd";
-import TextArea from "antd/es/input/TextArea";
+
 import dayjs from "dayjs";
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import TextArea from "antd/es/input/TextArea";
 
 interface Props {
   csList: selectType[];
@@ -71,23 +71,6 @@ const SalesOrderContent: React.FC<Props> = ({
                 setFormData({...formData, partnerId: value});
               }}
               handleAddData={()=>setAddPartner(true)}
-            />
-          </div>
-          <div className="flex flex-col gap-8">
-            <LabelThin label="총 수주 금액"/>
-            <AntdInput
-              value={formData.totalOrderPrice}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData({...formData, totalOrderPrice: Number(value)});
-              }}
-              styles={{ht:'36px'}}
-              type="number"
-              onClick={(e)=>{
-                setPriceFlag(true);
-                if(newProducts.length > 0)
-                  setViewKey(newProducts.length);
-              }}
             />
           </div>
           <div className="flex flex-col gap-8">

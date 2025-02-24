@@ -8,7 +8,7 @@ import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
 
-import { LabelMedium } from "@/components/Text/Label";
+import { LabelMedium, LabelThin } from "@/components/Text/Label";
 import { DividerH } from "@/components/Divider/Divider";
 import SalesModelTable from "@/components/ModelTable/SalesModelTable";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
@@ -54,6 +54,7 @@ import { MOCK } from "@/utils/Mock";
 
 import SalesOrderContent from "./SalesOrderContent";
 import CsMngContent from "./CsMngContent";
+import AntdInput from "@/components/Input/AntdInput";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -654,7 +655,20 @@ const OrderAddLayout = () => {
                 <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
                   <div className="v-between-h-center">
                     <LabelMedium label="모델 등록"/>
-                    
+                    <div className="h-center gap-8">
+                      총 수주 금액
+                      <AntdInput
+                        value={formData.totalOrderPrice}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({...formData, totalOrderPrice: Number(value)});
+                        }}
+                        styles={{ht:'36px'}}
+                        type="number"
+                        className="!w-[150px]"
+                      />
+                      원
+                    </div>
                     {/* <Button
                       className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                       onClick={()=>{

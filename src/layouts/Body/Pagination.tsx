@@ -6,6 +6,7 @@ import { MoreOutlined } from "@ant-design/icons";
 
 import Excel from "@/assets/png/excel.png"
 import Print from "@/assets/png/print.png"
+import { LabelMedium } from "@/components/Text/Label";
 
 interface Props {
   totalData: number;
@@ -15,6 +16,7 @@ interface Props {
   }
   handleMenuClick?: (key:number) => void;
   onChange?: (page: number, size: number) => void;
+  title?: string;
 }
 
 export const ListPagination: React.FC<Props> = ({
@@ -22,6 +24,7 @@ export const ListPagination: React.FC<Props> = ({
   pagination,
   handleMenuClick,
   onChange,
+  title,
 }) => {
   const items: MenuProps['items'] = [
     {
@@ -47,30 +50,35 @@ export const ListPagination: React.FC<Props> = ({
   }
 
   return (
-    <div className="flex w-full h-50 gap-20 justify-end items-center">
-      <span>총 {totalData}건</span>
-      <Pagination 
-        size="small"
-        defaultCurrent={1}
-        current={pagination.current}
-        total={totalData}
-        onChange={(page: number, size: number) => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          onChange?.(page, size);
-        }}
-        pageSize={pagination.size}
-        showSizeChanger={true}
-        pageSizeOptions={pageSizeOptions}
-        locale={{ items_per_page: "건씩 보기" }}
-      />
-      <Dropdown
-        menu={{ items }}
-        trigger={['click']}
-        placement="bottomCenter"
-        getPopupContainer={() => document.body}
-      >
-        <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
-      </Dropdown>
+    <div className="flex w-full h-50 v-between-h-center">
+      <div>
+        {title && <LabelMedium label={title}/>}
+      </div>
+      <div className="h-50 gap-20 h-center">
+        <span>총 {totalData}건</span>
+        <Pagination 
+          size="small"
+          defaultCurrent={1}
+          current={pagination.current}
+          total={totalData}
+          onChange={(page: number, size: number) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            onChange?.(page, size);
+          }}
+          pageSize={pagination.size}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          locale={{ items_per_page: "건씩 보기" }}
+        />
+        <Dropdown
+          menu={{ items }}
+          trigger={['click']}
+          placement="bottomCenter"
+          getPopupContainer={() => document.body}
+        >
+          <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
+        </Dropdown>
+      </div>
     </div>
   )
 }

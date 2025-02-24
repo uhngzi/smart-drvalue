@@ -90,8 +90,13 @@ const SalesModelHead:React.FC<Props> = ({
           onChange={(e)=>{
             handleModelDataChange(model.id ?? '', 'modelStatus', e);
           }}
-          className="w-[54px!important]" styles={{ht:'36px', bw:'1px', bc:'#FAAD14', pd:'0'}}
-          disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
+          className="w-[54px!important]"
+          styles={selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT ?
+            {ht:'36px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+            {ht:'36px', bw:'0', pd:'0'}
+          }
+          disabled={model.completed}
+          // disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
           readonly={read}
         />
       </div>
