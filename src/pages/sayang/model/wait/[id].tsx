@@ -160,7 +160,9 @@ const SayangModelAddPage: React.FC & {
         // 키 값이 객체일 경우 키값 분해
         // ex. orderModel.prdNm > orderModel 안에 "prdNm"에 접근해야 함
         const keys = name.split(".");
-        const updatedItem = { ...item, temp: false };
+        const updatedItem = { ...item,
+          // temp: false
+        };
   
         // 마지막 키를 제외한 객체 탐색
         const lastKey = keys.pop()!;

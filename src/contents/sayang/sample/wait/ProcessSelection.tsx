@@ -352,7 +352,7 @@ const ProcessSelection: React.FC<Props> = ({
                     <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{letterSpacing:-0.05}}>
                       <div className="flex-1 h-full h-center whitespace-pre-wrap">
                         <AntdInput
-                          value={selectPrc?.find(f=>f.id.includes(process.id))?.remark}
+                          value={selectPrc?.find(f=>f.id.includes(process.id))?.remark ?? process.remark}
                           onChange={(e)=>{
                             const updateData = selectPrc;
                             const index = updateData.findIndex(f=>f.id === process.id)

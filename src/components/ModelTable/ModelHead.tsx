@@ -158,11 +158,13 @@ const ModelHead:React.FC<Props> = ({
       </div>
 
       <div className="flex-1 flex jutify-end">
-      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING &&
+      { (model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING) &&
+        !model.completed && !(model as orderModelType).temp &&
         <FullChip label="대기중" state="yellow" className="!mr-20 !w-80 !h-30"/>
       }
-      { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING &&
-        <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/>
+      { (model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING) ||
+        (!model.completed && (model as orderModelType).temp) ?
+        <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/> : <></>
       }
       { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&<>
         <FullChip label="확정" state="purple" className="!mr-20 !w-80 !h-30"/>
@@ -172,8 +174,8 @@ const ModelHead:React.FC<Props> = ({
         <FullChip label="폐기" className="!mr-20 !w-80 !h-30"/>
       }
       { !model.completed && (model as orderModelType).temp && <>
-        <FullChip label="임시저장 완료" className="!mr-20 !w-100 !h-30"/>
-        <p className="h-center">임시저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")}</p>
+        {/* <FullChip label="임시저장 완료" className="!mr-20 !w-[120px] !h-30"/> */}
+        <p className="h-center text-11">{dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")} 임시저장 완료</p>
       </>}
       </div>
     </div>

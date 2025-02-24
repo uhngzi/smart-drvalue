@@ -1130,7 +1130,9 @@ export const sayangSampleWaitAddClmn = (
             value={record?.specLine}
             onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
             className="w-[45px!important] !text-12"
-            />
+            maxPoint={3}
+            type="number"
+          />
           <p className="w-12 !text-12">㎜</p>
         </div>
         <div className={divClass+"mb-3"}>
@@ -1139,7 +1141,9 @@ export const sayangSampleWaitAddClmn = (
             value={record?.specSpace}
             onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
             className="w-[45px!important] !text-12"
-            />
+            maxPoint={3}
+            type="number"
+          />
           <p className="w-12 !text-12">㎜</p>
         </div>
         <div className={divClass+"mb-3"}>
@@ -1148,7 +1152,9 @@ export const sayangSampleWaitAddClmn = (
             value={record?.specDr}
             onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
             className="w-[45px!important] !text-12"
-            />
+            maxPoint={2}
+            type="number"
+          />
           <p className="w-12 !text-12">￠</p>
         </div>
         <div className={divClass}>
@@ -1157,6 +1163,8 @@ export const sayangSampleWaitAddClmn = (
             value={record?.specPad}
             onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
             className="w-[45px!important] !text-12"
+            maxPoint={2}
+            type="number"
           />
           <p className="w-12 !text-12">￠</p>
         </div>
@@ -2165,9 +2173,10 @@ export const sayangModelStatusClmn = (
     dataIndex: 'prdNm',
     key: 'prdNm',
     align: 'center',
+    tooltip: "모델명을 클릭하면 상세 정보를 볼 수 있어요",
     render: (_, record:modelsType) => (
       <div
-        className="text-left cursor-pointer"
+        className="text-left cursor-pointer text-shadow-hover"
         onClick={()=>{
           setModelId(record);
         }}
