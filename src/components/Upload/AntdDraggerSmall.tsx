@@ -93,11 +93,13 @@ const AntdDraggerSmall: React.FC<Props> = ({
   const [height, setHeight] = useState<number>(0);
   useEffect(()=>{
     if(divRef?.current?.clientHeight) {
-      const divHeight = Number(divRef?.current?.clientHeight) - 444;
+      const divHeight = Number(divRef?.current?.clientHeight) - 348;
       if(divHeight > 0) setHeight(divHeight);
-      else              setHeight(76);
+      else              setHeight(172);
     }
   }, [changeHeight])
+
+  useEffect(()=>{console.log(height)},[height])
 
   return (
     <>
@@ -107,7 +109,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
     >
       { fileList && fileList?.map((file, idx) => (
         <div className="h-center" key={idx}>
-          <p className="w-16 h-16 mr-8"><Klip /></p>
+          <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
           {/* 파일 이름/형식/사이즈 */}
           <p 
             className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
@@ -158,7 +160,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
         }}
         action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}
       >
-        <div className={`h-40 flex-col v-h-center bg-point1 text-white ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+        <div className={`h-40 flex-col v-h-center bg-point1 rounded-2 text-white ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
           <div className="h-center gap-5">
             <p className="w-24 h-24 v-h-center">
               <UploadIcon />

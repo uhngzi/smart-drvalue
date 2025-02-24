@@ -16,6 +16,7 @@ import { validReq } from "@/utils/valid";
 import { postAPI } from "@/api/post";
 import Image from "next/image";
 import { baseURL } from "@/api/lib/config";
+import { LabelMedium } from "@/components/Text/Label";
 
 const SalesArrayPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -164,11 +165,11 @@ const SalesArrayPage: React.FC & {
               </div>
             ))}
           </div>
-          <div className="w-[1070px] h-[210px] flex flex-wrap gap-x-15 gap-y-30">
+          <div className="w-[800px] h-[210px] flex flex-wrap gap-x-15 gap-y-30">
           {items.map((item, idx) => (
             <div key={idx} className="flex flex-col h-66">
               <p className='pb-8'>{item.label}</p>
-              <div className="h-center gap-10 w-[200px]">
+              <div className="h-center gap-10 w-[130px]">
                 <AntdInput 
                   value={item.value ?? undefined}
                   type="number"
@@ -188,6 +189,8 @@ const SalesArrayPage: React.FC & {
                     });
                   }}
                   tabIndex={item.tabIndex}
+                  className="!w-100"
+                  maxPoint={1}
                 />
               </div>
             </div>
@@ -207,7 +210,8 @@ const SalesArrayPage: React.FC & {
       </div>
 
       <div className="w-full v-between-h-center gap-30">
-        <div className='p-30 bg-white rounded-14 border border-[#D9D9D9]'>
+        <div className='p-30 bg-white rounded-14 border border-[#D9D9D9] min-h-[300px]'>
+          <LabelMedium label="계산 결과"/>
           <AntdTable
             className='h-full overflow-y-auto'
             columns={[
@@ -298,7 +302,7 @@ const SalesArrayPage: React.FC & {
             styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
           />
         </div>
-        <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]">
+        <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9] min-h-[300px]">
           {yieldTableData.length > 0 &&
             yieldTableData.reduce((acc, data, index) => {
               if (index % 2 === 0) {

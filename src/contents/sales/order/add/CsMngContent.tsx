@@ -111,7 +111,7 @@ const CsMngContent:React.FC<Props> = ({
           <LabelIcon label={mng.prtMngMobile} icon={<Mobile />}/>
         </div>
         <div className="flex-1 px-12">
-          <LabelIcon label={mng.prtMngMobile} icon={<Mail />}/>
+          <LabelIcon label={mng.prtMngEmail} icon={<Mail />}/>
         </div>
         <div className="w-40 h-40 v-h-center">
           <p

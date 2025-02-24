@@ -784,13 +784,13 @@ const OrderAddLayout = () => {
             alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
             // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
             alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
-            alertType === "close" ? "아직 저장되지 않은 모델이 존재하거나 고객 발주 등록 이전입니다." :
+            alertType === "close" ? "저장되지 않은 모델 정보 또는 미등록된 고객 발주 정보가 있습니다." :
             alertType === "discard" ? "고객 발주 폐기 성공" : ""
           }
           contents={
             alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
             alertType === "cancle" ? <>해당 발주를 취소할 경우 하위에 등록된 모델도 폐기됩니다.<br/>정말 폐기하시겠습니까?</> :
-            alertType === "close" ? <>저장하지 않고 나가실 경우 저장되지 않은 값은 사라집니다.<br/>정말 나가시겠습니까?</> :
+            alertType === "close" ? <>저장하지 않고 나가시면 해당 정보는 삭제됩니다.<br/>정말 나가시겠습니까?</> :
             alertType === "discard" ? <>고객 발주 폐기가 완료되었습니다.</> : <></>
           }
           onOk={()=>{

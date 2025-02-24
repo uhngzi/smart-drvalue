@@ -135,7 +135,7 @@ const SalesOrderContent: React.FC<Props> = ({
                 setFormData({...formData, orderTxt:value});
               }}
               className="rounded-2"
-              style={{height:400}}
+              style={{height:400,minHeight:400}}
               onResize={(e)=>{setChangeHeight(e)}}
             />
           </div>
