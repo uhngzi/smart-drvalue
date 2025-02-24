@@ -13,6 +13,7 @@ interface Props {
   readonly?: boolean;
   disabled?: boolean;
   tabIndex?: number;
+  maxPoint?: number;
 }
 
 const AntdInputFill: React.FC<Props> = ({
@@ -26,6 +27,7 @@ const AntdInputFill: React.FC<Props> = ({
   readonly,
   disabled,
   tabIndex,
+  maxPoint,
 }) => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let { value } = e.target;
@@ -66,6 +68,19 @@ const AntdInputFill: React.FC<Props> = ({
         });
         return onChange?.(newEvent);
       }
+      
+      // 최대 소수점 자리가 정해져 있을 때 최대 소수점 자리만 반환
+      if(maxPoint && sanitizedValue.split(".").length > 1) {
+        const pt = sanitizedValue.split(".");
+        
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: pt[0]+"."+pt[1].slice(0, maxPoint),
+          },
+        });
+        return onChange?.(newEvent);
+      }
 
       const numericValue = parseFloat(sanitizedValue);
   
@@ -73,6 +88,7 @@ const AntdInputFill: React.FC<Props> = ({
       if (isNaN(numericValue) || numericValue < 0) {
         return;
       }
+
   
       // onChange에 전달할 때는 포맷팅 없이 저장 (콤마 제거된 값)
       const newEvent = Object.assign({}, e, {

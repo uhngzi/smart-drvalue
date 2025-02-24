@@ -17,6 +17,7 @@ interface Props {
   disabled?:boolean,
   onClick?: MouseEventHandler<HTMLInputElement>;
   tabIndex?: number;
+  maxPoint?: number;
 }
 
 const AntdInput = forwardRef<InputRef, Props>((
@@ -34,6 +35,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     disabled,
     onClick,
     tabIndex,
+    maxPoint,
   },
   ref
 ) => {
@@ -72,6 +74,19 @@ const AntdInput = forwardRef<InputRef, Props>((
           target: {
             ...e.target,
             value: sanitizedValue,
+          },
+        });
+        return onChange?.(newEvent);
+      }
+      
+      // 최대 소수점 자리가 정해져 있을 때 최대 소수점 자리만 반환
+      if(maxPoint && sanitizedValue.split(".").length > 1) {
+        const pt = sanitizedValue.split(".");
+        
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: pt[0]+"."+pt[1].slice(0, maxPoint),
           },
         });
         return onChange?.(newEvent);

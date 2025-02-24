@@ -10,6 +10,7 @@ interface Props {
   placeholder?: string;
   type?: "string" | "number";
   tabIndex?: number;
+  maxPoint?: number;
 }
 
 const AntdInputRound: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const AntdInputRound: React.FC<Props> = ({
   placeholder,
   type,
   tabIndex,
+  maxPoint,
 }) => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let { value } = e.target;
@@ -56,6 +58,19 @@ const AntdInputRound: React.FC<Props> = ({
           target: {
             ...e.target,
             value: sanitizedValue,
+          },
+        });
+        return onChange?.(newEvent);
+      }
+      
+      // 최대 소수점 자리가 정해져 있을 때 최대 소수점 자리만 반환
+      if(maxPoint && sanitizedValue.split(".").length > 1) {
+        const pt = sanitizedValue.split(".");
+        
+        const newEvent = Object.assign({}, e, {
+          target: {
+            ...e.target,
+            value: pt[0]+"."+pt[1].slice(0, maxPoint),
           },
         });
         return onChange?.(newEvent);
