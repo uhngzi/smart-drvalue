@@ -50,8 +50,7 @@ export const specStatusClmn = (
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
-        // className="text-left cursor-pointer"
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
@@ -414,7 +413,7 @@ export const sayangSampleWaitClmn = (
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
-        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.orderModel?.prtInfo.prt ?? null);
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
@@ -1190,7 +1189,7 @@ export const sayangModelWaitClmn = (
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.prtInfo.prt);
           setPartnerMngData(record.prtInfo.mng);

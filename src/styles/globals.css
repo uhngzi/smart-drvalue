@@ -60,6 +60,7 @@ body {
   box-shadow: none !important;
 }
 
+/* 결제창 부드럽게 열고 닫기 */
 .filter-container {
   overflow: hidden;
   max-height: 0;
@@ -77,3 +78,11 @@ body {
   opacity: 0;
 }
 
+/* 텍스트 그림자 부드럽게 나타나는 효과 */
+.text-shadow-hover {
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+.text-shadow-hover:hover {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}

@@ -38,7 +38,7 @@ export const salesUserOrderClmn = (
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition-shadow duration-300 shadow-none hover:shadow-md"
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt);
           setPartnerMngData(record?.prtInfo?.mng);
