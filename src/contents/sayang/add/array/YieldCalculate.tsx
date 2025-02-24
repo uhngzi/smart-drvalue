@@ -140,7 +140,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
   return (
     <section className='flex gap-10 w-full flex-col'>
       <div className="w-full flex flex-col">
-        <div className="w-full h-46 bg-[#FAFAFA] py-12 px-16 rounded-t-14 border-1 border-line h-center gap-12">
+        <div className={`w-full h-46 bg-[#FAFAFA] py-12 px-16 border-1 border-line h-center gap-12 ${!calChk ? 'rounded-t-14' : 'rounded-8'}`}>
           <p
             className="w-16 h-16 cursor-pointer"
             onClick={()=>setCalChk(!calChk)}
@@ -183,7 +183,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                 ))}
               </div>
             </div>
-            <div className="w-[200px] h-full flex flex-col gap-20 overflow-y-auto">
+            <div className="w-[210px] px-10 h-full flex flex-col gap-20 overflow-y-auto">
               {items.map((item, idx) => (
                 <div key={idx}>
                   <p className='pb-8'>{item.label}</p>
