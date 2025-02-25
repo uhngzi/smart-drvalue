@@ -46,67 +46,67 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   }, [signIn])
 
   const items: ItemType<MenuItemType>[] = [
-    {
-      key: '/',
-      title:'/',
-      label: '홈 피드',
-      icon: <p className={iconClassNm}><DashBoard /></p>,
-    },
-    {
-      key: 'star',
-      title:'',
-      label: '즐겨찾는 메뉴',
-      icon: <p className={iconClassNm}><Star /></p>,
-    },
-    {
-      type: 'divider',
-      style: {margin: 15},
-    },
-    {
-      key: 'sales',
-      title:'sales',
-      label: '영업',
-      icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
-      children: [
-        {
-          key: 'sales/order',
-          title: 'sales/order',
-          label: '고객발주/견적',
-        },
-        {
-          key: 'sales/array',
-          title: 'sales/array',
-          label: '원판 수율 계산',
-        },
-        // {
-        //   key: 'sales/order',
-        //   title: 'sales/order',
-        //   label: '수주',
-        // },
-      ]
-    },
-    {
-      type: 'divider',
-      style: {margin: 15},
-    },
-    {
-      key: 'sayang',
-      title:'sayang',
-      label: '사양',
-      icon: <p className={iconClassNm}><Sayang /></p>,
-      children: [
-        {
-          key: 'sayang/model',
-          title: 'sayang/model/wait',
-          label: '모델 확정 및 현황',
-        },
-        {
-          key: 'sayang/sample',
-          title: 'sayang/sample/wait',
-          label: '샘플-사양등록및현황',
-        },
-      ]
-    },
+    // {
+    //   key: '/',
+    //   title:'/',
+    //   label: '홈 피드',
+    //   icon: <p className={iconClassNm}><DashBoard /></p>,
+    // },
+    // {
+    //   key: 'star',
+    //   title:'',
+    //   label: '즐겨찾는 메뉴',
+    //   icon: <p className={iconClassNm}><Star /></p>,
+    // },
+    // {
+    //   type: 'divider',
+    //   style: {margin: 15},
+    // },
+    // {
+    //   key: 'sales',
+    //   title:'sales',
+    //   label: '영업',
+    //   icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
+    //   children: [
+    //     {
+    //       key: 'sales/order',
+    //       title: 'sales/order',
+    //       label: '고객발주/견적',
+    //     },
+    //     {
+    //       key: 'sales/array',
+    //       title: 'sales/array',
+    //       label: '원판 수율 계산',
+    //     },
+    //     // {
+    //     //   key: 'sales/order',
+    //     //   title: 'sales/order',
+    //     //   label: '수주',
+    //     // },
+    //   ]
+    // },
+    // {
+    //   type: 'divider',
+    //   style: {margin: 15},
+    // },
+    // {
+    //   key: 'sayang',
+    //   title:'sayang',
+    //   label: '사양',
+    //   icon: <p className={iconClassNm}><Sayang /></p>,
+    //   children: [
+    //     {
+    //       key: 'sayang/model',
+    //       title: 'sayang/model/wait',
+    //       label: '모델 확정 및 현황',
+    //     },
+    //     {
+    //       key: 'sayang/sample',
+    //       title: 'sayang/sample/wait',
+    //       label: '샘플-사양등록및현황',
+    //     },
+    //   ]
+    // },
     {
       key: 'attd',
       title:'attd',
