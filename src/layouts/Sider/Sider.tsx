@@ -150,10 +150,10 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     const firstSegment = path.split(',')[0];
     return [firstSegment];
   };
-  
-  if(router.pathname === "/") {
-    return router.push("/attd/secom");
-  }
+
+  // if(router.pathname === "/") {
+  //   return router.push("/attd/secom");
+  // }
 
   return (
     <SiderStyled $width={collapsed?'80px':'240px'}>
