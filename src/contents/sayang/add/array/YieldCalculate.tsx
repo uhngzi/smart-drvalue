@@ -60,11 +60,11 @@ const SayangYieldCalculate: React.FC<Props> = ({
 }) => {
   const { showToast, ToastContainer } = useToast();
 
-  const [yieldTableData, setYieldTableData] = useState<yieldCalType[]>([]);
-
   const [boardData, setBoardData] = useState<boardType[]>([]);
 
   const [calChk, setCalChk] = useState<boolean>(false);
+  const [calLoading, setCalLoading] = useState<boolean>(false);
+
 
   useEffect(()=>{
     if(board.length > 0) {
@@ -74,13 +74,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
 
   useEffect(()=>{
     if(yielddata === null) {
-      setYieldTableData([]);
+      setCalLoading(false);
       setResultData([]);
       setCalChk(false);
     }
   }, [yielddata]);
 
-  const [calLoading, setCalLoading] = useState<boolean>(true);
 
   const items = [
     {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
