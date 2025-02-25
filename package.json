@@ -2,6 +2,9 @@
   "name": "smart-front",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "secom/smart-drvalue"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
