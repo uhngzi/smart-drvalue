@@ -41,7 +41,6 @@ export const ListPagination: React.FC<Props> = ({
       icon: <Image src={Print} alt="Print" width={16} height={16} />,
       onClick: ()=>{handleMenuClick?.(2)}
     },
-
   ]
   // 100개 이상일 경우 "전체 보기" 옵션 추가 (totalData와 비교)
   const pageSizeOptions = ["10", "20", "50", "100"];
