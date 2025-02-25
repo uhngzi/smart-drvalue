@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
@@ -15,7 +15,6 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
-import { LabelMedium } from "@/components/Text/Label";
 import { DividerH } from "@/components/Divider/Divider";
 import { FinalGlbStatus } from "@/data/type/enum";
 
@@ -27,27 +26,30 @@ const SayangModelWaitPage: React.FC & {
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
-  const [totalData, setTotalData] = useState<number>(1);
-  const [pagination, setPagination] = useState({
+  const [paginationWait, setPaginationWait] = useState({
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number, size: number) => {
-    setPagination({ current: page, size: size });
+  const handlePageChangeWait = (page: number, size: number) => {
+    setPaginationWait({ current: page, size: size });
   };
-  const [data, setData] = useState<salesOrderRType[]>([]);
+  const [paginationIng, setPaginationIng] = useState({
+    current: 1,
+    size: 10,
+  });
+  const handlePageChangeIng = (page: number, size: number) => {
+    setPaginationIng({ current: page, size: size });
+  };
+  const [dataWait, setDataWait] = useState<salesOrderRType[]>([]);
   const [dataIng, setDataIng] = useState<salesOrderRType[]>([]);
   const { data:queryData, isLoading } = useQuery({
-    queryKey: ['sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only', pagination],
+    queryKey: ['sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only'],
     queryFn: async () => {
       try {
         return getAPI({
           type: 'core-d1',
           utype: 'tenant/',
           url: 'sales-order/jsxcrud/many/by-model-status/registering-or-waiting-only'
-        },{
-          limit: pagination.size,
-          page: pagination.current,
         });
       } catch (e) {
         return;
@@ -62,11 +64,22 @@ const SayangModelWaitPage: React.FC & {
         modelCnt: item.products?.length,
       }))
       setDataIng(arr.filter((f:salesOrderRType)=>f.finalGlbStatus === FinalGlbStatus.REGISTERING))
-      setData(arr.filter((f:salesOrderRType)=>f.finalGlbStatus === FinalGlbStatus.WAITING));
-      setTotalData(queryData?.data.total ?? 0);
+      setDataWait(arr.filter((f:salesOrderRType)=>f.finalGlbStatus === FinalGlbStatus.WAITING));
       setDataLoading(false);
     }
   }, [queryData]);
+
+  const dataWaitSlice = useMemo(() => {
+    const startIdx = (paginationWait.current - 1) * paginationWait.size;
+    const endIdx = startIdx + paginationWait.size;
+    return dataWait.slice(startIdx, endIdx);
+  }, [dataWait, paginationWait]);
+
+  const dataIngSlice = useMemo(() => {
+    const startIdx = (paginationIng.current - 1) * paginationIng.size;
+    const endIdx = startIdx + paginationIng.size;
+    return dataIng.slice(startIdx, endIdx);
+  }, [dataIng, paginationIng]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   // 리스트 내 거래처
@@ -82,20 +95,35 @@ const SayangModelWaitPage: React.FC & {
     }
   }, [drawerOpen]);
     
-    const handlePageMenuClick = (key:number)=>{
-      const clmn = sayangModelWaitClmn(totalData, router, pagination, setPartnerData, setPartnerMngData)
-        .map((item) => ({
-          title: item.title?.toString() as string,
-          dataIndex: item.dataIndex,
-          width: Number(item.width ?? item.minWidth ?? 0),
-          cellAlign: item.cellAlign,
-        }))
-      if(key === 1) { // 엑셀 다운로드
-        exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "excel", showToast);
-      } else {        // 프린트
-        exportToExcelAndPrint(clmn, data, totalData, pagination, "모델등록대기", "print", showToast);
-      }
+  const handlePageMenuWaitClick = (key:number)=>{
+    const clmn = sayangModelWaitClmn(dataWait.length, router, paginationWait, setPartnerData, setPartnerMngData)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, dataWaitSlice, dataWaitSlice.length, paginationWait, "모델등록대기", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, dataWaitSlice, dataWaitSlice.length, paginationWait, "모델등록대기", "print", showToast);
     }
+  }
+    
+  const handlePageMenuIngClick = (key:number)=>{
+    const clmn = sayangModelWaitClmn(dataIngSlice.length, router, paginationIng, setPartnerData, setPartnerMngData)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, dataIngSlice, dataIngSlice.length, paginationIng, "모델등록중", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, dataIngSlice, dataIngSlice.length, paginationIng, "모델등록중", "print", showToast);
+    }
+  }
   
   return (
     <div className="flex flex-col gap-20">
@@ -103,23 +131,23 @@ const SayangModelWaitPage: React.FC & {
         <ListPagination 
           title="모델 등록중"
           totalData={dataIng.length} 
-          pagination={pagination}
-          onChange={handlePageChange}
-          handleMenuClick={handlePageMenuClick}
+          pagination={paginationIng}
+          onChange={handlePageChangeIng}
+          handleMenuClick={handlePageMenuIngClick}
         />
         <List>
           <AntdTableEdit
-            columns={sayangModelWaitClmn(dataIng.length, router, pagination, setPartnerData, setPartnerMngData)}
-            data={dataIng}
+            columns={sayangModelWaitClmn(dataIng.length, router, paginationIng, setPartnerData, setPartnerMngData)}
+            data={dataIngSlice}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={dataLoading}
           />
         </List>
         <ListPagination 
           totalData={dataIng.length} 
-          pagination={pagination}
-          onChange={handlePageChange}
-          handleMenuClick={handlePageMenuClick}
+          pagination={paginationIng}
+          onChange={handlePageChangeIng}
+          handleMenuClick={handlePageMenuIngClick}
         />
       </div>
 
@@ -128,24 +156,24 @@ const SayangModelWaitPage: React.FC & {
       <div>
         <ListPagination
           title="모델 등록 대기" 
-          totalData={data.length} 
-          pagination={pagination}
-          onChange={handlePageChange}
-          handleMenuClick={handlePageMenuClick}
+          totalData={dataWait.length} 
+          pagination={paginationWait}
+          onChange={handlePageChangeWait}
+          handleMenuClick={handlePageMenuWaitClick}
         />
         <List>
           <AntdTableEdit
-            columns={sayangModelWaitClmn(data.length, router, pagination, setPartnerData, setPartnerMngData)}
-            data={data}
+            columns={sayangModelWaitClmn(dataWait.length, router, paginationWait, setPartnerData, setPartnerMngData)}
+            data={dataWaitSlice}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
             loading={dataLoading}
           />
         </List>
         <ListPagination
-          totalData={data.length}
-          pagination={pagination}
-          onChange={handlePageChange}
-          handleMenuClick={handlePageMenuClick}
+          totalData={dataWait.length}
+          pagination={paginationWait}
+          onChange={handlePageChangeWait}
+          handleMenuClick={handlePageMenuWaitClick}
         />
       </div>
 
