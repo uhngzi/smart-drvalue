@@ -420,9 +420,9 @@ export const sayangSampleWaitClmn = (
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
         }}
       >
-        {record.orderModel?.prtInfo.prt.prtNm}
+        {record.orderModel?.prtInfo.prt?.prtNm}
         /
-        {record.orderModel?.prtInfo.prt.prtRegCd}
+        {record.orderModel?.prtInfo.prt?.prtRegCd}
       </div>
     )
   },
@@ -1207,9 +1207,9 @@ export const sayangModelWaitClmn = (
           setPartnerMngData(record.prtInfo.mng);
         }}
       >
-        {record.prtInfo?.prt.prtNm}
+        {record.prtInfo?.prt?.prtNm}
         /
-        {record.prtInfo?.prt.prtRegCd}
+        {record.prtInfo?.prt?.prtRegCd}
       </div>
     )
   },
