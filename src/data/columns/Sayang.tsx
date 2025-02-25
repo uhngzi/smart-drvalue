@@ -560,6 +560,7 @@ export const sayangSampleWaitAddClmn = (
     name?: string,
     value?: any
   ) => void,
+  setDeleted: React.Dispatch<SetStateAction<specModelType | null>>,
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -567,10 +568,15 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'id',
     key: 'id',
     align: 'center',
-    render: (value:any,_,index:number) => (
+    render: (value:any,record:specModelType,index:number) => (
       <>
         <div className="h-[50%] w-[100%] v-h-center ">
-          <p className="w-16 h-16 border-1 border-[#222222] v-h-center rounded-4 cursor-pointer">
+          <p
+            className="w-16 h-16 border-1 border-[#222222] v-h-center rounded-4 cursor-pointer"
+            onClick={()=>{
+              setDeleted(record);
+            }}
+          >
             <CloseOutlined style={{color:"#222222"}}/>
           </p>
           {/* <Checkbox id={value}/> */}

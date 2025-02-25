@@ -3,7 +3,7 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
 import { boardType } from "@/data/type/base/board";
-import { yieldInputType } from "@/data/type/sayang/sample";
+import { arrayCalType, yieldInputType } from "@/data/type/sayang/sample";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
 import SayangYieldCalculate from "./YieldCalculate";
@@ -21,10 +21,12 @@ const ArrayContents: React.FC<Props> = ({
   const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
-  const [kit, setKit] = useState<{id:string, x:number, y:number}[]>([{id:"new-0", x:0, y:0}]);
+  const [kit, setKit] = useState<{id:string, x:number, y:number, cnt:number}[]>([{id:"new-0", x:0, y:0, cnt:1}]);
+    const [resultData, setResultData] = useState<arrayCalType[]>([]);
   useEffect(()=>{
     if(!yieldPopOpen) {
-      setKit([{id:"new-0", x:0, y:0}]);
+      setKit([{id:"new-0", x:0, y:0, cnt: 1}]);
+      setResultData([]);
     }
   }, [yieldPopOpen])
 
@@ -43,7 +45,7 @@ const ArrayContents: React.FC<Props> = ({
             setYieldPopOpen(true);
           }}
         >
-          수율 계산
+          배열도면선택
         </Button>
       </div>
 
@@ -144,6 +146,8 @@ const ArrayContents: React.FC<Props> = ({
           setDisk={setDisk}
           kit={kit}
           setKit={setKit}
+          resultData={resultData}
+          setResultData={setResultData}
         />}
         onClose={()=>{
           setYieldPopOpen(false);

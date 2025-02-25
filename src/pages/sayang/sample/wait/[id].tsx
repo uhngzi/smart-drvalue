@@ -40,6 +40,7 @@ import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { productLinesGroupRType } from "@/data/type/base/product";
 import { specModelType, specType } from "@/data/type/sayang/sample";
+import { deleteAPI } from "@/api/delete";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -316,7 +317,7 @@ const SayangSampleAddPage: React.FC & {
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"cf" | "error" | "">("");
+  const [resultType, setResultType] = useState<"cf" | "error" | "del" | "">("");
   const [resultMsg, setResultMsg] = useState<string>("");
 
   // 로딩 후 결재창 보여주기
@@ -344,6 +345,48 @@ const SayangSampleAddPage: React.FC & {
       setTimeout(() => setAnimate(true), 10); // 애니메이션 활성화
     }
   };
+
+  const [deleted, setDeleted] = useState<specModelType | null>(null);
+
+  useEffect(()=>{
+    if(deleted) {
+      setResultType("del");
+      setResultOpen(true);
+    }
+  }, [deleted])
+
+  const handleDeleteModel = async () => {
+    try {
+      if(deleted) {
+        const result = await deleteAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: `spec/model/default/cancel`,
+          jsx: 'default',
+          etc: true,
+        },
+          deleted?.id ?? "",
+        );
+
+        if(result.resultCode === "OK_0000") {
+          setDeleted(null);
+          showToast("사양 모델 취소 성공", "success");
+          if(detailData.specModels?.length && detailData.specModels?.length < 2) {
+            router.push("/sayang/sample/wait");
+          } else {
+            refetch();
+          }
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      } else  console.log("delete 없음 :: ", deleted);
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
 
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
@@ -433,6 +476,7 @@ const SayangSampleAddPage: React.FC & {
               ul1SelectList,
               ul2SelectList,
               handleModelDataChange,
+              setDeleted,
             )}
             data={detailData.specModels}
             styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
@@ -509,29 +553,43 @@ const SayangSampleAddPage: React.FC & {
         title={
           resultType === "cf"? "사양 확정 완료" :
           resultType === "error"? "요청 실패" :
+          resultType === "del"? "해당 모델을 삭제하시겠습니까?" :
           ""
         }
         contents={
           resultType === "cf" ? <div className="h-40">사양 확정에 성공하였습니다.</div> :
           resultType === "error" ? <div className="h-40">{resultMsg}</div> :
+          resultType === "del" ? <div className="h-40">해당 모델의 사양 등록을 취소하시겠습니까?</div> :
           <div className="h-40"></div>
         }
         type={
           resultType === "cf" ? "success" :
           resultType === "error" ? "error" :
+          resultType === "del" ? "warning" :
           "success"
         }
         onOk={()=>{
           setResultOpen(false);
           if(resultType === "cf") {
             router.push('/sayang/sample/wait');
+          } else if(resultType === "del") {
+            handleDeleteModel();
           }
         }}
-        hideCancel={true}
+        onCancle={()=>{
+          setResultOpen(false);
+          setDeleted(null);
+        }}
+        hideCancel={resultType === "del" ? false : true}
         okText={
           resultType === "cf" ? "목록으로 이동" :
           resultType === "error" ? "확인" :
+          resultType === "del" ? "네 사양 등록 대기로 변경하겠습니다" :
           "목록으로 이동"
+        }
+        cancelText={
+          resultType === "del" ? "아니요 계속 등록할게요" :
+          ""
         }
       />
 

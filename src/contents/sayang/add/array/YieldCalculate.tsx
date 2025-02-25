@@ -12,7 +12,7 @@ import Down from "@/assets/svg/icons/s_drop_down.svg";
 import Right from "@/assets/svg/icons/s_drop_right.svg";
 import AntdInput from '@/components/Input/AntdInput';
 import AntdTable from '@/components/List/AntdTable';
-import { yieldCalType, yieldInputReq, yieldInputType } from '@/data/type/sayang/sample';
+import { arrayCalType, yieldCalType, yieldInputReq, yieldInputType } from '@/data/type/sayang/sample';
 import { postAPI } from '@/api/post';
 import useToast from '@/utils/useToast';
 import { validReq } from '@/utils/valid';
@@ -23,7 +23,8 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Plus from "@/assets/svg/icons/s_plus.svg";
 import Check from "@/assets/svg/icons/s_check.svg";
-
+import { ColumnsType } from 'antd/es/table';
+import { AnyObject } from 'antd/es/_util/type';
 
 interface Props {
   board: boardType[];
@@ -39,8 +40,10 @@ interface Props {
     diskWidth:number;
     diskHeight:number;
   }[]>>;
-  kit: {id:string, x:number, y:number}[];
-  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number}[]>>;
+  kit: {id:string, x:number, y:number, cnt:number}[];
+  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number}[]>>;
+  resultData: arrayCalType[];
+  setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
 }
 
 
@@ -52,6 +55,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
   setDisk,
   kit,
   setKit,
+  resultData,
+  setResultData,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -70,23 +75,24 @@ const SayangYieldCalculate: React.FC<Props> = ({
   useEffect(()=>{
     if(yielddata === null) {
       setYieldTableData([]);
+      setResultData([]);
       setCalChk(false);
     }
   }, [yielddata]);
 
-  const [calLoading, setCalLoading] = useState<boolean>(false);
+  const [calLoading, setCalLoading] = useState<boolean>(true);
 
   const items = [
     {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
-    {value:yielddata?.minYield, name:'minYield', label:'최저 수율', type:'input', widthType:'full'},
+    // {value:yielddata?.minYield, name:'minYield', label:'최저 수율', type:'input', widthType:'full'},
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
     {value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
     // {value:yielddata?.kitWidth, name:'kitWidth', label:'Kit긴쪽길이', type:'input', widthType:'full'},
     // {value:yielddata?.kitHeight, name:'kitHeight', label:'Kit짧은쪽길이', type:'input', widthType:'full'},
-    {value:yielddata?.kitArrangeX, name:'kitArrangeX', label:'Kit 배치 X', type:'input', widthType:'full'},
-    {value:yielddata?.kitArrangeY, name:'kitArrangeY', label:'Kit 배치 Y', type:'input', widthType:'full'},
+    // {value:yielddata?.kitArrangeX, name:'kitArrangeX', label:'Kit 배치 X', type:'input', widthType:'full'},
+    // {value:yielddata?.kitArrangeY, name:'kitArrangeY', label:'Kit 배치 Y', type:'input', widthType:'full'},
   ]
 
   const handleCheckboxChange = (id:string, w: number, h: number) => {
@@ -99,28 +105,35 @@ const SayangYieldCalculate: React.FC<Props> = ({
         showToast("원판을 선택해주세요.", "error");
         return;
       }
+  
+      setCalLoading(true);
 
-      const val = validReq(yielddata, yieldInputReq());
-      if(!val.isValid) {
-        showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
-        return;
-      } 
-
-      const jsonData = { ...yielddata, disks:disk.map(d=>({diskWidth:d.diskWidth,diskHeight:d.diskHeight})) };
+      const jsonData = { 
+        boards:disk.map(board=>({width:board.diskWidth,height:board.diskHeight})),
+        kits: kit.map((kit, index)=>({kitId:'kit'+index, width:kit.x, height:kit.y, targetCount: 100})),
+        panelSpacing: {
+          horizontalPadding: yielddata?.marginLongSide,
+          verticalPadding: yielddata?.marginShortSide,
+        },
+        kitSpacing: {
+          horizontalSpacing: yielddata?.kitGapX,
+          verticalSpacing: yielddata?.kitGapY,
+          sharingLineSpacing: yielddata?.minPanelLength,
+        },
+     };
       console.log(JSON.stringify(jsonData));
 
-      setCalLoading(true);
       const result = await postAPI({
         type: 'core-d1',
         utype: 'tenant/',
         jsx: 'default',
-        url:'board-yield-calc/default/calculate/auto/multi-board',
+        url:'spec/board-array-calc/default/calculate',
         etc: true,
       }, jsonData);
-  
+      console.log(result);
       if(result.resultCode === "OK_0000") {
-        const rdata = (result.data ?? []) as yieldCalType[];
-        setYieldTableData(rdata);
+        const rdata = (result.data ?? []) as arrayCalType[];
+        setResultData(rdata);
         setCalLoading(false);
       } else {
         const msg = result?.response?.data?.message;
@@ -137,6 +150,115 @@ const SayangYieldCalculate: React.FC<Props> = ({
     setCalChk(true);
   }
 
+  const handleDataChange = (
+    id: string,
+    name: string,
+    value: any
+  ) => {
+    // 데이터를 복사
+    const updatedData = kit.map((item) => {
+      if (item.id === id) {
+        const keys = name.split(".");
+        const updatedItem = { ...item };
+  
+        // 마지막 키를 제외한 객체 탐색
+        const lastKey = keys.pop()!;
+        let targetObject: any = updatedItem;
+  
+        keys.forEach((key) => {
+          // 중간 키가 없거나 null인 경우 초기화
+          if (!targetObject[key] || typeof targetObject[key] !== "object") {
+            targetObject[key] = {};
+          }
+          targetObject = targetObject[key];
+        });
+  
+        // 최종 키에 새 값 할당
+        targetObject[lastKey] = value;
+  
+        return updatedItem;
+      }
+      return item; // 다른 데이터는 그대로 유지
+    });
+
+    setKit(updatedData); // 상태 업데이트
+  }; 
+
+  // 1) 최대 kit 개수 계산
+  const maxKitCount = Math.max(...resultData.map((row) => row.kitsInfo.length), 0);
+
+  const kitColumns = Array.from({ length: maxKitCount }, (_, i) => ({
+    title: `Kit${i + 1}`,  // or '키트' + (i+1)
+    children: [
+      {
+        title: 'X.Y',
+        dataIndex: ['kitsInfo', i], 
+        key: `xy-${i}`,
+        width: 30,
+        align: 'center' as const,
+        render: (val: any) => {
+          if (!val) return null; 
+          return `${val.rows} . ${val.cols}`;
+        }
+      },
+      {
+        title: '가로 x 세로',
+        dataIndex: ['kitsInfo', i],
+        key: `size-${i}`,
+        width: 50,
+        align: 'center' as const,
+        render: (val: any) => {
+          if (!val) return null;
+          return `${val.kitArrayXSize} x ${val.kitArrayYSize}`;
+        }
+      },
+      {
+        title: '개수',
+        dataIndex: ['kitsInfo', i],
+        key: `count-${i}`,
+        width: 30,
+        align: 'center' as const,
+        render: (val: any) => {
+          if (!val) return null;
+          return val.totalCount;
+        }
+      }
+    ]
+  }));
+
+  // 3) 최종 columns
+  const columns: ColumnsType<AnyObject> = [
+    {
+      title: '원판',
+      children: [
+        {
+          title: '가로 x 세로',
+          dataIndex: 'board',
+          key: 'boardSize',
+          width: 50,
+          align: 'center',
+          render: (board) => {
+            if (!board) return null;
+            return `${board.width} x ${board.height}`;
+          },
+        },
+      ],
+    },
+    {
+      title: '판넬',
+      children: [
+        ...kitColumns,
+        {
+          title: '수량',
+          dataIndex: 'requiredPanels',
+          key: 'requiredPanels',
+          width: 50,
+          align: 'center',
+        },
+      ],
+    },
+  ];
+
   return (
     <section className='flex gap-10 w-full flex-col'>
       <div className="w-full flex flex-col">
@@ -150,8 +272,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
           배열 도면 계산하기
         </div>
         { !calChk &&
-        <div className="w-full h-[550px] bg-white p-20 rounded-b-14 border-1 border-line border-t-0 flex flex-col gap-10">
-          <div className="w-full h-[465px] h-center gap-30">
+        <div className="w-full h-[500px] bg-white p-20 rounded-b-14 border-1 border-line border-t-0 flex flex-col gap-30">
+          <div className="w-full h-[390px] h-center gap-30">
             <div className="w-[300px] h-full flex flex-col gap-10">
               <p className="pl-10">원판 선택</p>
               <div className="flex-1 overflow-y-auto">
@@ -233,7 +355,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           </div>,
                           key: 0,
                           onClick: () => {
-                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0} ])
+                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
                           }
                         },
                         {
@@ -261,32 +383,39 @@ const SayangYieldCalculate: React.FC<Props> = ({
                     <div className="v-h-center gap-15">
                       <div>
                         <p className='pb-8'>Kit긴쪽길이</p>
-                        <div className="h-center gap-10 w-[145px]">
+                        <div className="h-center gap-10 w-80">
                           <AntdInput 
-                            // value={item.x}
+                            value={item.x}
                             type="number"
                             onChange={(e)=>{
                               let { value } = e.target;
-                              setYielddata({
-                                ...yielddata,
-                                kitWidth: Number(value),
-                              });
+                              handleDataChange(item.id, "x", value);
                             }}
                           />
                         </div>
                       </div>
                       <div>
                         <p className='pb-8'>Kit짧은쪽길이</p>
-                        <div className="h-center gap-10 w-[145px]">
+                        <div className="h-center gap-10 w-80">
                           <AntdInput 
-                            // value={item.x}
+                            value={item.y}
                             type="number"
                             onChange={(e)=>{
                               let { value } = e.target;
-                              setYielddata({
-                                ...yielddata,
-                                kitHeight: Number(value),
-                              });
+                              handleDataChange(item.id, "y", value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <p className='pb-8'>Kit목표개수</p>
+                        <div className="h-center gap-10 w-80">
+                          <AntdInput 
+                            value={item.cnt}
+                            type="number"
+                            onChange={(e)=>{
+                              let { value } = e.target;
+                              handleDataChange(item.id, "cnt", value);
                             }}
                           />
                         </div>
@@ -309,90 +438,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
       <div className='w-full p-30 bg-white rounded-14 border border-[#D9D9D9]'>
         <AntdTable
           className='h-full overflow-y-auto'
-          columns={[
-            {
-              title: '원판',
-              dataIndex: 'stencil',
-              key: 'stencil',
-              align: 'center',
-              children: [
-                {
-                  title: '가로 x 세로',
-                  dataIndex: 'diskWidth',
-                  key: 'diskWidth',
-                  width: 120,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return (record.disk?.diskWidth ?? "") + ' x ' + (record.disk?.diskHeight ?? "");
-                  }
-                },
-              ],
-            },
-            {
-              title: '판넬',
-              dataIndex: 'panel',
-              key: 'panel',
-              align: 'center',
-              children: [
-                { title: 'X . Y',
-                  dataIndex: 'panel.arrangeX',
-                  key: 'panel.arrangeX',
-                  width: 50,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return Math.floor(Number(record.panel?.arrangeX ?? 0)) + ' . ' + Math.floor(Number(record.panel?.arrangeY ?? 0));
-                  }
-                },
-                { title: '가로 x 세로',
-                  dataIndex: 'panel.width',
-                  key: 'panel.width',
-                  width: 120,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return Math.floor(Number(record.panel?.width ?? 0)) + ' x ' +  Math.floor(Number(record.panel?.height ?? 0));
-                  }
-                },
-                { title: '개수',
-                  dataIndex: 'panelCount',
-                  key: 'panelCount',
-                  width: 50,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return Math.floor(Number(record.panelCount ?? 0));
-                  }
-                },
-                {
-                  title: '수량',
-                  dataIndex: 'kitCount',
-                  key: 'kitCount',
-                  width: 80,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return Math.floor(Number(record.kitCount ?? 0));
-                  }
-                },
-              ],
-            },
-            {
-              title: '계산결과',
-              dataIndex: 'remark',
-              key: 'remark',
-              align: 'center',
-              children: [
-                {
-                  title: '수율',
-                  dataIndex: 'layout.yieldRatio',
-                  key: 'layout.yieldRatio',
-                  width: 100,
-                  align: 'center',
-                  render: (_, record:yieldCalType) => {
-                    return Math.floor(Number(record.layout?.yieldRatio ?? 0) * 100) / 100;
-                  }
-                },
-              ],
-            },
-          ]}
-          data={yieldTableData}
+          columns={columns}
+          data={resultData}
           loading={calLoading}
           styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
         />
@@ -400,13 +447,14 @@ const SayangYieldCalculate: React.FC<Props> = ({
         
       <section className='flex flex-col gap-10 w-full min-h-[300px]'>
         <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
-          {yieldTableData.length > 0 && yieldTableData
+          { calLoading && <div className="w-full h-full v-h-center"><Spin tip="계산중..." /></div>}
+          { !calLoading && resultData.length > 0 && resultData
             .map((data, rowIndex) => (
               <div key={rowIndex} className="w-full flex flex-col gap-20">
                 <div className="flex w-full min-h-100 gap-30">
                   <section className="relative" style={{ flex: 1.5 }}>
                     <Image
-                      src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.layout}`}
+                      src={`${baseURL}file-mng/v1/every/file-manager/download/${data?.boardImageStorageName}`}
                       alt=""
                       layout="fill" // 🔹 부모 크기에 맞춤
                       objectFit="contain" // 🔹 이미지 비율 유지하면서 부모 영역에 맞춤
@@ -414,7 +462,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                   </section>
                   <section className="relative" style={{ flex: 1 }}>
                     <Image
-                      src={`${baseURL}file-mng/v1/every/file-manager/download/${data.images?.panel}`}
+                      src={`${baseURL}file-mng/v1/every/file-manager/download/${data?.panelImageStorageName}`}
                       alt=""
                       layout="fill" // 🔹 부모 크기에 맞춤
                       objectFit="contain" // 🔹 이미지 비율 유지하면서 부모 영역에 맞춤

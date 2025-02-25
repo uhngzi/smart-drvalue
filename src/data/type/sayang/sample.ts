@@ -198,3 +198,31 @@ export type yieldCalType = {
     panel?: string;
   }
 }
+
+export type arrayCalType = {
+  configs: {
+    kitId: string;
+    rows: number;
+    cols: number;
+  }[];
+  finalWidth: number;
+  finalHeight: number;
+  requiredPanels: number;
+  boardsUsed: number;
+  panelsPerBoard: number;
+  yieldBoard: number;
+  board: {
+    width: number;
+    height: number;
+  },
+  boardImageStorageName: string;
+  panelImageStorageName: string;
+  kitsInfo: {
+    kitId: string;
+    rows: number;
+    cols: number;
+    totalCount: number;
+    kitArrayXSize: number;
+    kitArrayYSize: number;
+  }[];
+}
