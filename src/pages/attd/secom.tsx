@@ -577,7 +577,7 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: headerBg,
-              fontSize: "10px",
+              fontSize: "11px",
               whiteSpace: "nowrap",
               color: headerFc,
             },
@@ -592,7 +592,7 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: bgColor,
-              fontSize: "10px",
+              fontSize: "11px",
               padding: "0",
             },
           };
