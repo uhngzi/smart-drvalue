@@ -178,7 +178,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         />
       </div>
       
-      <div className="flex flex-col mt-[auto] h-[130px]">
+      {/* <div className="flex flex-col mt-[auto] h-[130px]">
         <Menu
           mode="vertical"
           items={[
@@ -221,7 +221,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           className="sider__menu h-[100%]"
           inlineCollapsed={collapsed}
         />
-      </div>
+      </div> */}
     </SiderStyled>
   )
 }
