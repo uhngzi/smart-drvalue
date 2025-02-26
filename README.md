@@ -76,3 +76,14 @@ git pull
 yarn build
 pm2 restart 0
 ```
+
+
+```
+근태 관련
+** SIDER 내 근태만 남길 것
+** MainPageLayout 내 loginCheck 주석 처리
+cd /home/secom/smart-front
+git pull
+yarn build
+pm2 restart smart-front-81
+```
