@@ -298,6 +298,18 @@ const ErrBoardPage: React.FC & {
               key: 'content',
               align: 'center',
               cellAlign: "left",
+              render: (value, record) => (
+                <div
+                  className="w-full h-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1"
+                  onClick={()=>{
+                    setSelect(record);
+                    setFileIdList((record as errBoardType).attachmentFiles ?? []);
+                    setOpen(true);
+                  }}
+                >
+                  {value}
+                </div>
+              )
             },
             {
               title: '처리상태',
@@ -350,6 +362,7 @@ const ErrBoardPage: React.FC & {
                       const { value } = e.target;
                       setSelect({...select, writerName: value});
                     }}
+                    readonly={select?.id ? true : false}
                   />
                 </div>
                 <div>
@@ -361,6 +374,7 @@ const ErrBoardPage: React.FC & {
                       setSelect({...select, detailWorkName: value});
                     }}
                     // placeholder="작업명"
+                    readonly={select?.id ? true : false}
                   />
                   {/* <AntdSelect
                     options={[
@@ -391,6 +405,7 @@ const ErrBoardPage: React.FC & {
                       setSelect({...select, status: value});
                     }}
                     styles={{ht:'36px'}}
+                    readonly={select?.id ? true : false}
                   />
                 </div>
                 { !select?.id &&
@@ -431,6 +446,7 @@ const ErrBoardPage: React.FC & {
                       const { value } = e.target;
                       setSelect({...select, menuName: value});
                     }}
+                    readonly={select?.id ? true : false}
                   />
                 </div>
                 <div className="w-full">
@@ -442,8 +458,9 @@ const ErrBoardPage: React.FC & {
                       setSelect({...select, content:value});
                     }}
                     className="rounded-2"
-                    style={{height:200,minHeight:200}}
+                    style={{height:200,minHeight:200,background:"#FFF",color:"#222222"}}
                     onResize={(e)=>{setChangeHeight(e)}}
+                    disabled={select?.id ? true : false}
                   />
                 </div>
               </div>
