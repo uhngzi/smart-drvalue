@@ -491,7 +491,7 @@ const ErrBoardPage: React.FC & {
               </div>
               <div className="w-full min-h-[200px] flex flex-col gap-10">
               {
-                comments && comments.map((cmt) => (<div className="w-full flex flex-col gap-10">
+                comments && comments.map((cmt) => (<div className="w-full flex flex-col gap-10" key={cmt.id}>
                   <div className="h-center gap-10" key={cmt.id}>
                     <div className="max-w-100 min-w-100 border-r-2 border-r-black">
                       <LabelMedium  label={cmt?.writerName ?? ""} />
