@@ -378,6 +378,7 @@ const ClientCuListPage: React.FC & {
       /> */}
 
       <AntdAlertModal
+        key={newData.id}
         open={resultOpen}
         setOpen={setResultOpen}
         title={resultTitle}

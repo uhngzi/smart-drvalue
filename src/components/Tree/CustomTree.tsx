@@ -19,12 +19,6 @@ import AntdDatePicker from "../DatePicker/AntdDatePicker"
 
 interface Props {
   data: treeType[];
-  // handleDataChange: (
-  //   type:'main' | 'child',
-  //   id:string,
-  //   value:string,
-  //   parentsId?: string,
-  // ) => void;
   onSubmit: (newData : any) => void;
 }
 
@@ -32,13 +26,24 @@ interface Props {
 
 const CustomTree:React.FC<Props> = ({
   data,
-  // handleDataChange,
   onSubmit,
 }) => {
+  const [ treeName, setTreeName ] = useState<string>('');
 
-  const customEditItems = (id: string) => (
+  const customEditItems = (type: "main" | "child", id: string, parentId?: string) => (
     <div className="flex flex-col gap-12 px-16 py-9 bg-white rounded-8" style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
-      <div className="relative h-center mb-10"><AntdInput className="w-[120px]" /> <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span></div>
+      <div className="relative h-center mb-10">
+        <AntdInput className="w-[120px]" value={treeName} 
+          onChange={(e) => setTreeName(e.target.value)}
+          onKeyDown={(e) => {
+            if(e.key === "Enter") {
+              const inputValue = (e.target as HTMLInputElement).value;
+              handleDataUpdate(type, id, inputValue, parentId);
+              // e.currentTarget.blur();
+            }
+          }}/> 
+        <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
+      </div>
       <div className="flex h-center justify-between">
         <span className="flex text-12  gap-5"><CloseEye/>숨기기</span>
         <Switch size="small"/>
@@ -73,12 +78,53 @@ const CustomTree:React.FC<Props> = ({
   const [selectId, setSelectId] = useState<String[]>([]);
   const [hoverId, setHoverId] = useState<string | null>(null);
 
-  const handleDataChange = async (
+  // tree 데이터를 수정할때 사용하는 함수
+  const handleDataUpdate = async (
+    type: 'main' | 'child',
+    id: string,
+    value: string,
+    parentsId?: string,
+  ) => {
+    console.log(type, id, value, parentsId);
+  
+    setList((prev) => {
+      if (type === 'main') {
+        return prev.map(item => 
+          // 기존에 동일한 id가 있으면 해당 항목 수정, 없으면 새 항목 추가
+          item.id === id
+            ? { ...item, label: value } // 기존 항목 수정
+            : item // 그대로 두기
+        );
+      } else {
+        const newList = prev.map((item) => {
+          if (item.id === parentsId) {
+            const updatedChildren = item.children?.map(child => 
+              // 자식 항목 중에서 동일한 id가 있으면 수정
+              child.id === id
+                ? { ...child, label: value } // 해당 자식 수정
+                : child // 그대로 두기
+            );
+  
+            return {
+              ...item,
+              children: updatedChildren || item.children, // 자식 항목 갱신
+            };
+          }
+          return item;
+        });
+        return newList;
+      }
+    });
+  };
+  
+  // tree에 데이터를 추가할때 사용하는 함수
+  const handleDataAdd = async (
     type:'main'|'child',
     id:string,
     value:string,
     parentsId?: string,
   ) => {
+    console.log(type, id, value, parentsId);
     setList((prev) => {
       if(type === 'main'){
         return [
@@ -249,7 +295,7 @@ const CustomTree:React.FC<Props> = ({
                       placeholder="새 항목 입력"
                       onKeyDown={(e) => {
                         if(e.key === "Enter") {
-                          handleDataChange('main', item.id, item.label);
+                          handleDataAdd('main', item.id, item.label);
                           // e.currentTarget.blur();
                         }
                       }}
@@ -291,7 +337,7 @@ const CustomTree:React.FC<Props> = ({
                         <Plus/>
                       </Button>
                       <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                        <Dropdown trigger={['click']} dropdownRender={() => customEditItems(item.id)}>
+                        <Dropdown onOpenChange={(visible) => {if(visible) setTreeName(item.label)}} trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
                           <a onClick={(e) => e.preventDefault()}>
                               <div 
                                 className="w-full h-full v-h-center cursor-pointer"
@@ -328,7 +374,7 @@ const CustomTree:React.FC<Props> = ({
                               onBlur={handleBlur}
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") {
-                                  handleDataChange("child", child.id, child.label, item.id);
+                                  handleDataAdd("child", child.id, child.label, item.id);
                                 }
                               }}
                             />
@@ -357,7 +403,7 @@ const CustomTree:React.FC<Props> = ({
                           {!selectId.includes(child.id) ? (
                             <div className={`${child.id === hoverId ? 'visible' : 'invisible'}`}>
                               <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                                <Dropdown trigger={['click']} dropdownRender={() => customEditItems(child.id)}>
+                                <Dropdown onOpenChange={(visible) => {if(visible) setTreeName(child.label)}} trigger={['click']} dropdownRender={() => customEditItems("child", child.id, item.id)}>
                                   <a onClick={(e) => e.preventDefault()}>
                                       <div 
                                         className="w-full h-full v-h-center cursor-pointer"

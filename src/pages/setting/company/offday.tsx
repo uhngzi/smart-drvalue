@@ -20,7 +20,7 @@ import { getAPI } from "@/api/get";
 import dayjs from "dayjs";
 import 'dayjs/locale/ko';  // 한글 로케일
 import 'dayjs/locale/en';  // 영어 로케일
-import { offdayCUType } from "@/data/type/base/offday";
+import { newDataOffdayType, offdayCUType } from "@/data/type/base/offday";
 import { postAPI } from "@/api/post";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import { deleteAPI } from "@/api/delete";
@@ -111,12 +111,14 @@ const CompanyOffdayListPage: React.FC & {
       setResultOpen(true);
       setResultTitle('등록 성공');
       setResultText('쉬는 날이 등록되었습니다.');
+      setAddOffData(newDataOffdayType)
       setAddOffOpen(false);
       setResultType('success');
     } else {
       setResultOpen(true);
       setResultTitle('등록 실패');
       setResultText('쉬는 날 등록을 실패했습니다.');
+      setAddOffData(newDataOffdayType)
       setResultType('error');
     }
   }
@@ -202,6 +204,11 @@ const CompanyOffdayListPage: React.FC & {
       }
   }, [isFetching]);
 
+  function offPopClose(){
+    setAddOffData(newDataOffdayType)
+    setAddOffOpen(false);
+  }
+
 
   return (
     <section className="flex flex-col gap-20">
@@ -237,6 +244,7 @@ const CompanyOffdayListPage: React.FC & {
         width={600}
         open={addOffOpen}
         setOpen={setAddOffOpen}
+        onClose={offPopClose}
         bgColor="#fff"
         contents={
           <div>
