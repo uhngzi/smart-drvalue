@@ -451,7 +451,7 @@ const AtdSecomPage: React.FC & {
   /**
    * (A) 날짜별로 휴일/주말 배경색을 구하는 함수
    */
-  const getHolidayColor = (dayNum: number): string | undefined => {
+  const getHolidayColor = (type:"bg" | "fc", dayNum: number): string | undefined => {
     const dayStr = String(dayNum).padStart(2, "0");
     const isHoliday = culList.includes(dayStr);
     const current = dayjs(
@@ -461,11 +461,11 @@ const AtdSecomPage: React.FC & {
 
     // 공휴일·일요일 → yellow Tag의 배경
     if (isHoliday || dow === 0) {
-      return "#ffa75620";
+      return type === "bg" ? "#ffa75620" : "red";
     }
     // 토요일 → mint Tag의 배경
     if (dow === 6) {
-      return "#00b69b20";
+      return type === "bg" ? "#00b69b20" : "blue";
     }
     return undefined; // 평일이면 없음
   };
@@ -540,7 +540,7 @@ const AtdSecomPage: React.FC & {
     if (attColor) return attColor;
 
     // 2) 휴일/주말 색
-    const holidayColor = getHolidayColor(dayNum);
+    const holidayColor = getHolidayColor("bg",dayNum);
     if (holidayColor) return holidayColor;
 
     // 3) 퇴근 행이면 회색
@@ -562,7 +562,8 @@ const AtdSecomPage: React.FC & {
       const dayKey = dayNum < 10 ? `d0${dayNum}` : `d${dayNum}`;
 
       // 1) 헤더 배경색
-      const headerBg = getHolidayColor(dayNum);
+      const headerBg = getHolidayColor("bg",dayNum);
+      const headerFc = getHolidayColor("fc",dayNum);
 
       return {
         title: dayNum.toString(),
@@ -576,8 +577,9 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: headerBg,
-              fontSize: "9px",
+              fontSize: "10px",
               whiteSpace: "nowrap",
+              color: headerFc,
             },
           };
         },
@@ -590,7 +592,7 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: bgColor,
-              fontSize: "9px",
+              fontSize: "10px",
               padding: "0",
             },
           };
@@ -676,7 +678,17 @@ const AtdSecomPage: React.FC & {
     teamMap.forEach((records, teamName) => {
       // 일단 정렬해두면 "첫 직원"이 누가 될지 확정 가능
       // (정렬 조건은 원하는 대로. 여기선 사번 순으로 예시)
-      records.sort((a, b) => (a.sabun > b.sabun ? 1 : -1));
+      records.sort((a, b) => {
+        // a.sabun > b.sabun ? 1 : -1
+        const sabunA = parseInt(a.sabun, 10);
+        const sabunB = parseInt(b.sabun, 10);
+        if (sabunA !== sabunB) {
+          return sabunA - sabunB;
+        } else {
+          // flag1도 문자열일 가능성이 있으니 Number() 변환
+          return Number(a.flag1) - Number(b.flag1);
+        }
+      });
 
       // 대표 직원(맨 앞)
       const rep = records[0];
