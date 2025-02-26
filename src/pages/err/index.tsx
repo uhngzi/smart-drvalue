@@ -83,7 +83,9 @@ const ErrBoardPage: React.FC & {
   const [ fileList, setFileList ] = useState<any[]>([]);
   const [ fileIdList, setFileIdList ] = useState<string[]>([]);
   useEffect(()=>{
-    setSelect({ ...select, attachmentFiles:fileIdList });
+    if(select) {
+      setSelect({ ...select, attachmentFiles:fileIdList });
+    }
   }, [fileIdList]);
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
