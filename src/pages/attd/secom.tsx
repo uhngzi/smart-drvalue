@@ -567,7 +567,7 @@ const AtdSecomPage: React.FC & {
       return {
         title: dayNum.toString(),
         dataIndex: dayKey,
-        width: 36,
+        // width: 25,
         align: "center" as const,
 
         // (1) 헤더 배경색
@@ -576,7 +576,7 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: headerBg,
-              fontSize: "12px",
+              fontSize: "9px",
               whiteSpace: "nowrap",
             },
           };
@@ -590,6 +590,7 @@ const AtdSecomPage: React.FC & {
           return {
             style: {
               backgroundColor: bgColor,
+              fontSize: "9px",
               padding: "0",
             },
           };
@@ -612,7 +613,7 @@ const AtdSecomPage: React.FC & {
         title: "직원명",
         dataIndex: "teamNm/name",
         align: "center" as const,
-        width: 180,
+        width: 175,
         render: (value: any, row: any) => {
           return row?.teamNm + " / " + row?.name;
         },
@@ -621,7 +622,7 @@ const AtdSecomPage: React.FC & {
         title: "업무구분",
         dataIndex: "empTit",
         align: "center" as const,
-        width: 85,
+        width: 130,
         render: (value: any) => {
           return value || "";
         },
@@ -630,7 +631,7 @@ const AtdSecomPage: React.FC & {
         title: "구분",
         dataIndex: "flag1",
         align: "center" as const,
-        width: 60,
+        width: 50,
         render: (value: string) => {
           if (value === "1") return "출근";
           if (value === "4") return "퇴근";

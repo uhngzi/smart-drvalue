@@ -469,7 +469,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                   </section>
                 </div>
                 <div className="w-full h-center justify-end">
-                  <Button type="primary" className="flex h-center" onClick={calculdate}>
+                  <Button type="primary" className="flex h-center" onClick={()=>{console.log(data);}}>
                     <span className='w-16 h-16'><Check/></span>
                     <span>선택</span>
                   </Button>
