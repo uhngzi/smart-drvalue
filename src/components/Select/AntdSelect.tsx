@@ -16,6 +16,7 @@ interface Props {
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
   readonly?: boolean,
   tabIndex?: number;
+  placeholder?: string;
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -30,6 +31,7 @@ const AntdSelect : React.FC<Props> = ({
   onKeyDown,
   readonly,
   tabIndex,
+  placeholder,
 }) => {
 
   return (
@@ -53,6 +55,7 @@ const AntdSelect : React.FC<Props> = ({
         onKeyDown={onKeyDown}
         dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
         tabIndex={tabIndex}
+        placeholder={placeholder}
       />
     </AndtSelectStyled>
   )

@@ -34,9 +34,10 @@ import { instance, instanceRoot } from "./lib/axios"
 
 export const getAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1',
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'utility',
     utype?: 'root/' | 'tenant/',
     url: string,
+    header?: boolean,
   },
   params?: {
     limit?: number,
@@ -47,7 +48,7 @@ export const getAPI = async (
     sort?: string,
   }
 ): Promise<apiGetResponseType | apiAuthResponseType>  => {
-  if(server.utype === 'root/') {
+  if(server.utype === 'root/' && server.header && !server.header) {
     const response = await instanceRoot.get(`${server.type}/v1/${server.utype??''}${server.url}`, {
       params: {
         limit: params?.limit ?? null,

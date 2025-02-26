@@ -23,6 +23,7 @@ interface Props {
   mult?: boolean;
   divRef?: RefObject<HTMLDivElement | null>;
   changeHeight?: {width:number, height:number} | null;
+  defaultHeight?: number;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -55,6 +56,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
   mult = false,
   divRef,
   changeHeight,
+  defaultHeight,
 }) => {
   const UploadProp: UploadProps = {
     name: 'files',
@@ -93,20 +95,32 @@ const AntdDraggerSmall: React.FC<Props> = ({
   const [height, setHeight] = useState<number>(0);
   useEffect(()=>{
     if(divRef?.current?.clientHeight) {
-      const divHeight = Number(divRef?.current?.clientHeight) - 348;
+      const divHeight = Number(divRef?.current?.clientHeight) - (defaultHeight ?? 0);
       if(divHeight > 0) setHeight(divHeight);
       else              setHeight(172);
     }
   }, [changeHeight])
 
-  useEffect(()=>{console.log(height)},[height])
-
   return (
     <>
     <div
       className="flex flex-col mt-20 overflow-y-auto"
-      style={{ height: fileList && fileList.length > 0 && divRef?.current?.clientHeight ? height : "auto" }}
+      // style={{ height: fileList && fileList.length > 0 && divRef?.current?.clientHeight ? height : "auto" }}
+      style={{ height: height}}
     >
+      {/* { (!fileList || fileList.length < 1) && fileIdList && fileIdList.length > 0 && fileIdList.map((fileId, index) => (
+        <div className="h-center">
+          <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
+          <div
+            className="text-[#1890FF] cursor-pointer"
+            onClick={()=> downloadFileByObjectName(fileId)}
+          >
+            파일{index+1}
+          </div>
+        </div>
+      ))
+
+      } */}
       { fileList && fileList?.map((file, idx) => (
         <div className="h-center" key={idx}>
           <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>

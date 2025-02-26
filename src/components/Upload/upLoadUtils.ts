@@ -1,4 +1,4 @@
-import { instance } from '@/api/lib/axios';
+import { instance, instanceRoot } from '@/api/lib/axios';
 
 import { Modal } from 'antd';
 
@@ -53,20 +53,19 @@ export const uploadFile = async (file: any) => {
   }
 };
 
-export const downloadFileByObjectName = async (objectName: string) => {
+export const downloadFileByObjectName = async (storageId: string) => {
   try {
-    const response = await instance.get(
-      `/nhn/api-nhn-object-storage/download/public/${objectName}`,
-      {
-        responseType: 'blob', // 파일 다운로드를 위한 설정
-      },
+    const response = await instanceRoot.get(
+      `file-mng/v1/every/file-manager/download/${storageId}`,
+      {responseType: 'blob'}
     );
+    console.log(response);
 
     // 파일 다운로드 처리
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', objectName); // 다운로드할 파일 이름 설정
+    link.setAttribute('download', "파일1.png"); // 다운로드할 파일 이름 설정
     document.body.appendChild(link);
     link.click();
 

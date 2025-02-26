@@ -108,6 +108,7 @@ const SalesOrderContent: React.FC<Props> = ({
               mult={true}
               divRef={ref}
               changeHeight={changeHeight}
+              defaultHeight={348}
             />
           </div>
         </div>

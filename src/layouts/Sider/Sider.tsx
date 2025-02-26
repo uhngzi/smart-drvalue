@@ -14,6 +14,7 @@ import MenuIcon from "@/assets/svg/icons/l_menu.svg"
 import Setting from "@/assets/svg/icons/s_setting.svg"
 import Logout from "@/assets/svg/icons/logout.svg"
 import Login from "@/assets/svg/icons/s_login.svg"
+import Err from "@/assets/svg/icons/s_excalm.svg"
 
 import { Menu } from "antd";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
@@ -30,7 +31,7 @@ interface Props {
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
 
-  const iconClassNm = "h-40 min-w-[40px!important]";
+  const iconClassNm = "h-40 min-w-[40px!important] v-h-center";
 
   const currentPath = router.pathname.split('/').slice(1).join();
   const [newPath, setNewPath] = useState<string>('');
@@ -46,80 +47,80 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   }, [signIn])
 
   const items: ItemType<MenuItemType>[] = [
-    // {
-    //   key: '/',
-    //   title:'/',
-    //   label: '홈 피드',
-    //   icon: <p className={iconClassNm}><DashBoard /></p>,
-    // },
-    // {
-    //   key: 'star',
-    //   title:'',
-    //   label: '즐겨찾는 메뉴',
-    //   icon: <p className={iconClassNm}><Star /></p>,
-    // },
-    // {
-    //   type: 'divider',
-    //   style: {margin: 15},
-    // },
-    // {
-    //   key: 'sales',
-    //   title:'sales',
-    //   label: '영업',
-    //   icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
-    //   children: [
-    //     {
-    //       key: 'sales/order',
-    //       title: 'sales/order',
-    //       label: '고객발주/견적',
-    //     },
-    //     {
-    //       key: 'sales/array',
-    //       title: 'sales/array',
-    //       label: '원판 수율 계산',
-    //     },
-    //     // {
-    //     //   key: 'sales/order',
-    //     //   title: 'sales/order',
-    //     //   label: '수주',
-    //     // },
-    //   ]
-    // },
-    // {
-    //   type: 'divider',
-    //   style: {margin: 15},
-    // },
-    // {
-    //   key: 'sayang',
-    //   title:'sayang',
-    //   label: '사양',
-    //   icon: <p className={iconClassNm}><Sayang /></p>,
-    //   children: [
-    //     {
-    //       key: 'sayang/model',
-    //       title: 'sayang/model/wait',
-    //       label: '모델 확정 및 현황',
-    //     },
-    //     {
-    //       key: 'sayang/sample',
-    //       title: 'sayang/sample/wait',
-    //       label: '샘플-사양등록및현황',
-    //     },
-    //   ]
-    // },
     {
-      key: 'attd',
-      title:'attd',
-      label: '근태',
-      icon: <p className={iconClassNm}><Wk /></p>,
+      key: '/',
+      title:'/',
+      label: '홈 피드',
+      icon: <p className={iconClassNm}><DashBoard /></p>,
+    },
+    {
+      key: 'star',
+      title:'',
+      label: '즐겨찾는 메뉴',
+      icon: <p className={iconClassNm}><Star /></p>,
+    },
+    {
+      type: 'divider',
+      style: {margin: 15},
+    },
+    {
+      key: 'sales',
+      title:'sales',
+      label: '영업',
+      icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
       children: [
         {
-          key: 'attd/secom',
-          title: 'attd/secom',
-          label: '근태',
+          key: 'sales/order',
+          title: 'sales/order',
+          label: '고객발주/견적',
+        },
+        {
+          key: 'sales/array',
+          title: 'sales/array',
+          label: '원판 수율 계산',
+        },
+        // {
+        //   key: 'sales/order',
+        //   title: 'sales/order',
+        //   label: '수주',
+        // },
+      ]
+    },
+    {
+      type: 'divider',
+      style: {margin: 15},
+    },
+    {
+      key: 'sayang',
+      title:'sayang',
+      label: '사양',
+      icon: <p className={iconClassNm}><Sayang /></p>,
+      children: [
+        {
+          key: 'sayang/model',
+          title: 'sayang/model/wait',
+          label: '모델 확정 및 현황',
+        },
+        {
+          key: 'sayang/sample',
+          title: 'sayang/sample/wait',
+          label: '샘플-사양등록및현황',
         },
       ]
     },
+    // {
+    //   key: 'attd',
+    //   title:'attd',
+    //   label: '근태',
+    //   icon: <p className={iconClassNm}><Wk /></p>,
+    //   children: [
+    //     {
+    //       key: 'attd/secom',
+    //       title: 'attd/secom',
+    //       label: '근태',
+    //     },
+    //   ]
+    // },
     // {
     //   key: 'wk',
     //   title:'',
@@ -178,7 +179,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         />
       </div>
       
-      {/* <div className="flex flex-col mt-[auto] h-[130px]">
+      <div className="flex flex-col mt-[auto] h-[150px]">
         <Menu
           mode="vertical"
           items={[
@@ -203,6 +204,15 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               // ]
             },
             {
+              key: 'err',
+              title: 'err',
+              label:'오류사항',
+              icon: <div className={iconClassNm}><p className="w-22 h-22 icons"><Err /></p></div>,
+              onClick:()=>{
+                router.push("/err");
+              }
+            },
+            {
               key: signIn?'logout':'login',
               title: '',
               label:signIn?'로그아웃':'로그인',
@@ -220,8 +230,10 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           ]}
           className="sider__menu h-[100%]"
           inlineCollapsed={collapsed}
+          defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
+          selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
         />
-      </div> */}
+      </div>
     </SiderStyled>
   )
 }
@@ -247,6 +259,10 @@ const SiderStyled = styled.div<{
   .ant-menu-item-selected {
     background:  #4880FF;
     color: white;
+
+    .icons {
+      color: #4880FF;
+    }
   }
   
   .menu_under {
