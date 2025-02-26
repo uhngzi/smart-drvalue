@@ -82,11 +82,14 @@ const ErrBoardPage: React.FC & {
   const [open, setOpen] = useState<boolean>(false);
   const [ fileList, setFileList ] = useState<any[]>([]);
   const [ fileIdList, setFileIdList ] = useState<string[]>([]);
-  useEffect(()=>{
-    if(select) {
-      setSelect({ ...select, attachmentFiles:fileIdList });
+  useEffect(() => {
+    if (select) {
+      setSelect((prevSelect) => ({
+        ...prevSelect,
+        attachmentFiles: fileIdList,
+      }));
     }
-  }, [fileIdList]);
+  }, [fileIdList]);  
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
   // 전체 div의 크기를 가져오기 위한 변수
@@ -404,7 +407,7 @@ const ErrBoardPage: React.FC & {
                 }
                 { select?.id && select?.attachmentFiles && select?.attachmentFiles?.length > 0 &&
                   select?.attachmentFiles?.map((fileId, index) => (
-                  <div className="h-center">
+                  <div className="h-center" key={index}>
                     <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
                     <div
                       className="text-[#1890FF] cursor-pointer"
@@ -489,7 +492,7 @@ const ErrBoardPage: React.FC & {
               <div className="w-full min-h-[200px] flex flex-col gap-10">
               {
                 comments && comments.map((cmt) => (<div className="w-full flex flex-col gap-10">
-                  <div className="h-center gap-10">
+                  <div className="h-center gap-10" key={cmt.id}>
                     <div className="max-w-100 min-w-100 border-r-2 border-r-black">
                       <LabelMedium  label={cmt?.writerName ?? ""} />
                     </div>
@@ -551,7 +554,7 @@ const ErrBoardPage: React.FC & {
                     }}
                   > {cmt?.childShow ? "⇢ 답글 접기" : "⇢ 답글 보기"} </div> }
                   { cmt?.childComments && cmt?.childShow && cmt?.childComments.map((child)=> (
-                    <div className="h-center gap-10 pl-10">
+                    <div className="h-center gap-10 pl-10" key={child.id}>
                       <CommentOutlined />
                       <div className="max-w-100 min-w-100 border-r-2 border-r-black">
                         {child?.writerName}
