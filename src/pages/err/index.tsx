@@ -163,7 +163,9 @@ const ErrBoardPage: React.FC & {
       if(result.resultCode === "OK_0000") {
         refetch();
         const entity = result.data.entity as errBoardType;
-        setSelect(entity);
+        const attachmentFilesStr = result.data.entity?.attachmentFiles;
+        setSelect({ ...entity, attachmentFiles: JSON.parse(attachmentFilesStr)});
+        console.log(entity);
         showToast("등록 완료", "success");
       } else {
         const msg = result.response?.data?.message;
@@ -400,8 +402,8 @@ const ErrBoardPage: React.FC & {
                     defaultHeight={267}
                   />
                 }
-                { select?.id && select?.attachmentFiles && select.attachmentFiles.length > 0 &&
-                  select.attachmentFiles.map((fileId, index) => (
+                { select?.id && select?.attachmentFiles && select?.attachmentFiles?.length > 0 &&
+                  select?.attachmentFiles?.map((fileId, index) => (
                   <div className="h-center">
                     <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
                     <div
