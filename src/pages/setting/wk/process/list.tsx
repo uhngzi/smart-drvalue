@@ -190,6 +190,9 @@ const WkProcessGroupListPage: React.FC & {
             data={treeData}
             // handleDataChange={handleTreeDataChange}
             onSubmit={()=>{}}
+            setAddList={() => {}}
+            setEditList={() => {}}
+            setDelList={() => {}}
           />
         </div>
 

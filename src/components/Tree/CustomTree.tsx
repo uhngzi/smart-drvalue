@@ -10,23 +10,32 @@ import CloseEye from "@/assets/svg/icons/close_eye.svg"
 import BlueCheck from "@/assets/svg/icons/blue_check.svg"
 
 import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined } from "@ant-design/icons";
-import { useEffect, useRef, useState } from "react";
-import { treeType } from "@/data/type/componentStyles"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { CUtreeType, treeType } from "@/data/type/componentStyles"
 import { Button, Dropdown, MenuProps, Switch, Tooltip } from "antd"
 import AntdInput from "../Input/AntdInput"
 import dayjs from "dayjs"
 import AntdDatePicker from "../DatePicker/AntdDatePicker"
 
 interface Props {
+  open?: boolean;
   data: treeType[];
   onSubmit: (newData : any) => void;
+  setAddList: Dispatch<SetStateAction<CUtreeType[]>>;
+  setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
+  setDelList: Dispatch<SetStateAction<{type: string, id: string}[]>>;
 }
 
 
 
 const CustomTree:React.FC<Props> = ({
+  open, // 모달에서 트리를 사용하는 경우에만 사용됨, 모달이 열려있는지 여부
   data,
   onSubmit,
+  setAddList,
+  setEditList,
+  setDelList,
+  
 }) => {
   const [ treeName, setTreeName ] = useState<string>('');
 
@@ -48,7 +57,7 @@ const CustomTree:React.FC<Props> = ({
         <span className="flex text-12  gap-5"><CloseEye/>숨기기</span>
         <Switch size="small"/>
       </div>
-      <Button type="text" className="justify-start p-0 h-center gap-5 text-12" onClick={()=>handleDeleteList([id])}>
+      <Button type="text" className="justify-start p-0 h-center gap-5 text-12" onClick={()=>handleDeleteList([{id, type}])}>
         <Trash/>삭제
       </Button>
     </div>
@@ -57,6 +66,15 @@ const CustomTree:React.FC<Props> = ({
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
   const [ list, setList ] = useState<treeType[]>([]);
   const newInputRef = useRef<HTMLInputElement>(null);
+
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const [selectId, setSelectId] = useState<{id: string, type: string}[]>([]);
+  const [hoverId, setHoverId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectId([]);
+    setList(data);
+  }, [open])
 
   useEffect(()=>{
     // if(data.length > 0) {
@@ -74,9 +92,7 @@ const CustomTree:React.FC<Props> = ({
       newInputRef.current.focus();
     }
   }, [list]);
-  const [focusId, setFocusId] = useState<string | null>(null);
-  const [selectId, setSelectId] = useState<String[]>([]);
-  const [hoverId, setHoverId] = useState<string | null>(null);
+  
 
   // tree 데이터를 수정할때 사용하는 함수
   const handleDataUpdate = async (
@@ -86,16 +102,25 @@ const CustomTree:React.FC<Props> = ({
     parentsId?: string,
   ) => {
     console.log(type, id, value, parentsId);
-  
-    setList((prev) => {
-      if (type === 'main') {
-        return prev.map(item => 
-          // 기존에 동일한 id가 있으면 해당 항목 수정, 없으면 새 항목 추가
-          item.id === id
-            ? { ...item, label: value } // 기존 항목 수정
-            : item // 그대로 두기
-        );
-      } else {
+    if (type === 'main') {
+      
+      setEditList((prev) =>
+        prev.some((item) => item.id === id)
+          ? prev.map((item) => (item.id === id ? { ...item, label: value } : item))
+          : [...prev, { id, label: value }]
+      );
+      setList((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, label: value } : item
+        )
+      );
+    }else{
+      setEditList((prev) =>
+        prev.some((item) => item.id === id)
+          ? prev.map((item) => (item.id === id ? { ...item, label: value } : item))
+          : [...prev, { id, label: value, parentId: parentsId }]
+      );
+      setList((prev) =>{
         const newList = prev.map((item) => {
           if (item.id === parentsId) {
             const updatedChildren = item.children?.map(child => 
@@ -113,8 +138,39 @@ const CustomTree:React.FC<Props> = ({
           return item;
         });
         return newList;
-      }
-    });
+      });
+    }
+  
+    // setList((prev) => {
+    //   console.log('test')
+    //   if (type === 'main') {
+        
+    //     return prev.map(item => 
+    //       // 기존에 동일한 id가 있으면 해당 항목 수정, 없으면 새 항목 추가
+    //       item.id === id
+    //         ? { ...item, label: value } // 기존 항목 수정
+    //         : item // 그대로 두기
+    //     );
+    //   } else {
+    //     const newList = prev.map((item) => {
+    //       if (item.id === parentsId) {
+    //         const updatedChildren = item.children?.map(child => 
+    //           // 자식 항목 중에서 동일한 id가 있으면 수정
+    //           child.id === id
+    //             ? { ...child, label: value } // 해당 자식 수정
+    //             : child // 그대로 두기
+    //         );
+  
+    //         return {
+    //           ...item,
+    //           children: updatedChildren || item.children, // 자식 항목 갱신
+    //         };
+    //       }
+    //       return item;
+    //     });
+    //     return newList;
+    //   }
+    // });
   };
   
   // tree에 데이터를 추가할때 사용하는 함수
@@ -127,6 +183,7 @@ const CustomTree:React.FC<Props> = ({
     console.log(type, id, value, parentsId);
     setList((prev) => {
       if(type === 'main'){
+        setAddList((prev) => [...prev, {id: `temp${list.length}`, label: value}]);
         return [
           ...prev.filter(item => !item.id.includes('new')), 
           { id: `temp${list.length}`, label:value, children:[], open:true }
@@ -134,6 +191,7 @@ const CustomTree:React.FC<Props> = ({
       } else {
         const newList = prev.map((item) => {
           if(item.id === parentsId){
+            setAddList((prev) => [...prev, {id: `temp${item.children?.length}`, label: value, parentId: parentsId}]);
             return {
               ...item,
               children: [
@@ -151,10 +209,10 @@ const CustomTree:React.FC<Props> = ({
   }
 
   const handleSelect = (item: any) => {
-    const selectId = [item.id, ...item.children?.map((child: any) => child.id) || []];
+    const selectId = [{id: item.id, type:'main'}, ...item.children?.map((child: any) => ({id: child.id, type:'child'})) || []];
     setSelectId(prev =>
-      prev.some(selectedId => selectId.includes(selectedId))
-        ? prev.filter(selectedId => !selectId.includes(selectedId))
+      prev.some(selectedId => selectId.some(v => v.id.includes(selectedId.id)))
+        ? prev.filter(selectedId => !selectId.some(v => v.id.includes(selectedId.id)))
         : [...prev, ...selectId]
     );
   };
@@ -194,24 +252,24 @@ const CustomTree:React.FC<Props> = ({
         ...item,
         children:
           item.children?.length ? [
-            {id:'newchild'+item.children?.length+1, label:''},
+            {id:'newchild'+(Number(item.children?.length)+1), label:''},
             ...item.children,
-          ] : [{id:'newchild'+item.children?.length+1, label:''}]
+          ] : [{id:'newchild'+(Number(item.children?.length)+1), label:''}]
       } : item
     ));
   }
 
-  const handleDeleteList = (idList: string[]) => {
+  const handleDeleteList = (idList: {id: string, type: string}[]) => {
     const list = idList.length > 0 ? idList : selectId;
     const removeItemById = (items: any) => {
       return items
-        .filter((item: any) => !list.includes(item.id)) // 현재 리스트에서 ID 일치하는 항목 삭제
+        .filter((item: any) => !list.some(v => v.id.includes(item.id))) // 현재 리스트에서 ID 일치하는 항목 삭제
         .map((item: any) => ({
           ...item,
           children: item.children ? removeItemById(item.children) : undefined // children도 검사하여 삭제
         }));
     };
-  
+    setDelList((prev) => [...prev, ...list]);
     setList(prevList => removeItemById(prevList));
     setSelectId([])
   }
@@ -311,7 +369,7 @@ const CustomTree:React.FC<Props> = ({
           }else{
             return(
               <div key={item.id}>
-                <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.includes(item.id) ? 'bg-[#f3faff]' : ''}`} key={item.id} 
+                <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.some(v => v.id.includes(item.id)) ? 'bg-[#f3faff]' : ''}`} key={item.id} 
                   style={{
                     transition: 'none',
                     animation: 'none',
@@ -331,7 +389,7 @@ const CustomTree:React.FC<Props> = ({
                       </Button>
                     )}
                   <span className="flex-1 text-left">{item.label}</span>
-                  {!selectId.includes(item.id) ? (
+                  {!selectId.some(v => v.id.includes(item.id)) ? (
                     <div className={`${item.id === hoverId ? 'visible' : 'invisible'}`}>
                       <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); handleAddChild(item.id)}}>
                         <Plus/>
@@ -388,7 +446,7 @@ const CustomTree:React.FC<Props> = ({
                       )
                     }else{
                       return(
-                        <Button type="text" className={`w-full h-40 h-center pl-25 gap-10 ${selectId.includes(child.id) ? 'bg-[#f3faff]' : ''}`} key={child.id} 
+                        <Button type="text" className={`w-full h-40 h-center pl-25 gap-10 ${selectId.some(v => v.id.includes(child.id)) ? 'bg-[#f3faff]' : ''}`} key={child.id} 
                           style={{
                             transition: 'none',
                             animation: 'none',
@@ -400,7 +458,7 @@ const CustomTree:React.FC<Props> = ({
                           onMouseEnter={() => setHoverId(child.id)} onMouseLeave={() => setHoverId(null)}>
                           <div className="w-5 h-5 bg-[#ddd] rounded-50" />
                           <span className="flex-1 text-left">{child.label}</span>
-                          {!selectId.includes(child.id) ? (
+                          {!selectId.some(v => v.id.includes(child.id)) ? (
                             <div className={`${child.id === hoverId ? 'visible' : 'invisible'}`}>
                               <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
                                 <Dropdown onOpenChange={(visible) => {if(visible) setTreeName(child.label)}} trigger={['click']} dropdownRender={() => customEditItems("child", child.id, item.id)}>
@@ -435,7 +493,7 @@ const CustomTree:React.FC<Props> = ({
       {selectId.length > 0 ? (
         <div className="w-full justify-center flex h-center gap-8">
           <span style={{color:'#00000073'}} className="mr-20">{selectId.length}개 선택됨</span>
-          <Button size="large" className="!w-[170px] !h-[50px]" style={{color:'#DF2C2C'}} onClick={() => handleDeleteList([])}>삭제</Button>
+          <Button size="large" className="!w-[170px] !h-[50px]" style={{color:'#DF2C2C'}} onClick={() => handleDeleteList(selectId)}>삭제</Button>
           <Button size="large" className="!w-[170px] !h-[50px] bg-[#EEEEEEA6]" style={{color:'#444444'}}>숨기기</Button>
           <Tooltip title="이동">
             <Button size="large" className="!h-[50px] bg-[#EEEEEEA6]"><Edit/></Button>

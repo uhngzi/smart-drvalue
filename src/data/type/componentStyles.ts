@@ -66,3 +66,9 @@ export type treeType = {
   }>;
   open: boolean;
 }
+
+export type CUtreeType = {
+  parentId?: string;
+  id: string;
+  label: string;
+}
