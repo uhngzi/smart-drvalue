@@ -17,6 +17,7 @@ import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 import { DividerH } from "@/components/Divider/Divider";
 import { FinalGlbStatus } from "@/data/type/enum";
+import { LabelMedium } from "@/components/Text/Label";
 
 const SayangModelWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -128,53 +129,35 @@ const SayangModelWaitPage: React.FC & {
   return (
     <div className="flex flex-col gap-20">
       <div>
-        <ListPagination 
-          title="모델 등록중"
-          totalData={dataIng.length} 
-          pagination={paginationIng}
-          onChange={handlePageChangeIng}
-          handleMenuClick={handlePageMenuIngClick}
-        />
+        <div className="flex w-full h-50 v-between-h-center">
+          <LabelMedium label={"모델 등록중"}/>
+          <span>총 {dataIng.length}건</span>
+        </div>
         <List>
           <AntdTableEdit
             columns={sayangModelWaitClmn(dataIng.length, router, paginationIng, setPartnerData, setPartnerMngData)}
-            data={dataIngSlice}
+            data={dataIng}
             styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={dataLoading}
           />
         </List>
-        <ListPagination 
-          totalData={dataIng.length} 
-          pagination={paginationIng}
-          onChange={handlePageChangeIng}
-          handleMenuClick={handlePageMenuIngClick}
-        />
       </div>
 
       <DividerH />
 
       <div>
-        <ListPagination
-          title="모델 등록 대기" 
-          totalData={dataWait.length} 
-          pagination={paginationWait}
-          onChange={handlePageChangeWait}
-          handleMenuClick={handlePageMenuWaitClick}
-        />
+        <div className="flex w-full h-50 v-between-h-center">
+          <LabelMedium label={"모델 등록 대기"}/>
+          <span>총 {dataWait.length}건</span>
+        </div>
         <List>
           <AntdTableEdit
             columns={sayangModelWaitClmn(dataWait.length, router, paginationWait, setPartnerData, setPartnerMngData)}
-            data={dataWaitSlice}
+            data={dataWait}
             styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
             loading={dataLoading}
           />
         </List>
-        <ListPagination
-          totalData={dataWait.length}
-          pagination={paginationWait}
-          onChange={handlePageChangeWait}
-          handleMenuClick={handlePageMenuWaitClick}
-        />
       </div>
 
       <PrtDrawer

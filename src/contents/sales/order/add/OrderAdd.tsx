@@ -172,16 +172,16 @@ const OrderAddLayout = () => {
       const data = result.data.data as salesOrderDetailRType;
       setFormData({
         id: data?.id,
-        partnerId: data.prtInfo.prt.id,
-        partnerManagerId: data.prtInfo.mng.id,
-        orderName: data.orderNm,
-        orderDt: dayjs(data.orderDt, 'YYYY-MM-DD'),
-        orderRepDt: data.orderRepDt,
-        orderTxt: data.orderTxt,
-        totalOrderPrice: data.totalOrderPrice,
-        empId: data.emp.id,
-        hotGrade: data.hotGrade ?? HotGrade.NORMAL,
-        files: data.files.map((file) => { return file.storageId }),
+        partnerId: data.prtInfo?.prt?.id,
+        partnerManagerId: data.prtInfo?.mng?.id,
+        orderName: data?.orderNm,
+        orderDt: dayjs(data?.orderDt, 'YYYY-MM-DD'),
+        orderRepDt: data?.orderRepDt,
+        orderTxt: data?.orderTxt,
+        totalOrderPrice: data?.totalOrderPrice,
+        empId: data?.emp?.id,
+        hotGrade: data?.hotGrade ?? HotGrade.NORMAL,
+        files: data?.files.map((file) => { return file.storageId }),
       });
 
       const prdArr = data.products.filter(f => f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED);

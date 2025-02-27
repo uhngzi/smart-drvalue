@@ -61,11 +61,21 @@ export const downloadFileByObjectName = async (storageId: string) => {
     );
     console.log(response);
 
+    // 🎯 파일명 가져오기 (Content-Disposition 헤더에서)
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = "downloaded-file"; // 기본값
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (match && match[1]) {
+        fileName = match[1].replace(/['"]/g, ''); // 따옴표 제거
+      }
+    }
+
     // 파일 다운로드 처리
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', "파일1.png"); // 다운로드할 파일 이름 설정
+    link.setAttribute('download', fileName); // 다운로드할 파일 이름 설정
     document.body.appendChild(link);
     link.click();
 

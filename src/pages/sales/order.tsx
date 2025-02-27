@@ -141,17 +141,17 @@ const SalesUserPage: React.FC & {
     if(result.resultCode === "OK_0000") {
       const data = result.data.data as salesOrderDetailRType;
       setFormData({
-        id: data.id,
-        partnerId: data.prtInfo.prt.id,
-        partnerManagerId: data.prtInfo.mng.id,
-        orderName: data.orderNm,
-        orderDt: dayjs(data.orderDt, 'YYYY-MM-DD'),
-        orderRepDt: data.orderRepDt,
-        orderTxt: data.orderTxt,
-        totalOrderPrice: data.totalOrderPrice,
-        empId: data.emp.id,
-        hotGrade: data.hotGrade ?? HotGrade.NORMAL,
-        files: data.files.map((file) => { return file.storageId }),
+        id: data?.id,
+        partnerId: data.prtInfo?.prt?.id,
+        partnerManagerId: data.prtInfo?.mng?.id,
+        orderName: data?.orderNm,
+        orderDt: dayjs(data?.orderDt, 'YYYY-MM-DD'),
+        orderRepDt: data?.orderRepDt,
+        orderTxt: data?.orderTxt,
+        totalOrderPrice: data?.totalOrderPrice,
+        empId: data?.emp?.id,
+        hotGrade: data?.hotGrade ?? HotGrade.NORMAL,
+        files: data?.files?.map((file) => { return file.storageId }),
       });
       setNewProducts(data.products
         .filter((prd:salesOrderProductRType) => prd.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
