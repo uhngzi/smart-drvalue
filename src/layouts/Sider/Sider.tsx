@@ -110,7 +110,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     // },
     {
       key: 'attd/secom',
-      title:'attd/secmo',
+      title:'attd/secom',
       label: '근태',
       icon: <p className={iconClassNm}><Wk /></p>,
     },
@@ -172,7 +172,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         />
       </div>
       
-      {/* <div className="flex flex-col mt-[auto] h-[150px]">
+      <div className="flex flex-col mt-[auto] h-[150px]">
         <Menu
           mode="vertical"
           items={[
@@ -226,7 +226,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
           selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
         />
-      </div> */}
+      </div>
     </SiderStyled>
   )
 }
