@@ -391,7 +391,7 @@ const SayangSampleAddPage: React.FC & {
   }
 
   // 모델 영역 접었다 피기
-  const [modelTabOpen, setModelTabOpen] = useState<boolean>(false);
+  const [modelTabOpen, setModelTabOpen] = useState<boolean>(true);
 
   return (
     <div className="w-full pr-20 flex flex-col gap-40">

@@ -274,7 +274,8 @@ const SayangSampleListPage: React.FC & {
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
-                      if(data.specModels?.[0].layerEm === record?.model?.layerEm) {
+                      console.log(data.specModels?.[0].layerEm, record?.model?.layerEm, data.specModels?.[0].layerEm === record?.model?.layerEm);
+                      if(data.specModels?.[0].layerEm !== record?.model?.layerEm) {
                         showToast("같은 층의 모델만 조합하실 수 있습니다.", "error");
                       } else {
                         if(selectedValue?.specId !== data.id)
