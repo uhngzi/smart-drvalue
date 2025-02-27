@@ -564,11 +564,11 @@ const AtdSecomPage: React.FC & {
       // 1) 헤더 배경색
       const headerBg = getHolidayColor("bg",dayNum);
       const headerFc = getHolidayColor("fc",dayNum);
+      const isHoliday = !!getHolidayColor("fc", dayNum);
 
       return {
         title: dayNum.toString(),
         dataIndex: dayKey,
-        // width: 25,
         align: "center" as const,
 
         // (1) 헤더 배경색
@@ -600,9 +600,15 @@ const AtdSecomPage: React.FC & {
 
         // (3) 본문 표시
         render: (timeValue: string | null) => {
-          // 팀(부모) 행이건 직원(자식) 행이건, 그냥 값 출력
-          // (없으면 "")
-          return timeValue || "";
+          if (!timeValue) return ""; // 값이 없으면 빈 칸
+
+          const [hour, minute] = timeValue.split(":");
+          return (
+            <span>
+              <span style={{ fontSize: "10px" }}>{hour}:</span>
+              <span style={{ fontSize: "12px" }}>{minute}</span>
+            </span>
+          );
         },
       };
     });
