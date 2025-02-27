@@ -22,6 +22,8 @@ import ProcessSelection from "@/contents/sayang/sample/wait/ProcessSelection";
 
 import Models from "@/assets/svg/icons/sales.svg";
 import Prc from "@/assets/svg/icons/data.svg";
+import Down from "@/assets/svg/icons/s_drop_down.svg";
+import Right from "@/assets/svg/icons/s_drop_right.svg";
 
 import PopRegLayout from "@/layouts/Main/PopRegLayout";
 
@@ -388,6 +390,9 @@ const SayangSampleAddPage: React.FC & {
     }
   }
 
+  // 모델 영역 접었다 피기
+  const [modelTabOpen, setModelTabOpen] = useState<boolean>(false);
+
   return (
     <div className="w-full pr-20 flex flex-col gap-40">
       { detailDataLoading && <>
@@ -411,10 +416,25 @@ const SayangSampleAddPage: React.FC & {
           </div>
         </div>
       </>}
+      { !detailDataLoading && !modelTabOpen &&
+        <div
+          className="w-full h-46 bg-[#FAFAFA] py-30 px-16 border-1 border-line h-center gap-12 rounded-14 cursor-pointer"
+          onClick={()=>setModelTabOpen(!modelTabOpen)}
+        >
+          <p className="w-16 h-16">
+            { !modelTabOpen ? <Right /> : <Down />}
+          </p>
+          모델 목록 보기
+        </div>
+      }
       { !detailDataLoading && <>
+      { modelTabOpen &&
       <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20 w-full">
         <div className="v-between-h-center">
-          <div className="flex">
+          <div className="flex gap-10">
+            <Button onClick={()=>setModelTabOpen(!modelTabOpen)}>
+              모델 목록 접기
+            </Button>
             <Button 
               type="text"
               icon={<DoubleRightOutlined/>}
@@ -484,7 +504,7 @@ const SayangSampleAddPage: React.FC & {
             loading={detailDataLoading}
           />
         </div>
-      </div>
+      </div>}
       <div className="flex bg-white rounded-14 p-30 gap-40 w-full">
         <div className="min-w-[300px]">
           {/* 적층 구조 */}
