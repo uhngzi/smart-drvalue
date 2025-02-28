@@ -17,6 +17,7 @@ export async function onTreeAdd(url: string, data: any){
       console.error("아이디 생성 실패 : ", data)
       return false;
     }
+    console.log('success', '등록이 완료되었습니다.');
     return true;
   }catch(e){
     console.error('추가중 오류가 발생했습니다.');
@@ -36,14 +37,14 @@ export async function onTreeEdit(item: CUtreeType, url: string, data: any){
     data
     );
     if(result.resultCode != 'OK_0000') {
-      console.error('error', '수정 실패', '수정중 오류가 발생했습니다.');
+      console.error('error', '수정중 오류가 발생했습니다.');
       return false;
     }
-    console.log('success', '수정 성공', '수정가 완료되었습니다.');
+    console.log('success', '수정이 완료되었습니다.');
     return true;
   }
   catch(e){
-    console.error('error', '수정 실패', '수정중 오류가 발생했습니다.');
+    console.error('error', '수정중 오류가 발생했습니다.');
     return false;
   }
 }
@@ -59,14 +60,14 @@ export async function onTreeDelete(item: {type: string, id: string}, url: string
     item.id ?? "",
     );
     if(result.resultCode != 'OK_0000') {
-      console.error('error', '삭제 실패', '삭제중 오류가 발생했습니다.');
+      console.error('error', '삭제중 오류가 발생했습니다.');
       return false;
     }
-    console.log('success', '삭제 성공', '삭제가 완료되었습니다.');
+    console.log('success', '삭제가 완료되었습니다.');
     return true;
   }
   catch(e){
-    console.error('error', '삭제 실패', '삭제중 오류가 발생했습니다.');
+    console.error('error', '삭제중 오류가 발생했습니다.');
     return false;
   }
 }

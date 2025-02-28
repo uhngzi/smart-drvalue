@@ -137,6 +137,9 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
               type={resultType} 
               onOk={()=>{
                 // refetch();
+                onUpdateDataFunc.setAddList([]);
+                onUpdateDataFunc.setEditList([]);
+                onUpdateDataFunc.setDeleteList([]);
                 setResultOpen(false);
                 setTreeModalOpen(false);
               }}

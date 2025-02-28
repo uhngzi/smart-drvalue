@@ -181,27 +181,29 @@ const CustomTree:React.FC<Props> = ({
     parentsId?: string,
   ) => {
     console.log(type, id, value, parentsId);
+    const uniqueKey = Date.now();
     setList((prev) => {
       if(type === 'main'){
-        setAddList((prev) => [...prev, {id: `temp${list.length}`, label: value}]);
+        setAddList((prev) => [...prev, {id: `temp-${uniqueKey}`, label: value}]);
         return [
           ...prev.filter(item => !item.id.includes('new')), 
-          { id: `temp${list.length}`, label:value, children:[], open:true }
+          { id: `temp-${uniqueKey}`, label:value, children:[], open:true }
         ];
       } else {
         const newList = prev.map((item) => {
-          if(item.id === parentsId){
-            setAddList((prev) => [...prev, {id: `temp${item.children?.length}`, label: value, parentId: parentsId}]);
+          if (item.id === parentsId) {
             return {
               ...item,
               children: [
-                ...(item.children ?? []).filter(item => !item.id.includes('new')),
-                { id: `temp${item.children?.length}`, label:value }
+                ...(item.children ?? []).filter((child) => !child.id.includes('new')),
+                { id: `temp-${uniqueKey}`, label: value }
               ],
             };
           }
           return item;
         });
+        const newAddItem = { id: `temp-${uniqueKey}`, label: value, parentId: parentsId };
+        setAddList((prev) => [...prev, newAddItem]);
         return newList;
       }
     });
@@ -394,8 +396,8 @@ const CustomTree:React.FC<Props> = ({
                       <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); handleAddChild(item.id)}}>
                         <Plus/>
                       </Button>
-                      <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                        <Dropdown onOpenChange={(visible) => {if(visible) setTreeName(item.label)}} trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
+                      <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); setTreeName(item.label)}}>
+                        <Dropdown trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
                           <a onClick={(e) => e.preventDefault()}>
                               <div 
                                 className="w-full h-full v-h-center cursor-pointer"

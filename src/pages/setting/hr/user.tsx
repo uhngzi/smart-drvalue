@@ -13,6 +13,7 @@ import { getAPI } from "@/api/get";
 import { CUtreeType } from "@/data/type/componentStyles";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import useToast from "@/utils/useToast";
 
 const groupType = {
   dept: {name: '조직도', child:'team'},
@@ -24,6 +25,8 @@ const groupType = {
 const HrUserListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const { showToast, ToastContainer } = useToast();
+
   const router = useRouter();
   const [newOpen, setNewOpen] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<keyof typeof groupType>('dept');
@@ -39,7 +42,7 @@ const HrUserListPage: React.FC & {
   //데이터 관련
   const [dataLoading, setDataLoading] = useState<boolean>(true);
 
-  const { data:queryData } = useQuery< apiGetResponseType, Error>({
+  const { data:queryData, refetch } = useQuery< apiGetResponseType, Error>({
     queryKey: ['setting', 'hr', 'user', newTitle],
     queryFn: async () => {
       setDataLoading(true);
@@ -109,53 +112,67 @@ const HrUserListPage: React.FC & {
   //     })
   //   }
   // }
-  function onTreeSubmit(){
+  async function onTreeSubmit(){
+    console.log(addList, editList, deleteList);
     const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
     console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
     let result = false
 
-    setAddList([]);
-    setEditList([]);
-    setDeleteList([]);
+    for(const item of updatedAddList){
+      let url: string = newTitle;
+      let parent: string = '';
+      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
 
-    // addList.forEach( async (item) => {
-    //   let url: string = newTitle;
-    //   let parent: string = '';
-    //   const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+      if(item.parentId) {
+        url = groupType[newTitle].child;
+        parent = newTitle;
+        jsonData[parent] = {id: item.parentId};
+        jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+      }else{
+        jsonData[`${newTitle}Nm`] = item.label;
+      }
+      result = await onTreeAdd(url, jsonData);
+      if(!result) {
+        showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+      }
+      console.log("add", result)
+    }
 
-    //   if(item.parentId) {
-    //     url = groupType[newTitle].child;
-    //     parent = newTitle;
-    //     jsonData[parent] = {id: item.parentId};
-    //     jsonData[`${groupType[newTitle].child}Nm`] = item.label;
-    //   }else{
-    //     jsonData[`${newTitle}Nm`] = item.label;
-    //   }
-    //   result = await onTreeAdd(url, jsonData);
-    // });
+    for(const item of finalEditList){
+      let url: string = newTitle;
+      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
 
-    // editList.forEach( async (item) => {
-    //   let url: string = newTitle;
-    //   const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+      if(item.parentId) {
+        url = groupType[newTitle].child;
+        jsonData[newTitle] = {id: item.parentId};
+        jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+      }else{
+        jsonData[`${newTitle}Nm`] = item.label;
+      }
+      result = await onTreeEdit(item, url, jsonData);
+      if(!result){
+        showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+      }
+    }
 
-    //   if(item.parentId) {
-    //     url = groupType[newTitle].child;
-    //     jsonData[newTitle] = {id: item.parentId};
-    //     jsonData[`${groupType[newTitle].child}Nm`] = item.label;
-    //   }else{
-    //     jsonData[`${newTitle}Nm`] = item.label;
-    //   }
-    //   result = await onTreeEdit(item, url, jsonData);
-    // });
-
-    // deleteList.forEach( async (item) => {
-    //   let url: string = newTitle;
-    //   if(item.type === 'child'){
-    //     url = groupType[newTitle].child;
-    //   }
-    //   result = await onTreeDelete(item, url);
-    //   console.log(result)
-    // })
+    for(const item of updatedDeleteList){
+      let url: string = newTitle;
+      if(item.type === 'child'){
+        url = groupType[newTitle].child;
+      }
+      result = await onTreeDelete(item, url);
+      if(!result){
+        showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+      }
+    }
+    console.log(result);
+    if(result) {
+      setAddList([]);
+      setEditList([]);
+      setDeleteList([]);
+      showToast('저장이 완료되었습니다.', 'success');
+      refetch();
+    }
   }
 
   
@@ -227,7 +244,7 @@ const HrUserListPage: React.FC & {
           setDeleteList: setDeleteList,
         }}
       />
-      
+      <ToastContainer/>
     </section>
   )
 }
