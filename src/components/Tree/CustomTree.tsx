@@ -310,7 +310,7 @@ const CustomTree:React.FC<Props> = ({
   return (
     <section className="flex flex-col h-full justify-between">
     <div className="w-full flex flex-col gap-20 h-full overflow-y-auto">
-      <div className="flex flex-col">
+      {/* <div className="flex flex-col">
         <p className="pb-8">적용일</p>
         <AntdDatePicker
           value={null}
@@ -320,7 +320,7 @@ const CustomTree:React.FC<Props> = ({
           styles={{bc: '#e5e7eb', wd: '100%'}}
           suffixIcon="cal"
         />
-      </div>
+      </div> */}
       <div className="v-between-h-center ">
         <p>전체 ({list.length})</p>
 
@@ -371,14 +371,7 @@ const CustomTree:React.FC<Props> = ({
           }else{
             return(
               <div key={item.id}>
-                <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.some(v => v.id.includes(item.id)) ? 'bg-[#f3faff]' : ''}`} key={item.id} 
-                  style={{
-                    transition: 'none',
-                    animation: 'none',
-                    WebkitTransition: 'none',
-                    MozTransition: 'none',
-                    OTransition: 'none',
-                  }}
+                <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}`} key={item.id} 
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
                   { item.open ? (
@@ -448,7 +441,7 @@ const CustomTree:React.FC<Props> = ({
                       )
                     }else{
                       return(
-                        <Button type="text" className={`w-full h-40 h-center pl-25 gap-10 ${selectId.some(v => v.id.includes(child.id)) ? 'bg-[#f3faff]' : ''}`} key={child.id} 
+                        <Button type="text" className={`w-full h-40 h-center !pl-30 !gap-10 ${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}`} key={child.id} 
                           style={{
                             transition: 'none',
                             animation: 'none',

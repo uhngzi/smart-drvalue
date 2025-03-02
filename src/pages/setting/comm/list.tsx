@@ -2,6 +2,7 @@ import { getAPI } from "@/api/get";
 import { patchAPI } from "@/api/patch";
 import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import CustomTree from "@/components/Tree/CustomTree";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { commonCodeCUType, commonCodeGroupType, commonCodeGrpReq, commonCodeReq, commonCodeRType, newDataCommonCode, newDataCommonCodeGroupType } from "@/data/type/base/common";
 import { deptRType } from "@/data/type/base/hr";
@@ -17,32 +18,16 @@ const CommonListPage: React.FC & {
 } = () => {
   const { showToast, ToastContainer } = useToast();
 
-  const [dataDept, setDataDept] = useState<{value:string,label:string}[]>([]);
-  const { data:queryDept } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['setting', 'hr', 'dept'],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: 'dept/jsxcrud/many'
-      });
+  const [ treeData, setTreeData ] = useState<treeType[]>([]);
+  const [ dataCode, setDataCode ] = useState<Array<commonCodeRType | commonCodeCUType>>([]);
+  const [ groupData, setGroupData ] = useState<Array<commonCodeGroupType>>([]);
 
-      if (result.resultCode === 'OK_0000') {
-        const arr = (result.data.data ?? []).map((dept:deptRType) => ({
-          value: dept.id,
-          label: dept.deptNm,
-        }))
-        setDataDept(arr);
-      } else {
-        console.log('error:', result.response);
-      }
+  // ---------- 신규 tree 데이터 시작 ----------
+  const [ addList, setAddList ] = useState<any[]>([]);
+  const [ editList, setEditList ] = useState<any[]>([]);
+  const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
 
-      setDataLoading(false);
-      return result;
-    },
-  });
+  
 
   // --------- 리스트 데이터 시작 ---------
   const [editIndex, setEditIndex] = useState<number>(-1);
@@ -52,7 +37,7 @@ const CommonListPage: React.FC & {
   const [totalData, setTotalData] = useState<number>(1);
   const [ dataSelect, setDataSelect ] = useState<Array<{value:string, label:string}[]>>([]);
   const [ data, setData ] = useState<Array<commonCodeGroupType>>([]);
-  const { data:queryData, refetch } = useQuery<
+  const { data:queryData, refetch, isFetching: groupFetching } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['setting', 'comm'],
@@ -66,13 +51,19 @@ const CommonListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data.data ?? []);
-        setTotalData(result.data.total ?? 0);
+        // setGroupData(result.data.data ?? []);
+        // setData(result.data.data ?? []);
+        // setTotalData(result.data.total ?? 0);
         const arr = (result.data.data ?? []).map((d:commonCodeGroupType) => ({
-          value: d.id,
+          id: d.id,
           label: d.cdGrpNm,
+          children: (d.codes ?? []).map((c:commonCodeRType) => ({
+            id: c.id,
+            label: c.cdNm,
+          })),
+          open:true
         }))
-        setDataSelect(arr);
+        setTreeData(arr);
       } else {
         console.log('error:', result.response);
       }
@@ -81,6 +72,32 @@ const CommonListPage: React.FC & {
       return result;
     },
   });
+  // const { data:queryDataCode, refetch:codeRefetch, isFetching: codeFetching } = useQuery<
+  //   apiGetResponseType, Error
+  // >({
+  //   queryKey: ['setting', 'comm', 'code'],
+  //   queryFn: async () => {
+  //     const result = await getAPI({
+  //       type: 'baseinfo', 
+  //       utype: 'tenant/',
+  //       url: `common-code/jsxcrud/many/`
+  //     });
+      
+  //     if (result.resultCode === 'OK_0000') {
+  //       setDataCode(result.data.data ?? []);
+  //       // setTotalData(result.data.total ?? 0);
+  //     } else {
+  //       console.log('error:', result.response);
+  //     }
+  //     return result;
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   console.log('groupData:', groupData);
+  //   console.log('codeData:', dataCode);
+
+  // },[groupFetching, codeFetching]);
 
     // 그룹 등록 함수
   const handleSubmit = async () => {
@@ -152,106 +169,106 @@ const CommonListPage: React.FC & {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<string | number | null>(null);
 
-  const [ dataCode, setDataCode ] = useState<Array<commonCodeRType | commonCodeCUType>>([]);
-  const { data:queryDataCode, refetch:codeRefetch } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['setting', 'comm', 'code', selectedRowKeys],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: `common-code/jsxcrud/many/by-cd-grp-idx/${selectedRowKeys}`
-      });
+  
+  // const { data:queryDataCode, refetch:codeRefetch } = useQuery<
+  //   apiGetResponseType, Error
+  // >({
+  //   queryKey: ['setting', 'comm', 'code', selectedRowKeys],
+  //   queryFn: async () => {
+  //     const result = await getAPI({
+  //       type: 'baseinfo', 
+  //       utype: 'tenant/',
+  //       url: `common-code/jsxcrud/many/by-cd-grp-idx/${selectedRowKeys}`
+  //     });
       
-      if (result.resultCode === 'OK_0000') {
-        setDataCode(result.data.data ?? []);
-        // setTotalData(result.data.total ?? 0);
-      } else {
-        console.log('error:', result.response);
-      }
-      return result;
-    },
-    enabled: !!selectedRowKeys
-  });
+  //     if (result.resultCode === 'OK_0000') {
+  //       setDataCode(result.data.data ?? []);
+  //       // setTotalData(result.data.total ?? 0);
+  //     } else {
+  //       console.log('error:', result.response);
+  //     }
+  //     return result;
+  //   },
+  //   enabled: !!selectedRowKeys
+  // });
 
   // 등록 함수
-const handleSubmitCode = async () => {
-  try {
-    const newData = dataCode[editIndexCode];
+// const handleSubmitCode = async () => {
+//   try {
+//     const newData = dataCode[editIndexCode];
     
-    if(newData.id?.includes('new')){
-      const val = validReq(newData, commonCodeReq());
-      if(!val.isValid) {
-        showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
-        return;
-      }
+//     if(newData.id?.includes('new')){
+//       const val = validReq(newData, commonCodeReq());
+//       if(!val.isValid) {
+//         showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
+//         return;
+//       }
 
-      const result = await postAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'common-code',
-        jsx: 'jsxcrud'
-      }, {
-        cdNm: newData.cdNm,
-        cdDesc: newData.cdDesc,
-        codeGroup: { id: newData.codeGroup?.id },
-        useYn: newData.useYn,
-      } as commonCodeCUType);
+//       const result = await postAPI({
+//         type: 'baseinfo',
+//         utype: 'tenant/',
+//         url: 'common-code',
+//         jsx: 'jsxcrud'
+//       }, {
+//         cdNm: newData.cdNm,
+//         cdDesc: newData.cdDesc,
+//         codeGroup: { id: newData.codeGroup?.id },
+//         useYn: newData.useYn,
+//       } as commonCodeCUType);
 
-      if(result.resultCode === 'OK_0000') {
-        showToast("공통코드 등록 완료", "success");
+//       if(result.resultCode === 'OK_0000') {
+//         showToast("공통코드 등록 완료", "success");
     
-        refetch();
-        codeRefetch();
-        setEditIndexCode(-1);
-      } else {
-        const msg = result?.response?.data?.message;
-        if(msg.includes("Duplicate entry")) {
-          showToast("중복된 코드값이 있습니다.", "error");
-          return;
-        }
-        showToast(result?.response?.data?.message, "error");
-      }
-    } else {
-      const result = await patchAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'common-code',
-        jsx: 'jsxcrud'
-      },
-      newData.id || '',
-      {
-        cdNm: newData.cdNm,
-        cdDesc: newData.cdDesc,
-        codeGroup: { id: newData.codeGroup?.id },
-        useYn: newData.useYn,
-      } as commonCodeCUType);
+//         refetch();
+//         codeRefetch();
+//         setEditIndexCode(-1);
+//       } else {
+//         const msg = result?.response?.data?.message;
+//         if(msg.includes("Duplicate entry")) {
+//           showToast("중복된 코드값이 있습니다.", "error");
+//           return;
+//         }
+//         showToast(result?.response?.data?.message, "error");
+//       }
+//     } else {
+//       const result = await patchAPI({
+//         type: 'baseinfo',
+//         utype: 'tenant/',
+//         url: 'common-code',
+//         jsx: 'jsxcrud'
+//       },
+//       newData.id || '',
+//       {
+//         cdNm: newData.cdNm,
+//         cdDesc: newData.cdDesc,
+//         codeGroup: { id: newData.codeGroup?.id },
+//         useYn: newData.useYn,
+//       } as commonCodeCUType);
 
-      if(result.resultCode === 'OK_0000') {
-        showToast("공통코드 수정 완료", "success");
+//       if(result.resultCode === 'OK_0000') {
+//         showToast("공통코드 수정 완료", "success");
     
-        codeRefetch();
-        setEditIndexCode(-1);
-      } else {
-        showToast(result?.response?.data?.message, "error");
-      }
-    }
-  } catch(e) {
-    console.log(e);
-    showToast("공통코드 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.", "error");
+//         codeRefetch();
+//         setEditIndexCode(-1);
+//       } else {
+//         showToast(result?.response?.data?.message, "error");
+//       }
+//     }
+//   } catch(e) {
+//     console.log(e);
+//     showToast("공통코드 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.", "error");
 
-    codeRefetch();
-    setEditIndexCode(-1);
-  }
-}
+//     codeRefetch();
+//     setEditIndexCode(-1);
+//   }
+// }
 
 // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
-useEffect(()=>{
-  if(editIndexCode > -1) {
-    handleSubmitCode();
-  }
-}, [dataCode])
+// useEffect(()=>{
+//   if(editIndexCode > -1) {
+//     handleSubmitCode();
+//   }
+// }, [dataCode])
 
   return (
     <>
@@ -259,8 +276,16 @@ useEffect(()=>{
       {!dataLoading &&
       <>
         
-        <div className="flex items-start gap-10">
-          <div className="w-[50%] h-full">
+        <div className="p-20 h-[900px] h-full">
+        <CustomTree
+            data={treeData}
+            // handleDataChange={handleTreeDataChange}
+            onSubmit={()=>{}}
+            setAddList={setAddList}
+            setEditList={setEditList}
+            setDelList={setDeleteList}
+          />
+          {/* <div className="w-[50%] h-full">
             <div className="h-center justify-between p-20">
               <p>총 {totalData}건</p>
               <div
@@ -289,17 +314,7 @@ useEffect(()=>{
                   align: 'center',
                   editable: true,
                 },
-                {
-                  title: '관리부서',
-                  width: 130,
-                  dataIndex: 'dept.deptNm',
-                  key: 'dept.deptNm',
-                  align: 'center',
-                  editable: true,
-                  editType: 'select',
-                  selectOptions: dataDept,
-                  selectValue: 'dept.id'
-                },
+                
                 {
                   title: '사용여부',
                   width: 80,
@@ -383,7 +398,7 @@ useEffect(()=>{
               setData={setDataCode}
               setEditIndex={setEditIndexCode}
             />
-          </div>
+          </div> */}
         </div>
       </>}
       <ToastContainer/>
