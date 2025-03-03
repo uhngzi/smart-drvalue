@@ -605,7 +605,7 @@ const AtdSecomPage: React.FC & {
           const [hour, minute] = timeValue.split(":");
           return (
             <span>
-              <span style={{ fontSize: "10px" }}>{hour}:</span>
+              <span style={{ fontSize: "12px" }}>{hour}:</span>
               <span style={{ fontSize: "12px" }}>{minute}</span>
             </span>
           );
