@@ -102,7 +102,7 @@ const SalesModelTable:React.FC<Props> = ({
   }
 
   return (
-    <div className="gap-40 flex flex-col overflow-auto">
+    <div className="gap-40 flex flex-col overflow-auto min-w-[1500px]">
     { data.length > 0 && data
       // 삭제되지 않은 모델만 가져오기
       .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)

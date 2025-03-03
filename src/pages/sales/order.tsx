@@ -443,7 +443,7 @@ const SalesUserPage: React.FC & {
             router,
           )}
           data={data}
-          styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
         />
       </List>

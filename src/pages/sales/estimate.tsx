@@ -242,7 +242,7 @@ const SalesUserEstimatePage: React.FC & {
       <AntdTable
         columns={sampleCl(setOpen)}
         data={sampleDt}
-        styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+        styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
       />
       <AntdModal 
         open={open}

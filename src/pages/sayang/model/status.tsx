@@ -167,7 +167,7 @@ const SayangModelStatPage: React.FC & {
         <AntdTableEdit
           columns={sayangModelStatusClmn(totalData, pagination, setPartnerData, setPartnerMngData, setModelDetail)}
           data={data}
-          styles={{ th_bg: '#FAFAFA', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
+          styles={{ th_bg: '#F2F2F2', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
           loading={dataLoading}
         />
       </List>
@@ -230,9 +230,9 @@ const SayangModelStatPage: React.FC & {
 
 SayangModelStatPage.layout = (page: React.ReactNode) => (
   <MainPageLayout 
-    menuTitle="모델 등록 및 현황"
+    menuTitle="모델 확정 및 현황"
     menu={[
-      {text:'모델 등록 대기', link:'/sayang/model/wait'},
+      {text:'모델 확정 현황', link:'/sayang/model/wait'},
       {text:'모델 등록 현황', link:'/sayang/model/status'},
     ]}
   >{page}</MainPageLayout>

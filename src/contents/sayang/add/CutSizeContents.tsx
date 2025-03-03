@@ -35,9 +35,11 @@ const CutSizeContents: React.FC<Props> = ({
         <div className="w-full h-32 v-h-center text-white bg-point1 rounded-6 cursor-pointer">
           승인원 작성
         </div>
-        <div className="w-full h-40 v-h-center rounded-6 border-2 border-point1 font-semibold cursor-pointer text-18 font-bold">
-          {specNo}
-        </div>
+        { specNo &&
+          <div className="w-full h-40 v-h-center rounded-6 border-2 border-point1 font-semibold cursor-pointer text-18 font-bold">
+            {specNo}
+          </div>
+        }
       </div>
     </div>
   )

@@ -27,6 +27,8 @@ interface Props {
   setPriceFlag: React.Dispatch<SetStateAction<boolean>>;
   newProducts: salesOrderProcuctCUType[];
   setAddPartner: React.Dispatch<SetStateAction<boolean>>;
+  detailChk: boolean;
+  setDetailChk: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const SalesOrderContent: React.FC<Props> = ({
@@ -41,10 +43,14 @@ const SalesOrderContent: React.FC<Props> = ({
   setPriceFlag,
   newProducts,
   setAddPartner,
+  detailChk,
+  setDetailChk,
 }) => {
   // 첨부파일 변경 시 FORM에 세팅
   useEffect(()=>{
-    setFormData({ ...formData, files:fileIdList });
+    if(!detailChk) {
+      setFormData({ ...formData, files:fileIdList });
+    }
   }, [fileIdList]);
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
@@ -71,6 +77,7 @@ const SalesOrderContent: React.FC<Props> = ({
                 setFormData({...formData, partnerId: value});
               }}
               handleAddData={()=>setAddPartner(true)}
+              addLabel="고객 추가하기"
             />
           </div>
           <div className="flex flex-col gap-8">

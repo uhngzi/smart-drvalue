@@ -182,7 +182,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
         cell.s = {
           font: { bold: true },
           alignment: { horizontal: "center", vertical: "center" },
-          fill: { fgColor: { rgb: "FAFAFA" } },
+          fill: { fgColor: { rgb: "F2F2F2" } },
           border: {
             top: { style: "thin", color: { rgb: "D5D5D5" } },
             left: { style: "thin", color: { rgb: "D5D5D5" } },
@@ -337,7 +337,7 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
         border:1px solid #D9D9D9;
       }
       th {
-        background: #FAFAFA;
+        background: #F2F2F2;
         font-weight: bold;
         border-bottom:2px solid black;
       }

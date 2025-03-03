@@ -161,6 +161,8 @@ const OrderAddLayout = () => {
   // ----------- 거래처 데이터 등록 ----------- 끝
 
   // -------- 수정 시 디테일 데이터 세팅 -------- 시작
+  const [detailChk, setDetailChk] = useState<boolean>(false);
+
   const fetchDetail = async (modelId?: string) => {
     const result = await getAPI({
       type: 'core-d1',
@@ -183,12 +185,22 @@ const OrderAddLayout = () => {
         hotGrade: data?.hotGrade ?? HotGrade.NORMAL,
         files: data?.files.map((file) => { return file.storageId }),
       });
+      if(data?.files?.length > 0) {
+        setDetailChk(true);
+        console.log(formData.files);
+      }
 
-      const prdArr = data.products.filter(f => f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED);
+      const prdArr = data.products
+                      .filter(f => f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+                      .sort((a, b) => {
+                        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                        return dateA - dateB;
+                      });
 
       setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
         id: prd.id,
-        index: index,
+        index: index+1,
         currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
         modelStatus: prd.modelStatus,
         orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
@@ -208,6 +220,45 @@ const OrderAddLayout = () => {
       setStepCurrent(1);
     }
   }
+
+  // 데이터 세팅 시 파일 목록이 있을 경우 파일 정보 가져와서 세팅
+  useEffect(()=>{
+    if(detailChk) {
+      console.log(formData.files);
+      fetchFileInfo();
+    }
+  }, [detailChk])
+
+  const fetchFileInfo = async () => {
+    if(formData.files && formData.files.length > 0) {
+      let fileArr:any[] = [];
+      for (const file of formData?.files) {
+        const result = await getAPI({
+          type: 'file-mng',
+          url: `every/file-manager/default/info/${file}`,
+          header: true,
+        });
+        
+        if(result.resultCode === "OK_0000") {
+          const entity = result?.data?.fileEntity;
+          fileArr.push({
+            ...entity,
+            name: entity?.originalName,
+            originFileObj: {
+              name: entity?.originalName,
+              size: entity?.size,
+              type: entity?.type,
+            }
+          });
+        }
+      }
+      setFileList(fileArr);
+      setFileIdList(formData.files);
+      setDetailChk(false);
+    }
+  }
+
+  useEffect(()=>{console.log(fileList)}, [fileList]);
   // -------- 수정 시 디테일 데이터 세팅 -------- 끝
   
   // ---------- 발주 신규 등록 함수 ----------- 시작
@@ -254,7 +305,6 @@ const OrderAddLayout = () => {
           files: entity.files?.map((file) => { return file.storageId }),
         });
       }
-      
       
       // 신규 발주 등록 후 등록중이던 기존 모델들은 냅둔 채 저장을 누른 모델에만 아이디 값이 저장 될 수 있게 변경해줌
       // 이후는 수정 모드로 전환되어 발주 신규 등록이 아닌 모델 저장 함수로 들어가게 됨
@@ -506,7 +556,7 @@ const OrderAddLayout = () => {
   const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "">("");
 
   return (<>
-    <div className="p-30 flex v-between-h-center">
+    <div className="p-30 flex v-between-h-center w-full">
       <p className="text-20 fw-500 font-semibold">{ id?.includes("new") ? "고객 발주 등록" : "고객 발주 수정"}</p>
       <p 
         className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
@@ -563,6 +613,8 @@ const OrderAddLayout = () => {
                 setPriceFlag={setPriceFlag}
                 newProducts={newProducts}
                 setAddPartner={setAddPartner}
+                detailChk={detailChk}
+                setDetailChk={setDetailChk}
               />
             </div>
 
@@ -610,24 +662,9 @@ const OrderAddLayout = () => {
                   <Arrow />다음 단계
                 </Button>
               </> : <>
-                  <div className="flex"></div>
-                  {/* <Button
-                    className="w-109 h-32 rounded-6"
-                    onClick={()=>{
-                      stepRef.current[0].scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'end',
-                      });
-                      // 이동 후 스탭을 바꿔줌 (스무스한 이동을 위함)
-                      setTimeout(()=>{
-                        setStepCurrent(0);
-                      }, 400)
-                    }}
-                  >
-                    <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
-                  </Button> */}
+                  <div className="flex" />
                   <Button
-                    className="w-109 h-32 rounded-6"
+                    className="w-109 h-32 rounded-6 border-point1 text-point1"
                     onClick={()=>{
                       if(!edit)
                         handleAddOrderMain();
@@ -635,7 +672,7 @@ const OrderAddLayout = () => {
                         handleEditOrderMain();
                     }}
                   >
-                    <p className="w-16 h-16 text-[#222222]"><Edit /></p> {edit ? "수정" : "발주 등록"}
+                    <p className="w-16 h-16"><Edit /></p> {edit ? "수정" : "발주 등록"}
                   </Button>
                 </>
                 }
@@ -644,7 +681,7 @@ const OrderAddLayout = () => {
             {/* 모델 컨텐츠 */}
           { stepCurrent > 0 &&
             <div
-              className="flex w-full relative pl-10"
+              className="flex w-full relative pl-10 min-w-[1500px]"
               ref={el => {
                 if (el) {
                   stepRef.current[1] = el;

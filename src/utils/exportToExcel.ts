@@ -115,7 +115,7 @@ export const exportToExcelAndPrint = (
           worksheet[cellAddress].s = {
             font: { bold: true },
             alignment: { horizontal: "center", vertical: "center" },
-            fill: { fgColor: { rgb: "FAFAFA" } },
+            fill: { fgColor: { rgb: "F2F2F2" } },
             border: {
               top: { style: "thin", color: { rgb: "D5D5D5" } },
               left: { style: "thin", color: { rgb: "D5D5D5" } },
@@ -157,7 +157,7 @@ export const exportToExcelAndPrint = (
         h2 { text-align: center; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th, td { border: 1px solid #D9D9D9; padding: 8px; text-align: center; font-size: 14px; }
-        th { background: #FAFAFA; font-weight: bold; border-bottom: 2px solid black; }
+        th { background: #F2F2F2; font-weight: bold; border-bottom: 2px solid black; }
         td { border-bottom: 1px solid black; }
       </style>
     `;

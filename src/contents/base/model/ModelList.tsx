@@ -10,6 +10,10 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 import styled from "styled-components";
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
+import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
+import { useQuery } from "@tanstack/react-query";
+import { getPrtCsAPI } from "@/api/cache/client";
+import { partnerRType } from "@/data/type/base/partner";
 
 interface Props {
   type: 'order' | 'match';
@@ -38,6 +42,29 @@ const ModelList:React.FC<Props> = ({
   setDrawerOpen,
   partnerId,
 }) => {
+  // ----------- 거래처 데이터 세팅 ----------- 시작
+    // 거래처를 가져와 SELECT에 세팅 (type이 다름)
+  const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
+  const { data:cs, refetch:csRefetch } = useQuery({
+    queryKey: ["getClientCs"],
+    queryFn: () => getPrtCsAPI(),
+  });
+  useEffect(()=>{
+    if(cs?.data.data?.length) {
+      setCsList(cs.data.data.map((cs:partnerRType) => ({
+        value:cs.id,
+        label:cs.prtNm
+      })));
+    }
+  }, [cs?.data.data]);
+
+  const [searchCs, setSearchCs] = useState<string>("");
+  useEffect(()=>{
+    if(partnerId)
+      setSearchCs(partnerId);
+  }, [partnerId])
+  // ----------- 거래처 데이터 세팅 ----------- 끝
+  
   const items = (record: any): MenuProps['items'] => [
     {
       label: <>복사하여 새로 등록</>,
@@ -64,10 +91,10 @@ const ModelList:React.FC<Props> = ({
   const [searchModel, setSearchModel] = useState<string>('');
   useEffect(()=>{
     setFmodel(models
-      .filter((f:modelsType) => f.partner.id.includes(partnerId ?? ""))
+      .filter((f:modelsType) => f.partner.id.includes(searchCs ?? ""))
       .filter((f:modelsType) => f.prdNm.includes(searchModel))
     );
-  }, [searchModel, partnerId]);
+  }, [searchModel, searchCs]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
@@ -76,7 +103,6 @@ const ModelList:React.FC<Props> = ({
   const handleSelectMenu = () => {
     if(selectMenuKey===0)   setNewFlag(true);   // 복사하여 등록
     if(selectMenuKey===1)   setNewFlag(false);  // 그대로 등록
-    
 
     if(selectRecord !== null) {
       if(type === 'order') {
@@ -126,12 +152,35 @@ const ModelList:React.FC<Props> = ({
 
   return (
     <div className="flex flex-col gap-20">
-      <div className="flex h-70 py-20 border-b-1 border-line">
-        <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
-        <div
-          className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
-        >
-          <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
+      <div className="v-between-h-center h-70 py-20 border-b-1 border-line">
+        <div className="h-center pt-3 min-w-[220px]">
+          <AntdInput 
+            value={searchModel}
+            onChange={(e)=>setSearchModel(e.target.value)}
+            placeholder="모델명 검색"
+            styles={{ht:"36px",br:"0"}}
+          />
+          <div
+            className="min-w-32 w-32 h-36 border-1 border-line v-h-center border-l-0 cursor-pointer"
+          >
+            <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
+          </div>
+        </div>
+
+        <div className="h-center min-w-[220px]">
+          <CustomAutoComplete
+            option={csList}
+            value={searchCs}
+            onChange={(value) => {
+              setSearchCs(value);
+            }}
+            placeholder="고객명 검색"
+          />
+          <div
+            className="min-w-32 w-32 h-36 border-1 border-line v-h-center border-l-0 cursor-pointer mt-3"
+          >
+            <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
+          </div>
         </div>
       </div>
       <div className="">

@@ -1295,7 +1295,7 @@ export const sayangModelWaitClmn = (
     align: 'center',
   },
   {
-    title: '모델등록',
+    title: '모델확정',
     width: 90,
     dataIndex: 'id',
     key: 'id',
@@ -1362,7 +1362,7 @@ export const sayangModelWaitAddClmn = (
         <div className="h-[50%] w-[100%] v-h-center ">
         <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
         </div>
-        <div className="h-[50%] w-[100%] v-h-center">
+        {/* <div className="h-[50%] w-[100%] v-h-center">
         {
           !record.completed &&
             <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
@@ -1371,7 +1371,7 @@ export const sayangModelWaitAddClmn = (
               <p className="w-16 h-16"><Trash /></p>
             </div>
         }
-        </div>
+        </div> */}
       </>
     ),
   },

@@ -536,7 +536,7 @@ const SayangSampleAddPage: React.FC & {
           <div className="min-w-[300px] flex-grow-[24]">
             {/* 재단 사이즈 */}
             <CutSizeContents
-              specNo={detailData.specNo ?? ""}
+              specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
             />
           </div>
         </div>

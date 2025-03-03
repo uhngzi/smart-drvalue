@@ -14,7 +14,7 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
-  return <p className="h-center justify-end">{label}</p>
+  return <p className="h-center">{label}</p>
 }
 
 const Divider:React.FC = () => {
@@ -47,38 +47,41 @@ const SalesModelHead:React.FC<Props> = ({
 }) => {
   return (
     <div className="w-full min-h-60 h-center">
-      <div className="h-full h-center gap-10 p-10">
+      <div className="h-full h-center gap-20 p-10">
         { !read &&
           <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
         }
+        <div className="flex flex-col">
+          <Label label="수주 모델명" />
+          <AntdInput
+            ref={el => {
+              // 자동 스크롤 & 포커싱을 위해 Ref 추가
+              if(el &&inputRef && inputRef.current && model.index) {
+                inputRef.current[model.index] = el;
+              }
+            }}
+            value={model.orderTit}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
+            }}
+            readonly={read ? true : selectId === model.id ? !newFlag : undefined}
+            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
+            disabled={model.completed}
+          />
+        </div>
 
-        <Label label="수주 모델명" />
-        <AntdInput
-          ref={el => {
-            // 자동 스크롤 & 포커싱을 위해 Ref 추가
-            if(el &&inputRef && inputRef.current && model.index) {
-              inputRef.current[model.index] = el;
-            }
-          }}
-          value={model.orderTit}
-          onChange={(e)=>{
-            handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
-          }}
-          readonly={read ? true : selectId === model.id ? !newFlag : undefined}
-          className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
-          disabled={model.completed}
-        />
-
-        <Label label="고객측 관리번호" />
-        <AntdInput
-          value={model.prtOrderNo}
-          onChange={(e)=>{
-            handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
-          }}
-          readonly={read}
-          className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
-          disabled={model.completed}
-        />
+        <div className="flex flex-col">
+          <Label label="고객측 관리번호" />
+          <AntdInput
+            value={model.prtOrderNo}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
+            }}
+            readonly={read}
+            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
+            disabled={model.completed}
+          />
+        </div>
 
         <AntdSelect
           options={[
@@ -103,71 +106,84 @@ const SalesModelHead:React.FC<Props> = ({
 
       <Divider />
       
-      <div className="h-full h-center gap-10 p-10">
-        <Label label="원판" />
-        <AntdSelect
-          options={boardSelectList}
-          value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
-          className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-          readonly={read}
-          disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-        />
+      <div className="h-full h-center gap-20 p-10">
+        <div className="flex flex-col">
+          <Label label="원판" />
+          <AntdSelect
+            options={boardSelectList}
+            value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
+            className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+            readonly={read}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        </div>
+        <div className="flex flex-col">
+          <Label label="제조사" />
+          <AntdInput 
+            value={model.currPrdInfo?.mnfNm}
+            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
+            className="w-[120px!important]" styles={{ht:'32px'}}
+            readonly={read ? read : selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        </div>
 
-        <Label label="제조사" />
-        <AntdInput 
-          value={model.currPrdInfo?.mnfNm}
-          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
-          className="w-[120px!important]" styles={{ht:'32px'}}
-          readonly={read ? read : selectId === model.id ? !newFlag : undefined}
-          disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-        />
-
-        <Label label="재질" />
-        <AntdSelect
-          options={metarialSelectList}
-          value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
-          onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
-          className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
-          disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-          readonly={read}
-        />
+        <div className="flex flex-col">
+          <Label label="재질" />
+          <AntdSelect
+            options={metarialSelectList}
+            value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
+            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
+            className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+            readonly={read}
+          />
+        </div>
       </div>
 
       <Divider />
 
-      <div className="h-full h-center gap-10 p-10">
-        <Label label="납기" />
-        { read && model.orderPrdDueDt ?
-          dayjs(model.orderPrdDueDt).format('YYYY-MM-DD') : null}
+      <div className="h-full h-center gap-20 p-10">
+        { read && model.orderPrdDueDt ?<>
+          <Label label="납기" />
+          {dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}
+        </>: null}
         { !read && <>
-          <AntdDatePicker
-            value={model.orderPrdDueDt}
-            onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
-            suffixIcon={'cal'}
-            styles={{bw:'0',bg:'none', pd:"0"}}
-            className="!w-[106px]"
-            placeholder=""
-            afterDate={new Date()}
-          />
+          <div className="flex flex-col">
+            <Label label="납기" />
+            <AntdDatePicker
+              value={model.orderPrdDueDt}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
+              suffixIcon={'cal'}
+              styles={{bw:'0',bg:'none', pd:"0"}}
+              className="!w-[106px]"
+              placeholder=""
+              afterDate={new Date()}
+            />
+          </div>
 
-          <Label label="수주 수량" />
-          <AntdInput 
-            value={model.orderPrdCnt}
-            onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
-            className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-            // readonly={selectId === model.id ? !newFlag : undefined}
-            disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-          />
+          <div className="flex flex-col">
+            <Label label="수주 수량" />
+            <AntdInput 
+              value={model.orderPrdCnt}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
+              className="w-[120px!important]" styles={{ht:'32px'}} type="number"
+              // readonly={selectId === model.id ? !newFlag : undefined}
+              disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
+            />
+          </div>
 
-          <Label label="수주 금액" />
-          <AntdInput 
-            value={model.orderPrdPrice}
-            onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
-            className="w-[120px!important]" styles={{ht:'32px'}} type="number"
-            // readonly={selectId === model.id ? !newFlag : undefined}
-            disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
-          />
+          <div className="flex flex-col">
+            <Label label="수주 금액" />
+            <AntdInput 
+              value={model.orderPrdPrice}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
+              className="w-[120px!important]" styles={{ht:'32px'}} type="number"
+              // readonly={selectId === model.id ? !newFlag : undefined}
+              disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
+            />
+          </div>
         </>}
       </div>
       {

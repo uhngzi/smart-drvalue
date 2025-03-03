@@ -230,7 +230,7 @@ const SayangSampleListPage: React.FC & {
           <AntdTableEdit
             columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, router)}
             data={ingData}
-            styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={ingDataLoading}
           />
         </List>
@@ -248,7 +248,7 @@ const SayangSampleListPage: React.FC & {
           <AntdTableEdit
             columns={sayangSampleWaitClmn(waitTotalData, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)}
             data={waitData}
-            styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}
           />
         </List>
