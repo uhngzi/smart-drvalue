@@ -334,7 +334,9 @@ const OrderAddLayout = () => {
       showToast("고객 발주가 완료되었습니다.", "success");
     } else {
       const msg = result?.response?.data?.message;
-      showToast(msg, "error");
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
     }
   }
   // ---------- 발주 신규 등록 함수 ----------- 끝
@@ -374,7 +376,9 @@ const OrderAddLayout = () => {
     } else {
       console.log(result);
       const msg = result?.response?.data?.message;
-      showToast(msg, "error");
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
     }
   }
   // ------------ 모델 저장 함수 ------------- 끝
@@ -455,7 +459,9 @@ const OrderAddLayout = () => {
       showToast("발주 등록 완료", "success");
     } else {
       const msg = result.response?.data?.message;
-      showToast(msg, "error");
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
     }
   }
   // ------------ 발주 등록 함수 ------------- 끝
@@ -476,7 +482,9 @@ const OrderAddLayout = () => {
       showToast("발주 수정 완료", "success");
     } else {
       const msg = result.response?.data?.message;
-      showToast(msg, "error");
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
     }
   }
   // ------------ 발주 수정 함수 ------------- 끝
@@ -553,7 +561,8 @@ const OrderAddLayout = () => {
   useEffect(()=>{console.log('new :: ',newFlag)}, [newFlag]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "">("");
+  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
+  const [errMsg, setErrMsg] = useState<string>("");
 
   return (<>
     <div className="p-30 flex v-between-h-center w-full">
@@ -816,18 +825,23 @@ const OrderAddLayout = () => {
         <AntdAlertModal
           open={alertOpen}
           setOpen={setAlertOpen}
-          type={alertType === "discard" ? "success" : "warning"}
+          type={
+            alertType === "discard" ? "success" :
+            alertType === "error" ? "error" :
+            "warning"}
           title={
             alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
             // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
             alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
             alertType === "close" ? "저장되지 않은 모델 정보 또는 미등록된 고객 발주 정보가 있습니다." :
+            alertType === "error" ? "오류 발생" :
             alertType === "discard" ? "고객 발주 폐기 성공" : ""
           }
           contents={
             alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
             alertType === "cancle" ? <>해당 발주를 취소할 경우 하위에 등록된 모델도 폐기됩니다.<br/>정말 폐기하시겠습니까?</> :
             alertType === "close" ? <>저장하지 않고 나가시면 해당 정보는 삭제됩니다.<br/>정말 나가시겠습니까?</> :
+            alertType === "error" ? <>{errMsg}</> :
             alertType === "discard" ? <>고객 발주 폐기가 완료되었습니다.</> : <></>
           }
           onOk={()=>{
@@ -846,11 +860,12 @@ const OrderAddLayout = () => {
             setAlertOpen(false);
             setDeleted(false);
           }}
-          hideCancel={alertType === "discard" ? true : false}
+          hideCancel={alertType === "discard" || alertType === "error" ? true : false}
           okText={
             alertType === "del" ? "네 삭제할래요" :
             alertType === "cancle" ? "네 폐기할래요" :
             alertType === "close" ? "그래도 나갈게요" :
+            alertType === "error" ? "확인" :
             alertType === "discard" ? "목록으로 이동" : ""
           }
           cancelText={

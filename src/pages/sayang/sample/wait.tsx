@@ -59,9 +59,6 @@ const SayangSampleListPage: React.FC & {
         type: 'core-d1', 
         utype: 'tenant/',
         url: 'models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting'
-      },{
-        limit:paginationWait.size,
-        page:paginationWait.current,
       });
 
       setWaitDataLoading(false);
@@ -75,7 +72,7 @@ const SayangSampleListPage: React.FC & {
         model: models.find(f=>f.id === d.model?.id),
       }));
       setWaitData(arr);
-      setWaitTotalData(queryData?.data.total ?? 0);
+      // setWaitTotalData(queryData?.data.total ?? 0);
     }
   }, [queryData, models]);
   // ------------ 대기중 리스트 데이터 세팅 ------------ 끝
@@ -237,27 +234,31 @@ const SayangSampleListPage: React.FC & {
       </div>
       <div className="w-full h-1 border-b-1 border-line"></div>
       <div>
-        <ListPagination
+        {/* <ListPagination
           pagination={paginationWait}
           totalData={waitTotalData}
           onChange={handlePageWaitChange}
           handleMenuClick={handlePageMenuClick}
           title="사양 등록 대기"
-        />
+        /> */}
+        <div className="v-between-h-center h-50 w-full">
+          <div><LabelMedium label="사양 등록 대기" /></div>
+          <p className="h-center">총 {waitData.length}건</p>
+        </div>
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitTotalData, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)}
+            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)}
             data={waitData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}
           />
         </List>
-        <ListPagination
+        {/* <ListPagination
           pagination={paginationWait}
           totalData={waitTotalData}
           onChange={handlePageWaitChange}
           handleMenuClick={handlePageMenuClick}
-        />
+        /> */}
       </div>
       
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}

@@ -259,6 +259,7 @@ export const changeSayangTemp = (
           prdGrpIdx: specData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id,
           data: specData.specPrdGroupPrcs?.map((prc:specPrdGroupPrcs) => ({
             prcIdx: prc.process?.id,
+            vendorIdx: prc.vendor?.id,
             order: prc.ordNo,
             prcWkRemark: prc.prcWkRemark
           }))

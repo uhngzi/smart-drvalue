@@ -10,9 +10,10 @@ interface LaminationRowProps {
   color: string[];
   lamination?: laminationRType[];
   setLamination?: React.Dispatch<SetStateAction<laminationRType[]>>;
+  disable?: boolean;
 }
 
-const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, lamination, setLamination }) => {
+const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, lamination, setLamination, disable }) => {
   return (
     <div
       key={item.id}
@@ -50,7 +51,7 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, 
           setLamination?.(newArray);
         }}
       >
-        { item.lamDtlTypeEm !== 'cf' &&
+        { item.lamDtlTypeEm !== 'cf' && !disable &&
           <Close />
         }
       </div>}

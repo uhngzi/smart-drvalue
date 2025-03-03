@@ -131,6 +131,7 @@ export type specPrdGroupPrcs = {
     id?: string;
     name?: string;
   },
+  vendor?: partnerRType;
 }
 
 export type yieldInputType = {

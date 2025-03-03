@@ -9,6 +9,7 @@ interface BaseLaminationRowProps {
   onMenuClick: (e: any, item: laminationRType) => void;
   index: number;
   onDragEnd?: () => void;
+  disabled?: boolean;
 }
 
 const items: MenuProps['items'] = [
@@ -26,7 +27,7 @@ const items: MenuProps['items'] = [
   },
 ]
 
-const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick, index, onDragEnd }) => {
+const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick, index, onDragEnd, disabled }) => {
   // 오른쪽 아이템에서 드래그를 시작할 때, dataTransfer에 item 정보를 넣어준다.
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     // JSON 형태로 변환해서 저장
@@ -39,7 +40,7 @@ const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick
       key={item.id}
       className="w-full h-40 h-center border-b-1 border-[#0000006] text-center"
       // 드래그 설정
-      draggable
+      draggable={!disabled}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
     >
@@ -47,16 +48,18 @@ const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick
       <div className="w-56 px-8 py-8">{item.copOut}</div>
       <div className="w-56 px-8 py-8">{item.lamDtlThk}</div>
       <div className="w-56 px-8 py-8">{item.lamDtlRealThk}</div>
-      <div className="w-34 v-h-center cursor-pointer">
-        <Dropdown
-          trigger={["click"]}
-          menu={{ items: items, onClick: (e) => onMenuClick(e, item) }}
-        >
-          <p className="w-16 h-16">
-            <Edit />
-          </p>
-        </Dropdown>
-      </div>
+      { disabled ? <></> :
+        <div className="w-34 v-h-center cursor-pointer">
+          <Dropdown
+            trigger={["click"]}
+            menu={{ items: items, onClick: (e) => onMenuClick(e, item) }}
+          >
+            <p className="w-16 h-16">
+              <Edit />
+            </p>
+          </Dropdown>
+        </div>
+      }
     </div>
   );
 };

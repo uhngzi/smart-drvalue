@@ -2,12 +2,14 @@ import React from "react";
 import Check from "@/assets/svg/icons/s_check.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 import { specLaminationType } from "@/data/type/sayang/lamination";
+import { Dropdown } from "antd";
 
 interface SpecSourceRowProps {
   source: specLaminationType;
   index: number;
   isSelected: boolean;
   onSelect: (source: specLaminationType) => void;
+  selectMenuClick?: (source:specLaminationType) => void;
 }
 
 const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
@@ -15,6 +17,7 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
   index,
   isSelected,
   onSelect,
+  selectMenuClick,
 }) => {
   return (
     <div
@@ -39,6 +42,18 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
       >{source.lamNo}</div>
       <div className="w-45 v-h-center">{source.lamThk}T</div>
       <div className="w-45 v-h-center">{source.lamRealThk}T</div>
+      {
+        source.confirmYn === 1 && 
+        <Dropdown
+          className="cursor-pointer"
+          trigger={["click"]}
+          menu={{ items: [{label: "복사하여 새로 등록", key: 1}], onClick:()=>selectMenuClick?.(source) }}
+        >
+          <p className="w-16 h-16">
+            <Edit />
+          </p>
+        </Dropdown>
+      }
       {/* <div
         className="w-34 v-h-center cursor-pointer"
         onClick={() => onSelect(source)}
