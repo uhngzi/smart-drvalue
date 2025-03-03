@@ -18,7 +18,7 @@ import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
 import CustomTree from "@/components/Tree/CustomTree";
 import { treeType } from "@/data/type/componentStyles";
-import CustomTreeView from "@/components/Tree/CustomTreeView";
+import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { CheckboxChangeEvent } from "antd";
 
@@ -246,7 +246,7 @@ const WkProcessVendorListPage: React.FC & {
       <>
         <div className="w-full flex gap-30">
           <div className="p-20 w-[30%]">
-            <CustomTreeView
+            <CustomTreeCheck
               data={treeData}
               childCheck={true}
               onChange={handleCheck}

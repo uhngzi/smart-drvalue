@@ -15,6 +15,7 @@ export type commonCodeGroupType = {
     updatedAt?: Date | null;
     deletedAt?: Date | null;
   },
+  codes?: Array<any>;
   createdAt?: Date | null;
   updatedAt?: Date | null;
   deletedAt?: Date | null;

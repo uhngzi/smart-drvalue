@@ -135,7 +135,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           </Button>
                           <Input 
                             name={item.name}
-                            key={data[item.name]}
+                            key={data.id}
                             defaultValue={data[item.name]}                            
                             placeholder={item?.placeholder}
                             readOnly={true}
@@ -147,7 +147,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           type={item.inputType || "text"}
                           step={item.inputType === "number" ? 0.1 : 1}
                           min={0}
-                          key={data[item.name]}
+                          key={data.id}
                           defaultValue={data[item.name]}
                           onChange={(e) => setData(item.name, e.target.value)}
                           placeholder={item?.placeholder}
@@ -157,7 +157,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <Select 
                           className="w-full"
                           options={item.option}
-                          key={data[item.name]}
+                          key={data.id}
                           defaultValue={data[item.name] || (item.option && item.option[0]?.value)}
                           onChange={(value) => {setData(item.name, value)}}
                         />

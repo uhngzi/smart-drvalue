@@ -16,7 +16,8 @@ import AddContents from "@/contents/base/wk/process/group/AddContents";
 import CustomTree from "@/components/Tree/CustomTree";
 import { patchAPI } from "@/api/patch";
 import useToast from "@/utils/useToast";
-import { treeType } from "@/data/type/componentStyles";
+import { CUtreeType, treeType } from "@/data/type/componentStyles";
+import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -82,103 +83,76 @@ const WkProcessGroupListPage: React.FC & {
     // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<AlertType>('info');
-    //등록 모달창을 위한 변수
-  const [ newOpen, setNewOpen ] = useState<boolean>(false);
-    //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<processGroupCUType>(newDataProcessGroupCUType);
-    //값 변경 함수
-  const handleDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-  ) => {
-    if(type === "input" && typeof e !== "string") {
-      const { value } = e.target;
-      setNewData({...newData, [name]: value});
-    } else if(type === "select") {
-      setNewData({...newData, [name]: e});
-    }
-  }
-    //등록 버튼 함수
-  const handleSubmitNewData = async () => {
-    try {
-      console.log(newData);
-      const result = await postAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: 'process-group',
-        jsx: 'jsxcrud'
-      }, newData);
+
+  // ---------- 신규 tree 데이터 시작 ----------
+  const [ addList, setAddList ] = useState<CUtreeType[]>([]);
+  const [ editList, setEditList ] = useState<CUtreeType[]>([]);
+  const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
+
+  // 트리데이터 submit 함수
+  async function onTreeSubmit(){
+      console.log(addList, editList, deleteList);
+      const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
+      console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
+      let result = false
+  
+      for(const item of updatedAddList){
+        let url: string = "process-group";
+        let parent: string = '';
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+  
+        if(item.parentId) {
+          url = "process";
+          parent = "process-group";
+          jsonData.processGroup = {id: item.parentId};
+          jsonData.prcNm = item.label;
+        }else{
+          jsonData.prcGrpNm = item.label;
+        }
+        result = await onTreeAdd(url, jsonData);
+        if(!result) {
+          showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+        }
+        console.log("add", result)
+      }
+  
+      for(const item of finalEditList){
+        let url: string = "process-group";
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+  
+        if(item.parentId) {
+          url = "process";
+          jsonData.processGroup = {id: item.parentId};
+          jsonData.prcNm = item.label;
+        }else{
+          jsonData.prcGrpNm = item.label;
+        }
+        result = await onTreeEdit(item, url, jsonData);
+        if(!result){
+          showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+        }
+      }
+  
+      for(const item of updatedDeleteList){
+        let url: string = "process-group";
+        if(item.type === 'child'){
+          url = "process";
+        }
+        result = await onTreeDelete(item, url);
+        if(!result){
+          showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+        }
+      }
       console.log(result);
-
-      if(result.resultCode === 'OK_0000') {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType('success');
-      } else {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType('error');
-      }
-    } catch(e) {
-      setNewOpen(false);
-      setResultOpen(true);
-      setResultType('error');
-    }
-  }
-  // ----------- 신규 데이터 끝 -----------
-
-  const handleTreeDataChange = async (
-    type:'main'|'child',
-    id:string,
-    value:string,
-    parentsId?: string,
-  ) => {
-    console.log(type, id, value);
-    const url = type === 'main' ? 'process-group' : 'process';
-    const jsonData = 
-      type === 'main' ? 
-      {
-        prcGrpNm: value,
-        useYn: true
-      } : {
-        processGroup: {
-          id: parentsId
-        },
-        prcNm: value,
-        useYn: true,
-      }
-    console.log(JSON.stringify(jsonData));
-    if(id.includes('new')) {
-      const result = await postAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: url,
-        jsx: 'jsxcrud'
-      }, jsonData);
-
-      if(result.resultCode === "OK_0000") {
-        showToast("등록 완료", "success");
+      if(result) {
+        setAddList([]);
+        setEditList([]);
+        setDeleteList([]);
+        showToast('저장이 완료되었습니다.', 'success');
         refetch();
-      } else {
-        showToast("등록 실패", "error");
-      }
-    } else {
-      const result = await patchAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: url,
-        jsx: 'jsxcrud',
-      }, id, jsonData);
-
-      if(result.resultCode === "OK_0000") {
-        showToast("수정 완료", "success");
-        console.log('ok');
-      } else {
-        showToast("실패 완료", "error");
       }
     }
-  }
+   
 
   return (
     <>
@@ -189,7 +163,10 @@ const WkProcessGroupListPage: React.FC & {
           <CustomTree
             data={treeData}
             // handleDataChange={handleTreeDataChange}
-            onSubmit={()=>{}}
+            onSubmit={onTreeSubmit}
+            setAddList={setAddList}
+            setEditList={setEditList}
+            setDelList={setDeleteList}
           />
         </div>
 
@@ -239,41 +216,7 @@ const WkProcessGroupListPage: React.FC & {
         </div> */}
       </>}
         
-      <AntdModal
-        title={"공정그룹 등록"}
-        open={newOpen}
-        setOpen={setNewOpen}
-        width={800}
-        contents={
-          <AddContents
-            handleDataChange={handleDataChange}
-            newData={newData}
-            handleSubmitNewData={handleSubmitNewData}
-            setNewOpen={setNewOpen}
-            setNewData={setNewData}
-          />
-        }
-        onClose={()=>{
-          setNewOpen(false);
-          setNewData(newDataProcessGroupCUType);
-        }}
-      />
-
       <ToastContainer />
-      <AntdAlertModal
-        open={resultOpen}
-        setOpen={setResultOpen}
-        title={resultType === "success" ? "공정 그룹 등록 성공" : "공정 그룹 등록 실패"}
-        contents={resultType === "success" ? <div>공정 그룹 등록이 완료되었습니다.</div> : <div>공정 그룹 등록이 실패하였습니다.</div>}
-        type={resultType} 
-        onOk={()=>{
-          refetch();
-          setResultOpen(false);
-          setNewData(newDataProcessGroupCUType);
-        }}
-        hideCancel={true}
-        theme="base"
-      />
     </>
   )
 }
