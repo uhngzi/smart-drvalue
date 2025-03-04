@@ -30,8 +30,6 @@ const getSecomData = async (date: Dayjs, dept?: number) => {
   return await axios.get(`http://1.234.23.160:3301/pcb/secom/list/${dt}/${dept}`);
 };
 
-
-
 // ============ 트리를 1차원 배열로 변환하는 유틸 ============
 function flattenTreeData(nodes: any[]): any[] {
   let result: any[] = [];
@@ -110,46 +108,74 @@ function getExcelCellBackground(timeValue: string | null, empTit: string, flag1:
  *   - 셀 스타일 (특히 행1=헤더 스타일, 나머지=데이터)
  *   - dayNum 에 따른 배경색
  */
-function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, culList: string[]) {
+function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, culList: string[], tableDataGrouped: any[]) {
   if (!flatData.length) return;
 
-  // 1) 헤더 row
+  // 1) 기본 헤더 row (팀명, 직원명, 업무구분, 구분, 1, 2, ..., lastDay)
   const headerRow = ["팀명", "직원명", "업무구분", "구분"];
   for (let i = 1; i <= lastDay; i++) {
     headerRow.push(String(i));
   }
+  // 총 컬럼 수
+  const totalCols = headerRow.length;
 
-  // 2) 데이터 rows (2차원 배열)
-  //   예: [ [팀명, 직원명, 업무구분, 구분, d01, d02, ...], ... ]
+  // 2) 제목 row 생성: "YYYY년 MM월 근무표"를 첫 셀에 넣고 나머지는 빈 문자열로 채움
+  const titleRow = [`${selDate.format("YYYY")}년 ${selDate.format("MM")}월 근무표`];
+  for (let i = 1; i < totalCols; i++) {
+    titleRow.push("");
+  }
+
+  // 3) 데이터 rows (기존 flatData 순회)
   const aoa = [];
+  // 첫번째 row는 제목 row
+  aoa.push(titleRow);
+  // 두번째 row는 헤더 row
   aoa.push(headerRow);
-
   flatData.forEach((row) => {
-    const isParent = !!row.children; // 대표행(부모)이면 children이 있음
     const arr = [];
-    // (a) 앞 4개
+    // 앞 4개 컬럼
     arr.push(row.teamNm || ""); 
     arr.push(row.name || "");    
     arr.push(row.empTit || "");  
-    // 구분
     if (row.flag1 === "1") arr.push("출근");
     else if (row.flag1 === "4") arr.push("퇴근");
     else arr.push("");
-
-    // (b) 날짜별
+    // 날짜별 컬럼
     for (let i = 1; i <= lastDay; i++) {
       const dayKey = i < 10 ? `d0${i}` : `d${i}`;
       arr.push(row[dayKey] || "");
     }
-
     aoa.push(arr);
   });
 
-  // 3) 시트 만들기
+  // 4) 시트 생성
   const worksheet = XLSX.utils.aoa_to_sheet(aoa);
 
-  // 4) 컬럼 너비 (원하는 대로)
-  //    ex: 첫 4개는 좀 넓게, 나머지는 6칸 정도
+  // 5) 기존 제목 행 병합 (첫번째 행 전체 병합)
+  const merges = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } }
+  ];
+
+  // 6) 추가: 동일 팀끼리 병합 (원본 그룹화된 tableData 이용)
+  // 데이터 행은 index 2부터 시작
+  let currentRow = 2;
+  tableDataGrouped.forEach((group) => {
+    // 그룹의 행 수 = 1(부모) + (자식 수, 없으면 0)
+    const groupSize = 1 + (group.children ? group.children.length : 0);
+    if (groupSize > 1) {
+      // A열은 인덱스 0
+      merges.push({
+        s: { r: currentRow, c: 0 },
+        e: { r: currentRow + groupSize - 1, c: 0 }
+      });
+    }
+    currentRow += groupSize;
+  });
+
+  // 병합 설정 반영
+  worksheet["!merges"] = merges;
+
+  // 7) 컬럼 너비 설정
   const colWidths = [
     { wpx: 120 }, // 팀명
     { wpx: 80 },  // 직원명
@@ -161,24 +187,31 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
   }
   worksheet["!cols"] = colWidths;
 
-  // 5) 행 높이
+  // 8) 행 높이 설정
   const rowHeights = aoa.map((_, idx) => {
-    if (idx === 0) return { hpx: 24 }; // 헤더 행
+    if (idx === 0) return { hpx: 30 }; // 제목 행
+    if (idx === 1) return { hpx: 24 }; // 헤더 행
     return { hpx: 20 };               // 데이터 행
   });
   worksheet["!rows"] = rowHeights;
 
-  // 6) 셀 스타일 (헤더 / 데이터)
+  // 9) 셀 스타일 설정 (제목, 헤더, 데이터)
   const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
-
   for (let R = range.s.r; R <= range.e.r; ++R) {
     for (let C = range.s.c; C <= range.e.c; ++C) {
       const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
       const cell = worksheet[cellAddress];
       if (!cell) continue;
-
-      // (a) 헤더 스타일
+      // 제목 행 스타일
       if (R === 0) {
+        cell.s = {
+          font: { bold: true, sz: 14 },
+          alignment: { horizontal: "center", vertical: "center" },
+          border: { bottom: { style: "medium", color: { rgb: "000000" } } },
+        };
+      }
+      // 헤더 행 스타일
+      else if (R === 1) {
         cell.s = {
           font: { bold: true },
           alignment: { horizontal: "center", vertical: "center" },
@@ -191,22 +224,18 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
           },
         };
       } else {
-        // (b) 데이터 스타일
-        const rowIndexInData = R - 1; // aoa의 데이터 부분 index
+        // 데이터 행 스타일
+        const rowIndexInData = R - 2; // 데이터 부분의 인덱스
         const dataRow = flatData[rowIndexInData];
-        // day column index => C-4 (0~3 = 팀명/직원명/업무구분/구분)
-        // => dayNum = C - 4 + 1
         let fillColor = undefined;
         if (C >= 3) {
-          const dayNum = C - 3; // C=4 => dayNum=1
+          const dayNum = C - 3; // C=4 → dayNum=1
           const timeValue = dataRow[dayNum < 10 ? `d0${dayNum}` : `d${dayNum}`] || null;
           fillColor = getExcelCellBackground(timeValue, dataRow.empTit, dataRow.flag1, dayNum, selDate, culList, !!dataRow.children);
-          // 만약 fillColor가 없다면 => 퇴근 행 체크
           if (!fillColor && String(dataRow.flag1) === "4") {
             fillColor = "#F2F2F2";
           }
         }
-
         cell.s = {
           alignment: { horizontal: "center", vertical: "center" },
           border: {
@@ -216,10 +245,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
             bottom: { style: "thin", color: { rgb: "000000" } },
           },
         };
-
-        // 배경색이 있으면 fill 적용
         if (fillColor) {
-          // fillColor 예: "#96b670" → XLSX는 "RRGGBB" hex만 인식. #을 빼고 uppercase.
           const hex = fillColor.replace("#", "").toUpperCase();
           cell.s.fill = { fgColor: { rgb: hex } };
         }
@@ -227,7 +253,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
     }
   }
 
-  // 7) Workbook 생성 & 다운로드
+  // 10) Workbook 생성 및 다운로드
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "근무표");
   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
@@ -236,10 +262,13 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
 }
 
 /** (5) 프린트 */
-function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList: string[]) {
+function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList: string[], tableDataGrouped: any[]) {
   if (!flatData.length) return;
 
-  // (a) colgroup + thead
+  // 총 컬럼 수 (앞 4개 + 날짜 수)
+  const totalCols = 4 + lastDay;
+
+  // (a) colgroup 생성
   let colgroup = `
     <colgroup>
       <col style="width:30mm;" />  <!-- 팀명 -->
@@ -251,58 +280,77 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
     colgroup += `<col style="width:10mm;" />`; // 날짜 열
   }
   colgroup += `</colgroup>`;
-  
-  // (a) HTML 표의 헤더
-  let thead = `<thead><tr>
+
+  // (b) 헤더 생성: 첫번째 행은 제목 행, 두번째 행은 실제 컬럼명
+  let thead = `<thead>`;
+  // 제목 행: colspan으로 전체 열을 병합
+  thead += `<tr>
+    <th colspan="${totalCols}" style="font-size:14px; font-weight:bold; text-align:center; border:1px solid #D9D9D9;">
+      ${selDate.format("YYYY")}년 ${selDate.format("MM")}월 근무표
+    </th>
+  </tr>`;
+  // 컬럼명 행
+  thead += `<tr>
     <th>팀명</th>
     <th>직원명</th>
     <th>업무구분</th>
-    <th>구분</th>
-  `;
+    <th>구분</th>`;
   for (let i = 1; i <= lastDay; i++) {
     thead += `<th>${i}</th>`;
   }
-  thead += "</tr></thead>";
+  thead += `</tr></thead>`;
 
-  // (b) tbody
+  // (c) tbody 생성: 그룹별로 rowspan 적용
   let tbody = "<tbody>";
-  flatData.forEach((row) => {
-    const isParent = !!row.children;
+  tableDataGrouped.forEach((group) => {
+    // 그룹의 부모 행과 자식 행들
+    const groupSize = 1 + (group.children ? group.children.length : 0);
+    // 부모 행 (첫 번째 행)
     tbody += "<tr>";
-
-    // 팀명
-    tbody += `<td>${row.teamNm || ""}</td>`;
-    // 직원명
-    tbody += `<td>${row.name || ""}</td>`;
-    // 업무구분
-    tbody += `<td>${row.empTit || ""}</td>`;
-    // 구분
-    let gubun = "";
-    let fill = "";
-    if (row.flag1 === "1") { gubun = "출근"; fill="none"; }
-    else if (row.flag1 === "4") { gubun = "퇴근"; fill="#F2F2F2"; }
-    tbody += `<td style="background-color:${fill}">${gubun}</td>`;
-
-    // 날짜별
+    // 팀명이 있는 셀에 rowspan 적용 (부모 행에서만)
+    tbody += `<td rowspan="${groupSize}">${group.teamNm || ""}</td>`;
+    // 부모 행의 나머지 셀
+    tbody += `<td>${group.name || ""}</td>`;
+    tbody += `<td>${group.empTit || ""}</td>`;
+    tbody += `<td style="background-color:${group.flag1==="4"?"#F2F2F2":""}">${group.flag1==="1"?"출근":group.flag1==="4"?"퇴근":""}</td>`;
+    // 날짜별 셀
     for (let i = 1; i <= lastDay; i++) {
       const dayKey = i < 10 ? `d0${i}` : `d${i}`;
-      const timeValue = row[dayKey] || null;
-      let fillColor = getExcelCellBackground(timeValue, row.empTit, row.flag1, i, selDate, culList, isParent);
-      if (!fillColor && row.flag1 === "4") {
+      const timeValue = group[dayKey] || "";
+      let fillColor = getExcelCellBackground(timeValue, group.empTit, group.flag1, i, selDate, culList, true);
+      if (!fillColor && group.flag1==="4") {
         fillColor = "#F2F2F2";
       }
-      const styleBg = fillColor ? `background-color:${fillColor};` : "";
-      const val = timeValue || "";
-      tbody += `<td style="${styleBg}">${val}</td>`;
+      const styleBg = fillColor ? `style="background-color:${fillColor};"` : "";
+      tbody += `<td ${styleBg}>${timeValue}</td>`;
     }
-
     tbody += "</tr>";
+    // 자식 행들: 팀명 셀은 생략
+    if (group.children && group.children.length > 0) {
+      group.children.forEach((child: any) => {
+        tbody += "<tr>";
+        // 빈 셀 대신 팀명은 생략
+        tbody += `<td>${child.name || ""}</td>`;
+        tbody += `<td>${child.empTit || ""}</td>`;
+        tbody += `<td style="background-color:${child.flag1==="4"?"#F2F2F2":""}">${child.flag1==="1"?"출근":child.flag1==="4"?"퇴근":""}</td>`;
+        for (let i = 1; i <= lastDay; i++) {
+          const dayKey = i < 10 ? `d0${i}` : `d${i}`;
+          const timeValue = child[dayKey] || "";
+          let fillColor = getExcelCellBackground(timeValue, child.empTit, child.flag1, i, selDate, culList, false);
+          if (!fillColor && child.flag1==="4") {
+            fillColor = "#F2F2F2";
+          }
+          const styleBg = fillColor ? `style="background-color:${fillColor};"` : "";
+          tbody += `<td ${styleBg}>${timeValue}</td>`;
+        }
+        tbody += "</tr>";
+      });
+    }
   });
   tbody += "</tbody>";
 
-  // (c) 완성된 HTML
+  // (d) 최종 HTML 조합
   const tableHTML = `
-    <h2 style="text-align:center; margin:0 0 10px;">근무표</h2>
     <table style="
       border-collapse:collapse;
       table-layout:fixed;
@@ -314,10 +362,9 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
     </table>
   `;
 
-  // 새 창 열기
+  // 새 창 열기 및 프린트
   const printWindow = window.open("", "_blank");
   if (!printWindow) return;
-
   const style = `
     <style>
       @page {
@@ -328,10 +375,6 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
         margin: 0;
         padding: 0;
         font-family: sans-serif;
-      }
-      h2 {
-        text-align: center;
-        margin-bottom: 10px;
       }
       table, td, th {
         border:1px solid #D9D9D9;
@@ -357,7 +400,6 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
       }
     </style>
   `;
-
   printWindow.document.write(`<!DOCTYPE html><html><head>${style}</head><body>${tableHTML}</body></html>`);
   printWindow.document.close();
   printWindow.focus();
@@ -614,55 +656,6 @@ const AtdSecomPage: React.FC & {
     });
   }, [last, selDate, culList]);
 
-  // 기본 컬럼
-  const baseColumns = useMemo(() => {
-    return [
-      {
-        title: "직원명",
-        dataIndex: "teamNm/name",
-        align: "center" as const,
-        width: 175,
-        render: (value: any, row: any) => {
-          return row?.teamNm + " / " + row?.name;
-        },
-      },
-      {
-        title: "업무구분",
-        dataIndex: "empTit",
-        align: "center" as const,
-        width: 130,
-        render: (value: any) => {
-          return value || "";
-        },
-      },
-      {
-        title: "구분",
-        dataIndex: "flag1",
-        align: "center" as const,
-        width: 50,
-        render: (value: string) => {
-          if (value === "1") return "출근";
-          if (value === "4") return "퇴근";
-          return "";
-        },
-        // (2) 본문 셀 배경색
-        onCell: (row: any) => {
-          // 가져올 값 (timeValue)
-          return {
-            style: {
-              backgroundColor: String(row?.flag1) === "4" ? "#F2F2F2" : "",
-            },
-          };
-        },
-      },
-    ];
-  }, []);
-
-  // 최종 columns
-  const columns = useMemo(() => {
-    return [...baseColumns, ...dayColumns];
-  }, [baseColumns, dayColumns]);
-
   // *********************************************************
   // **팀 - 대표 직원** 한 줄만 보여 주고, 펼치면 나머지 직원 표시
   // *********************************************************
@@ -718,11 +711,10 @@ const AtdSecomPage: React.FC & {
 
       // 나머지 직원들 (대표직원 제외) → children
       const childRows = records.slice(1).map((emp, idx) => {
-        // 마찬가지로 "팀명 - 직원명" 합치기
-        const childTeamNm = `${emp.teamNm} / ${emp.name}`;
         return {
           key: `child-${teamName}-${emp.sabun}-${idx}`,
-          teamNm: childTeamNm,
+          teamNm: null,
+          name: emp.name,
           empTit: emp.empTit,
           flag1: emp.flag1,
           // 날짜별 근무
@@ -741,6 +733,55 @@ const AtdSecomPage: React.FC & {
 
     return result;
   }, [secoms]);
+
+  // 기본 컬럼
+  const baseColumns = useMemo(() => {
+    return [
+      {
+        title: "직원명",
+        dataIndex: "teamNm/name",
+        align: "center" as const,
+        width: 175,
+        render: (_:any, row: any) => {
+          return (row?.key as string ?? "").includes("parent") ? `${row.teamNm} / ${row.name}` : row.name;
+        },
+      },
+      {
+        title: "업무구분",
+        dataIndex: "empTit",
+        align: "center" as const,
+        width: 130,
+        render: (value: any) => {
+          return value || "";
+        },
+      },
+      {
+        title: "구분",
+        dataIndex: "flag1",
+        align: "center" as const,
+        width: 50,
+        render: (value: string) => {
+          if (value === "1") return "출근";
+          if (value === "4") return "퇴근";
+          return "";
+        },
+        // (2) 본문 셀 배경색
+        onCell: (row: any) => {
+          // 가져올 값 (timeValue)
+          return {
+            style: {
+              backgroundColor: String(row?.flag1) === "4" ? "#F2F2F2" : "",
+            },
+          };
+        },
+      },
+    ];
+  }, [tableData]);
+
+  // 최종 columns
+  const columns = useMemo(() => {
+    return [...baseColumns, ...dayColumns];
+  }, [baseColumns, dayColumns]);
 
   // ***********************
   // ** "전체 펼치기" 제어 **
@@ -781,13 +822,13 @@ const AtdSecomPage: React.FC & {
   /** 엑셀 다운로드 */
   const handleExcelDownload = () => {
     if (!flatData.length || !last) return;
-    handleExcelDownload2(flatData, last, selDate, culList);
+    handleExcelDownload2(flatData, last, selDate, culList, tableData);
   };
 
   /** 프린트 */
   const handlePrint = () => {
     if (!flatData.length || !last) return;
-    handlePrint2(flatData, last, selDate, culList);
+    handlePrint2(flatData, last, selDate, culList, tableData);
   };
 
   const items: MenuProps['items'] = [
