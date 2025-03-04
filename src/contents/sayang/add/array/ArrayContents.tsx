@@ -51,13 +51,14 @@ const ArrayContents: React.FC<Props> = ({
         brdArrStorageKey: selectData?.boardImageStorageName,
         cutCnt: selectData?.panelsPerBoard,
         jYn: bd?.brdType === "J" || bd?.brdType === "AJ",
-      })
+      });
+      
+      setTimeout(()=>handleSumbitTemp(), 30);
     }
   }, [selectData])
 
   useEffect(()=>{
-    if(detailData?.board?.id && detailData?.brdArrYldRate) {
-      handleSumbitTemp();
+    if(detailData?.board?.id) {
       const bd = board.find(f=>f.id === detailData.board?.id);
       setSpecBoard(bd);
     }

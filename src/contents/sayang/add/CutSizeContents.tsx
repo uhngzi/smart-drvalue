@@ -19,7 +19,7 @@ const CutSizeContents: React.FC<Props> = ({
       />
       
       <div className="w-full h-[140px] border-1 border-line bg-back rounded-14">
-        <p className="text-16 font-medium h-40 v-h-center">{detailData.cutCnt && detailData.cutCnt+"등분"}</p>
+        <p className="text-16 font-medium h-40 v-h-center">{detailData.cutCnt && detailData.cutCnt+"등분"}{}</p>
         <div className="h-100 flex flex-col text-12 font-medium gap-5 h-center">
           <p className="h-center h-20 w-[160px]">간격(XY) : 2 | 3</p>
           <p className="h-center h-20 w-[160px]">규격 : 489 X 280.36</p>
