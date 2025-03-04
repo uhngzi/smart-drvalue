@@ -1,6 +1,7 @@
 import Cut from "@/assets/svg/icons/cut.svg";
 import TitleIcon from "@/components/Text/TitleIcon";
 import { specType } from "@/data/type/sayang/sample";
+import { Empty } from "antd";
 
 interface Props {
   specNo: string;
@@ -19,13 +20,16 @@ const CutSizeContents: React.FC<Props> = ({
       />
       
       <div className="w-full h-[140px] border-1 border-line bg-back rounded-14">
-        <p className="text-16 font-medium h-40 v-h-center">{detailData.cutCnt && detailData.cutCnt+"등분"}{}</p>
-        <div className="h-100 flex flex-col text-12 font-medium gap-5 h-center">
-          <p className="h-center h-20 w-[160px]">간격(XY) : 2 | 3</p>
-          <p className="h-center h-20 w-[160px]">규격 : 489 X 280.36</p>
-          <p className="h-center h-20 w-[160px]">W/S : 520 X 310</p>
-          <p className="h-center h-20 w-[160px]">Trimmimg size : 516 X 306</p>
-        </div>
+        {!detailData.cutCnt && <Empty className="pt-5" />}
+        {detailData.cutCnt && <>
+          <p className="text-16 font-medium h-40 v-h-center">{detailData.cutCnt && detailData.cutCnt+"등분"}{detailData.jYn && "/J"}</p>
+          <div className="h-100 flex flex-col text-12 font-medium gap-5 h-center">
+            <p className="h-center h-20 w-[160px]">{detailData.stdW && detailData.stdH && "간격(XY) : "+detailData.stdW+" | "+detailData.stdH}</p>
+            <p className="h-center h-20 w-[160px]">{detailData.stdW && detailData.stdH && "규격 : "+detailData.stdW+" X "+detailData.stdH}</p>
+            <p className="h-center h-20 w-[160px]">{detailData.wksizeW && detailData.wksizeH && "W/S : "+detailData.wksizeW+" X "+detailData.wksizeH}</p>
+            <p className="h-center h-20 w-[160px]">{detailData.wksizeW && detailData.wksizeH && "Trimmimg size : 516 X 306"}</p>
+          </div>
+        </>}
       </div>
 
       <div className="w-full h-[165px] flex flex-col gap-10">
