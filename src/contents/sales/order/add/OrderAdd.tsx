@@ -595,8 +595,8 @@ const OrderAddLayout = () => {
       </p>
     </div>
     <div className="w-full overflow-auto pl-20 pb-20">
-      <div className="h-center gap-20">
-        <div className="w-[calc(100vw-100px)]">
+      <div className="w-full v-between-h-center gap-20">
+        <div className="w-[calc(100%-100px)]">
           {/* 스탭 */}
           <div className="w-full h-80 p-30 v-between-h-center">
             <Steps current={stepCurrent} items={[{title:'고객 발주'}, {title:'고객 발주 모델 등록'}]} />
@@ -690,7 +690,7 @@ const OrderAddLayout = () => {
             {/* 모델 컨텐츠 */}
           { stepCurrent > 0 &&
             <div
-              className="flex w-full relative pl-10 min-w-[1500px]"
+              className="flex w-full relative pl-10"
               ref={el => {
                 if (el) {
                   stepRef.current[1] = el;

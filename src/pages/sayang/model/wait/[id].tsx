@@ -399,11 +399,11 @@ const SayangModelAddPage: React.FC & {
   return (
     <>
       <div 
-        className="gap-20 flex"
+        className="gap-20 flex w-full h-full v-between-h-center"
         style={{minWidth:1600}}
       >
         {/* 테이블 */}
-        <div className="w-[calc(100vw-100px)] flex flex-col gap-40">
+        <div className="w-[calc(100%-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
           <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-20">
             <TabSmall
@@ -543,7 +543,7 @@ const SayangModelAddPage: React.FC & {
         </div>
 
         {/* 우측 탭 */}
-        <div className=" min-w-[80px] w-[3%] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" style={{height:'calc(100vh - 192px)'}} key="contents-tab">
+        <div className=" min-w-[80px] w-[3%] h-full px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
           <div 
             className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
             onClick={()=>{
