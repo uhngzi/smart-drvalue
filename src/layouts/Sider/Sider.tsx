@@ -31,7 +31,7 @@ interface Props {
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
 
-  const iconClassNm = "h-40 min-w-[40px!important] v-h-center";
+  const iconClassNm = "h-40 min-w-[40px!important]";
 
   const currentPath = router.pathname.split('/').slice(1).join();
   const [newPath, setNewPath] = useState<string>('');

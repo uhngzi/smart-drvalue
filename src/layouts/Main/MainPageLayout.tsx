@@ -36,8 +36,20 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
       router.push('/sign/in');
     }
   });
+  
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('siderCollapsed');
+      return stored === 'true';
+    }
+    return false;
+  });
+  
+  // collapsed 상태가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('siderCollapsed', collapsed.toString());
+  }, [collapsed]);
 
-  const [ collapsed, setCollapsed ] = useState<boolean>(false);
   const [ width, setWidth ] = useState<number>(240);
   useEffect(()=>{
     if(collapsed) setWidth(80);
