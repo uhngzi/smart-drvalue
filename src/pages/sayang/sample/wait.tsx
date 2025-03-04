@@ -158,7 +158,7 @@ const SayangSampleListPage: React.FC & {
       return;
     }
     
-    if(ingData.filter(f=>f.specModels?.[0].layerEm === record?.model?.layerEm).length > 0) {
+    if(ingData.filter(f=>f.specModels?.[0]?.layerEm === record?.model?.layerEm).length > 0) {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       setSayangRegOpen(true);
     } else {
@@ -361,7 +361,7 @@ const SayangSampleListPage: React.FC & {
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
-                      if(data.specModels?.[0].layerEm !== record?.model?.layerEm) {
+                      if(data.specModels?.[0]?.layerEm !== record?.model?.layerEm) {
                         showToast("같은 층의 모델만 조합하실 수 있습니다.", "error");
                       } else {
                         if(selectedValue?.specId !== data.id)
@@ -374,7 +374,7 @@ const SayangSampleListPage: React.FC & {
                         else  setSelectedValue({matchId:selectedValue?.matchId})
                       }
                     }}
-                    disabled={data.specModels?.[0].layerEm !== record?.model?.layerEm}
+                    disabled={data.specModels?.[0]?.layerEm !== record?.model?.layerEm}
                   >
                     {data.specNo ?? (ingData.length - index)?.toString()}
                   </Radio.Button>
@@ -386,7 +386,7 @@ const SayangSampleListPage: React.FC & {
               id && selectedValue?.text === "" &&
               <LabelIcon label={
                 "조합하려는 모델과 층이 다른 모델은 조합할 수 없습니다.\n"+
-                ingData.find(f=>f.id === id)?.specNo+" : "+ingData.find(f=>f.id === id)?.specModels?.[0].layerEm?.replace("L","")+"층 / "+
+                ingData.find(f=>f.id === id)?.specNo+" : "+ingData.find(f=>f.id === id)?.specModels?.[0]?.layerEm?.replace("L","")+"층 / "+
                 "현재 선택 모델 : "+record?.model?.layerEm.replace("L","")+"층"
               }
               icon={<Info/>} className="!text-[red]"

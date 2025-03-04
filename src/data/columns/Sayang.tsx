@@ -72,7 +72,7 @@ export const specStatusClmn = (
     cellAlign: 'left',
     render: (_, record:specType) => (
       <div className="w-full h-full h-center">
-        {record.specModels?.[0].prdNm}
+        {record.specModels?.[0]?.prdNm}
       </div>
     )
   },
@@ -94,7 +94,7 @@ export const specStatusClmn = (
     align: 'center',
     render: (_, record:specType) => (
       <div className="w-full h-full h-center">
-        {record.specModels?.[0].prdRevNo}
+        {record.specModels?.[0]?.prdRevNo}
       </div>
     )
   },
@@ -141,7 +141,7 @@ export const specStatusClmn = (
     key: 'specModels.thk',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].thk;
+      return record.specModels?.[0]?.thk;
     }
   },
   {
@@ -151,7 +151,7 @@ export const specStatusClmn = (
     key: 'specModels.layerEm',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].layerEm?.replace("L", "");
+      return record.specModels?.[0]?.layerEm?.replace("L", "");
     }
   },
   {
@@ -161,7 +161,7 @@ export const specStatusClmn = (
     key: 'specModels.pcsW',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].pcsL+'/'+record.specModels?.[0].pcsW;
+      return record.specModels?.[0]?.pcsL+'/'+record.specModels?.[0]?.pcsW;
     }
   },
   {
@@ -248,7 +248,7 @@ export const specIngClmn = (
     cellAlign: 'left',
     render: (_, record:specType) => (
       <div className="w-full h-full h-center">
-        {record.specModels?.[0].prdNm}
+        {record.specModels?.[0]?.prdNm}
       </div>
     )
   },
@@ -270,7 +270,7 @@ export const specIngClmn = (
     align: 'center',
     render: (_, record:specType) => (
       <div className="w-full h-full h-center">
-        {record.specModels?.[0].prdRevNo}
+        {record.specModels?.[0]?.prdRevNo}
       </div>
     )
   },
@@ -317,7 +317,7 @@ export const specIngClmn = (
     key: 'specModels.thk',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].thk;
+      return record.specModels?.[0]?.thk;
     }
   },
   {
@@ -327,7 +327,7 @@ export const specIngClmn = (
     key: 'specModels.layerEm',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].layerEm?.replace("L", "");
+      return record.specModels?.[0]?.layerEm?.replace("L", "");
     }
   },
   {
@@ -337,7 +337,7 @@ export const specIngClmn = (
     key: 'specModels.pcsW',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0].pcsL+'/'+record.specModels?.[0].pcsW;
+      return record.specModels?.[0]?.pcsL+'/'+record.specModels?.[0]?.pcsW;
     }
   },
   {
