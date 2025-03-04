@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button, Radio, Spin } from "antd";
+import { Button, Radio, Spin, Tooltip } from "antd";
 import { getAPI } from "@/api/get";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -28,6 +28,8 @@ import useToast from "@/utils/useToast";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { postAPI } from "@/api/post";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import { LayerEm } from "@/data/type/enum";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -146,7 +148,6 @@ const SayangSampleListPage: React.FC & {
     // 조합일 경우
     if(id) {
       const sd = ingData.find(f=>f.id === id);
-      console.log(sd, sd?.specModels?.[0]?.layerEm, record.model?.layerEm, sd?.specModels?.[0]?.layerEm !== record.model?.layerEm);
       // 모델의 층이 다르면 선택할 수 없게 변경
       if(sd?.specModels?.[0]?.layerEm !== record.model?.layerEm) {
         setSelectedValue({matchId:matchId, modelId:modelId, statusId:statusId, specId: "", text: ""});
@@ -193,22 +194,97 @@ const SayangSampleListPage: React.FC & {
       console.log('CATCH ERROR : ', e);
     }
   }
-  // ---------- 등록 클릭 시 팝업 데이터 세팅 ----------- 끝
-    
-  const handlePageMenuClick = (key:number)=>{
-    const clmn = sayangSampleWaitClmn(waitTotalData, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)
-      .map((item) => ({
-        title: item.title?.toString() as string,
-        dataIndex: item.dataIndex,
-        width: Number(item.width ?? item.minWidth ?? 0),
-        cellAlign: item.cellAlign,
-      }))
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, waitData, waitTotalData, paginationWait, "사양등록대기", "excel", showToast);
+
+    // 여러 개 모델로 새로 임시저장하는 함수
+  const handleSumbitTempArr = async () => {
+    try {
+      if(checkeds.length > 0) {
+        const records = checkeds.map(item => item.record);
+        const jsonData = changeSayangTemp("new", checkeds[0].record, true, records);
+  
+        const result = await postAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'spec/default/temporary-save',
+          jsx: 'default',
+          etc: true,
+        }, jsonData);
+  
+        if(result.resultCode === 'OK_0000') {
+          const specId:any = result.data;
+          router.push(`/sayang/sample/wait/${specId?.specId}`);
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
+      }
+    } catch (e) {
+      console.log('CATCH ERROR : ', e);
     }
   }
+  // ---------- 등록 클릭 시 팝업 데이터 세팅 ----------- 끝
+
+  const [checkeds, setCheckeds] = useState<{
+    matchId: string,
+    modelId: string,
+    statusId: string,
+    layerEm?: LayerEm,
+    record: modelsMatchRType,
+  }[]>([]);
+
+  useEffect(()=>{
+    console.log(checkeds);
+  }, [checkeds]);
+
+  const handleCheckedAllClick = () => {
+    if(checkeds.length === waitData.length) {
+      setCheckeds([]);
+    } else {
+      setCheckeds(waitData.map((record) => ({
+        matchId: record.id,
+        modelId: record?.model?.id ?? "",
+        statusId: record.glbStatus?.id ?? "",
+        layerEm: record.model?.layerEm,
+        record: record
+      })))
+    }
+  }
+
+  const handleCheckedClick = () => {
+    // 1. 체크된 것이 있는지 확인
+    if(checkeds.length < 1) {
+      showToast("선택된 사양이 없습니다.", "error");
+      return;
+    }
+
+    // 2. 층이 같은지 확인
+    let flag = false;
+    let no = "";
+    checkeds.map((chk) => {
+      if(chk.layerEm !== checkeds[0].layerEm) {
+        flag = true;
+        return;
+      } else {
+        no += chk.record.model?.prdMngNo+", ";
+      }
+    });
+
+    // 2-1. 층이 다르다면 에러 메시지
+    if(flag) {
+      setResultType("chkLayerErr");
+      setOpen(true);
+      return;
+    }
+
+    // 3. 선택한 조합들 확인
+    setMsg(no.slice(0, -2));
+    setResultType("cf");
+    setOpen(true);
+  }
+
+  const [open, setOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<"chkLayerErr" | "cf" | "">("");
+  const [msg, setMsg] = useState<string>("");
 
   if (modelsLoading || ingDataLoading || waitDataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
@@ -243,11 +319,21 @@ const SayangSampleListPage: React.FC & {
         /> */}
         <div className="v-between-h-center h-50 w-full">
           <div><LabelMedium label="사양 등록 대기" /></div>
-          <p className="h-center">총 {waitData.length}건</p>
+          <div className="h-center gap-10">
+            <p className="h-center">총 {waitData.length}건</p>
+            <Tooltip title="체크한 사양들을 조합하여 등록할 수 있어요">
+              <Button
+                className="border-point1 text-point1"
+                onClick={handleCheckedClick}
+              >
+                사양 등록
+              </Button>
+            </Tooltip>
+          </div>
         </div>
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, paginationWait, sayangPopOpen)}
+            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, paginationWait, sayangPopOpen)}
             data={waitData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}
@@ -275,7 +361,6 @@ const SayangSampleListPage: React.FC & {
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
-                      console.log(data.specModels?.[0].layerEm, record?.model?.layerEm, data.specModels?.[0].layerEm === record?.model?.layerEm);
                       if(data.specModels?.[0].layerEm !== record?.model?.layerEm) {
                         showToast("같은 층의 모델만 조합하실 수 있습니다.", "error");
                       } else {
@@ -337,6 +422,45 @@ const SayangSampleListPage: React.FC & {
         partnerData={partnerData}
         partnerMngData={partnerMngData}
       />
+
+      <AntdAlertModal
+        open={open}
+        setOpen={setOpen}
+        title={
+          resultType === "chkLayerErr" ? "층이 다른 모델이 존재합니다." :
+          resultType === "cf" ? "아래의 조합으로 등록하시겠습니까?" :
+          ""
+        }
+        contents={
+          resultType === "chkLayerErr" ? <div>같은 층의 모델만 조합 가능합니다.<br/>선택한 층을 확인해주세요.</div> :
+          resultType === "cf" ? <div>{msg}</div> :
+          <></>
+        }
+        hideCancel={
+          resultType === "chkLayerErr" ? true :
+          false
+        }
+        type={
+          resultType === "chkLayerErr" ? "warning" :
+          "success"
+        }
+        onOk={()=>{
+          setOpen(false);
+          if(resultType === "cf") {
+            handleSumbitTempArr();
+          }
+        }}
+        okText={
+          resultType === "chkLayerErr" ? "확인" :
+          resultType === "cf" ? "네 이대로 조합할게요" :
+          ""
+        }
+        cancelText={
+          resultType === "cf" ? "아니요 변경할래요" :
+          ""
+        }
+      />
+      
       <ToastContainer />
     </div>
   )

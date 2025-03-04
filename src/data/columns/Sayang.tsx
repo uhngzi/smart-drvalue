@@ -387,9 +387,54 @@ export const sayangSampleWaitClmn = (
   totalData: number,
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
+  checkeds: {
+    matchId: string,
+    modelId: string,
+    statusId: string,
+    layerEm?: LayerEm,
+    record: modelsMatchRType
+  }[],
+  setCheckeds: React.Dispatch<SetStateAction<{
+    matchId: string,
+    modelId: string,
+    statusId: string,
+    layerEm?: LayerEm,
+    record: modelsMatchRType
+  }[]>>,
+  handleCheckedAllClick: () => void,
   pagination?: {current: number, size: number},
   sayangPopOpen?: (value:string, model:string, status:string, record:modelsMatchRType) => void,
 ): CustomColumn[] => [
+  {
+    title: <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>,
+    width: 80,
+    dataIndex: 'check',
+    key: 'check',
+    align: 'center',
+    render: (_: any, record: modelsMatchRType) => (
+      <Checkbox
+        checked={checkeds.filter(f=>f.matchId === record.id).length > 0}
+        onChange={(e)=>{
+          const { checked } = e.target;
+          console.log(checked);
+          if(checked) {
+            setCheckeds([ 
+              ...checkeds,
+              { matchId: record.id,
+                modelId: record?.model?.id ?? "",
+                statusId: record.glbStatus?.id ?? "",
+                layerEm: record.model?.layerEm,
+                record: record
+              }
+            ]);
+          } else {
+            console.log(checkeds.filter(f=>f.matchId !== record.id));
+            setCheckeds(checkeds.filter(f=>f.matchId !== record.id));
+          }
+        }}
+      />
+    )
+  },
   {
     title: '대기',
     width: 80,

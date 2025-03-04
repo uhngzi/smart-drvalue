@@ -104,14 +104,76 @@ export const changeModelAddNewModel = (
 // 사양 - 사양 등록 임시저장에서 값 변환
 export const changeSayangTemp = (
   type:"new"|"re",  // 신규인지 재등록인지 판단
-  data:modelsMatchRType | specType
+  data:modelsMatchRType | specType,
+  arrChk?: boolean,
+  datas?: modelsMatchRType[],
 ) => {
   let jsonData = {}
   if(type === "new") {
     const model = (data as modelsMatchRType).model;
     jsonData = {
       specDetail: {},
-      models: [
+      models: arrChk ? 
+      datas?.map((item:modelsMatchRType) => ({
+        glbStatusId: item?.model?.glbStatus?.id ?? (data as modelsMatchRType).glbStatus?.id,
+        modelMatchId: item?.id,
+        prdNm: item?.model?.prdNm,
+        prdRevNo: item?.model?.prdRevNo,
+        layerEm: item?.model?.layerEm,
+        modelTypeEm: item?.model?.modelTypeEm,
+        thk: item?.model?.thk,
+        mnfNm: item?.model?.mnfNm,
+        copOut: item?.model?.copOut,
+        copIn: item?.model?.copIn,
+        vcutYn: item?.model?.vcutYn,
+        board: item?.model?.board,
+        material: item?.model?.material,
+        surface: item?.model?.surface,
+        smPrint: item?.model?.smPrint,
+        smColor: item?.model?.smColor,
+        smType: item?.model?.smType,
+        mkPrint: item?.model?.mkPrint,
+        mkColor: item?.model?.mkColor,
+        mkType: item?.model?.mkType,
+        spPrint: item?.model?.spPrint,
+        spType: item?.model?.spType,
+        aprType: item?.model?.aprType,
+        vcutType: item?.model?.vcutType,
+        // fpNo: item?.model?.fpNo,
+        drgNo: item?.model?.drgNo,
+        unit: item?.model?.unit,
+        pcsW: item?.model?.pcsW,
+        pcsL: item?.model?.pcsL,
+        kitW: item?.model?.kitW,
+        kitL: item?.model?.kitL,
+        pnlW: item?.model?.pnlW,
+        pnlL: item?.model?.pnlL,
+        ykitW: item?.model?.ykitW,
+        ykitL: item?.model?.ykitL,
+        ypnlW: item?.model?.ypnlW,
+        ypnlL: item?.model?.ypnlL,
+        kitPcs: item?.model?.kitPcs,
+        pnlKit: item?.model?.pnlKit,
+        sthPnl: item?.model?.sthPnl,
+        sthPcs: item?.model?.sthPcs,
+        pltThk: item?.model?.pltThk,
+        pltAlph: item?.model?.pltAlph,
+        spPltNi: item?.model?.spPltNi,
+        spPltNiAlph: item?.model?.spPltNiAlph,
+        spPltAu: item?.model?.spPltAu,
+        spPltAuAlph: item?.model?.spPltAuAlph,
+        pinCnt: item?.model?.pinCnt,
+        ulTxt1: item?.model?.ulTxt1,
+        ulTxt2: item?.model?.ulTxt2,
+        ulCd1: { id: item?.model?.ulCd1?.id },
+        ulCd2: { id: item?.model?.ulCd2?.id },
+        specLine: item?.model?.specLine,
+        specSpace: item?.model?.specSpace,
+        specDr: item?.model?.specDr,
+        specPad: item?.model?.specPad,
+      }))
+      :
+      [
         {
           glbStatusId: model?.glbStatus?.id ?? (data as modelsMatchRType).glbStatus?.id,
           modelMatchId: data.id,
