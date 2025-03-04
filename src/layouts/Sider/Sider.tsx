@@ -75,6 +75,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           label: '고객발주/견적',
         },
         {
+          key: 'sales/status',
+          title: 'sales/status',
+          label: '수주현황',
+        },
+        {
           key: 'sales/array',
           title: 'sales/array',
           label: '원판 수율 계산',

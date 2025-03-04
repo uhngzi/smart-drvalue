@@ -134,6 +134,28 @@ export type salesOrderProductRType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   },
+  worksheet: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    wkPrdCnt?: number;
+    wkProcCnt?: number;
+    wkLatestDtm?: Date | Dayjs | null;
+    wkLatestProcIdx?: number;
+    wsExpDt?: Date | Dayjs | null;
+    wsSchDt?: Date | Dayjs | null;
+    wsStDt?: Date | Dayjs | null;
+    wkEdDt?: Date | Dayjs | null;
+    wkOutDt?: Date | Dayjs | null;
+    wkOutCnt?: number;
+    wkBadCnt?: number;
+    priceUnitChkYn?: 0 | 1,
+    invChkDt?: Date | Dayjs | null;
+    invChkCnt?: number;
+    isWait?: number;
+    wsRemark?: string | null;
+  };
   modelStatus: ModelStatus;
   orderDt: Date | Dayjs;
   orderNo: string;

@@ -2,7 +2,7 @@ import { TableProps } from 'antd/es/table';
 import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
-import { FinalGlbStatus, HotGrade, ModelStatus, SalesOrderStatus } from '../type/enum';
+import { FinalGlbStatus, HotGrade, LayerEm, ModelStatus, SalesOrderStatus } from '../type/enum';
 import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
@@ -11,6 +11,129 @@ import Trash from "@/assets/svg/icons/s_trash.svg";
 import { SetStateAction } from 'react';
 import { NextRouter } from 'next/router';
 import { Tooltip } from 'antd';
+
+export const salesOrderStatusClmn = (
+  totalData: number,
+  setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
+  pagination: {current: number, size: number},
+): CustomColumn[] => [
+  {
+    title: 'No',
+    width: 50,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+  },
+  {
+    title: '업체명/코드',
+    width: 150,
+    dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    align: 'center',
+    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    render: (_, record:salesOrderRType) => (
+      <div
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        onClick={()=>{
+          setPartnerData(record?.prtInfo?.prt);
+          setPartnerMngData(record?.prtInfo?.mng);
+        }}
+      >
+        {record.prtInfo?.prt?.prtNm} / {record.prtInfo?.prt?.prtRegCd}
+      </div>
+    )
+  },
+  {
+    title: '제품명',
+    minWidth: 150,
+    dataIndex: 'model.prdNm',
+    key: 'model.prdNm',
+    align: 'center', 
+    cellAlign: 'left',
+  },
+  {
+    title: '수주번호',
+    width: 100,
+    dataIndex: 'orderNo',
+    key: 'orderNo',
+    align: 'center', 
+  },
+  {
+    title: '수주일',
+    width: 100,
+    dataIndex: 'orderDt',
+    key: 'orderDt',
+    align: 'center', 
+  },
+  {
+    title: '수주량',
+    width: 80,
+    dataIndex: 'orderPrdCnt',
+    key: 'orderPrdCnt',
+    align: 'center', 
+  },
+  {
+    title: '수주매수',
+    width: 80,
+    dataIndex: 'm2',
+    key: 'm2',
+    align: 'center',
+    
+  },
+  {
+    title: '층',
+    width: 50,
+    dataIndex: 'model.layerEm',
+    key: 'model.layerEm',
+    align: 'center',
+    render: (_, record:salesOrderProductRType) => (
+      <div className="w-full h-full v-h-center">
+        {(record?.model?.layerEm ?? "").replace("L", "")}
+      </div>
+    )
+  },
+  {
+    title: '두께',
+    width: 50,
+    dataIndex: 'model.thk',
+    key: 'model.thk',
+    align: 'center', 
+  },
+  {
+    title: '제품 Size',
+    width: 100,
+    dataIndex: 'model.pcsW/model.pcsL',
+    key: 'model.pcsW/model.pcsL',
+    align: 'center', 
+    render: (_, record:salesOrderProductRType) => (
+      <div className="w-full h-full v-h-center">
+        {
+          (record?.model?.pcsW || record?.model?.pcsL) ?
+          (record?.model?.pcsW ?? "")+" * "+(record?.model?.pcsL ?? "") :
+          ""
+        }
+      </div>
+    )
+  },
+  {
+    title: '판넬 Size',
+    width: 100,
+    dataIndex: 'model.pnlW/model.pnlL',
+    key: 'model.pnlW/model.pnlL',
+    align: 'center',
+    render: (_, record:salesOrderProductRType) => (
+      <div className="w-full h-full v-h-center">
+        {
+          (record?.model?.pnlW || record?.model?.pnlL) ?
+          (record?.model?.pnlW ?? "")+" * "+(record?.model?.pnlL ?? "") :
+          ""
+        }
+      </div>
+    )
+  },
+]
 
 export const salesUserOrderClmn = (
   totalData: number,
