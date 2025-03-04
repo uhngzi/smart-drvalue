@@ -531,12 +531,17 @@ const SayangSampleAddPage: React.FC & {
             {/* 배열 도면 */}
             <ArrayContents
               board={board}
+              handleSumbitTemp={handleSumbitTemp}
+              refetch={refetch}
+              detailData={detailData}
+              setDetailData={setDetailData}
             />
           </div>
           <div className="min-w-[300px] flex-grow-[24]">
             {/* 재단 사이즈 */}
             <CutSizeContents
               specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
+              detailData={detailData}
             />
           </div>
         </div>

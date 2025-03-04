@@ -135,6 +135,7 @@ export type specPrdGroupPrcs = {
 }
 
 export type yieldInputType = {
+  extraMargin?: number;
   minPanelLength?: number | string;
   disks?: {
     diskWidth: number;
@@ -201,6 +202,11 @@ export type yieldCalType = {
 }
 
 export type arrayCalType = {
+  imageName: "sihun.vLg4DUH.20250227183155-ofmgtvccst.panel_kit1:1x2_kit2:1x2.png",
+  stdInfo: {
+    x: number;
+    y: number;
+  },
   configs: {
     kitId: string;
     rows: number;
@@ -213,6 +219,7 @@ export type arrayCalType = {
   panelsPerBoard: number;
   yieldBoard: number;
   board: {
+    boardId: string;
     width: number;
     height: number;
   },

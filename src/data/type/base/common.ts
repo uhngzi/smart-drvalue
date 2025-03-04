@@ -40,9 +40,9 @@ export const commonCodeGrpReq = () => {
 
 export type commonCodeRType = {
   id: string;
-  cdNm: string;
+  cdNm?: string;
   cdDesc?: string;
-  useYn: boolean;
+  useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

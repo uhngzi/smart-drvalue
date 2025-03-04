@@ -25,6 +25,7 @@ import Plus from "@/assets/svg/icons/s_plus.svg";
 import Check from "@/assets/svg/icons/s_check.svg";
 import { ColumnsType } from 'antd/es/table';
 import { AnyObject } from 'antd/es/_util/type';
+import AntdAlertModal from '@/components/Modal/AntdAlertModal';
 
 interface Props {
   board: boardType[];
@@ -44,6 +45,8 @@ interface Props {
   setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number}[]>>;
   resultData: arrayCalType[];
   setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
+  selectData?: arrayCalType;
+  setSelectData?: React.Dispatch<SetStateAction<arrayCalType | undefined>>;
 }
 
 
@@ -57,6 +60,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
   setKit,
   resultData,
   setResultData,
+  selectData,
+  setSelectData,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -82,16 +87,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
 
 
   const items = [
+    // {value:yielddata?.extraMargin, name:'extraMargin', label:'추가 여백', type:'input', widthType:'full'},
     {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
-    // {value:yielddata?.minYield, name:'minYield', label:'최저 수율', type:'input', widthType:'full'},
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
     {value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
-    // {value:yielddata?.kitWidth, name:'kitWidth', label:'Kit긴쪽길이', type:'input', widthType:'full'},
-    // {value:yielddata?.kitHeight, name:'kitHeight', label:'Kit짧은쪽길이', type:'input', widthType:'full'},
-    // {value:yielddata?.kitArrangeX, name:'kitArrangeX', label:'Kit 배치 X', type:'input', widthType:'full'},
-    // {value:yielddata?.kitArrangeY, name:'kitArrangeY', label:'Kit 배치 Y', type:'input', widthType:'full'},
   ]
 
   const handleCheckboxChange = (id:string, w: number, h: number) => {
@@ -108,7 +109,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
       setCalLoading(true);
 
       const jsonData = { 
-        boards:disk.map(board=>({width:board.diskWidth,height:board.diskHeight})),
+        extraMargin: 0,
+        boards:disk.map(board=>({boardId:board.id,width:board.diskWidth,height:board.diskHeight})),
         kits: kit.map((kit, index)=>({kitId:'kit'+index, width:kit.x, height:kit.y, targetCount: 100})),
         panelSpacing: {
           horizontalPadding: yielddata?.marginLongSide,
@@ -117,7 +119,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
         kitSpacing: {
           horizontalSpacing: yielddata?.kitGapX,
           verticalSpacing: yielddata?.kitGapY,
-          sharingLineSpacing: yielddata?.minPanelLength,
+          sharingLineSpacing: yielddata?.kitGapY,
         },
      };
       console.log(JSON.stringify(jsonData));
@@ -136,7 +138,9 @@ const SayangYieldCalculate: React.FC<Props> = ({
         setCalLoading(false);
       } else {
         const msg = result?.response?.data?.message;
-        showToast(msg, "error");
+        setErrMsg(msg);
+        setAlertType("error");
+        setAlertOpen(true);
         setCalLoading(false);
       }
     } catch (e) {
@@ -258,13 +262,19 @@ const SayangYieldCalculate: React.FC<Props> = ({
     },
   ];
 
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [alertType, setAlertType] = useState<"error" | "">("");
+  const [errMsg, setErrMsg] = useState<string>("");
+
   return (
     <section className='flex gap-10 w-full flex-col'>
       <div className="w-full flex flex-col">
-        <div className={`w-full h-46 bg-[#FAFAFA] py-12 px-16 border-1 border-line h-center gap-12 ${!calChk ? 'rounded-t-14' : 'rounded-8'}`}>
+        <div 
+          className={`w-full h-46 bg-[#FAFAFA] py-12 px-16 border-1 border-line h-center gap-12 cursor-pointer ${!calChk ? 'rounded-t-14' : 'rounded-8'}`}
+          onClick={()=>setCalChk(!calChk)}
+        >
           <p
             className="w-16 h-16 cursor-pointer"
-            onClick={()=>setCalChk(!calChk)}
           >
             { calChk ? <Right /> : <Down />}
           </p>
@@ -470,7 +480,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                 </div>
                 <div className="w-full h-center justify-end">
                   <Button type="primary" className="flex h-center" onClick={()=>{
-                    console.log(data);
+                    setSelectData?.(data);
                   }}>
                     <span className='w-16 h-16'><Check/></span>
                     <span>선택</span>
@@ -480,6 +490,29 @@ const SayangYieldCalculate: React.FC<Props> = ({
             ))}
         </div>
       </section>
+
+      <AntdAlertModal
+        open={alertOpen}
+        setOpen={setAlertOpen}
+        title={
+          alertType === "error" ? "오류 발생" :
+          ""
+        }
+        contents={
+          alertType === "error" ? <div>{errMsg}</div> :
+          <></>
+        }
+        onOk={()=>{
+          setAlertOpen(false);
+        }}
+        hideCancel={
+          alertType === "error"
+        }
+        type={
+          alertType === "error" ? "error" :
+          "success"
+        }
+      />
       <ToastContainer/>
     </section>
   );

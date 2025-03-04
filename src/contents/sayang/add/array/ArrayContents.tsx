@@ -3,17 +3,26 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import TitleIcon from "@/components/Text/TitleIcon";
 import { boardType } from "@/data/type/base/board";
-import { arrayCalType, yieldInputType } from "@/data/type/sayang/sample";
+import { arrayCalType, specType, yieldInputType } from "@/data/type/sayang/sample";
 import { Button } from "antd";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import SayangYieldCalculate from "./YieldCalculate";
+import { changeSayangTemp } from "@/data/type/sayang/changeData";
 
 interface Props {
   board: boardType[];
+  handleSumbitTemp: () => void;
+  refetch: () => void;
+  detailData: specType;
+  setDetailData: React.Dispatch<SetStateAction<specType>>;
 }
 
 const ArrayContents: React.FC<Props> = ({
   board,
+  handleSumbitTemp,
+  refetch,
+  detailData,
+  setDetailData,
 }) => {
   // 원판 수율 팝업
   const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
@@ -22,14 +31,44 @@ const ArrayContents: React.FC<Props> = ({
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
   const [kit, setKit] = useState<{id:string, x:number, y:number, cnt:number}[]>([{id:"new-0", x:0, y:0, cnt:1}]);
-    const [resultData, setResultData] = useState<arrayCalType[]>([]);
+  const [resultData, setResultData] = useState<arrayCalType[]>([]);
+  const [selectData, setSelectData] = useState<arrayCalType>();
+
+  const [specBoard, setSpecBoard] = useState<boardType>();
+
+  useEffect(()=>{
+    if(selectData?.board.boardId && selectData?.yieldBoard) {
+      const bd = board.find(f=>f.id === selectData?.board.boardId);
+      console.log(bd, selectData.yieldBoard);
+      setDetailData({
+        ...detailData,
+        board: { id: selectData?.board.boardId },
+        brdArrYldRate: Math.floor(Number(selectData?.yieldBoard) * 100) / 100,
+        wksizeW: selectData?.finalWidth,
+        wksizeH: selectData?.finalHeight,
+        stdW: selectData?.stdInfo?.x,
+        stdH: selectData?.stdInfo?.y,
+        brdArrStorageKey: selectData?.boardImageStorageName,
+        cutCnt: selectData?.panelsPerBoard,
+        jYn: bd?.brdType === "J" || bd?.brdType === "AJ",
+      })
+    }
+  }, [selectData])
+
+  useEffect(()=>{
+    if(detailData?.board?.id && detailData?.brdArrYldRate) {
+      handleSumbitTemp();
+      const bd = board.find(f=>f.id === detailData.board?.id);
+      setSpecBoard(bd);
+    }
+  }, [detailData.board])
+
   useEffect(()=>{
     if(!yieldPopOpen) {
       setKit([{id:"new-0", x:0, y:0, cnt: 1}]);
       setResultData([]);
     }
   }, [yieldPopOpen])
-
 
   return (
     <div className="w-full flex flex-col gap-20">
@@ -66,11 +105,11 @@ const ArrayContents: React.FC<Props> = ({
               <p className="w-65 h-full bg-back v-h-center p-5">원판</p>
               <div className="flex-grow-[35] h-full">
                 <div className="h-37 v-between-h-center p-5">
-                  <p>{'NY-2140 (난야)'}</p>
-                  <p>FR-1</p>
+                  <p>{specBoard?.brdDesc}</p>
+                  <p>{specBoard?.brdType}</p>
                 </div>
                 <div className="w-full h-[50%] v-between-h-center border-t-1 border-line p-5">
-                  <p>{'1040 x 1240'}</p>
+                  <p>{specBoard?.brdH && specBoard?.brdW && specBoard?.brdW+' x '+specBoard?.brdH}</p>
                 </div>
               </div>
             </div>
@@ -148,6 +187,8 @@ const ArrayContents: React.FC<Props> = ({
           setKit={setKit}
           resultData={resultData}
           setResultData={setResultData}
+          selectData={selectData}
+          setSelectData={setSelectData}
         />}
         onClose={()=>{
           setYieldPopOpen(false);
