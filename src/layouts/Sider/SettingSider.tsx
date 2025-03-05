@@ -273,10 +273,18 @@ const SiderStyled = styled.div<{
   }
 
   & .ant-menu-submenu-title {
+    padding-left: 23px !important;
     color: #666666 !important;
+  }
+
+  .ant-menu-sub {
+    & .ant-menu-item-only-child > .ant-menu-title-content {
+      margin-left: 20px;
+    }
   }
   
   & .ant-menu-item {
+    padding-left: 23px !important;
     display: flex;
     align-items: center;
     border-inline-end: 0 !important; 
