@@ -30,12 +30,12 @@ interface Props {
 const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
   const router = useRouter();
 
-  // useEffect(()=>{
-  //   // 로그인 안 했을 경우 로그인 페이지로 이동
-  //   if(typeof window !== 'undefined' && !loginCheck()) {
-  //     router.push('/sign/in');
-  //   }
-  // });
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      router.push('/sign/in');
+    }
+  });
   
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
