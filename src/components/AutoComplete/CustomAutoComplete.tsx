@@ -83,6 +83,9 @@ const CustomAutoComplete: React.FC<Props> = ({
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
+        onClick={()=>{
+          setInputValue("");
+        }}
       />
     </AutoComplete>
   );
