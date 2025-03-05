@@ -323,7 +323,7 @@ const SayangSampleListPage: React.FC & {
             <p className="h-center">총 {waitData.length}건</p>
             <Tooltip title="체크한 사양들을 조합하여 등록할 수 있어요">
               <Button
-                className="border-point1 text-point1"
+                style={{border:"1px solid #4880FF", color:"#4880FF"}}
                 onClick={handleCheckedClick}
               >
                 사양 등록

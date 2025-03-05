@@ -27,6 +27,13 @@ export const salesOrderStatusClmn = (
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
+    title: '관리번호',
+    minWidth: 150,
+    dataIndex: 'model.prdMngNo',
+    key: 'model.prdMngNo',
+    align: 'center', 
+  },
+  {
     title: '업체명/코드',
     width: 150,
     dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',

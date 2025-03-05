@@ -162,7 +162,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col max-h-[calc(100vh-230px)] overflow-y-auto overflow-x-hidden">
+      <div className="flex flex-col max-h-[calc(100%-230px)] overflow-y-auto overflow-x-hidden">
         <Menu
           mode="inline"
           items={items}
@@ -170,7 +170,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
             const it: any = item;
             router.push(`/${it.props.title}`);  //title이 실제 url이므로 title 추출
           }}
-          className="sider__menu h-[100%]"
+          className="sider__menu h-[100vh]"
           inlineCollapsed={collapsed}
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
           selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
@@ -226,7 +226,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               }
             },
           ]}
-          className="sider__menu h-[100%]"
+          className="sider__menu h-[100vh]"
           inlineCollapsed={collapsed}
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
           selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
@@ -243,10 +243,12 @@ const SiderStyled = styled.div<{
   flex-direction: column;
 
   width: ${({ $width }) => $width};
-  height: 100vh;
-  max-height: 100vh;
+  height: 100%;
+  max-height: 100%;
 
   background: white;
+  
+  transition: width 1s ease;
   
   .ant-menu-item {
     display: flex;

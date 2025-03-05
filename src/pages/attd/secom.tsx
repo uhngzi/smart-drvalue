@@ -112,7 +112,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
   if (!flatData.length) return;
 
   // 1) 기본 헤더 row (팀명, 직원명, 업무구분, 구분, 1, 2, ..., lastDay)
-  const headerRow = ["팀명", "직원명", "업무구분", "구분"];
+  const headerRow = ["팀명", "직원명", "구분"];
   for (let i = 1; i <= lastDay; i++) {
     headerRow.push(String(i));
   }
@@ -136,7 +136,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
     // 앞 4개 컬럼
     arr.push(row.teamNm || ""); 
     arr.push(row.name || "");    
-    arr.push(row.empTit || "");  
+    // arr.push(row.empTit || "");  
     if (row.flag1 === "1") arr.push("출근");
     else if (row.flag1 === "4") arr.push("퇴근");
     else arr.push("");
@@ -179,7 +179,7 @@ function handleExcelDownload2(flatData: any[], lastDay: number, selDate: Dayjs, 
   const colWidths = [
     { wpx: 120 }, // 팀명
     { wpx: 80 },  // 직원명
-    { wpx: 80 },  // 업무구분
+    // { wpx: 80 },  // 업무구분
     { wpx: 60 },  // 구분
   ];
   for (let i = 1; i <= lastDay; i++) {
@@ -273,7 +273,6 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
     <colgroup>
       <col style="width:30mm;" />  <!-- 팀명 -->
       <col style="width:25mm;" />  <!-- 직원명 -->
-      <col style="width:25mm;" />  <!-- 업무구분 -->
       <col style="width:20mm;" />  <!-- 구분 -->
   `;
   for (let i = 1; i <= lastDay; i++) {
@@ -293,7 +292,6 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
   thead += `<tr>
     <th>팀명</th>
     <th>직원명</th>
-    <th>업무구분</th>
     <th>구분</th>`;
   for (let i = 1; i <= lastDay; i++) {
     thead += `<th>${i}</th>`;
@@ -311,7 +309,7 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
     tbody += `<td rowspan="${groupSize}">${group.teamNm || ""}</td>`;
     // 부모 행의 나머지 셀
     tbody += `<td>${group.name || ""}</td>`;
-    tbody += `<td>${group.empTit || ""}</td>`;
+    // tbody += `<td>${group.empTit || ""}</td>`;
     tbody += `<td style="background-color:${group.flag1==="4"?"#F2F2F2":""}">${group.flag1==="1"?"출근":group.flag1==="4"?"퇴근":""}</td>`;
     // 날짜별 셀
     for (let i = 1; i <= lastDay; i++) {
@@ -331,7 +329,7 @@ function handlePrint2(flatData: any[], lastDay: number, selDate: Dayjs, culList:
         tbody += "<tr>";
         // 빈 셀 대신 팀명은 생략
         tbody += `<td>${child.name || ""}</td>`;
-        tbody += `<td>${child.empTit || ""}</td>`;
+        // tbody += `<td>${child.empTit || ""}</td>`;
         tbody += `<td style="background-color:${child.flag1==="4"?"#F2F2F2":""}">${child.flag1==="1"?"출근":child.flag1==="4"?"퇴근":""}</td>`;
         for (let i = 1; i <= lastDay; i++) {
           const dayKey = i < 10 ? `d0${i}` : `d${i}`;
@@ -606,7 +604,6 @@ const AtdSecomPage: React.FC & {
       // 1) 헤더 배경색
       const headerBg = getHolidayColor("bg",dayNum);
       const headerFc = getHolidayColor("fc",dayNum);
-      const isHoliday = !!getHolidayColor("fc", dayNum);
 
       return {
         title: dayNum.toString(),
@@ -698,29 +695,28 @@ const AtdSecomPage: React.FC & {
       // columns에서 'teamNm' 컬럼에 이 값을 표시하도록 하면 됨.
       // 아래는 대표 행의 teamNm 필드를 "임원 - 홍길동" 식으로 만듦
       const parentTeamNm = `${rep.teamNm} / ${rep.name}`;
-
+      
       const parentRow = {
         key: parentKey,
-        // 부모 행에 표시할 "팀명" 필드 → "팀명 - 대표직원"
-        teamNm: parentTeamNm,
+        teamNm: `${teamName} / ${rep.name}`, // 화면에 표시할 텍스트
+        originalTeam: teamName,              // 비교용 원본 팀명
+        originalName: rep.name,              // 비교용 원본 직원명
         empTit: rep.empTit,
         flag1: rep.flag1,
-        // 날짜별 근무도 그대로
         ...rep,
       };
 
       // 나머지 직원들 (대표직원 제외) → children
-      const childRows = records.slice(1).map((emp, idx) => {
-        return {
-          key: `child-${teamName}-${emp.sabun}-${idx}`,
-          teamNm: null,
-          name: emp.name,
-          empTit: emp.empTit,
-          flag1: emp.flag1,
-          // 날짜별 근무
-          ...emp,
-        };
-      });
+      const childRows = records.slice(1).map((emp, idx) => ({
+        key: `child-${teamName}-${emp.sabun}-${idx}`,
+        teamNm: null,
+        name: emp.name,
+        originalTeam: teamName,
+        originalName: emp.name,
+        empTit: emp.empTit,
+        flag1: emp.flag1,
+        ...emp,
+      }));
 
       // 자식이 하나도 없어도 괜찮음 (한 팀에 직원이 1명뿐)
       if (childRows.length > 0) {
@@ -733,28 +729,55 @@ const AtdSecomPage: React.FC & {
 
     return result;
   }, [secoms]);
+  
+  const flatData = useMemo(() => flattenTreeData(tableData), [tableData]);
+  
+  const keyToIndex = useMemo(() => {
+    const mapping: { [key: string]: number } = {};
+    flatData.forEach((row, idx) => {
+      mapping[row.key] = idx;
+    });
+    return mapping;
+  }, [flatData]);
 
   // 기본 컬럼
   const baseColumns = useMemo(() => {
     return [
       {
-        title: "직원명",
+        title: <div className="w-full v-h-center">직원명</div>,
         dataIndex: "teamNm/name",
-        align: "center" as const,
-        width: 175,
-        render: (_:any, row: any) => {
-          return (row?.key as string ?? "").includes("parent") ? `${row.teamNm} / ${row.name}` : row.name;
+        align: "right" as const, // 전체 셀을 오른쪽 정렬
+        // onHeaderCell: () => ({
+        //   style: { textAlign: "right" }, // 헤더 텍스트 오른쪽 정렬
+        // }),
+        render: (_: any, record: any, rowIndex: number) => {
+          const currentFlatIndex = keyToIndex[record.key];
+          if (currentFlatIndex > 0) {
+            const prevRecord = flatData[currentFlatIndex - 1];
+            // 이전 행과 현재 행의 원본 팀명과 이름이 같으면 이름을 숨김
+            if (
+              prevRecord.originalTeam === record.originalTeam &&
+              prevRecord.originalName === record.originalName
+            ) {
+              return "";
+            }
+          }
+          // 부모 행은 팀명과 이름을 함께 표시, 자식은 이름만 표시
+          return record.key.includes("parent")
+            ? record.teamNm + " / " + record.name
+            : record.name;
         },
+        width: 160,
       },
-      {
-        title: "업무구분",
-        dataIndex: "empTit",
-        align: "center" as const,
-        width: 130,
-        render: (value: any) => {
-          return value || "";
-        },
-      },
+      // {
+      //   title: "업무구분",
+      //   dataIndex: "empTit",
+      //   align: "center" as const,
+      //   width: 130,
+      //   render: (value: any) => {
+      //     return value || "";
+      //   },
+      // },
       {
         title: "구분",
         dataIndex: "flag1",
@@ -776,7 +799,7 @@ const AtdSecomPage: React.FC & {
         },
       },
     ];
-  }, [tableData]);
+  }, [flatData, keyToIndex]);
 
   // 최종 columns
   const columns = useMemo(() => {
@@ -814,10 +837,6 @@ const AtdSecomPage: React.FC & {
       setExpandedKeys((prev) => prev.filter((k) => k !== record.key));
     }
   };
-  
-  const flatData = useMemo(() => {
-    return flattenTreeData(tableData);
-  }, [tableData]);
 
   /** 엑셀 다운로드 */
   const handleExcelDownload = () => {

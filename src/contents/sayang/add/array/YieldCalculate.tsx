@@ -88,7 +88,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
 
   const items = [
     // {value:yielddata?.extraMargin, name:'extraMargin', label:'추가 여백', type:'input', widthType:'full'},
-    {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
+    // {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
@@ -454,13 +454,13 @@ const SayangYieldCalculate: React.FC<Props> = ({
         />
       </div>
         
-      <section className='flex flex-col gap-10 w-full min-h-[300px]'>
+      <section className='flex flex-col gap-10 w-full min-h-[400px]'>
         <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
           { calLoading && <div className="w-full h-full v-h-center"><Spin tip="계산중..." /></div>}
           { !calLoading && resultData.length > 0 && resultData
             .map((data, rowIndex) => (
               <div key={rowIndex} className="w-full flex flex-col gap-20">
-                <div className="flex w-full min-h-100 gap-30">
+                <div className="flex w-full min-h-[400px] gap-30">
                   <section className="relative" style={{ flex: 1.5 }}>
                     <Image
                       src={`${baseURL}file-mng/v1/every/file-manager/download/${data?.boardImageStorageName}`}
