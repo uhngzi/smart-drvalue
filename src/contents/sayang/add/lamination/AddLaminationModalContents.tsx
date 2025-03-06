@@ -226,6 +226,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleDragStart = (index: number) => {
+    console.log(index);
     setDraggedItemIndex(index);
   };
 
@@ -255,24 +256,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
             setResult(newItem);
             return;
           } else {
-            // 맨 위/아래는 추가 못하도록 => if (dropIndex === 0 || dropIndex === lamination.length-1) return;
-            if (dropIndex === 0 || dropIndex === lamination.length - 1) {
-              showToast("맨 위/맨 아래에는 추가할 수 없습니다.", "error");
-              return;
-            }
-
-            // 원하시는 로직대로 삽입
+            // 위 아래로 생성
             setLamination((prev) => [
-              ...prev.slice(0, dropIndex),
               newItem,
-              ...prev.slice(dropIndex),
+              ...prev,
+              newItem,
             ]);
             return;
           }
         }
-
+        
         // CF 아닐 때
-        if (dropIndex === 0 || dropIndex === lamination.length - 1) {
+        if (dropIndex === 0 || (lamination.length > 2 && dropIndex === lamination.length)) {
           showToast("맨 위/맨 아래에는 추가할 수 없습니다.", "error");
           return;
         }
@@ -746,17 +741,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
             </div>
           </div>
           <div className="h-[440px] overflow-y-auto text-12">
+            <Tooltip
+              title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
+              getPopupContainer={() => document.body}
+            >
             <div className="h-40 bg-back v-between-h-center">
               <p className="w-70 v-h-center">재질</p>
               <p className="w-56 v-h-center">동박</p>
               <p className="w-56 v-h-center">두께</p>
               <p className="w-56 v-h-center">실두께</p>
-              <div className="w-34 v-h-center"><p className="w-16 h-16"><Edit/></p></div>
+              <div className="w-34 v-h-center"></div>
             </div>
-            <Tooltip
-              title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
-              getPopupContainer={() => document.body}
-            >
+            </Tooltip>
             <div>
             {
               !baseLaminationLoading && baseLamination
@@ -774,7 +770,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
               ))
             }
             </div>
-            </Tooltip>
           </div>
         </div>
       </div>

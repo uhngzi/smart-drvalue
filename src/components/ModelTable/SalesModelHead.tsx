@@ -95,8 +95,8 @@ const SalesModelHead:React.FC<Props> = ({
           }}
           className="w-[54px!important]"
           styles={selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT ?
-            {ht:'36px', bw:'1px', bc:'#FAAD14', pd:'0'} :
-            {ht:'36px', bw:'0', pd:'0'}
+            {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+            {ht:'32px', bw:'0', pd:'0'}
           }
           disabled={model.completed}
           // disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
@@ -113,7 +113,7 @@ const SalesModelHead:React.FC<Props> = ({
             options={boardSelectList}
             value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
-            className="w-[125px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+            className="w-[125px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             readonly={read}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
@@ -135,7 +135,7 @@ const SalesModelHead:React.FC<Props> = ({
             options={metarialSelectList}
             value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
-            className="w-[155px!important]" styles={{ht:'36px', bw:'0px', pd:'0'}}
+            className="w-[155px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
             readonly={read}
           />
@@ -145,10 +145,10 @@ const SalesModelHead:React.FC<Props> = ({
       <Divider />
 
       <div className="h-full h-center gap-20 p-10">
-        { read && model.orderPrdDueDt ?<>
+        { read && model.orderPrdDueDt ?<div className="flex flex-col">
           <Label label="납기" />
-          {dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}
-        </>: null}
+          <div className="h-32">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div>
+        </div>: null}
         { !read && <>
           <div className="flex flex-col">
             <Label label="납기" />

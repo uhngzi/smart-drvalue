@@ -1,32 +1,24 @@
-import styled from "styled-components";
-import { Button, Radio, Spin } from "antd";
+import { Spin } from "antd";
 import { getAPI } from "@/api/get";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { List } from "@/layouts/Body/List";
 import { ListPagination } from "@/layouts/Body/Pagination";
-import ModelPageLayout from "@/layouts/Main/ModelPageLayout";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
-import Info from "@/assets/svg/icons/s_grayInfo.svg";
-import Close from "@/assets/svg/icons/s_close.svg";
 import { useQuery } from "@tanstack/react-query";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { useModels } from "@/data/context/ModelContext";
-import { modelsMatchRType } from "@/data/type/sayang/models";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import { sayangSampleWaitClmn, specIngClmn, specStatusClmn } from "@/data/columns/Sayang";
+import { specStatusClmn } from "@/data/columns/Sayang";
+import { specType } from "@/data/type/sayang/sample";
 
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import AntdModal from "@/components/Modal/AntdModal";
-import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
-import { LabelIcon } from "@/components/Text/Label";
-import { specType } from "@/data/type/sayang/sample";
+
 import useToast from "@/utils/useToast";
-import { changeSayangTemp } from "@/data/type/sayang/changeData";
-import { postAPI } from "@/api/post";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 
 const SayangSampleStatPage: React.FC & {
@@ -149,13 +141,13 @@ const SayangSampleStatPage: React.FC & {
 }
 
 SayangSampleStatPage.layout = (page: React.ReactNode) => (
-  <ModelPageLayout
+  <MainPageLayout
     menuTitle="샘플-사양등록및현황"
     menu={[
       {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
       {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/status'},
     ]}
-  >{page}</ModelPageLayout>
+  >{page}</MainPageLayout>
 )
 
 export default SayangSampleStatPage;

@@ -932,14 +932,14 @@ export const salesOrderModelReadClmn = (
                 value={record.currPrdInfo?.copOut}
                 className="!text-12" 
                 readonly={true}
-              /> 외
+              />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.copIn}
                 className="!text-12" 
                 readonly={true}
-              />내
+              />
             </div>
           </div>
         )

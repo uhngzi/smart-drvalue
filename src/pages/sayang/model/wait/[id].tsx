@@ -15,8 +15,6 @@ import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 import { TabSmall } from '@/components/Tab/Tabs';
 import { salesOrderModelReadClmn } from '@/components/ModelTable/Column';
 
-import PopRegLayout from "@/layouts/Main/PopRegLayout";
-
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { useBase } from '@/data/context/BaseContext';
@@ -41,6 +39,7 @@ import User from "@/assets/svg/icons/user_chk.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import SalesModelHead from '@/components/ModelTable/SalesModelHead';
 import { LabelMedium } from '@/components/Text/Label';
+import MainPageLayout from '@/layouts/Main/MainPageLayout';
 
 
 const SayangModelAddPage: React.FC & {
@@ -399,7 +398,7 @@ const SayangModelAddPage: React.FC & {
   return (
     <>
       <div 
-        className="gap-20 flex w-full h-full v-between-h-center"
+        className="gap-20 flex w-full h-full justify-between"
         style={{minWidth:1600}}
       >
         {/* 테이블 */}
@@ -543,7 +542,7 @@ const SayangModelAddPage: React.FC & {
         </div>
 
         {/* 우측 탭 */}
-        <div className=" min-w-[80px] w-[3%] h-full px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
+        <div className=" min-w-[80px] w-[3%] h-[calc(100vh-132px)] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
           <div 
             className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
             onClick={()=>{
@@ -619,7 +618,11 @@ const SayangModelAddPage: React.FC & {
 }
 
 SayangModelAddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout title="모델 등록">{page}</PopRegLayout>
+  <MainPageLayout 
+    menuTitle="모델 등록"
+    modal={true}
+    head={true}
+  >{page}</MainPageLayout>
 )
 
 export default SayangModelAddPage;

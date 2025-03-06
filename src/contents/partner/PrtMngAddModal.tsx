@@ -10,6 +10,8 @@ import { postAPI } from "@/api/post";
 import { partnerMngCUType, partnerMngRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
 import { patchAPI } from "@/api/patch";
+import { isValidEmail } from "@/utils/formatEmail";
+import { isValidTel } from "@/utils/formatPhoneNumber";
 
 interface Props {
   open: boolean;
@@ -120,6 +122,14 @@ const PrtMngAddModal:React.FC<Props> = ({
             btnLabel={
               <Button type="primary" size="large"
                 onClick={()=>{
+                  if((newPartnerMngData?.prtMngEmail && !isValidEmail(newPartnerMngData?.prtMngEmail)) || 
+                    (newPartnerMngData?.prtMngTel && !isValidTel(newPartnerMngData?.prtMngTel ?? "")) ||
+                    (newPartnerMngData?.prtMngMobile && !isValidTel(newPartnerMngData?.prtMngMobile ?? ""))
+                  ) {
+                    showToast("올바른 형식을 입력해주세요.", "error");
+                    return;
+                  }
+
                   if(edit)  handleEditPrtMngData();
                   else      handleSubmitPrtMngData();
                 }}

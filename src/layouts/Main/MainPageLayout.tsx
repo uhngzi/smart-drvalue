@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import Contents from "../Body/Contents";
 import MainHeader from "../Header/MainHeader";
-import Sider from "../Sider/Sider";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { TabLarge } from "@/components/Tab/Tabs";
-import { Button, Dropdown, MenuProps, Pagination } from "antd";
-import Image from "next/image";
-import { MoreOutlined } from "@ant-design/icons";
-
-import Excel from "@/assets/png/excel.png"
-import Print from "@/assets/png/print.png"
 import { loginCheck } from "@/utils/signUtil";
+import dynamic from "next/dynamic";
+import Close from "@/assets/svg/icons/s_close.svg";
 
 interface Props {
   children : React.ReactNode;
@@ -25,9 +19,14 @@ interface Props {
 
   writeButtonHref?: string;
   bg?: string;
+
+  modal?: boolean;
+  head?: boolean;
 }
 
-const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
+const Sider = dynamic(() => import('../Sider/Sider'), { ssr: false });
+
+const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, modal, head }) => {
   const router = useRouter();
 
   useEffect(()=>{
@@ -61,7 +60,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
     setCollapsed(false);
     const timer = setTimeout(() => {
       setCollapsed(true);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
   
@@ -76,19 +75,42 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg }) => {
           width:`calc(100% - ${width}px)`
         }}
       >
-        <MainHeader title={menuTitle} />
+        { !modal && <>
+          <MainHeader title={menuTitle} />
+          
+          <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
+            <Contents padding="10px 30px 20px 30px" bg={bg} >
+              {menu && (
+                <TabLarge
+                  items={menu}
+                  pathname={router.pathname}
+                />
+              )}
+              {children}
+            </Contents>
+          </div>
+        </>}
 
-        <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
-          <Contents padding="10px 30px 20px 30px" bg={bg} >
-            {menu && (
-              <TabLarge
-                items={menu}
-                pathname={router.pathname}
-              />
-            )}
+        { head && modal && <div>
+          <div className="p-30 flex v-between-h-center">
+            <p className="text-20 fw-500 font-semibold">{menuTitle}</p>
+            <p 
+              className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+              onClick={(()=>router.back())}
+            >
+              <Close />
+            </p>
+          </div>
+          <div className="w-full overflow-auto pl-20 pb-20">
             {children}
-          </Contents>
-        </div>
+          </div>
+        </div>}
+
+        { !head && modal && <>
+          <div className="w-full">
+            {children}
+          </div>
+        </>}
       </div>
     </div>
   )

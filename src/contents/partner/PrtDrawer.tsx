@@ -8,7 +8,7 @@ import CardList from "@/components/List/CardList";
 import AntdEditModal from "@/components/Modal/AntdEditModal";
 import CardInputList from "@/components/List/CardInputList";
 
-import { inputTel } from "@/utils/formatPhoneNumber";
+import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 import { inputFax } from "@/utils/formatFax";
 
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -21,6 +21,7 @@ import Search from "@/assets/svg/icons/s_search.svg";
 import { partnerCUType, partnerMngCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
 import PrtMngAddModal from "./PrtMngAddModal";
+import { isValidEmail } from "@/utils/formatEmail";
 
 
 interface Props {
@@ -154,6 +155,12 @@ const PrtDrawer: React.FC<Props> = ({
   // 거래처 설정 저장 시 실행 함수
   const handleSubmitPrtData = async () => {
     try {
+      if((newPartnerData?.prtTel && !isValidTel(newPartnerData?.prtTel)) ||
+        (newPartnerData?.prtEmail && !isValidEmail(newPartnerData.prtEmail))
+      ) {
+        showToast("올바른 형식을 입력해주세요.", "error");
+        return;
+      }
       const result = await patchAPI({
         type: 'baseinfo',
         utype: 'tenant/',
@@ -237,12 +244,18 @@ const PrtDrawer: React.FC<Props> = ({
           <CardInputList title="고객정보 수정" 
             titleIcon={<Bag/>}
             btnLabel={
-              <Button type="primary" size="large" onClick={handleSubmitPrtData} 
-                className="w-full flex h-center gap-8 !h-full" 
+              <Button type="primary" size="large" onClick={handleSubmitPrtData}
+                className="w-full flex h-center gap-8 !h-[50px]" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <TrArrow/>
                 <span>저장</span>
               </Button>
+              // <Button type="primary" size="large" onClick={handleSubmitPrtData} 
+              //   className="w-full flex h-center gap-8 !h-full" 
+              //   style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
+              //   <TrArrow/>
+              //   <span>저장</span>
+              // </Button>
             }
             items={[
             { value:newPartnerData?.prtNm,
@@ -275,13 +288,13 @@ const PrtDrawer: React.FC<Props> = ({
             { value:newPartnerData?.prtAddrDtl, placeholder: "세부 주소",
               name:'prtAddrDtl', type:'input', widthType:'full' },
             { value:newPartnerData?.prtCeo,
-              name:'prtCeo', label:'대표', type:'input', widthType:'half' },
+              name:'prtCeo', label:'대표자명', type:'input', widthType:'half' },
             { value:newPartnerData?.prtTel,
-              name:'prtTel', label:'전화', type:'input', widthType:'half' },
+              name:'prtTel', label:'전화번호', type:'input', widthType:'half' },
             { value:newPartnerData?.prtFax,
-              name:'prtFax', label:'팩스', type:'input', widthType:'half' },
+              name:'prtFax', label:'팩스번호', type:'input', widthType:'half' },
             { value:newPartnerData?.prtEmail,
-              name:'prtEmail', label:'메일', type:'input', widthType:'half' },
+              name:'prtEmail', label:'이메일', type:'input', widthType:'half' },
             ]}
             handleDataChange={(e, name, type)=>handlePrtDataChange('prt', e, name, type)}
           />

@@ -25,10 +25,12 @@ import AntdInput from "@/components/Input/AntdInput";
 interface Props {
   open: boolean;
   detailData: specType;
+  setUpdatePrc: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const ProcessSelection: React.FC<Props> = ({
   detailData,
+  setUpdatePrc,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -43,7 +45,7 @@ const ProcessSelection: React.FC<Props> = ({
   // ------------- 트리 데이터 세팅 ----------- 시작
   const [ dataLoading, setDataLoading ] = useState<boolean>(true);
   const [ dataProcessGrp, setDataProcessGrp ] = useState<processGroupRType[]>([]);
-  const [selectedVendors, setSelectedVendors] = useState<{pid:string, vid:string}[]>([]);
+  const [selectedVendors, setSelectedVendors] = useState<{pid:string, vid:string, vname:string}[]>([]);
   const { data:queryData } = useQuery<
     apiGetResponseType, Error
   >({
@@ -87,7 +89,8 @@ const ProcessSelection: React.FC<Props> = ({
             <div className="process-name">
               <span>{process.prcNm}</span>
             </div>
-            <div className="vendor-node" onClick={(e) => e.stopPropagation()} style={{ marginLeft: 10 }}>
+            { process.processVendors && process.processVendors.length > 0 && 
+            <div className="vendor-group-node" onClick={(e) => e.stopPropagation()} style={{marginLeft:10}}>
               <Radio.Group
                 value={
                   selectedVendors.find((sv) =>
@@ -97,18 +100,19 @@ const ProcessSelection: React.FC<Props> = ({
               >
                 {process.processVendors.map((pvendor) => (
                   <Radio
+                    className="vendor-node"
                     key={pvendor.vendor.id}
                     value={pvendor.vendor.id}
                     onClick={(e)=>{
                       e.stopPropagation();
-                      handleVendorSelect(process.id, pvendor.vendor.id);
+                      handleVendorSelect(process.id, pvendor.vendor.id, pvendor.vendor.prtNm);
                     }}
                   >
                     {pvendor?.vendor?.prtNm}
                   </Radio>
                 ))}
               </Radio.Group>
-            </div>
+            </div>}
           </div>
         ),
         key: process.id,
@@ -117,7 +121,22 @@ const ProcessSelection: React.FC<Props> = ({
     }));
   }, [dataProcessGrp, selectedVendors]);
   
-  const handleVendorSelect = (processId: string, vendorId: string) => {
+  const handleVendorSelect = (processId: string, vendorId: string, vendorName: string) => {
+    if (!selectPrdGrp?.id) {
+      showToast("제품군을 선택해주세요.", "error");
+      return;
+    }
+
+    // 프로세스가 체크되지 않은 상태라면 자동으로 체크 처리
+    if (!selectedKeys.includes(processId)) {
+      setSelectedKeys(prev => [...prev, processId]);
+      // dataProcess에서 해당 프로세스를 찾아 selectedPrc에 추가 (dataProcess는 공정 데이터가 저장된 state입니다)
+      const addData = dataProcess.find(f => f.id === processId);
+      if (addData) {
+        setSelectPrc(prev => [...prev, addData]);
+      }
+    }
+  
     setSelectedVendors((prev) => {
       const exists = prev.find(item => item.pid === processId);
       if (exists && exists.vid === vendorId) {
@@ -125,7 +144,7 @@ const ProcessSelection: React.FC<Props> = ({
         return prev.filter(item => item.pid !== processId);
       } else {
         // 동일 processId가 있다면 업데이트, 없으면 추가
-        return [...prev.filter(item => item.pid !== processId), { pid: processId, vid: vendorId }];
+        return [...prev.filter(item => item.pid !== processId), { pid: processId, vid: vendorId, vname: vendorName }];
       }
     });
   };
@@ -203,12 +222,12 @@ const ProcessSelection: React.FC<Props> = ({
   // 제품군 그룹 선택 후 공정 변경 시 실행 함수
   const handleChangePrc = () => {
     let arr = [] as string[];
-    let varr = [] as {pid:string, vid:string}[];
+    let varr = [] as {pid:string, vid:string, vname:string}[];
     console.log(selectPrdPrcGrp);
     selectPrdPrcGrp?.map((item:processRType) => {
       arr.push(item.id);
-      const vid = dataProcessGrp.find(f=>f.id === item.processGroup?.id)?.processes.find(f=>f.id === item.id)?.processVendors?.[0]?.vendor?.id;
-      if(vid) varr.push({pid: item.id, vid: vid})
+      const vid = dataProcessGrp.find(f=>f.id === item.processGroup?.id)?.processes.find(f=>f.id === item.id)?.processVendors?.[0]?.vendor;
+      if(vid) varr.push({pid: item.id, vid: vid?.id, vname: vid?.prtNm})
     })
     setSelectedKeys(arr);
     setSelectedVendors(varr);
@@ -251,6 +270,7 @@ const ProcessSelection: React.FC<Props> = ({
 
       if(result.resultCode === "OK_0000") {
         showToast("저장 완료", "success");
+        setUpdatePrc(true);
       } else {
         const msg = result?.response?.data?.message;
         setErrMsg(msg);
@@ -275,13 +295,13 @@ const ProcessSelection: React.FC<Props> = ({
       // 스팩 내 선택된 공정 추가
       let defaultPrc = [] as processRType[];
       let defaultKey = [] as string[];
-      let defaultVndr = [] as {pid:string, vid:string}[];
+      let defaultVndr = [] as {pid:string, vid:string, vname:string}[];
       detailData.specPrdGroupPrcs?.map((item) => {
         if(item.process) {
           defaultPrc.push({ ...item.process, remark: item.prcWkRemark });
           defaultKey.push(item.process.id);
           if(item.vendor) {
-            defaultVndr.push({pid:item.process.id, vid:item.vendor.id});
+            defaultVndr.push({pid:item.process.id, vid:item.vendor.id, vname:item.vendor?.prtNm});
           }
         }
       });
@@ -358,7 +378,7 @@ const ProcessSelection: React.FC<Props> = ({
                     if (vendors && vendors.length > 0) {
                       setSelectedVendors(prev => [
                         ...prev,
-                        { pid: addData.id, vid: vendors[0].vendor.id }
+                        { pid: addData.id, vid: vendors?.[0].vendor?.id, vname: vendors?.[0]?.vendor?.prtNm}
                       ]);
                     }
                   }
@@ -412,8 +432,8 @@ const ProcessSelection: React.FC<Props> = ({
                 <div key={process.id} className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10">
                   <Star />
                   <div className="flex-1 h-full h-center gap-50">
-                    <div className="w-[150px] h-center font-medium" style={{letterSpacing:-0.05}}>
-                      {group.prcGrpNm + ' > ' + process.prcNm}
+                    <div className="w-[200px] h-center font-medium" style={{letterSpacing:-0.05}}>
+                      {group.prcGrpNm + ' > ' + process.prcNm + ' (' + (selectedVendors.find(f=>f.pid === process.id)?.vname ?? "")+')'}
                     </div>
                     <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{letterSpacing:-0.05}}>
                       <div className="flex-1 h-full h-center whitespace-pre-wrap">
@@ -469,11 +489,13 @@ const ProcessSelection: React.FC<Props> = ({
         title={
           resultType === "already" ? "선택한 공정이 이미 존재합니다." :
           resultType === "error" ? "오류 발생" :
+          // resultType === "close" ? "저장하지 않은 내용이 존재합니다." :
           ""
         }
         contents={
           resultType === "already" ? <div>해당 제품군의 공정으로 변경하시겠습니까?</div> : 
           resultType === "error" ? <div>{errMsg}</div> : 
+          // resultType === "close" ? <div>저장하지 않고 닫을 경우 입력한 데이터가 삭제됩니다.<br/>정말 닫으시겠습니까?</div> : 
           <div></div>}
         type="warning"
         onOk={()=>{
@@ -542,12 +564,16 @@ const TreeStyled = styled.div`
 
   & .vendor-node {
     margin: 5px 20px 5px 0;
-    display: block;
+    display: flex;
+    height: 30px;
+    align-items: center;
   }
 
   & .ant-tree-checkbox {
+    height: 100%;
+    align-self: start;
+    margin-top: 12px;
     margin-left: 20px;
-    margin-top: -35px;
     & .ant-tree-checkbox-inner {
       border-radius: 2px;
     }

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import PopRegLayout from "@/layouts/Main/PopRegLayout";
 import OrderAddLayout from "@/contents/sales/order/add/OrderAdd";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 const AddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -17,7 +17,11 @@ const AddPage: React.FC & {
 };
 
 AddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout head={false}>{page}</PopRegLayout>
+  <MainPageLayout
+    menuTitle="모달"
+    head={false}
+    modal={true}
+  >{page}</MainPageLayout>
 );
 
 export default AddPage;

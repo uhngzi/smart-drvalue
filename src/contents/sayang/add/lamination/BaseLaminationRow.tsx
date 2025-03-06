@@ -33,6 +33,7 @@ const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({ item, onMenuClick
     // JSON 형태로 변환해서 저장
     e.dataTransfer.setData("application/base-lamination", JSON.stringify(item));
     e.dataTransfer.effectAllowed = "move";
+    console.log(e);
   };
 
   return (

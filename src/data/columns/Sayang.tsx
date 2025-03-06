@@ -737,16 +737,18 @@ export const sayangSampleWaitAddClmn = (
             value={record?.copOut}
             onChange={(e)=>handleModelDataChange(record.id, 'copOut', e.target.value)}
             className="!text-12" 
+            placeholder="외층 입력"
             type="number"
-          /> 외
+          />
         </div>
         <div className={divClass+"gap-5 !text-12"}>
           <AntdInputFill 
             value={record?.copIn}
             onChange={(e)=>handleModelDataChange(record.id, 'copIn', e.target.value)}
             className="!text-12" 
+            placeholder="내층 입력"
             type="number"
-          />내
+          />
         </div>
       </div>
     )
@@ -1529,7 +1531,7 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="동박외층 입력"
                 tabIndex={record.index*40+5}
-              /> 외
+              />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
@@ -1541,7 +1543,7 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="동박내층 입력"
                 tabIndex={record.index*40+6}
-              />내
+              />
             </div>
           </div>
         )

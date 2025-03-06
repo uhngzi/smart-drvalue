@@ -84,11 +84,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           title: 'sales/array',
           label: '원판 수율 계산',
         },
-        // {
-        //   key: 'sales/order',
-        //   title: 'sales/order',
-        //   label: '수주',
-        // },
       ]
     },
     {
@@ -119,36 +114,19 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     //   label: '근태',
     //   icon: <p className={iconClassNm}><Wk /></p>,
     // },
-    // {
-    //   key: 'wk',
-    //   title:'',
-    //   label: '생산',
-    //   icon: <p className={iconClassNm}><Wk /></p>
-    // },
-    // {
-    //   key: 'buy',
-    //   title:'',
-    //   label: '구매',
-    //   icon: <p className={iconClassNm}><Buy /></p>
-    // },
-    // {
-    //   key: 'mng',
-    //   title:'',
-    //   label: '관리',
-    //   icon: <p className={iconClassNm}><Mng /></p>
-    // },
-    // {
-    //   key: 'kpi',
-    //   title:'',
-    //   label: 'KPI',
-    //   icon: <p className={iconClassNm}><Kpi /></p>
-    // },
   ]
 
   const getOpenKeys = (path: string) => {
     const firstSegment = path.split(',')[0];
     return [firstSegment];
   };
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) return null;
 
   return (
     <SiderStyled $width={collapsed?'80px':'240px'}>

@@ -25,8 +25,6 @@ import Prc from "@/assets/svg/icons/data.svg";
 import Down from "@/assets/svg/icons/s_drop_down.svg";
 import Right from "@/assets/svg/icons/s_drop_right.svg";
 
-import PopRegLayout from "@/layouts/Main/PopRegLayout";
-
 import useToast from "@/utils/useToast";
 
 import { filterType } from "@/data/type/filter";
@@ -43,6 +41,7 @@ import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { productLinesGroupRType } from "@/data/type/base/product";
 import { specModelType, specType } from "@/data/type/sayang/sample";
 import { deleteAPI } from "@/api/delete";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -315,6 +314,7 @@ const SayangSampleAddPage: React.FC & {
   // --------------- 공정 지정 --------------- 시작
     // 공정 지정 팝업
   const [open, setOpen] = useState<boolean>(false);
+  const [updatePrc, setUpdatePrc] = useState<boolean>(false);
   // --------------- 공정 지정 --------------- 끝
 
   // 결과창
@@ -457,10 +457,10 @@ const SayangSampleAddPage: React.FC & {
               }}
             >모델추가</Button>
             {
-              detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0 ? 
+              updatePrc || (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
               <Button
                 className="!border-[#444444] !w-[107px]"
-                icon={ detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0 ? <CheckOutlined style={{color:"#4880FF"}}/> : <Prc className="w-16 h-16"/>}
+                icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
                 onClick={()=>{
                   setOpen(true);
                 }}
@@ -565,6 +565,7 @@ const SayangSampleAddPage: React.FC & {
         <ProcessSelection
           open={open}
           detailData={detailData}
+          setUpdatePrc={setUpdatePrc}
         />}
         width={1050}
         onClose={()=>{
@@ -624,7 +625,11 @@ const SayangSampleAddPage: React.FC & {
 }
 
 SayangSampleAddPage.layout = (page: React.ReactNode) => (
-  <PopRegLayout title="사양 등록">{page}</PopRegLayout>
+  <MainPageLayout 
+    menuTitle="사양 등록"
+    head={true}
+    modal={true}
+  >{page}</MainPageLayout>
 );
 
 export default SayangSampleAddPage;

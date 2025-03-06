@@ -3,12 +3,15 @@ import { Button, DatePicker, Input, Select } from "antd";
 
 import Calendar from "@/assets/svg/icons/newcalendar.svg";
 import Search from "@/assets/svg/icons/s_search.svg";
-
+import Hint from "@/assets/svg/icons/hint.svg";
 
 import dayjs from "dayjs";
 import styled from "styled-components";
 import AntdEditModal from "./AntdEditModal";
 import AntdAlertModal from "./AntdAlertModal";
+import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
+import { isValidEmail } from "@/utils/formatEmail";
+import { inputFax } from "@/utils/formatFax";
 
 interface Option {
   value: string | number | boolean ;
@@ -77,6 +80,23 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
     dataRef.current = data
   },[data])
 
+  const [formData, setFormData] = useState<{ [key: string]: any }>(data);
+
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+  
+  function handleInputChange(itemName: string, newValue: string) {
+    let value = newValue;
+    if(itemName.toLowerCase().includes("tel") || itemName.toLowerCase().includes("mobile")) {
+      value = inputTel(value);
+    } else if (itemName.toLowerCase().includes("fax")) {
+      value = inputFax(value);
+    }
+    setFormData(prev => ({ ...prev, [itemName]: value }));
+    setData(itemName, value);
+  }
+
   const handleSearchAddress = (key: string) => {
     const w: any = window;
     const d: any = w.daum;
@@ -144,13 +164,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       )}
                       {item.type === "input" && (
                         <Input 
-                          type={item.inputType || "text"}
-                          step={item.inputType === "number" ? 0.1 : 1}
-                          min={0}
-                          key={data.id}
-                          defaultValue={data[item.name]}
-                          onChange={(e) => setData(item.name, e.target.value)}
-                          placeholder={item?.placeholder}
+                          name={item.name}
+                          value={formData[item.name] || ''}
+                          onChange={(e) => handleInputChange(item.name, e.target.value)}
+                          placeholder={item.placeholder}
                         />
                       )}
                       {item.type === "select" && (
@@ -173,24 +190,22 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <>{item.customhtml}</>
                       )}
                     </div>
-                    {/* { item.value ?
-                      // 이메일 형식 체크
-                      item.name.toLowerCase().includes("email") && !isValidEmail(item?.value?.toString()) ?
+                    { // 이메일 형식 체크
+                      formData[item?.name] && item.name.toLowerCase().includes("email") && !isValidEmail(formData[item?.name]?.toString()) ?
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         올바르지 않은 이메일입니다.
                       </div> :
                       // 전화번호 형식 체크
-                      (item.name.toLowerCase().includes("tel")
+                      formData[item?.name] && (item.name.toLowerCase().includes("tel")
                       || item.name.toLowerCase().includes("mobile"))
-                      && !isValidTel(item?.value?.toString()) ? 
+                      && !isValidTel(formData[item?.name]?.toString()) ? 
                         <div className="h-center gap-3 text-[red]">
                           <p className="w-15 h-15"><Hint/></p>
                           올바르지 않은 전화번호입니다.
                         </div> :
                       <></>
-                      :<></>
-                    } */}
+                    }
                   </div>
                 ))}
               </div>

@@ -55,6 +55,8 @@ import { MOCK } from "@/utils/Mock";
 import SalesOrderContent from "./SalesOrderContent";
 import CsMngContent from "./CsMngContent";
 import AntdInput from "@/components/Input/AntdInput";
+import { isValidEmail } from "@/utils/formatEmail";
+import { isValidTel } from "@/utils/formatPhoneNumber";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -136,6 +138,13 @@ const OrderAddLayout = () => {
   const [newPartner, setNewPartner] = useState<partnerCUType>(newDataPartnerType);
   const handleSubmitNewData = async (data: partnerCUType) => {
     try {
+      if((data?.prtTel && !isValidTel(data?.prtTel)) ||
+        (data?.prtEmail && !isValidEmail(data.prtEmail))
+      ) {
+        showToast("올바른 형식을 입력해주세요.", "error");
+        return;
+      }
+      
       const result = await postAPI({
         type: 'baseinfo',
         utype: 'tenant/',
@@ -149,6 +158,7 @@ const OrderAddLayout = () => {
         csRefetch();
         setAddPartner(false);
         showToast("거래처 등록 완료", "success");
+        setNewPartner(newDataPartnerType);
         const entity = (result.data?.entity) as partnerRType;
         setFormData({ ...formData, partnerId: entity.id });
       } else {
@@ -715,18 +725,6 @@ const OrderAddLayout = () => {
                       />
                       원
                     </div>
-                    {/* <Button
-                      className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                      onClick={()=>{
-                        if(edit) {
-                          handleEditOrder(newProducts);
-                        } else {
-                          handleSubmitOrder(newProducts);
-                        }
-                      }}
-                    >
-                      <Arrow /> 전체 저장
-                    </Button> */}
                   </div>
                   <DividerH />
                   <SalesModelTable
@@ -744,23 +742,22 @@ const OrderAddLayout = () => {
                       }
                     }}
                   />
-                  <div className="w-full h-1 border-t-1"/>
-                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                      onClick={() => {
-                        setNewProducts((prev: salesOrderProcuctCUType[]) =>[
-                          ...prev,
-                          {
-                            ...newDataSalesOrderProductCUType(),
-                            id:'new-'+prev.length+1,
-                            index: newProducts.length+1
-                          },
-                        ]);
-                        setViewKey(newProducts.length+1);
-                      }}
-                    >
-                    <SplusIcon/>
-                    <span>모델 추가하기</span>
-                  </div>
+                  <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
+                    onClick={() => {
+                      setNewProducts((prev: salesOrderProcuctCUType[]) =>[
+                        ...prev,
+                        {
+                          ...newDataSalesOrderProductCUType(),
+                          id:'new-'+prev.length+1,
+                          index: newProducts.length+1
+                        },
+                      ]);
+                      setViewKey(newProducts.length+1);
+                    }}
+                  >
+                  <SplusIcon/>
+                  <span>모델 추가하기</span>
+                </div>
                 </div>
               </div>
             </div> }

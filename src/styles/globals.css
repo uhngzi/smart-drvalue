@@ -104,3 +104,7 @@ body {
 .text-shadow-hover:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.ant-menu-inline-collapsed-tooltip {
+  display: none !important;
+}
