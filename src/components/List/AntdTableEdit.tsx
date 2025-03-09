@@ -30,6 +30,7 @@ interface EditableCellProps {
 const EditableCell: React.FC<
   EditableCellProps
   & { onFieldChange: (value: any, label?: string) => void }
+  & { enterSubmit?: (id: any, value: any) => void }
 > = ({
   cellAlign = 'center',
   editing,
@@ -44,8 +45,15 @@ const EditableCell: React.FC<
   selectOptions,
   selectValue,
   onFieldChange,
+  enterSubmit,
   ...restProps
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && enterSubmit) {
+      enterSubmit(record.id, value);
+    }
+  };
+
   return (
     <td {...restProps} style={{textAlign:cellAlign,background:record?.disabled?"#F2F2F2":"#FFF"}}>
       {editing ? (
@@ -54,9 +62,16 @@ const EditableCell: React.FC<
             <ConfigProvider locale={koKR}>
               <DatePicker
                 defaultValue={value ? dayjs(value) : null}
-                onChange={(date)=>{
-                  if(date) {
+                onChange={(date) => {
+                  if (date) {
                     onFieldChange(dayjs(date).toDate() || new Date());
+                    // 날짜 선택 후 입력창에 포커스
+                    setTimeout(() => {
+                      const inputEl = document.querySelector<HTMLInputElement>('.ant-picker-input input');
+                      if (inputEl) {
+                        inputEl.focus();
+                      }
+                    }, 0);
                   }
                 }}
                 onOpenChange={(open) => {
@@ -66,6 +81,8 @@ const EditableCell: React.FC<
                 }}
                 style={{borderRadius:'2px', height:32}}
                 disabled={record?.disabled ?? undefined}
+                onKeyDown={handleKeyDown}
+                placeholder={enterSubmit ? "엔터 시 저장" : ""}
               />
             </ConfigProvider>
           :
@@ -108,6 +125,7 @@ const EditableCell: React.FC<
               type={inputType}
               readonly={record?.disabled ?? undefined}
               styles={{bg:"none"}}
+              onKeyDown={handleKeyDown}
             />
         }</>
       ) : (
@@ -123,6 +141,8 @@ export type CustomColumn = ColumnType<any>
   & { cellAlign?: 'center' | 'left' | 'right' }                       // 셀의 위치
   & { editable?: boolean }                                            // 수정 가능 여부
   & { editType?: 'input' | 'select' | 'date' | 'toggle' | 'none' }    // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
+  & { enter?: boolean }                                               // 수정 시 엔터 저장 여부
+  & { enterSubmit?: (id:string, value:any) => void }                  // 수정 시 엔터 호출
   & { req?: boolean }                                                 // 수정 시 필수 여부
   & { inputType?: 'string' | 'number' }                               // 셀의 타입이 INPUT일 경우의 INPUT의 TYPE
   & { selectOptions?: any[] }                                         // 셀의 타입이 SELECT일 경우의 SELECT 옵션
@@ -323,6 +343,7 @@ const AntdTableEdit: React.FC<Props> = ({
           tooltip: column.tooltip,
           // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
           onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+          enterSubmit: column.enterSubmit,
         }),
         ...column,
         title: column.tooltip ? (
@@ -411,6 +432,7 @@ const AntdTableEdit: React.FC<Props> = ({
           tooltip: column.tooltip,
           // 값 변경 시 실행되는 함수   ** 값 저장 아님
           onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+          enterSubmit: column.enterSubmit,
         }),
       };
     }

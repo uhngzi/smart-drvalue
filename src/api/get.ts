@@ -34,7 +34,7 @@ import { instance, instanceRoot } from "./lib/axios"
 
 export const getAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'utility',
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'utility',
     utype?: 'root/' | 'tenant/',
     url: string,
     header?: boolean,
@@ -46,6 +46,8 @@ export const getAPI = async (
     s_type?: 'in' | 'or' | 'eq' | 'regex' | 'elemMatch' | 'ne' | 'nin' | 'all',
     s_list?: Array<string>,
     sort?: string,
+    anykey?: string,
+    anyvalue?: any,
   }
 ): Promise<apiGetResponseType | apiAuthResponseType>  => {
   if(server.header) {
@@ -55,6 +57,7 @@ export const getAPI = async (
         page: params?.page ?? null,
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
         sort: params?.sort ?? "createdAt,DESC",
+        ...(params?.anykey ? { [params.anykey]: params.anyvalue } : {}),
       }
     });
     console.log(`%cGET :: ${server.url}`, "color: red", response);
@@ -68,6 +71,7 @@ export const getAPI = async (
         page: params?.page ?? null,
         s: params?.s_search?`{"${params?.s_search}": {"$${params?.s_type}": ${params?.s_list}}}`:null,
         sort: params?.sort ?? "createdAt,DESC",
+        ...(params?.anykey ? { [params.anykey]: params.anyvalue } : {}),
       }
     });
     console.log(`%cGET :: ${server.url}`, "color: red", response);

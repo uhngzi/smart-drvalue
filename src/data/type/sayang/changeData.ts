@@ -252,6 +252,7 @@ export const changeSayangTemp = (
         jYn: specData.jYn,
         prcNotice: specData.prcNotice,
         camNotice: specData.camNotice,
+        // wkPrdCnt: specData.wkPrdCnt,
       },
       models: (modelsData ?? []).map((model:specModelType) => ({
         id: model.id,

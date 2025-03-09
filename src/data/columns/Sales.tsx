@@ -3,7 +3,7 @@ import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
 import { FinalGlbStatus, HotGrade, LayerEm, ModelStatus, SalesOrderStatus } from '../type/enum';
-import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType } from '../type/sales/order';
+import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType, salesOrderWorkSheetType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 
@@ -26,12 +26,19 @@ export const salesOrderStatusClmn = (
     align: 'center',
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
+  // {
+  //   title: 'LotNo',
+  //   width: 120,
+  //   dataIndex: 'worksheet.specModel.fpNo',
+  //   key: 'worksheet.specModel.fpNo',
+  //   align: 'center', 
+  // },
   {
     title: '관리번호',
-    minWidth: 150,
-    dataIndex: 'model.prdMngNo',
-    key: 'model.prdMngNo',
-    align: 'center', 
+    width: 120,
+    dataIndex: 'worksheet.specModel.fpNo',
+    key: 'worksheet.specModel.fpNo',
+    align: 'center',
   },
   {
     title: '업체명/코드',
@@ -40,12 +47,12 @@ export const salesOrderStatusClmn = (
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
-    render: (_, record:salesOrderRType) => (
+    render: (_, record:salesOrderWorkSheetType) => (
       <div
         className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
         onClick={()=>{
-          setPartnerData(record?.prtInfo?.prt);
-          setPartnerMngData(record?.prtInfo?.mng);
+          setPartnerData(record?.prtInfo?.prt ?? null);
+          setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
         {record.prtInfo?.prt?.prtNm} / {record.prtInfo?.prt?.prtRegCd}
@@ -55,16 +62,16 @@ export const salesOrderStatusClmn = (
   {
     title: '제품명',
     minWidth: 150,
-    dataIndex: 'model.prdNm',
-    key: 'model.prdNm',
+    dataIndex: 'worksheet.specModel.prdNm',
+    key: 'worksheet.specModel.prdNm',
     align: 'center', 
     cellAlign: 'left',
   },
   {
     title: '수주번호',
     width: 100,
-    dataIndex: 'orderNo',
-    key: 'orderNo',
+    dataIndex: 'worksheet.specModel.prdMngNo',
+    key: 'worksheet.specModel.prdMngNo',
     align: 'center', 
   },
   {
@@ -79,46 +86,49 @@ export const salesOrderStatusClmn = (
     width: 80,
     dataIndex: 'orderPrdCnt',
     key: 'orderPrdCnt',
-    align: 'center', 
-  },
+    align: 'center',
+    render: (value) => {
+      return value ? Number(value).toLocaleString() : 0;
+    }
+   },
   {
     title: '수주매수',
     width: 80,
-    dataIndex: 'm2',
-    key: 'm2',
+    dataIndex: 'worksheet.specModel.m2',
+    key: 'worksheet.specModel.m2',
     align: 'center',
     
   },
   {
     title: '층',
     width: 50,
-    dataIndex: 'model.layerEm',
-    key: 'model.layerEm',
+    dataIndex: 'worksheet.specModel.layerEm',
+    key: 'worksheet.specModel.layerEm',
     align: 'center',
-    render: (_, record:salesOrderProductRType) => (
+    render: (_, record:salesOrderWorkSheetType) => (
       <div className="w-full h-full v-h-center">
-        {(record?.model?.layerEm ?? "").replace("L", "")}
+        {(record?.worksheet?.specModel?.layerEm ?? "").replace("L", "")}
       </div>
     )
   },
   {
     title: '두께',
     width: 50,
-    dataIndex: 'model.thk',
-    key: 'model.thk',
+    dataIndex: 'worksheet.specModel.thk',
+    key: 'worksheet.specModel.thk',
     align: 'center', 
   },
   {
     title: '제품 Size',
     width: 100,
-    dataIndex: 'model.pcsW/model.pcsL',
-    key: 'model.pcsW/model.pcsL',
+    dataIndex: 'worksheet.specModel.pcsW/worksheet.specModel.pcsL',
+    key: 'worksheet.specModel.pcsW/worksheet.specModel.pcsL',
     align: 'center', 
-    render: (_, record:salesOrderProductRType) => (
+    render: (_, record:salesOrderWorkSheetType) => (
       <div className="w-full h-full v-h-center">
         {
-          (record?.model?.pcsW || record?.model?.pcsL) ?
-          (record?.model?.pcsW ?? "")+" * "+(record?.model?.pcsL ?? "") :
+          (record?.worksheet?.specModel?.pcsW || record?.worksheet?.specModel?.pcsL) ?
+          (record?.worksheet?.specModel?.pcsW ?? "")+" * "+(record?.worksheet?.specModel?.pcsL ?? "") :
           ""
         }
       </div>
@@ -127,14 +137,14 @@ export const salesOrderStatusClmn = (
   {
     title: '판넬 Size',
     width: 100,
-    dataIndex: 'model.pnlW/model.pnlL',
-    key: 'model.pnlW/model.pnlL',
+    dataIndex: 'worksheet.specModel.pnlW/worksheet.specModel.pnlL',
+    key: 'worksheet.specModel.pnlW/worksheet.specModel.pnlL',
     align: 'center',
-    render: (_, record:salesOrderProductRType) => (
+    render: (_, record:salesOrderWorkSheetType) => (
       <div className="w-full h-full v-h-center">
         {
-          (record?.model?.pnlW || record?.model?.pnlL) ?
-          (record?.model?.pnlW ?? "")+" * "+(record?.model?.pnlL ?? "") :
+          (record?.worksheet?.specModel?.pnlW || record?.worksheet?.specModel?.pnlL) ?
+          (record?.worksheet?.specModel?.pnlW ?? "")+" * "+(record?.worksheet?.specModel?.pnlL ?? "") :
           ""
         }
       </div>

@@ -1,21 +1,23 @@
-import { getPrtCsAPI } from "@/api/cache/client";
-import { getAPI } from "@/api/get";
-import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import PrtDrawer from "@/contents/partner/PrtDrawer";
-import { salesOrderStatusClmn } from "@/data/columns/Sales";
-import { useUser } from "@/data/context/UserContext";
-import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import { salesOrderProductRType } from "@/data/type/sales/order";
-import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import { exportToExcelAndPrint } from "@/utils/exportToExcel";
-import useToast from "@/utils/useToast";
-import { useQuery } from "@tanstack/react-query";
 import { List, Spin } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getPrtCsAPI } from "@/api/cache/client";
+import { getAPI } from "@/api/get";
+
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+
+import { ListPagination } from "@/layouts/Body/Pagination";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import PrtDrawer from "@/contents/partner/PrtDrawer";
+
+import { useUser } from "@/data/context/UserContext";
+import { salesOrderStatusClmn } from "@/data/columns/Sales";
+import { salesOrderWorkSheetType } from "@/data/type/sales/order";
+import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import useToast from "@/utils/useToast";
 
 const SalesOrderStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -35,14 +37,14 @@ const SalesOrderStatusPage: React.FC & {
   const handlePageChange = (page: number, size: number) => {
     setPagination({ current: page, size: size });
   };
-  const [ data, setData ] = useState<Array<salesOrderProductRType>>([]);
+  const [ data, setData ] = useState<Array<salesOrderWorkSheetType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['sales-order/product/jsxcrud/many', pagination],
+    queryKey: ['sales-order/product/worksheet/jsxcrud/many', pagination],
     queryFn: async () => {
       return getAPI({
         type: 'core-d1',
         utype: 'tenant/',
-        url: 'sales-order/product/jsxcrud/many'
+        url: 'sales-order/product/worksheet/jsxcrud/many'
       },{
         limit: pagination.size,
         page: pagination.current,
@@ -53,7 +55,7 @@ const SalesOrderStatusPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading) {
-      const arr = (queryData?.data?.data ?? []).map((item:salesOrderProductRType) => ({
+      const arr = (queryData?.data?.data ?? []).map((item:salesOrderWorkSheetType) => ({
         ...item,
       }))
       setData(arr);

@@ -3,7 +3,7 @@ import { instance, instanceRoot } from "./lib/axios"
 
 export const postAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'utility',
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'utility',
     utype?: 'root/' | 'tenant/',
     url: string,
     jsx: 'jsxcrud' | 'default',

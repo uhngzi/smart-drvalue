@@ -95,7 +95,7 @@ export type processVendorPriceRType = {
   id: string;
   process: processRType;
   processGroup: processGroupRType;
-  vendor: processVendorRType;
+  vendor: partnerRType;
   priceNm: string;
   priceUnit: number;
   modelTypeEm: ModelTypeEm | null;

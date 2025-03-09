@@ -42,6 +42,7 @@ import { productLinesGroupRType } from "@/data/type/base/product";
 import { specModelType, specType } from "@/data/type/sayang/sample";
 import { deleteAPI } from "@/api/delete";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import AntdInput from "@/components/Input/AntdInput";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -449,6 +450,14 @@ const SayangSampleAddPage: React.FC & {
             </div>
           </div>
           <div className="h-center gap-20">
+            {/* <AntdInput
+              value={detailData?.wkPrdCnt ?? 0}
+              onChange={(e) => {
+                const {value} = e.target;
+                setDetailData({...detailData, wkPrdCnt: Number(value ?? 0)});
+              }}
+              type="number"
+            /> */}
             <Button
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{

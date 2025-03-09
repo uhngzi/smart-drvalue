@@ -29,6 +29,7 @@ export type specType = {
   specModels?: specModelType[];
   specPrdGroupPrcs?: specPrdGroupPrcs[];
   index?: number;   // 샘플로 넣은 값
+  wkPrdCnt?: number;
 }
 
 export type specModelType = {

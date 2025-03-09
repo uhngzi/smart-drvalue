@@ -108,6 +108,32 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         },
       ]
     },
+    {
+      key: 'buy',
+      title:'buy',
+      label: '관리/구매',
+      icon: <p className={iconClassNm}><Buy /></p>,
+      children: [
+        {
+          key: 'buy/cost/wait',
+          title: 'buy/cost/wait',
+          label: '외주처단가등록 및 현황',
+        },
+      ]
+    },
+    {
+      key: 'wk',
+      title:'wk',
+      label: '생산',
+      icon: <p className={iconClassNm}><Wk /></p>,
+      children: [
+        {
+          key: 'wk/plan/wait',
+          title: 'wk/plan/wait',
+          label: '생산계획',
+        },
+      ]
+    },
     // {
     //   key: 'attd/secom',
     //   title:'attd/secom',
