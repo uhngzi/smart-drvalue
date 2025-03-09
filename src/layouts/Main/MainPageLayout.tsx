@@ -19,6 +19,7 @@ interface Props {
 
   writeButtonHref?: string;
   bg?: string;
+  pd?: string;
 
   modal?: boolean;
   head?: boolean;
@@ -26,7 +27,7 @@ interface Props {
 
 const Sider = dynamic(() => import('../Sider/Sider'), { ssr: false });
 
-const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, modal, head }) => {
+const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10px 30px 20px 30px", modal, head }) => {
   const router = useRouter();
 
   useEffect(()=>{
@@ -79,7 +80,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, modal,
           <MainHeader title={menuTitle} />
           
           <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
-            <Contents padding="10px 30px 20px 30px" bg={bg} >
+            <Contents padding={pd} bg={bg} >
               {menu && (
                 <TabLarge
                   items={menu}

@@ -26,6 +26,7 @@ interface Item {
 interface CardInputListProps {
   title?: string;
   btnLabel?: React.ReactNode;
+  innerBtnContents?: React.ReactNode;
   items: Item[];
   titleIcon?: React.ReactNode;
   styles?: {
@@ -42,7 +43,7 @@ interface CardInputListProps {
   children?: React.ReactNode;
 }
 
-const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, titleIcon, styles, btnClick, handleDataChange, children}) => {
+const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, titleIcon, styles, btnClick, innerBtnContents, handleDataChange, children}) => {
   
   return (
     <StyledCardInputList 
@@ -122,6 +123,7 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
             ))}
           </div>
         )}
+        {innerBtnContents && <div className="w-full pt-20 flex justify-end">{innerBtnContents}</div>}
       </section>
       {!!btnLabel && (
         <>{btnLabel}</>
