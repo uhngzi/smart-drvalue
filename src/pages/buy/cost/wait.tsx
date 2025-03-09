@@ -149,7 +149,7 @@ const BuyCostWaitPage: React.FC & {
         contents={<>
           <div className="w-full h-full p-30 bg-white rounded-14 flex flex-col gap-20">
             {
-              prices.map((price) => (<div>
+              prices.map((price, index) => (<div key={index}>
                 <div className="h-center gap-30 mb-10">
                   <LabelMedium label={(price?.process?.prcNm ?? "")+" ("+(price?.vendor?.prtNm ?? "")+")"}/>
                   <div className="h-center gap-5">
