@@ -6,7 +6,7 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { WkPalnWaitClmn } from "@/data/columns/Wk";
 import { useUser } from "@/data/context/UserContext";
-import { wkPlanWaitType } from "@/data/type/\bwk/plan";
+import { wkPlanWaitType } from "@/data/type/wk/plan";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
