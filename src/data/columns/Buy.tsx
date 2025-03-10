@@ -44,11 +44,22 @@ export const BuyCostOutClmn = (
   },
   {
     title: '제품모델명',
-    minWidth: 150,
+    minWidth: 180,
     dataIndex: 'specModel.prdNm',
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "제품모델명을 클릭하면 외주처 단가를 등록할 수 있어요",
+    render: (_, record) => (
+      <div
+        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{
+          setSelect(record);
+        }}
+      >
+        {record?.specModel?.prdNm}
+      </div>
+    )
   },
   {
     title: '비용등록',
@@ -59,10 +70,7 @@ export const BuyCostOutClmn = (
     render: (value:0 | 1, record:buyCostOutType) => (
       <div className="w-full h-full v-h-center">
         {
-          value === 0 ? <FullChip state="yellow" label="등록전" click={()=>{
-            setOpen(true);
-            setSelect(record);
-          }}/> :
+          value === 0 ? <FullChip state="yellow" label="등록전"/> :
           <FullChip state="mint" label="등록완료"/>
         }
       </div>
@@ -293,8 +301,9 @@ export const BuyCostOutClmn = (
 ]
 
 export const BuyCostOutPriceClmn = (
-  selectPrice: {id:string, value:number}[],
-  setSelectPrice: React.Dispatch<SetStateAction<{id:string, value:number}[]>>,
+  selectPrice: {id:string, processId:string, vendorId:string, value:number}[],
+  setSelectPrice: React.Dispatch<SetStateAction<{id:string, processId:string,vendorId:string, value:number}[]>>,
+  select?: string,
 ): CustomColumn[] => [
   {
     title: '선택',
@@ -303,13 +312,18 @@ export const BuyCostOutPriceClmn = (
     key: 'id',
     align: 'center',
     render: (value:string, record:processVendorPriceRType)=>(
-      <input
-        type="radio"
-        name={record.process.id} value={value}
-        onChange={()=>{
-          setSelectPrice([...selectPrice.filter(f=>f.id !== record.id), {id: record.id, value:record.priceUnit}])
-        }}
-      />
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}>
+        <input
+          type="radio" className="cursor-pointer"
+          name={record.process.id} value={value}
+          onChange={()=>{
+            setSelectPrice([
+              ...selectPrice.filter(f=>f.processId !== record.process.id),
+              {id:record?.id, processId: record?.process?.id, vendorId: record.vendor.id, value:record.priceUnit}
+            ])
+          }}
+        />
+      </div>
     )
   },
   {
@@ -319,6 +333,11 @@ export const BuyCostOutPriceClmn = (
     key: 'priceNm',
     align: 'center',
     cellAlign: 'left',
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value}
+      </div>
+    )
   },
   {
     title: '층',
@@ -326,9 +345,11 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'layerEm',
     key: 'layerEm',
     align: 'center',
-    render: (value:LayerEm) => {
-      return value.replace("L", "");
-    }
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value.replace("L","")}
+      </div>
+    )
   },
   {
     title: '구분',
@@ -336,9 +357,11 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'modelTypeEm',
     key: 'modelTypeEm',
     align: 'center',
-    render: (value:ModelTypeEm) => {
-      return value === "sample" ? "샘플" : "양산";
-    }
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value === "sample" ? "샘플" : "양산"}
+      </div>
+    )
   },
   {
     title: '단가',
@@ -347,9 +370,11 @@ export const BuyCostOutPriceClmn = (
     key: 'priceUnit',
     align: 'center',
     cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
-    }
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value}
+      </div>
+    )
   },
   {
     title: '두께',
@@ -357,6 +382,11 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'thk',
     key: 'thk',
     align: 'center',
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value}
+      </div>
+    )
   },
   {
     title: '재질',
@@ -364,6 +394,11 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'matCd',
     key: 'matCd',
     align: 'center',
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value}
+      </div>
+    )
   },
   {
     title: '금속재질',
@@ -371,6 +406,11 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'metCd',
     key: 'metCd',
     align: 'center',
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {value}
+      </div>
+    )
   },
   {
     title: '무게',
@@ -378,8 +418,10 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'wgtMin/wgtMax',
     key: 'wgtMin/wgtMax',
     align: 'center',
-    render: (_, record:processVendorPriceRType) => (
-      <div className="v-h-center">{record?.wgtMin} ~ {record?.wgtMax}</div>
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {record?.wgtMin} ~ {record?.wgtMax}
+      </div>
     )
   },
   {
@@ -388,8 +430,10 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'cntMin/cntMax',
     key: 'cntMin/cntMax',
     align: 'center',
-    render: (_, record:processVendorPriceRType) => (
-      <div className="v-h-center">{record?.cntMin} ~ {record?.cntMax}</div>
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {record?.cntMin} ~ {record?.cntMax}
+      </div>
     )
   },
   {
@@ -398,8 +442,10 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'pnlcntMin/pnlcntMax',
     key: 'pnlcntMin/pnlcntMax',
     align: 'center',
-    render: (_, record:processVendorPriceRType) => (
-      <div className="v-h-center">{record?.pnlcntMin} ~ {record?.pnlcntMax}</div>
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {record?.pnlcntMin} ~ {record?.pnlcntMax}
+      </div>
     )
   },
   {
@@ -408,8 +454,10 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'holecntMin/holecntMax',
     key: 'holecntMin/holecntMax',
     align: 'center',
-    render: (_, record:processVendorPriceRType) => (
-      <div className="v-h-center">{record?.holecntMin} ~ {record?.holecntMax}</div>
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
+        {record?.holecntMin} ~ {record?.holecntMax}
+      </div>
     )
   },
   {
@@ -418,8 +466,10 @@ export const BuyCostOutPriceClmn = (
     dataIndex: 'm2Min/m2Max',
     key: 'm2Min/m2Max',
     align: 'center',
-    render: (_, record:processVendorPriceRType) => (
-      <div className="v-h-center">{record?.m2Min} ~ {record?.m2Max}</div>
+    render: (value, record) => (
+      <div className="v-h-center w-full h-full" style={{background:select===record.id?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}>
+        {record?.m2Min} ~ {record?.m2Max}
+      </div>
     )
   },
 ]
@@ -427,6 +477,7 @@ export const BuyCostOutPriceClmn = (
 export const BuyCostOutStatusClmn = (
   totalData: number,
   pagination: {current: number, size: number},
+  setSelect: React.Dispatch<SetStateAction<buyCostOutType | null>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -459,11 +510,22 @@ export const BuyCostOutStatusClmn = (
   },
   {
     title: '제품모델명',
-    minWidth: 150,
+    minWidth: 180,
     dataIndex: 'specModel.prdNm',
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "제품모델명을 클릭하면 외주처 단가 등록 내용을 볼 수 있어요",
+    render: (_, record) => (
+      <div
+        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        onClick={()=>{
+          setSelect(record);
+        }}
+      >
+        {record?.specModel?.prdNm}
+      </div>
+    )
   },
   {
     title: '비용등록',

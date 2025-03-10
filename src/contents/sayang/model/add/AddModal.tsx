@@ -436,7 +436,7 @@ const AddModal: React.FC<Props> = ({
           <div className="flex">
             <TabSmall
               items={[
-                {key:1,text:'고객발주(요구)정보'},
+                {key:1,text:'고객발주정보'},
                 {key:2,text:'모델목록'},
               ]}
               selectKey={selectTabDrawer}

@@ -36,8 +36,8 @@ export const salesOrderStatusClmn = (
   {
     title: '관리번호',
     width: 120,
-    dataIndex: 'worksheet.specModel.fpNo',
-    key: 'worksheet.specModel.fpNo',
+    dataIndex: 'worksheet.specModel.prdMngNo',
+    key: 'worksheet.specModel.prdMngNo',
     align: 'center',
   },
   {
@@ -66,12 +66,19 @@ export const salesOrderStatusClmn = (
     key: 'worksheet.specModel.prdNm',
     align: 'center', 
     cellAlign: 'left',
+    render: (_, record) => (
+      <div className="w-full h-full v-between-h-center">
+        {
+          record?.worksheet?.specModel?.prdNm ?? record?.orderTit
+        }
+      </div>
+    )
   },
   {
     title: '수주번호',
     width: 100,
-    dataIndex: 'worksheet.specModel.prdMngNo',
-    key: 'worksheet.specModel.prdMngNo',
+    dataIndex: 'orderNo',
+    key: 'orderNo',
     align: 'center', 
   },
   {
@@ -189,16 +196,16 @@ export const salesUserOrderClmn = (
     )
   },
   {
-    title: '발주명',
+    title: '고객발주명',
     minWidth: 150,
     dataIndex: 'orderNm',
     key: 'orderNm',
     align: 'center',
     cellAlign: 'left',
-    tooltip: "발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
+    tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value:string, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1"
+        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=> {
           if(!record.isDiscard && (record.finalGlbStatus === FinalGlbStatus.REGISTERING || record.finalGlbStatus === FinalGlbStatus.WAITING)) {
             // 완료 및 폐기가 아닐 경우에는 페이지 이동
@@ -215,7 +222,7 @@ export const salesUserOrderClmn = (
     )
   },
   {
-    title: '대기 모델 수',
+    title: '모델 수',
     width: 100,
     dataIndex: 'modelCnt',
     key: 'modelCnt',
@@ -282,7 +289,7 @@ export const salesUserOrderClmn = (
     key: 'orderDt',
   },
   {
-    title: '모델등록',
+    title: '모델상태',
     width: 90,
     dataIndex: 'finalGlbStatus',
     key: 'finalGlbStatus',
@@ -290,35 +297,41 @@ export const salesUserOrderClmn = (
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
         { record.isDiscard ? (
-           <FullChip label="폐기" click={()=>{
-            setOrderId(record.id);
-            setOrderDrawer(true);
-          }}/>
+          <FullChip label="폐기"
+            // click={()=>{
+            //   setOrderId(record.id);
+            //   setOrderDrawer(true);
+            // }}
+          />
         ): value === FinalGlbStatus.WAITING ? (
           <FullChip label="대기" state="yellow" 
-            click={()=>{
-              router.push(`/sales/order/${record.id}`);
-            }}
+            // click={()=>{
+            //   router.push(`/sales/order/${record.id}`);
+            // }}
           />
         ) : value === FinalGlbStatus.COMPLETED ? (
-          <FullChip label="완료" click={()=>{
-            setOrderId(record.id);
-            setOrderDrawer(true);
-          }}/>
+          <FullChip label="완료"
+            // click={()=>{
+            //   setOrderId(record.id);
+            //   setOrderDrawer(true);
+            // }}
+          />
         ) : value === FinalGlbStatus.REGISTERING ? (
         // ) : (
           <FullChip
             label="등록중" state="mint" 
-            click={()=>{
-              router.push(`/sales/order/${record.id}`);
-            }}
+            // click={()=>{
+            //   router.push(`/sales/order/${record.id}`);
+            // }}
           />
          )
         : (
-           <FullChip label="폐기" click={()=>{
-            setOrderId(record.id);
-            setOrderDrawer(true);
-          }}/>
+          <FullChip label="폐기"
+            // click={()=>{
+            //   setOrderId(record.id);
+            //   setOrderDrawer(true);
+            // }}
+          />
         )}
       </div>
     )

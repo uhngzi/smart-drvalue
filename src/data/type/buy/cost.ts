@@ -218,3 +218,100 @@ export type buyCostOutType =
     deletedAt?: Date | Dayjs | null;
   },
 }
+
+export type buyCostOutDetailType = {
+  id?: string;
+  wkLatestMemo?: string;
+  wkPrdCnt?: number;
+  progress?: number;
+  wkProcCnt?: number;
+  wkLatestDtm?: Date | Dayjs | null;
+  wsExpDt?: Date | Dayjs | null;
+  wsSchDt?: Date | Dayjs | null;
+  wsStDt?: Date | Dayjs | null;
+  wkEdDt?: Date | Dayjs | null;
+  wkOutDt?: Date | Dayjs | null;
+  wkOutCnt?: number;
+  wkBadCnt?: number;
+  priceUnitChkYn?: boolean;
+  invChkDt?: Date | Dayjs | null;
+  invChkCnt?: number;
+  isWait?: boolean;
+  wsRemark?: string;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  vendorPriceTotal?: number;
+  procs?: [
+    {
+      id?: string;
+      wkProcMemo?: string;
+      specPrdGrp?: {
+        createdAt?: Date | Dayjs | null;
+        updatedAt?: Date | Dayjs | null;
+        deletedAt?: Date | Dayjs | null;
+        id?: string;
+        productLinesGroup?: {
+          id?: string;
+          name?: string;
+          createdAt?: Date | Dayjs | null;
+          updatedAt?: Date | Dayjs | null;
+          deletedAt?: Date | Dayjs | null;
+        },
+        spec?: {
+          id?: string;
+          specNo?: string;
+          specNoCount?: number;
+          specLamNo?: string;
+          specLamThk?: number;
+          brdArrYldRate?: number;
+          wksizeW?: number;
+          wksizeH?: number;
+          stdW?: number;
+          stdH?: number;
+          cutCnt?: number;
+          jYn?: boolean;
+          brdArrStorageKey?: string;
+          prcNotice?: string;
+          camNotice?: string;
+          createdAt?: Date | Dayjs | null;
+          updatedAt?: Date | Dayjs | null;
+          deletedAt?: Date | Dayjs | null;
+        },
+        prdGrpNm?: string;
+        process?: {
+          id?: string;
+          processGroup?: {
+            id?: string;
+            prcGrpNm?: string;
+            useYn?: boolean;
+            processes?: processRType[],
+            createdAt?: Date | Dayjs | null;
+            updatedAt?: Date | Dayjs | null;
+            deletedAt?: Date | Dayjs | null;
+          },
+          prcNm?: string;
+          useYn?: boolean;
+          createdAt?: Date | Dayjs | null;
+          updatedAt?: Date | Dayjs | null;
+          deletedAt?: Date | Dayjs | null;
+        },
+        ordNo?: number;
+        prcWkRemark?: string;
+      },
+      tempPrdInfo?: string;
+      vendor?: partnerRType;
+      vendorPrice?: number;
+      ordNo?: number;
+      wkProcStCnt?: number;
+      wkProcStDtm?: Date | Dayjs | null;
+      wkProcEdCnt?: number;
+      wkProcEdDtm?: Date | Dayjs | null;
+      wkProcBadCnt?: number;
+      wkProcRemark?: string;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    }
+  ],
+}

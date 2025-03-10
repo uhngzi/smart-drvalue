@@ -35,7 +35,6 @@ const WkPlanWaitPage: React.FC & {
   const handlePageChange = (page: number, size: number) => {
     setPagination({ current: page, size: size });
   };
-  ///api/serv/core-d2/v1/tenant/worksheet/wait-for-production-plan/jsxcrud/many
   const [ data, setData ] = useState<Array<wkPlanWaitType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
     queryKey: ['worksheet/wait-for-production-plan/jsxcrud/many', pagination],
@@ -47,8 +46,7 @@ const WkPlanWaitPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykey: "applyAutoFilter",
-        anyvalue: true,
+        anykeys: {applyAutoFilter : true},
       });
     }
   });
@@ -86,7 +84,6 @@ const WkPlanWaitPage: React.FC & {
   }, [cs?.data.data]);
   // ------------- 필요 데이터 세팅 ------------- 끝
 
-  ///api/serv/core-d2/v1/tenant/worksheet/wait-for-production-plan/default/update-production-plan-start-date
   const handleSubmit = async (id:string, value:any) => {
     console.log(id, value);
     const dt = dayjs(value).format("YYYY-MM-DD");
@@ -104,6 +101,7 @@ const WkPlanWaitPage: React.FC & {
 
       if(result.resultCode === 'OK_0000') {
         showToast("생산예정일 입력 완료", "success");
+        refetch();
       } else {
         const msg = result?.response?.data?.message;
         setErrMsg(msg);
@@ -206,7 +204,7 @@ const WkPlanWaitPage: React.FC & {
 
 WkPlanWaitPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="생산계획대기"
+    menuTitle="생산 계획 대기"
   >{page}</MainPageLayout>
 );
 

@@ -30,7 +30,7 @@ interface Props {
   onClose?: () => void;
   partnerId: string;
   partnerData: partnerRType | null;
-  partnerMngData: partnerMngRType | null;
+  partnerMngData?: partnerMngRType | null;
   submitEndFn?: () => void;
   prtSuccessFn?: () => void;
   prtMngSuccessFn?: (entity:partnerMngRType) => void;
@@ -89,7 +89,7 @@ const PrtDrawer: React.FC<Props> = ({
       setDrawerMngItems([]);
     }
 
-    if(partnerData !== null || partnerMngData !== null) {
+    if(partnerData !== null || (partnerMngData && partnerMngData !== null)) {
       setNewPartnerData(partnerData);
       setOpen(true);
     }
@@ -230,9 +230,9 @@ const PrtDrawer: React.FC<Props> = ({
           <CardList title="고객정보" 
             btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Edit/></span> 고객 정보 수정</div>} 
             items={drawerPrtItems} btnClick={() => setNewPrtOpen(true)}/>
-          <CardList title="담당자정보" 
+          {partnerMngData && <CardList title="담당자정보" 
             btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Plus/></span> 담당자 추가</div>} 
-            items={drawerMngItems} btnClick={() => setNewPrtMngOpen(true)}/>
+            items={drawerMngItems} btnClick={() => setNewPrtMngOpen(true)}/>}
         </div>
       </AntdDrawer>
 

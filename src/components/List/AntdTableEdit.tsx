@@ -61,13 +61,14 @@ const EditableCell: React.FC<
           editType === "date" ?
             <ConfigProvider locale={koKR}>
               <DatePicker
+                className={`date-picker-${record?.id}-${dataIndex}`} // record.key를 이용해 고유 클래스명 부여
                 defaultValue={value ? dayjs(value) : null}
                 onChange={(date) => {
                   if (date) {
                     onFieldChange(dayjs(date).toDate() || new Date());
-                    // 날짜 선택 후 입력창에 포커스
+                    // 날짜 선택 후 해당 셀의 DatePicker 입력창에 포커스
                     setTimeout(() => {
-                      const inputEl = document.querySelector<HTMLInputElement>('.ant-picker-input input');
+                      const inputEl = document.querySelector<HTMLInputElement>(`.date-picker-${record?.id}-${dataIndex} .ant-picker-input input`);
                       if (inputEl) {
                         inputEl.focus();
                       }
@@ -79,7 +80,7 @@ const EditableCell: React.FC<
                     onFieldChange(new Date());
                   }
                 }}
-                style={{borderRadius:'2px', height:32}}
+                style={{borderRadius:'2px', height:32, width:'95%'}}
                 disabled={record?.disabled ?? undefined}
                 onKeyDown={handleKeyDown}
                 placeholder={enterSubmit ? "엔터 시 저장" : ""}
@@ -126,6 +127,7 @@ const EditableCell: React.FC<
               readonly={record?.disabled ?? undefined}
               styles={{bg:"none"}}
               onKeyDown={handleKeyDown}
+              className="!w-[95%]"
             />
         }</>
       ) : (
@@ -140,6 +142,7 @@ export type CustomColumn = ColumnType<any>
   & { tooltip?: string }                                              // 헤더 툴팁
   & { cellAlign?: 'center' | 'left' | 'right' }                       // 셀의 위치
   & { editable?: boolean }                                            // 수정 가능 여부
+  & { allEdit?: boolean }                                             // 모든 셀 수정 가능 여부
   & { editType?: 'input' | 'select' | 'date' | 'toggle' | 'none' }    // 수정 시 셀의 타입 (toggle은 true, false 값만 필요할 경우 사용)
   & { enter?: boolean }                                               // 수정 시 엔터 저장 여부
   & { enterSubmit?: (id:string, value:any) => void }                  // 수정 시 엔터 호출
@@ -180,6 +183,7 @@ interface Props {
     td_bg?: string;
     td_pd?: string;
     td_al?: string;
+    fs?: string;
   };
   className?: string;
   tableProps?: {
@@ -263,6 +267,15 @@ const AntdTableEdit: React.FC<Props> = ({
         newData[index] = { ...newData[index] };
         set(newData[index], dataIndex, value);
       }
+    
+      // 공정현황 내 추가 로직 : wkProcEdCnt가 변경되면 자동으로 wkProcBadCnt 업데이트
+      if(dataIndex === "wkProcEdCnt") {
+        const stCnt = Number(newData[index]["wkProcStCnt"]) || 0;
+        const edCnt = Number(value) || 0;
+        const badCnt = stCnt - edCnt;
+        set(newData[index], "wkProcBadCnt", badCnt);
+      }
+
       setDataSource(newData);
       // 생성 모드일 때는 값 자동 저장
       if(create && setData) {
@@ -327,31 +340,74 @@ const AntdTableEdit: React.FC<Props> = ({
   
     // 생성 모드 시
     if(create) {
-      return {
-        onCell: (record: DataType) => ({
-          cellAlign: column.cellAlign,
-          title: typeof column.title === "string" ? column.title : undefined,
-          dataIndex: column.dataIndex,
-          editing: isEditing(record) ? "true" : undefined,
-          value: get(record, column.dataIndex),
-          editType: column.editType,
-          record: record,
-          req: column.req,
-          inputType: column.inputType,
-          selectOptions: column.selectOptions,
-          selectValue: get(record, column.selectValue),
-          tooltip: column.tooltip,
-          // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
-          onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
-          enterSubmit: column.enterSubmit,
-        }),
-        ...column,
-        title: column.tooltip ? (
-          <Tooltip title={column.tooltip} placement="top">
-            <span>{typeof column.title === "string" ? column.title : ""}</span>
-          </Tooltip>
-        ) as React.ReactNode : column.title,
-      };
+      if (column.editable === false) {
+        return {
+          render: (value: any, record: any) => {
+            // 객체 안에 객체 값이 있을 때(ex. vendor.prtNm)는 value로 못 가져오므로 구분해서 실행
+            // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
+            // 날짜일 경우 format 변경
+            if(value) {
+              if(!Number.isNaN(value))
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {value}
+                </div>;
+              if(dayjs(value).isValid())
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {dayjs(value).format('YYYY-MM-DD')}
+                </div>;
+              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                {value}
+              </div>;
+            } else {
+              const v = get(record, column.dataIndex);
+              if(!Number.isNaN(value))
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {v}
+                </div>;
+              if(dayjs(v).isValid())
+                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                  {dayjs(value).format('YYYY-MM-DD')}
+                </div>;
+              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+                {v}
+              </div>;
+            }
+          },
+          // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
+          ...column,
+          title: column.tooltip ? (
+            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
+              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
+            </Tooltip>
+          ) as React.ReactNode : column.title,
+        };
+      } else {
+        return {
+          onCell: (record: DataType) => ({
+            cellAlign: column.cellAlign,
+            title: typeof column.title === "string" ? column.title : undefined,
+            dataIndex: column.dataIndex,
+            editing: (column.allEdit || isEditing(record)) ? "true" : undefined,
+            value: get(record, column.dataIndex),
+            editType: column.editType,
+            record: record,
+            req: column.req,
+            inputType: column.inputType,
+            selectOptions: column.selectOptions,
+            selectValue: get(record, column.selectValue),
+            tooltip: column.tooltip,
+            // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
+            onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+            enterSubmit: column.enterSubmit,
+          }),
+          ...column,
+          title: column.tooltip ? (
+            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
+              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
+            </Tooltip>
+          ) as React.ReactNode : column.title,
+        };
+      }
     } else {
       // 수정 모드가 아닐 때
       if (!column.editable) {
@@ -390,8 +446,8 @@ const AntdTableEdit: React.FC<Props> = ({
           // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
           ...column,
           title: column.tooltip ? (
-            <Tooltip title={column.tooltip} placement="top">
-              <span>{typeof column.title === "string" ? column.title : ""}</span>
+            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
+              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
             </Tooltip>
           ) as React.ReactNode : column.title,
         };
@@ -421,7 +477,7 @@ const AntdTableEdit: React.FC<Props> = ({
           cellAlign: column.cellAlign,
           title: typeof column.title === "string" ? column.title : undefined,
           dataIndex: column.dataIndex,
-          editing: isEditing(record) ? "true" : undefined,
+          editing: (column.allEdit || isEditing(record)) ? "true" : undefined,
           value: get(record, column.dataIndex),
           editType: column.editType,
           record: record,
@@ -459,6 +515,7 @@ const AntdTableEdit: React.FC<Props> = ({
       $thFontWeight={styles?.th_fw || "500"}
       $round={styles?.round || "14px"}
       $line={styles?.line === "n" ? "0" : "1px solid #0000000F"}
+      $fs={styles?.fs || "14px"}
     >
       <ConfigProvider 
         theme={{ 
@@ -542,6 +599,7 @@ const AntdTableStyled = styled.div<{
   $tdPadding: string;
   $round: string;
   $line: string;
+  $fs: string;
 }>`
   width: 100%;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
@@ -566,7 +624,7 @@ const AntdTableStyled = styled.div<{
       text-align: center;
 
       font-weight: ${({ $thFontWeight }) => $thFontWeight};
-      font-size: 14px;
+      font-size: ${({ $fs }) => $fs};
       color: #444444;
 
       background-color: transparent;
@@ -608,7 +666,7 @@ const AntdTableStyled = styled.div<{
       text-align: ${({ $tdTextAlign }) => $tdTextAlign };
 
       font-weight: 400;
-      font-size: 14px;
+      font-size: ${({ $fs }) => $fs};
       color: #444444;
     }
 

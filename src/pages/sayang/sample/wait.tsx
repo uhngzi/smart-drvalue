@@ -307,43 +307,22 @@ const SayangSampleListPage: React.FC & {
           />
         </List>
       </div>
-      <div className="w-full h-1 border-b-1 border-line"></div>
+      
       <div>
-        {/* <ListPagination
-          pagination={paginationWait}
-          totalData={waitTotalData}
-          onChange={handlePageWaitChange}
-          handleMenuClick={handlePageMenuClick}
-          title="사양 등록 대기"
-        /> */}
         <div className="v-between-h-center h-50 w-full">
           <div><LabelMedium label="사양 등록 대기" /></div>
           <div className="h-center gap-10">
             <p className="h-center">총 {waitData.length}건</p>
-            <Tooltip title="체크한 사양들을 조합하여 등록할 수 있어요">
-              <Button
-                style={{border:"1px solid #4880FF", color:"#4880FF"}}
-                onClick={handleCheckedClick}
-              >
-                사양 등록
-              </Button>
-            </Tooltip>
           </div>
         </div>
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, paginationWait, sayangPopOpen)}
+            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, handleCheckedClick, paginationWait, sayangPopOpen)}
             data={waitData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}
           />
         </List>
-        {/* <ListPagination
-          pagination={paginationWait}
-          totalData={waitTotalData}
-          onChange={handlePageWaitChange}
-          handleMenuClick={handlePageMenuClick}
-        /> */}
       </div>
       
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}
@@ -432,7 +411,11 @@ const SayangSampleListPage: React.FC & {
         }
         contents={
           resultType === "chkLayerErr" ? <div>같은 층의 모델만 조합 가능합니다.<br/>선택한 층을 확인해주세요.</div> :
-          resultType === "cf" ? <div>{msg}</div> :
+          resultType === "cf" ? <div className="h-center gap-10">
+            {(msg.split(",") ?? [])?.map((item) => (
+              <div className="rounded-20 border-1 border-line w-fit p-10">{item}</div>
+            ))}
+            </div> :
           <></>
         }
         hideCancel={
@@ -484,10 +467,10 @@ const CustomRadioGroup = styled(Radio.Group)`
 
 SayangSampleListPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="샘플-사양등록및현황"
+    menuTitle="사양 등록 및 현황"
     menu={[
-      {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
-      {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/status'},
+      {text:'사양 등록', link:'/sayang/sample/wait'},
+      {text:'사양 등록 현황', link:'/sayang/sample/status'},
     ]}
   >{page}</MainPageLayout>
 )

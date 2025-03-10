@@ -40,6 +40,11 @@ export const exportToExcelAndPrint = (
         const keys = dataIndex.split("/");
         value = keys.map((key) => get(row, key, "")).filter(Boolean).join(" / ");
       } 
+      else if (dataIndex.includes("*")) {
+        const keys = dataIndex.split("*");
+        value = keys.map((key) => get(row, key, "")).filter(Boolean).join(" * ");
+      }
+      
       else {
         value = get(row, dataIndex, "") || "";
       }

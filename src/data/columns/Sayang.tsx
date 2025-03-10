@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Checkbox } from 'antd';
+import { Checkbox, Tooltip } from 'antd';
 import { NextRouter } from 'next/router';
 import { SetStateAction } from 'react';
 import { TableProps } from 'antd/es/table';
@@ -28,7 +28,7 @@ export const specStatusClmn = (
   router?: NextRouter,
 ): CustomColumn[] => [
   {
-    title: '대기',
+    title: 'No',
     width: 80,
     dataIndex: 'index',
     key: 'index',
@@ -206,7 +206,7 @@ export const specIngClmn = (
   router?: NextRouter,
 ): CustomColumn[] => [
   {
-    title: '대기',
+    title: 'No',
     width: 80,
     dataIndex: 'index',
     key: 'index',
@@ -246,8 +246,13 @@ export const specIngClmn = (
     key: 'specModels.prdNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "모델명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="w-full h-full h-center">
+      <div className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{
+          router?.push(`/sayang/sample/wait/${record.id}`);
+        }}
+      >
         {record.specModels?.[0]?.prdNm}
       </div>
     )
@@ -362,25 +367,25 @@ export const specIngClmn = (
       return dayjs(record.specModels?.[0]?.modelMatch?.orderModel.orderDt).format('YYYY-MM-DD');
     }
   },
-  {
-    title: '사양등록',
-    width: 100,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value) => (
-      <div className="w-full h-full v-h-center">
-        <div 
-          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{
-            router?.push(`/sayang/sample/wait/${value}`);
-          }}
-        >
-          <p className="w-18 h-18"><Edit /></p>
-        </div>
-      </div>
-    )
-  },
+  // {
+  //   title: '사양등록',
+  //   width: 100,
+  //   dataIndex: 'id',
+  //   key: 'id',
+  //   align: 'center',
+  //   render: (value) => (
+  //     <div className="w-full h-full v-h-center">
+  //       <div 
+  //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
+  //         onClick={()=>{
+  //           router?.push(`/sayang/sample/wait/${value}`);
+  //         }}
+  //       >
+  //         <p className="w-18 h-18"><Edit /></p>
+  //       </div>
+  //     </div>
+  //   )
+  // },
 ]
 
 export const sayangSampleWaitClmn = (
@@ -402,11 +407,20 @@ export const sayangSampleWaitClmn = (
     record: modelsMatchRType
   }[]>>,
   handleCheckedAllClick: () => void,
+  handleCheckedClick: () => void,
   pagination?: {current: number, size: number},
   sayangPopOpen?: (value:string, model:string, status:string, record:modelsMatchRType) => void,
 ): CustomColumn[] => [
   {
-    title: <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>,
+    title: <div>
+      <Tooltip title="클릭 시 선택한 사양들을 조합하여 등록할 수 있어요">
+        <div
+          className="text-11 w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+          onClick={handleCheckedClick}
+        >선택한 사양 등록</div>
+      </Tooltip>
+      <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>
+    </div>,
     width: 80,
     dataIndex: 'check',
     key: 'check',
@@ -436,7 +450,7 @@ export const sayangSampleWaitClmn = (
     )
   },
   {
-    title: '대기',
+    title: 'No',
     width: 80,
     dataIndex: 'index',
     key: 'index',
@@ -478,6 +492,15 @@ export const sayangSampleWaitClmn = (
     key: 'model.prdNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "모델명을 클릭하면 조합하거나 신규 등록을 할 수 있어요",
+    render: (value, record) => (
+      <div
+        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
+      >
+        {record?.model?.prdNm}
+      </div>
+    )
   },
   {
     title: 'Rev',
@@ -563,23 +586,23 @@ export const sayangSampleWaitClmn = (
     key: 'orderModel.order.orderDt',
     align: 'center',
   },
-  {
-    title: '사양등록',
-    width: 100,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value, record:modelsMatchRType) => (
-      <div className="w-full h-full v-h-center">
-        <div 
-          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
-        >
-          <p className="w-18 h-18"><Edit /></p>
-        </div>
-      </div>
-    )
-  },
+  // {
+  //   title: '사양등록',
+  //   width: 100,
+  //   dataIndex: 'id',
+  //   key: 'id',
+  //   align: 'center',
+  //   render: (value, record:modelsMatchRType) => (
+  //     <div className="w-full h-full v-h-center">
+  //       <div 
+  //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
+  //         onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
+  //       >
+  //         <p className="w-18 h-18"><Edit /></p>
+  //       </div>
+  //     </div>
+  //   )
+  // },
 ];
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
@@ -1303,12 +1326,20 @@ export const sayangModelWaitClmn = (
     )
   },
   {
-    title: '고객발주(요구)명',
+    title: '고객발주명',
     minWidth: 150,
     dataIndex: 'orderNm',
     key: 'orderNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
+    render: (value, record) => (
+      <div className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{router.push(`/sayang/model/wait/${record?.id}`)}}
+      >
+        {value}
+      </div>
+    )
   },
   {
     title: '대기 모델 수',
@@ -1377,43 +1408,43 @@ export const sayangModelWaitClmn = (
     key: 'orderDt',
     align: 'center',
   },
-  {
-    title: '모델확정',
-    width: 90,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value, record) => (
-      <div className="w-full h-full v-h-center">
-        <div 
-          className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-          onClick={()=>{router.push(`/sayang/model/wait/${value}`)}}
-        >
-          <p className="w-18 h-18"><Edit /></p>
-        </div>
-      </div>
-      // <div className="w-full h-full v-h-center">
-      //   { record.isDiscard ? (
-      //     <FullChip label="폐기" />
-      //   ) : record.finalGlbStatus === FinalGlbStatus.COMPLETED ? (
-      //     <FullChip label="완료" />
-      //   ): record.finalGlbStatus === FinalGlbStatus.WAITING ? (
-      //     <FullChip label="대기" state="yellow" 
-      //       click={()=>{
-      //         router.push(`/sayang/model/wait/${value}`);
-      //       }}
-      //     />
-      //   ) : record.finalGlbStatus === FinalGlbStatus.REGISTERING ? (
-      //     <FullChip
-      //       label="등록중" state="mint" 
-      //       click={()=>{
-      //         router.push(`/sayang/model/wait/${value}`);
-      //       }}
-      //     />
-      //   ) : ( <></> )}
-      // </div>
-    )
-  },
+  // {
+  //   title: '모델확정',
+  //   width: 90,
+  //   dataIndex: 'id',
+  //   key: 'id',
+  //   align: 'center',
+  //   render: (value, record) => (
+  //     <div className="w-full h-full v-h-center">
+  //       <div 
+  //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
+  //         onClick={()=>{router.push(`/sayang/model/wait/${value}`)}}
+  //       >
+  //         <p className="w-18 h-18"><Edit /></p>
+  //       </div>
+  //     </div>
+  //     // <div className="w-full h-full v-h-center">
+  //     //   { record.isDiscard ? (
+  //     //     <FullChip label="폐기" />
+  //     //   ) : record.finalGlbStatus === FinalGlbStatus.COMPLETED ? (
+  //     //     <FullChip label="완료" />
+  //     //   ): record.finalGlbStatus === FinalGlbStatus.WAITING ? (
+  //     //     <FullChip label="대기" state="yellow" 
+  //     //       click={()=>{
+  //     //         router.push(`/sayang/model/wait/${value}`);
+  //     //       }}
+  //     //     />
+  //     //   ) : record.finalGlbStatus === FinalGlbStatus.REGISTERING ? (
+  //     //     <FullChip
+  //     //       label="등록중" state="mint" 
+  //     //       click={()=>{
+  //     //         router.push(`/sayang/model/wait/${value}`);
+  //     //       }}
+  //     //     />
+  //     //   ) : ( <></> )}
+  //     // </div>
+  //   )
+  // },
 ]
 
 export const sayangModelWaitAddClmn = (
@@ -2268,7 +2299,7 @@ export const sayangModelStatusClmn = (
     tooltip: "모델명을 클릭하면 상세 정보를 볼 수 있어요",
     render: (_, record:modelsType) => (
       <div
-        className="text-left cursor-pointer text-shadow-hover"
+        className="text-left cursor-pointer text-shadow-hover hover:underline hover:decoration-blue-500"
         onClick={()=>{
           setModelId(record);
         }}

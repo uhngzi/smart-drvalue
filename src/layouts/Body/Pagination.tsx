@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { MenuProps } from "antd/lib";
-import { Button, Dropdown, Pagination } from "antd";
+import { Button, Dropdown, Pagination, Tooltip } from "antd";
 
 import { MoreOutlined } from "@ant-design/icons";
 
@@ -17,6 +17,7 @@ interface Props {
   handleMenuClick?: (key:number) => void;
   onChange?: (page: number, size: number) => void;
   title?: string;
+  titleBtn?: any;
 }
 
 export const ListPagination: React.FC<Props> = ({
@@ -25,6 +26,7 @@ export const ListPagination: React.FC<Props> = ({
   handleMenuClick,
   onChange,
   title,
+  titleBtn,
 }) => {
   const items: MenuProps['items'] = [
     {
@@ -52,6 +54,7 @@ export const ListPagination: React.FC<Props> = ({
     <div className="flex w-full h-50 v-between-h-center">
       <div>
         {title && <LabelMedium label={title}/>}
+        {titleBtn}
       </div>
       <div className="h-50 gap-20 h-center">
         <span>총 {totalData}건</span>
@@ -75,7 +78,9 @@ export const ListPagination: React.FC<Props> = ({
           placement="bottomCenter"
           getPopupContainer={() => document.body}
         >
+          <Tooltip title="엑셀 다운로드 또는 프린트를 할 수 있어요">
           <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
+          </Tooltip>
         </Dropdown>
       </div>
     </div>

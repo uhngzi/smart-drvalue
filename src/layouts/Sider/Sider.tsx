@@ -92,10 +92,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       ]
     },
     {
-      type: 'divider',
-      style: {margin: 15},
-    },
-    {
       key: 'sayang',
       title:'sayang',
       label: '사양',
@@ -109,20 +105,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         {
           key: 'sayang/sample',
           title: 'sayang/sample/wait',
-          label: '샘플-사양등록및현황',
-        },
-      ]
-    },
-    {
-      key: 'buy',
-      title:'buy',
-      label: '관리/구매',
-      icon: <p className={iconClassNm}><Buy /></p>,
-      children: [
-        {
-          key: 'buy/cost/wait',
-          title: 'buy/cost/wait',
-          label: '외주처단가등록 및 현황',
+          label: '사양 등록 및 현황',
         },
       ]
     },
@@ -135,7 +118,25 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         {
           key: 'wk/plan/wait',
           title: 'wk/plan/wait',
-          label: '생산계획',
+          label: '생산 계획',
+        },
+        {
+          key: 'wk/status/proc',
+          title: 'wk/status/proc',
+          label: '생산 관리',
+        },
+      ]
+    },
+    {
+      key: 'buy',
+      title:'buy',
+      label: '관리/구매',
+      icon: <p className={iconClassNm}><Buy /></p>,
+      children: [
+        {
+          key: 'buy/cost/wait',
+          title: 'buy/cost/wait',
+          label: '외주처 단가 등록 및 현황',
         },
       ]
     },

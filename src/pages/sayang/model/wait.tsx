@@ -143,8 +143,6 @@ const SayangModelWaitPage: React.FC & {
         </List>
       </div>
 
-      <DividerH />
-
       <div>
         <div className="flex w-full h-50 v-between-h-center">
           <LabelMedium label={"모델 등록 대기"}/>
@@ -176,8 +174,8 @@ SayangModelWaitPage.layout = (page: React.ReactNode) => (
   <MainPageLayout 
     menuTitle="모델 확정 및 현황"
     menu={[
-      {text:'모델 확정 현황', link:'/sayang/model/wait'},
-      {text:'모델 등록 현황', link:'/sayang/model/status'},
+      {text:'모델 확정', link:'/sayang/model/wait'},
+      {text:'모델 현황', link:'/sayang/model/status'},
     ]}
   >{page}</MainPageLayout>
 )

@@ -56,7 +56,7 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
     key: 'cuName',
   },
   {
-    title: '고객요구(발주)명',
+    title: '고객발주명',
     dataIndex: 'orderName',
     align: 'center',
     key: 'orderName',
@@ -122,7 +122,7 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
     key: 'saleMng',
   },
   {
-    title: '발주(요구) 접수일',
+    title: '발주 접수일',
     width: 120,
     dataIndex: 'orderDt',
     align: 'center',

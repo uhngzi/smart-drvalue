@@ -1,8 +1,9 @@
 import { getAPI } from "@/api/get";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { BuyCostOutClmn, BuyCostOutStatusClmn } from "@/data/columns/Buy";
 import { useUser } from "@/data/context/UserContext";
-import { buyCostOutType } from "@/data/type/buy/cost";
+import { buyCostOutDetailType, buyCostOutType } from "@/data/type/buy/cost";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
@@ -11,6 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import { List } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Close from "@/assets/svg/icons/s_close.svg";
+import CardList from "@/components/List/CardList";
 
 const BuyCostStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -40,8 +43,7 @@ const BuyCostStatusPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykey: "applyAutoFilterType",
-        anyvalue: "NONE",
+        anykeys: {applyAutoFilterType : "MATCH"},
       });
     }
   });
@@ -59,20 +61,54 @@ const BuyCostStatusPage: React.FC & {
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
   
-    const handlePageMenuClick = (key:number)=>{
-      const clmn = BuyCostOutStatusClmn(totalData, pagination)
-      .map((item) => ({
-        title: item.title?.toString() as string,
-        dataIndex: item.dataIndex,
-        width: Number(item.width ?? item.minWidth ?? 0),
-        cellAlign: item.cellAlign,
-      }))
-      if(key === 1) { // 엑셀 다운로드
-        exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가등록대기", "excel", showToast);
-      } else {        // 프린트
-        exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가등록대기", "print", showToast);
-      }
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = BuyCostOutStatusClmn(totalData, pagination, setSelect)
+    .map((item) => ({
+      title: item.title?.toString() as string,
+      dataIndex: item.dataIndex,
+      width: Number(item.width ?? item.minWidth ?? 0),
+      cellAlign: item.cellAlign,
+    }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가현황", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가현황", "print", showToast);
     }
+  }
+  
+    // ------------ 디테일 데이터 세팅 ------------ 시작
+    const [open, setOpen] = useState<boolean>(false);
+    const [select, setSelect] = useState<buyCostOutType | null>(null);
+  
+    const [ detailData, setDetailData ] = useState<buyCostOutDetailType | null>(null);
+    const { data:queryDetailData } = useQuery({
+      queryKey: ['worksheet/vender-price/jsxcrud/one', select],
+      queryFn: async () => {
+        const result = await getAPI({
+          type: 'core-d2',
+          utype: 'tenant/',
+          url: `worksheet/vender-price/jsxcrud/one/${select?.id}`
+        });
+  
+        if(result.resultCode === "OK_0000") {
+          console.log(result?.data?.data);
+          setDetailData(result?.data?.data);
+          setOpen(true);
+        }
+  
+        return result;
+      },
+      enabled: !!select?.id
+    });
+  
+    // 값 초기화
+    useEffect(()=>{
+      if(!open) {
+        setSelect(null);
+        setDetailData(null);
+      }
+    }, [open])
+    // ------------ 디테일 데이터 세팅 ------------ 끝
 
   return (
     <>
@@ -85,7 +121,7 @@ const BuyCostStatusPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={BuyCostOutStatusClmn(totalData, pagination)}
+          columns={BuyCostOutStatusClmn(totalData, pagination, setSelect)}
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
@@ -98,16 +134,45 @@ const BuyCostStatusPage: React.FC & {
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
       />
+
+      <AntdDrawer
+        open={open}
+        close={()=>{
+          setOpen(false);
+          setSelect(null);
+        }}
+        width={600}
+      >
+        <div className="flex flex-col gap-15 p-20 !pr-5">
+          <div className="v-between-h-center">
+            <p className="text-16 font-medium">외주처 단가 정보</p>
+            <div className="flex justify-end cursor-pointer" onClick={() => {setOpen(false); setSelect(null)}}><Close/></div>
+          </div>
+
+          { detailData?.procs?.map((proc, index) => ( <div key={index}>
+            <CardList
+              items={[
+                {label: '공정그룹명', value: proc.specPrdGrp?.process?.processGroup?.prcGrpNm, widthType: ''},
+                {label: '공정명', value: proc.specPrdGrp?.process?.prcNm, widthType: 'half'},
+                {label: '외주처명', value: proc.vendor?.prtNm, widthType: 'half'},
+                {label: '단가', value: Number(proc.vendorPrice ?? 0).toLocaleString(), widthType: 'half'},
+              ]}
+              title="" btnLabel="" btnClick={()=>{}}
+            />
+          </div>))
+          }
+        </div>
+      </AntdDrawer>
     </>
   )
 };
 
 BuyCostStatusPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="외주처단가등록현황"
+    menuTitle="외주처 단가 현황"
     menu={[
-      { text: '외주처단가등록대기', link: '/buy/cost/wait' },
-      { text: '외주처단가등록현황', link: '/buy/cost/status' },
+      { text: '외주처 단가 등록', link: '/buy/cost/wait' },
+      { text: '외주처 단가 현황', link: '/buy/cost/status' },
     ]}
   >{page}</MainPageLayout>
 );

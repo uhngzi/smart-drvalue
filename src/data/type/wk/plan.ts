@@ -8,23 +8,24 @@ import { commonCodeRType } from "../base/common";
 export type wkPlanWaitType = {
   id?: string;
   progress?: number;
-  wkLatestMemo?: string;
-  wkPrdCnt?: 0,
-  wkProcCnt?: 0,
-  wkLatestDtm?: Date | Dayjs | null;
-  wsExpDt?: Date | Dayjs | null;
-  wsSchDt?: Date | Dayjs | null;
-  wsStDt?: Date | Dayjs | null;
-  wkEdDt?: Date | Dayjs | null;
-  wkOutDt?: Date | Dayjs | null;
-  wkOutCnt?: number;
-  wkBadCnt?: number;
-  priceUnitChkYn?: boolean;
-  invChkDt?: Date | Dayjs | null;
-  invChkCnt?: number;
-  isWait?: boolean;
-  wsRemark?: string;
-  wkLatestProc?: {
+  m2?: number;
+  wkLatestMemo?: string;              // 공정 마지막 비고
+  wkPrdCnt?: 0,                       // 수주량
+  wkProcCnt?: 0,                      // 외주처 공정 수
+  wkLatestDtm?: Date | Dayjs | null;  // 현경과
+  wsExpDt?: Date | Dayjs | null;      // 생산예정일
+  wsSchDt?: Date | Dayjs | null;      // 시작계획일(계획확정일)
+  wsStDt?: Date | Dayjs | null;       // 생산시작일
+  wkEdDt?: Date | Dayjs | null;       // 생산종료일
+  wkOutDt?: Date | Dayjs | null;      // 생산 출고일
+  wkOutCnt?: number;                  // 출고량
+  wkBadCnt?: number;                  // 불량
+  priceUnitChkYn?: boolean;           // 단가등록여부
+  invChkDt?: Date | Dayjs | null;     // ??
+  invChkCnt?: number;                 // 재고량?
+  isWait?: boolean;                   // 생산대기여부
+  wsRemark?: string;                  // 생산특이사항
+  wkLatestProc?: {                    // 마지막 공정
     id?: string;
     wkProcMemo?: string;
     specPrdGrp?: {
@@ -94,6 +95,26 @@ export type wkPlanWaitType = {
     modelMatch?: {
       id?: string;
       modelStatus?: ModelStatus;
+    },
+    spec?: {
+      id?: string;
+      specNo?: string;
+      specNoCount?: number;
+      specLamNo?: string;
+      specLamThk?: number;
+      brdArrYldRate?: number;
+      wksizeW?: number;
+      wksizeH?: number;
+      stdW?: number;
+      stdH?: number;
+      cutCnt?: number;
+      jYn?: boolean;
+      brdArrStorageKey?: string;
+      prcNotice?: string;
+      camNotice?: string;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
     },
     partner?: partnerRType;
     usedYn?: boolean;
@@ -213,6 +234,104 @@ export type wkPlanWaitType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   },
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+}
+
+
+export type wkDetailType = {
+  id?: string;
+  wkLatestMemo?: string;
+  wkPrdCnt?: number;
+  progress?: number;
+  wkProcCnt?: number;
+  wkLatestDtm?: Date | Dayjs | null;
+  wsExpDt?: Date | Dayjs | null;
+  wsSchDt?: Date | Dayjs | null;
+  wsStDt?: Date | Dayjs | null;
+  wkEdDt?: Date | Dayjs | null;
+  wkOutDt?: Date | Dayjs | null;
+  wkOutCnt?: number;
+  wkBadCnt?: number;
+  priceUnitChkYn?: boolean;
+  invChkDt?: Date | Dayjs | null;
+  invChkCnt?: number;
+  isWait?: boolean;
+  wsRemark?: string;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  vendorPriceTotal?: number;
+  procs?: wkProcsType[];
+}
+
+export type wkProcsType = {
+  id?: string;
+  wkProcMemo?: string;
+  specPrdGrp?: {
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+    id?: string;
+    productLinesGroup?: {
+      id?: string;
+      name?: string;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    },
+    spec?: {
+      id?: string;
+      specNo?: string;
+      specNoCount?: number;
+      specLamNo?: string;
+      specLamThk?: number;
+      brdArrYldRate?: number;
+      wksizeW?: number;
+      wksizeH?: number;
+      stdW?: number;
+      stdH?: number;
+      cutCnt?: number;
+      jYn?: boolean;
+      brdArrStorageKey?: string;
+      prcNotice?: string;
+      camNotice?: string;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    },
+    prdGrpNm?: string;
+    process?: {
+      id?: string;
+      processGroup?: {
+        id?: string;
+        prcGrpNm?: string;
+        useYn?: boolean;
+        processes?: processRType[],
+        createdAt?: Date | Dayjs | null;
+        updatedAt?: Date | Dayjs | null;
+        deletedAt?: Date | Dayjs | null;
+      },
+      prcNm?: string;
+      useYn?: boolean;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    },
+    ordNo?: number;
+    prcWkRemark?: string;
+  },
+  tempPrdInfo?: string;
+  vendor?: partnerRType;
+  vendorPrice?: number;
+  ordNo?: number;
+  wkProcStCnt?: number;
+  wkProcStDtm?: Date | Dayjs | null;
+  wkProcEdCnt?: number;
+  wkProcEdDtm?: Date | Dayjs | null;
+  wkProcBadCnt?: number;
+  wkProcRemark?: string;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

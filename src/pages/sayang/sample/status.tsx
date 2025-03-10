@@ -142,10 +142,10 @@ const SayangSampleStatPage: React.FC & {
 
 SayangSampleStatPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="샘플-사양등록및현황"
+    menuTitle="사양 등록 및 현황"
     menu={[
-      {text:'사양 및 생산의뢰 등록대기', link:'/sayang/sample/wait'},
-      {text:'사양 및 생산의뢰 등록현황', link:'/sayang/sample/status'},
+      {text:'사양 등록', link:'/sayang/sample/wait'},
+      {text:'사양 등록 현황', link:'/sayang/sample/status'},
     ]}
   >{page}</MainPageLayout>
 )

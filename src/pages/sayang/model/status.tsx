@@ -232,8 +232,8 @@ SayangModelStatPage.layout = (page: React.ReactNode) => (
   <MainPageLayout 
     menuTitle="모델 확정 및 현황"
     menu={[
-      {text:'모델 확정 현황', link:'/sayang/model/wait'},
-      {text:'모델 등록 현황', link:'/sayang/model/status'},
+      {text:'모델 확정', link:'/sayang/model/wait'},
+      {text:'모델 현황', link:'/sayang/model/status'},
     ]}
   >{page}</MainPageLayout>
 )
