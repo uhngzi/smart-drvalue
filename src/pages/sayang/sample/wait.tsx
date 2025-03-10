@@ -412,8 +412,8 @@ const SayangSampleListPage: React.FC & {
         contents={
           resultType === "chkLayerErr" ? <div>같은 층의 모델만 조합 가능합니다.<br/>선택한 층을 확인해주세요.</div> :
           resultType === "cf" ? <div className="h-center gap-10">
-            {(msg.split(",") ?? [])?.map((item) => (
-              <div className="rounded-20 border-1 border-line w-fit p-10">{item}</div>
+            {(msg.split(",") ?? [])?.map((item, index) => (
+              <div key={index} className="rounded-20 border-1 border-line w-fit p-10">{item}</div>
             ))}
             </div> :
           <></>

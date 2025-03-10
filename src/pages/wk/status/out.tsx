@@ -225,8 +225,8 @@ const WKStatusOutPage: {
           resultType === "cf" ? <div>
             <LabelMedium label="선택된 모델"/>
             {
-              checkeds.map((item) => (
-                <div>{item.specModel?.prdNm}</div>
+              checkeds.map((item, index) => (
+                <div key={index}>{item.specModel?.prdNm}</div>
               ))
             }
           </div> :
