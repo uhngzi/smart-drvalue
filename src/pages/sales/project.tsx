@@ -15,6 +15,7 @@ import Reg from "@/assets/svg/icons/memo.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 import CardInputList from "@/components/List/CardInputList";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
 
 type Task = {
   id: string;
@@ -41,6 +42,7 @@ const ProjcetPage: React.FC & {
 } = () => {
   
 const [orderOpen, setOrderOpen] = useState<boolean>(false);
+const [processOpen, setProcessOpen] = useState<boolean>(false);
 const tempSchedules = [
   {
     process: "설계",
@@ -151,7 +153,7 @@ function changeDate(date: any, id: string, type: string) {
                                         진행관리
                                       </div>,
                               key: 0,
-                              onClick:()=>{}
+                              onClick:()=>setProcessOpen(true)
                             },
                             {
                               label: <div className="h-center gap-5">
@@ -201,12 +203,12 @@ function changeDate(date: any, id: string, type: string) {
               {value:'', label: '구매처', name: 'orderCompany', type: 'input', widthType: 'third' },
               {value:'', label: '담당자', name: 'orderPrice', type: 'input', widthType: 'third' },
               {value:'', label: '구매담당', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '발주확정일', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '발주예정일', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '발주일', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '납품요구일', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '도착일', name: 'orderContent', type: 'input', widthType: 'third' },
-              {value:'', label: '승인일', name: 'orderContent', type: 'input', widthType: 'third' },
+              {value:'', label: '발주확정일', name: 'orderContent', type: 'date', widthType: 'third' },
+              {value:'', label: '발주예정일', name: 'orderContent', type: 'date', widthType: 'third' },
+              {value:'', label: '발주일', name: 'orderContent', type: 'date', widthType: 'third' },
+              {value:'', label: '납품요구일', name: 'orderContent', type: 'date', widthType: 'third' },
+              {value:'', label: '도착일', name: 'orderContent', type: 'date', widthType: 'third' },
+              {value:'', label: '승인일', name: 'orderContent', type: 'date', widthType: 'third' },
               {value:'', label: '비고', name: 'orderContent', type: 'input', widthType: 'full' },
             ]}
             handleDataChange={(e, name, type) => {}}
@@ -221,6 +223,7 @@ function changeDate(date: any, id: string, type: string) {
             />
         </section>
       </AntdDrawer>
+      <ProjectDrawer open={processOpen} close={()=>setProcessOpen(false)} />
     </section>
   )
 }

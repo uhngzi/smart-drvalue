@@ -33,6 +33,7 @@ interface CardInputListProps {
     gap?: string;
     bg?: string;
     pd?: string;
+    mg?: string;
   }
   btnClick?: () => void;
   handleDataChange: (
@@ -49,6 +50,7 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
     <StyledCardInputList 
       $bg={styles?.bg ? styles.bg : "#F8F8FA"}
       $pd={styles?.pd ? styles.pd : "20px"}
+      $mg={styles?.mg ? styles.mg : "0"}
       className="p-10 flex flex-col gap-10">
       {/* 제목 영역 */}
       {!!title && (
@@ -135,10 +137,12 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
 const StyledCardInputList = styled.div<{
   $bg: string;
   $pd: string;
+  $mg: string;
 }>`
   & > section {
     background: ${({ $bg }) => $bg};
     padding: ${({ $pd }) => $pd};
+    margin: ${({ $mg }) => $mg};
   }
   
 `
