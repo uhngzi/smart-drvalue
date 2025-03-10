@@ -248,7 +248,7 @@ const SayangSampleAddPage: React.FC & {
   // --------------- 임시 저장  ------------- 시작
     // 조합일 경우 알림이 뜨지 않게 하기 위한 flag
   const [temp, setTemp] = useState<boolean>(true);
-  const handleSumbitTemp = async (main?:boolean) => {
+  const handleSumbitTemp = async (main?:boolean, cf?: boolean) => {
     try {
       const jsonData = changeSayangTemp("re", detailData);
 
@@ -274,6 +274,8 @@ const SayangSampleAddPage: React.FC & {
             query: {id: id, text: detailData.specNo}
           });
         }
+
+        if(cf)  handleSubmitConfirm();
       } else {
         const msg = result?.response?.data?.message;
         setResultMsg(msg);
@@ -558,7 +560,7 @@ const SayangSampleAddPage: React.FC & {
 
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{
-          handleSubmitConfirm();
+          handleSumbitTemp(false, true);
         }}/>
         <FullSubButton label="임시저장" click={()=>{
           handleSumbitTemp();

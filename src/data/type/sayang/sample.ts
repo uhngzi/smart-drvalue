@@ -113,6 +113,7 @@ export type specModelType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   matchId?: string;
+  prdCnt?: number;
 }
 
 export type specPrdGroupPrcs = {

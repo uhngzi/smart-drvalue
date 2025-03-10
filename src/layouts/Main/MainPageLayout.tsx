@@ -57,13 +57,13 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
   }, [collapsed])
   
   // 1초 후 collapse 처리 (마운트 시 자동)
-  useEffect(() => {
-    setCollapsed(false);
-    const timer = setTimeout(() => {
-      setCollapsed(true);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   setCollapsed(false);
+  //   const timer = setTimeout(() => {
+  //     setCollapsed(true);
+  //   }, 2000);
+  //   return () => clearTimeout(timer);
+  // }, []);
   
   return (
     <div className="flex" key="mainPageLayout">

@@ -1179,54 +1179,90 @@ export const sayangSampleWaitAddClmn = (
     dataIndex: 'spec',
     key: 'spec',
     align: 'center',
-    render: (_, record:specModelType) => (
-      <>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">LINE</p>
-          <AntdInputFill 
-            value={record?.specLine}
-            onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
-            className="w-[45px!important] !text-12"
-            maxPoint={3}
-            type="number"
-          />
-          <p className="w-12 !text-12">㎜</p>
-        </div>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">SPACE</p>
-          <AntdInputFill 
-            value={record?.specSpace}
-            onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
-            className="w-[45px!important] !text-12"
-            maxPoint={3}
-            type="number"
-          />
-          <p className="w-12 !text-12">㎜</p>
-        </div>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">DR</p>
-          <AntdInputFill 
-            value={record?.specDr}
-            onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
-            className="w-[45px!important] !text-12"
-            maxPoint={2}
-            type="number"
-          />
-          <p className="w-12 !text-12">￠</p>
-        </div>
-        <div className={divClass}>
-          <p className="text-left w-37 !text-12">PAD</p>
-          <AntdInputFill
-            value={record?.specPad}
-            onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
-            className="w-[45px!important] !text-12"
-            maxPoint={2}
-            type="number"
-          />
-          <p className="w-12 !text-12">￠</p>
-        </div>
-      </>
-    )
+    children:[
+      {
+        title: '',
+        width:100,
+        dataIndex: 'spec',
+        key: 'spec',
+        align: 'center',
+        render: (_, record:specModelType) => (
+          <>
+            <div className={divClass+"mb-3"}>
+              <p className="text-left w-37 !text-12">LINE</p>
+              <AntdInputFill 
+                value={record?.specLine}
+                onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
+                className="w-[45px!important] !text-12"
+                maxPoint={3}
+                type="number"
+              />
+              <p className="w-12 !text-12">㎜</p>
+            </div>
+            <div className={divClass+"mb-3"}>
+              <p className="text-left w-37 !text-12">SPACE</p>
+              <AntdInputFill 
+                value={record?.specSpace}
+                onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
+                className="w-[45px!important] !text-12"
+                maxPoint={3}
+                type="number"
+              />
+              <p className="w-12 !text-12">㎜</p>
+            </div>
+            <div className={divClass+"mb-3"}>
+              <p className="text-left w-37 !text-12">DR</p>
+              <AntdInputFill 
+                value={record?.specDr}
+                onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
+                className="w-[45px!important] !text-12"
+                maxPoint={2}
+                type="number"
+              />
+              <p className="w-12 !text-12">￠</p>
+            </div>
+            <div className={divClass}>
+              <p className="text-left w-37 !text-12">PAD</p>
+              <AntdInputFill
+                value={record?.specPad}
+                onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
+                className="w-[45px!important] !text-12"
+                maxPoint={2}
+                type="number"
+              />
+              <p className="w-12 !text-12">￠</p>
+            </div>
+          </>
+        )
+      }
+    ]
+  },
+  {
+    title: '생산수량',
+    width:70,
+    dataIndex: 'cnt',
+    key: 'cnt',
+    align: 'center',
+    children:[
+      {
+        title: '',
+        width:70,
+        dataIndex: 'wkPrdCnt',
+        key: 'wkPrdCnt',
+        align: 'center',
+        render: (_, record:specModelType) => (
+          <div className={divTopClass}>
+          <div className={divClass}>
+            <AntdInputFill
+              value={record.prdCnt}
+              onChange={(e)=>handleModelDataChange(record.id, 'prdCnt', e.target.value)}
+              className='!text-12'
+              type="number"
+            />
+          </div>
+        </div>)
+      }
+    ]
   },
 ]
 

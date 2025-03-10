@@ -69,11 +69,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       label: '영업',
       icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
       children: [
-        {
-          key: 'sales/project',
-          title: 'sales/project',
-          label: '임시 일정관리',
-        },
+        // {
+        //   key: 'sales/project',
+        //   title: 'sales/project',
+        //   label: '임시 일정관리',
+        // },
         {
           key: 'sales/order',
           title: 'sales/order',

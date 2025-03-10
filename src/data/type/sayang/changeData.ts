@@ -312,6 +312,7 @@ export const changeSayangTemp = (
         specSpace: model.specSpace,
         specDr: model.specDr,
         specPad: model.specPad,
+        prdCnt: model.prdCnt,
       })),
     }
     if(specData?.specPrdGroupPrcs && specData.specPrdGroupPrcs.length > 0){
