@@ -496,7 +496,7 @@ export const sayangSampleWaitClmn = (
     render: (value, record) => (
       <div
         className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
-        onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
+        onClick={()=>{sayangPopOpen?.(record.id, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
       >
         {record?.model?.prdNm}
       </div>

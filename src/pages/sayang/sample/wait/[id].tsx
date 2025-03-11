@@ -291,6 +291,18 @@ const SayangSampleAddPage: React.FC & {
   // --------------- 확정 저장 --------------- 시작
   const handleSubmitConfirm = async () => {
     try {
+      let flag = false;
+      detailData.specModels?.map(f=>{
+        if((f.prdCnt ?? 0) < 1) {
+          flag = true;
+          return;
+        }
+      })
+      if(flag) {
+        showToast("모델 내 생산 수량을 입력해주세요.", "error");
+        return;
+      }
+
       const result = await patchAPI({
         type: 'core-d1',
         utype: 'tenant/',

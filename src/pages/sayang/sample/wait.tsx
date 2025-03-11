@@ -143,6 +143,7 @@ const SayangSampleListPage: React.FC & {
     // 리스트 내 사양 등록 클릭 시 팝업 발생
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
+    console.log(matchId, modelId, statusId, record);
 
     // 조합일 경우
     if(id) {
@@ -170,6 +171,7 @@ const SayangSampleListPage: React.FC & {
   const handleSumbitTemp = async () => {
     try {
       const matchData = waitData.find(d=> d.id === selectedValue?.matchId);
+      console.log(matchData, selectedValue);
       if(matchData) {
         const jsonData = changeSayangTemp("new", matchData);
   

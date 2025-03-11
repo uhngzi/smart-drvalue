@@ -68,6 +68,8 @@ const ArrayContents: React.FC<Props> = ({
     if(!yieldPopOpen) {
       setKit([{id:"new-0", x:0, y:0, cnt: 1}]);
       setResultData([]);
+    } else {
+      setYielddata({kitGapX:5.0, kitGapY: 5.0, marginLongSide: 20, marginShortSide: 10});
     }
   }, [yieldPopOpen])
 
