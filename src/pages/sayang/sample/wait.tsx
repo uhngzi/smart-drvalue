@@ -13,10 +13,10 @@ import Close from "@/assets/svg/icons/s_close.svg";
 import { useQuery } from "@tanstack/react-query";
 
 import { LayerEm } from "@/data/type/enum";
-import { specType } from "@/data/type/sayang/sample";
+import { specModelType, specType } from "@/data/type/sayang/sample";
 import { useModels } from "@/data/context/ModelContext";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { modelsMatchRType } from "@/data/type/sayang/models";
+import { modelsMatchRType, modelsType } from "@/data/type/sayang/models";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import { sayangSampleWaitClmn, specIngClmn } from "@/data/columns/Sayang";
@@ -183,6 +183,48 @@ const SayangSampleListPage: React.FC & {
           etc: true,
         }, jsonData);
   
+        if(result.resultCode === 'OK_0000') {
+          const specId:any = result.data;
+          router.push(`/sayang/sample/wait/${specId?.specId}`);
+        } else {
+          const msg = result?.response?.data?.message;
+          showToast(msg, "error");
+        }
+      }
+    } catch (e) {
+      console.log('CATCH ERROR : ', e);
+    }
+  }
+
+  // 조합 임시저장
+  const handleSumbitTempRe = async () => {
+    try {
+      const specData = ingData.find(d=> d.id === selectedValue?.specId);
+      const matchModel = models.find(d => d.id === selectedValue?.modelId) as modelsType;
+      if(specData && matchModel) {
+        const jsonData = changeSayangTemp("re", {
+          ...specData,
+          specModels: [
+            {
+              ...matchModel,
+              id: undefined,
+              unit: { id: matchModel?.unit?.id },
+              board: { id: matchModel?.board.id },
+              matchId: selectedValue?.matchId,
+              glbStatus: { id: selectedValue?.statusId },
+            } as specModelType,
+            ...specData?.specModels ?? [],
+          ]
+        });
+
+        const result = await postAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'spec/default/temporary-save',
+          jsx: 'default',
+          etc: true,
+        }, jsonData);
+
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
           router.push(`/sayang/sample/wait/${specId?.specId}`);
@@ -377,14 +419,7 @@ const SayangSampleListPage: React.FC & {
               <FullOkButtonSmall label={selectedValue?.text ? selectedValue.text+"과(와) 조합하여 사양 등록" : "신규 등록"}
                 click={()=>{
                   if(selectedValue?.specId){
-                    router.push({
-                      pathname: `/sayang/sample/wait/${selectedValue.specId}`,
-                      query: { 
-                        match: selectedValue.matchId,
-                        model: selectedValue.modelId,
-                        status: selectedValue.statusId,
-                      }
-                    })
+                    handleSumbitTempRe();
                   } else {
                     handleSumbitTemp()
                   }

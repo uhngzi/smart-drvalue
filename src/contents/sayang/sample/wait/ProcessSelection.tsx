@@ -328,11 +328,12 @@ const ProcessSelection: React.FC<Props> = ({
                     setResultType("already");
                   } else {
                     setResultType("");
-                    handleChangePrc();
                   }
                   const value = e+"" as string;
                   const rdata = prdGrpQueryData?.data.data as productLinesGroupRType[];
                   const prc = rdata.find(f=> f.id === value);
+                  handleChangePrc();
+                  console.log(prc, rdata);
 
                   if(prc) {
                     if(prc.productLines) {

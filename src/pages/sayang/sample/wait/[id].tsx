@@ -129,10 +129,20 @@ const SayangSampleAddPage: React.FC & {
     });
   // ------------ 필요 데이터 세팅 ------------ 끝
 
-  // ------------ 세부 데이터 세팅 ------------ 시작
+  // ------------ 제조/캠 전달사항 ------------ 시작
   const [prcNotice, setPrcNotice] = useState<string>("");
   const [camNotice, setCamNotice] = useState<string>("");
 
+  useEffect(()=>{
+    setDetailData({
+      ...detailData,
+      prcNotice: prcNotice,
+      camNotice: camNotice,
+    });
+  }, [prcNotice, camNotice]);
+  // ------------ 제조/캠 전달사항 ------------ 끝
+
+  // ------------ 세부 데이터 세팅 ------------ 시작
   const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<specType>({});
   const { data:queryData, isLoading, refetch } = useQuery<
@@ -164,48 +174,7 @@ const SayangSampleAddPage: React.FC & {
       setFilter({ ...filter, writeDt: dayjs(rdata.createdAt), writer: me?.userName ?? "", })
     }
   }, [queryData]);
-
-  // 모델 조합일 경우 임시저장 실행
-  const [matchId, setMatchId] = useState<string>("");
-  useEffect(()=>{
-    if(!detailDataLoading && !modelsLoading && !!model && models.length > 0 && matchId === "") {
-      // 재실행 방지를 위해 matchId를 넣어줌
-      setMatchId(match+"");
-      const matchModel = models.find(d => d.id === model) as modelsType;
-      const specModels = detailData.specModels ?? [];
-      setDetailData({
-        ...detailData,
-        specModels: [
-          {
-            ...matchModel,
-            id: undefined,
-            unit: { id: matchModel?.unit?.id },
-            board: { id: matchModel?.board.id },
-            matchId: match,
-            glbStatus: { id: status },
-          } as specModelType,
-          ...specModels,
-        ]
-      });
-      // 임시저장 toast가 뜨지 않기 위해 false를 넣어줌 (이외에는 전부 true)
-      setTemp(false);
-    }
-  }, [detailDataLoading, model, models])
-
-  useEffect(()=>{ 
-    if(!temp) handleSumbitTemp();
-  }, [matchId])
   // ------------ 세부 데이터 세팅 ------------ 끝
-
-  // ------------ 제조/캠 전달사항 ------------ 시작
-  useEffect(()=>{
-    setDetailData({
-      ...detailData,
-      prcNotice: prcNotice,
-      camNotice: camNotice,
-    });
-  }, [prcNotice, camNotice]);
-  // ------------ 제조/캠 전달사항 ------------ 끝
   
   // ----------- 모델 값 변경 함수 ------------ 시작
   const handleModelDataChange = (
@@ -464,14 +433,6 @@ const SayangSampleAddPage: React.FC & {
             </div>
           </div>
           <div className="h-center gap-20">
-            {/* <AntdInput
-              value={detailData?.wkPrdCnt ?? 0}
-              onChange={(e) => {
-                const {value} = e.target;
-                setDetailData({...detailData, wkPrdCnt: Number(value ?? 0)});
-              }}
-              type="number"
-            /> */}
             <Button
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{
