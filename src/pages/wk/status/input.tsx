@@ -82,7 +82,7 @@ const WKStatusProcPage: {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykeys: {applyAutoFilter:false, procVenderIdx: selectVendor?.vendorId},
+        anykeys: {applyAutoFilter:true, procVenderIdx: selectVendor?.vendorId},
       });
     }
   });
@@ -137,7 +137,7 @@ const WKStatusProcPage: {
   return (
     <div className="flex gap-20">
       <div className="w-[7%] pt-15">
-        <LabelMedium label="투입업체 목록"/>
+        <LabelMedium label="투입모델 공정업체"/>
         <div className="w-full max-h-[700px] overflow-y-auto mt-10 flex flex-col gap-10">
           <div
             className="h-50 v-between-h-center border-1 border-line rounded-14 p-10 cursor-pointer"
