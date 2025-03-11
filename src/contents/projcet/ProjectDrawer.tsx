@@ -62,6 +62,7 @@ const ProjectDrawer: React.FC<Props> = ({
   }
 
   function onProcessDataChange(name:string, data: any) {
+    
     processData.current[name] = data;
   }
   // -----------------------------------------------------
@@ -76,9 +77,12 @@ const ProjectDrawer: React.FC<Props> = ({
 
   function processSubmit() {
     if(selectKey === 1) {
-      console.log('진행관리 저장');
       if(!processData.current.progressDate || !processData.current.progress) {
         showToast('진행률과 진행일을 입력해주세요.', 'error');
+        return;
+      }
+      if(task && dayjs(processData.current.progressDate).isBefore(dayjs(task.from))) {
+        showToast('진행일은 시작일 이후로 입력해주세요.', 'error');
         return;
       }
       const newSchedules = schedules.map(process => {
