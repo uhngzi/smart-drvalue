@@ -20,6 +20,7 @@ export const WkPalnWaitClmn = (
     key: 'index',
     align: 'center',
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+    editable: false,
   },
   {
     title: '제품모델명',
@@ -28,6 +29,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
+    editable: false,
   },
   {
     title: '생산예정일',
@@ -35,8 +37,6 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
     align: 'center',
-    allEdit: true,
-    editable: true,
     editType: 'date',
     enter: true,
     enterSubmit: (id, value)=>handleSubmit(id, value),
@@ -47,6 +47,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wkPrdCnt',
     key: 'wkPrdCnt',
     align: 'center',
+    editable: false,
   },
   {
     title: '외주처공정수',
@@ -54,6 +55,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wkProcCnt',
     key: 'wkProcCnt',
     align: 'center',
+    editable: false,
   },
   {
     title: '재질',
@@ -61,6 +63,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.material.cdNm',
     key: 'specModel.material.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: '원판',
@@ -68,6 +71,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.board.brdType',
     key: 'specModel.board.brdType',
     align: 'center',
+    editable: false,
   },
   {
     title: '층',
@@ -75,6 +79,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.layerEm',
     key: 'specModel.layerEm',
     align: 'center',
+    editable: false,
     render: (_, record) => (
       <div>{record?.specModel?.layerEm?.replace("L", "")}</div>
     )
@@ -86,6 +91,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.thk',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '제품 PCS H',
@@ -94,6 +100,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.pcsW',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '제품 PCS V',
@@ -102,6 +109,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.pcsL',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '제품 KIT H',
@@ -110,6 +118,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.kitW',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '제품 KIT V',
@@ -118,6 +127,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.kitL',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '재단 H',
@@ -126,6 +136,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.pnlW',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: '재단 V',
@@ -134,6 +145,7 @@ export const WkPalnWaitClmn = (
     key: 'specModel.pnlL',
     align: 'center',
     cellAlign: 'right',
+    editable: false,
   },
   {
     title: 'M/K색상',
@@ -141,6 +153,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.mkColor.cdNm',
     key: 'specModel.mkColor.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'M/K잉크',
@@ -148,6 +161,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.mkType.cdNm',
     key: 'specModel.mkType.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'M/K인쇄',
@@ -155,6 +169,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.mkPrint.cdNm',
     key: 'specModel.mkPrint.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'S/M색상',
@@ -162,6 +177,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.smColor.cdNm',
     key: 'specModel.smColor.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'S/M잉크',
@@ -169,6 +185,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.smType.cdNm',
     key: 'specModel.smType.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'S/M인쇄',
@@ -176,6 +193,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.smPrint.cdNm',
     key: 'specModel.smPrint.cdNm',
     align: 'center',
+    editable: false,
   },
   {
     title: '판넬수',
@@ -183,6 +201,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.prdMngNo',
     key: 'specModel.prdMngNo',
     align: 'center',
+    editable: false,
   },
   {
     title: '소요',
@@ -190,6 +209,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wkLatestDtm',
     key: 'wkLatestDtm',
     align: 'center',
+    editable: false,
   },
   {
     title: 'M2',
@@ -197,6 +217,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.prdCnt',
     key: 'specModel.prdCnt',
     align: 'center',
+    editable: false,
   },
   {
     title: '투입량',
@@ -204,6 +225,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wkOutCnt',
     key: 'wkOutCnt',
     align: 'center',
+    editable: false,
   },
   {
     title: 'Pcs/Kit',
@@ -211,6 +233,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.kitPcs',
     key: 'specModel.kitPcs',
     align: 'center',
+    editable: false,
   },
   {
     title: 'Kit/Pnl',
@@ -218,6 +241,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.pnlKit',
     key: 'specModel.pnlKit',
     align: 'center',
+    editable: false,
   },
   {
     title: 'Pcs/Sht',
@@ -225,6 +249,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.sthPcs',
     key: 'specModel.sthPcs',
     align: 'center',
+    editable: false,
   },
   {
     title: 'Pnl/Sht',
@@ -232,6 +257,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.sthPnl',
     key: 'specModel.sthPnl',
     align: 'center',
+    editable: false,
   },
   {
     title: '특이사항',
@@ -239,6 +265,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wsRemark',
     key: 'wsRemark',
     align: 'center',
+    editable: false,
   },
 ]
 

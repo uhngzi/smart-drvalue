@@ -323,16 +323,9 @@ const ProcessSelection: React.FC<Props> = ({
                 options={prdGrpSelectList}
                 value={selectPrdGrp?.id}
                 onChange={(e) => {
-                  if(selectedKeys.length > 0) {
-                    setResultOpen(true);
-                    setResultType("already");
-                  } else {
-                    setResultType("");
-                  }
                   const value = e+"" as string;
                   const rdata = prdGrpQueryData?.data.data as productLinesGroupRType[];
                   const prc = rdata.find(f=> f.id === value);
-                  handleChangePrc();
                   console.log(prc, rdata);
 
                   if(prc) {
@@ -344,6 +337,14 @@ const ProcessSelection: React.FC<Props> = ({
                       setSelectPrdPrcGrp(arr);
                     }
                     setSelectPrdGrp(prc);
+                  }
+
+                  if(selectedKeys.length > 0) {
+                    setResultOpen(true);
+                    setResultType("already");
+                  } else {
+                    setResultType("");
+                    handleChangePrc();
                   }
                 }}
               />

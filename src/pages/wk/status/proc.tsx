@@ -69,7 +69,7 @@ const WKStatusProcPage: {
     if(!isLoading) {
       const arr = (queryData?.data?.data ?? []).map((item:wkPlanWaitType) => ({
         ...item,
-        progress: Math.floor((item?.progress ?? 0) * 100) / 100,
+        progress: (item?.progress ?? 0) * 100,
         make: item.wkLatestProc?.wkProcStDtm && item.wsStDt
         ? (() => {
             const diffMs = dayjs(item.wkLatestProc.wkProcStDtm).diff(item.wsStDt);
@@ -87,7 +87,7 @@ const WKStatusProcPage: {
             return `${days}일 ${hours}시간 ${minutes}분`;
           })()
         : null,
-        m2: ((item.specModel?.spec?.wksizeH ?? 0) * (item.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.specModel?.prdCnt ?? 0)
+        m2: Math.floor(((item.specModel?.spec?.wksizeH ?? 0) * (item.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.specModel?.prdCnt ?? 0) * 100) / 100,
       }))
       console.log(arr);
       setData(arr);

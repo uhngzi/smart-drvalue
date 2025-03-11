@@ -92,7 +92,7 @@ const WKStatusProcPage: {
     if(!isLoading) {
       const arr = (queryData?.data?.data ?? []).map((item:wkPlanWaitType) => ({
         ...item,
-        m2: ((item.specModel?.spec?.wksizeH ?? 0) * (item.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.specModel?.prdCnt ?? 0)
+        m2: Math.floor(((item.specModel?.spec?.wksizeH ?? 0) * (item.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.specModel?.prdCnt ?? 0) * 100) / 100,
       }))
       setData(arr);
       setTotalData(queryData?.data?.total ?? 0);

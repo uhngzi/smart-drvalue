@@ -51,6 +51,7 @@ const EditableCell: React.FC<
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && enterSubmit) {
       enterSubmit(record.id, value);
+      (e.target as HTMLElement).blur();
     }
   };
 
@@ -62,7 +63,7 @@ const EditableCell: React.FC<
             <ConfigProvider locale={koKR}>
               <DatePicker
                 className={`date-picker-${record?.id}-${dataIndex}`} // record.key를 이용해 고유 클래스명 부여
-                defaultValue={value ? dayjs(value) : null}
+                value={value ? dayjs(value) : null}
                 onChange={(date) => {
                   if (date) {
                     onFieldChange(dayjs(date).toDate() || new Date());
