@@ -84,9 +84,7 @@ const WkProcessVendorListPage: React.FC & {
         utype: 'tenant/',
         url: 'biz-partner/jsxcrud/many'
       },{
-        s_search: "prtTypeEm",
-        s_type: 'eq',
-        s_list:[`"vndr"`]
+        s_query: [{key: "prtTypeEm", oper: "eq", value: "vndr"}]
       });
 
       if (result.resultCode === 'OK_0000') {

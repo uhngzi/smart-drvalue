@@ -57,9 +57,7 @@ const ClientCuListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        s_search: "prtTypeEm",
-        s_type: 'eq',
-        s_list:[`"${type}"`]
+        s_query: [{key: "prtTypeEm", oper: "eq", value: type?.toString() ?? ""}]
       });
 
       if (result.resultCode === 'OK_0000') {

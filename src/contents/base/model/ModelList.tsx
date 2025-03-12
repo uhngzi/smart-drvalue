@@ -18,7 +18,6 @@ import { partnerRType } from "@/data/type/base/partner";
 interface Props {
   type: 'order' | 'match';
   models: modelsType[];
-  setModels: React.Dispatch<SetStateAction<modelsType[]>>;
   selectId: string | null;
   setSelectId: React.Dispatch<SetStateAction<string | null>>;
   products: orderModelType[] | salesOrderProcuctCUType[];
@@ -32,7 +31,6 @@ interface Props {
 const ModelList:React.FC<Props> = ({
   type,
   models,
-  setModels,
   selectId,
   setSelectId,
   products,
@@ -64,6 +62,10 @@ const ModelList:React.FC<Props> = ({
       setSearchCs(partnerId);
   }, [partnerId])
   // ----------- 거래처 데이터 세팅 ----------- 끝
+
+  // ------------ 모델 데이터 세팅 ------------ 시작
+  // ------------ 모델 데이터 세팅 ------------ 끝
+
   
   const items = (record: any): MenuProps['items'] => [
     {

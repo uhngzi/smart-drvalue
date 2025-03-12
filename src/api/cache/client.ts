@@ -25,9 +25,7 @@ export const getPrtCsAPI = async (
   },{
     limit: pagination?.size || 0,
     page: pagination?.current || 0,
-    s_search: "prtTypeEm",
-    s_type: 'eq',
-    s_list:[`"cs"`]
+    s_query: [{key: "prtTypeEm", oper: "eq", value: "cs"}]
   });
 
   return result;
@@ -43,9 +41,7 @@ export const getPrtVndrAPI = async (
   },{
     limit: pagination?.size || 0,
     page: pagination?.current || 0,
-    s_search: "prtTypeEm",
-    s_type: 'eq',
-    s_list:[`"vndr"`]
+    s_query: [{key: "prtTypeEm", oper: "eq", value: "vndr"}]
   });
 
   return result;
@@ -61,9 +57,7 @@ export const getPrtSupAPI = async (
   },{
     limit: pagination?.size || 0,
     page: pagination?.current || 0,
-    s_search: "prtTypeEm",
-    s_type: 'eq',
-    s_list:[`"sup"`]
+    s_query: [{key: "prtTypeEm", oper: "eq", value: "sup"}]
   });
 
   return result;
