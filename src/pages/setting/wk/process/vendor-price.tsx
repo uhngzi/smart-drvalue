@@ -465,7 +465,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 }
 
 WkProcessVendorPriceListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout
+  <SettingPageLayout styles={{pd:'70px'}}
     menu={[
       { text: '공정', link: '/setting/wk/process/list' },
       { text: '공정 공급처', link: '/setting/wk/process/vendor' },
