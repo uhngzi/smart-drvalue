@@ -16,7 +16,7 @@ export const Popup:React.FC<Props> = ({
 }) => {
   return (
     <div
-      className={"w-full p-30 flex flex-col gap-20 rounded-14 bg-white " + className}
+      className={"w-full px-30 py-20 flex flex-col gap-20 rounded-14 bg-white " + className}
     >
       {title && !titleEtc && <>
         <LabelMedium label={title}/>

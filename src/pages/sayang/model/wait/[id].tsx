@@ -40,6 +40,9 @@ import SalesModelHead from '@/components/ModelTable/SalesModelHead';
 import { LabelMedium } from '@/components/Text/Label';
 import MainPageLayout from '@/layouts/Main/MainPageLayout';
 import { DividerH } from '@/components/Divider/Divider';
+import { RightTab } from '@/layouts/Body/RightTab';
+import { IconButton } from '@/components/Button/IconButton';
+import { Popup } from '@/layouts/Body/Popup';
 
 
 const SayangModelAddPage: React.FC & {
@@ -402,7 +405,9 @@ const SayangModelAddPage: React.FC & {
         {/* 테이블 */}
         <div className="w-[calc(100%-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto">
+          <Popup
+            className="overflow-auto gap-0"
+          >
             <LabelMedium label="고객발주 모델" className="mb-20"/>
             <DividerH />
             <TabSmall
@@ -453,10 +458,12 @@ const SayangModelAddPage: React.FC & {
                 </div>
               ))
             }
-          </div>
+          </Popup>
           
           {/* 수주 탭 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto">
+          <Popup
+            className="overflow-auto gap-0"
+          >
             <LabelMedium label="모델 등록 및 확정" className="mb-20"/>
             <DividerH />
             <TabSmall
@@ -538,30 +545,29 @@ const SayangModelAddPage: React.FC & {
               </div>
             ))
           }
-          </div>
+          </Popup>
         </div>
 
         {/* 우측 탭 */}
-        <div className=" min-w-[80px] w-[3%] h-[calc(100vh-132px)] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
-          <div 
-            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+        <RightTab 
+          className="!h-[calc(100vh-132px)]"
+          key="contents-tab"
+        >
+          <IconButton
+            size="lg" icon={<User />}
             onClick={()=>{
               setSelectTabDrawer(1);
-              setDrawerOpen(true)
+              setDrawerOpen(true);
             }}
-          >
-            <p className="w-20 h-20"><User /></p>
-          </div>
-          <div 
-            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+          />
+          <IconButton
+            size="lg" icon={<Category />}
             onClick={()=>{
               setSelectTabDrawer(2);
               setDrawerOpen(true);
             }}
-          >
-            <p className="w-20 h-20"><Category /></p>
-          </div>
-        </div>
+          />
+        </RightTab>
       </div>
 
       <AddDrawer

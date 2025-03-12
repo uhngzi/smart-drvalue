@@ -62,9 +62,6 @@ $ yarn dev
   mg, mt, ml, mr, mb : margin top, left, right, bottom
   bd, bd_t, bd_l, bd_r, bd_b : border top, left, right, bottom
   bc, bw : border color, width
-
-  gap은 세로 시 20
-  패딩은 10 30
 ```
 
 ## 배포

@@ -39,6 +39,7 @@ import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import { specModelType, specType } from "@/data/type/sayang/sample";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import { Popup } from "@/layouts/Body/Popup";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -397,7 +398,7 @@ const SayangSampleAddPage: React.FC & {
       </>}
       { !detailDataLoading && !modelTabOpen &&
         <div
-          className="w-full h-46 bg-[#FAFAFA] py-30 px-16 border-1 border-line h-center gap-12 rounded-14 cursor-pointer"
+          className="w-full h-46 bg-white py-30 px-16 h-center gap-12 rounded-14 cursor-pointer"
           onClick={()=>setModelTabOpen(!modelTabOpen)}
         >
           <p className="w-16 h-16">
@@ -408,7 +409,9 @@ const SayangSampleAddPage: React.FC & {
       }
       { !detailDataLoading && <>
       { modelTabOpen &&
-      <div className="bg-white rounded-14 p-30 flex flex-col overflow-auto gap-20 w-full">
+      <Popup
+        className="overflow-auto !py-30"
+      >
         <div className="v-between-h-center">
           <div className="flex gap-10">
             <Button onClick={()=>setModelTabOpen(!modelTabOpen)}>
@@ -483,8 +486,10 @@ const SayangSampleAddPage: React.FC & {
             loading={detailDataLoading}
           />
         </div>
-      </div>}
-      <div className="flex bg-white rounded-14 p-30 gap-40 w-full">
+      </Popup>}
+      <Popup
+        className="!gap-40 !flex-row"
+      >
         <div className="min-w-[300px]">
           {/* 적층 구조 */}
           <LaminationContents
@@ -524,7 +529,7 @@ const SayangSampleAddPage: React.FC & {
             />
           </div>
         </div>
-      </div>
+      </Popup>
 
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{

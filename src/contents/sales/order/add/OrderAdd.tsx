@@ -647,7 +647,7 @@ const OrderAddLayout = () => {
             />
 
             {/* 발주 하단 버튼 */}
-            <div className="w-full h-50 v-between-h-center">
+            <div className="w-full h-32 v-between-h-center">
               {stepCurrent < 1 ?
               <>
                 <Button 

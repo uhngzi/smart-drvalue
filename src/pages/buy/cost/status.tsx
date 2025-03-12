@@ -1,7 +1,7 @@
 import { getAPI } from "@/api/get";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { BuyCostOutClmn, BuyCostOutStatusClmn } from "@/data/columns/Buy";
+import { BuyCostOutStatusClmn } from "@/data/columns/Buy";
 import { useUser } from "@/data/context/UserContext";
 import { buyCostOutDetailType, buyCostOutType } from "@/data/type/buy/cost";
 import { ListPagination } from "@/layouts/Body/Pagination";
