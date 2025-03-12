@@ -19,6 +19,7 @@ interface CardInputListProps {
   popWidth?: number;
   title: {name: string, icon?: React.ReactNode};
   data: treeType[] | [];
+  isChild?: boolean;
   onSubmit: (newData: any) => void;
   onUpdateDataFunc: {
     addList: CUtreeType[];
@@ -53,7 +54,9 @@ interface CardInputListProps {
  */
 
 const BaseTreeCUDModal: React.FC<CardInputListProps> = (
-  {open, setOpen, onClose, popWidth, title, data, onSubmit, onUpdateDataFunc, styles}: CardInputListProps
+  {open, setOpen, onClose, popWidth, title, data, isChild,
+    onSubmit, onUpdateDataFunc, styles
+  } : CardInputListProps
 ): JSX.Element => {
   
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
@@ -123,6 +126,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
               <CustomTree
                 open={treeModalOpen}
                 data={treeData}
+                isChild={isChild}
                 onSubmit={treeSubmit}
                 setAddList={onUpdateDataFunc.setAddList}
                 setEditList={onUpdateDataFunc.setEditList}
