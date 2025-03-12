@@ -48,9 +48,8 @@ const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-  const { id, match, model, status } = router.query;
+  const { id } = router.query;
   const { showToast, ToastContainer } = useToast();
-  const { models, modelsLoading } = useModels();
   const { me } = useUser();
 
   // 베이스 값 가져오기
