@@ -108,26 +108,13 @@ const AntdDraggerSmall: React.FC<Props> = ({
       // style={{ height: fileList && fileList.length > 0 && divRef?.current?.clientHeight ? height : "auto" }}
       style={{ height: height}}
     >
-      {/* { (!fileList || fileList.length < 1) && fileIdList && fileIdList.length > 0 && fileIdList.map((fileId, index) => (
-        <div className="h-center">
-          <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
-          <div
-            className="text-[#1890FF] cursor-pointer"
-            onClick={()=> downloadFileByObjectName(fileId)}
-          >
-            파일{index+1}
-          </div>
-        </div>
-      ))
-
-      } */}
       { fileList && fileList?.map((file, idx) => (
         <div className="h-center" key={idx}>
           <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
           {/* 파일 이름/형식/사이즈 */}
           <p 
             className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
-            onClick={() => downloadFileByObjectName(fileIdList[idx])}
+            onClick={() => downloadFileByObjectName(fileIdList[idx], fileList[idx])}
           >
             {sliceByDelimiter(file.name || '', '.', 'front')}.
             {sliceByDelimiter(file.name || '', '.', 'back')}
@@ -145,21 +132,6 @@ const AntdDraggerSmall: React.FC<Props> = ({
               </p>
             </button>
           )}
-
-          {/* 다운로드 버튼 */}
-          {/* <button
-            className="h-center cursor-pointer gap-2"
-            onClick={() => downloadFileByObjectName(fileIdList[idx])}
-          >
-            <p className="text-14 text-[#444444]">다운로드</p>
-            <Download />
-          </button> */}
-
-          {/* 바로보기 버튼 */}
-          {/* <button className="h-center cursor-pointer gap-2">
-            <p className="text-14 text-[#444444]">바로보기</p>
-            <OpenNewWindow color={'#444444'} strokeWidth={1} />
-          </button> */}
         </div>
       ))}
     </div>

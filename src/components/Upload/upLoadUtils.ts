@@ -1,6 +1,7 @@
 import { instance, instanceRoot } from '@/api/lib/axios';
 
 import { Modal } from 'antd';
+import { UploadFile } from 'antd/lib';
 
 export const sliceByDelimiter = (
   str: string,
@@ -53,23 +54,16 @@ export const uploadFile = async (file: any) => {
   }
 };
 
-export const downloadFileByObjectName = async (storageId: string) => {
+export const downloadFileByObjectName = async (storageId: string, fileList:UploadFile<any>) => {
   try {
     const response = await instanceRoot.get(
       `file-mng/v1/every/file-manager/download/${storageId}`,
       {responseType: 'blob'}
     );
-    console.log(response);
+    console.log(response.data?.type, fileList.name);
 
-    // 🎯 파일명 가져오기 (Content-Disposition 헤더에서)
-    const contentDisposition = response.headers['content-disposition'];
-    let fileName = "downloaded-file"; // 기본값
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      if (match && match[1]) {
-        fileName = match[1].replace(/['"]/g, ''); // 따옴표 제거
-      }
-    }
+    let type = response.data?.type?.split("/");
+    let fileName = fileList?.name ? fileList.name : type.length > 1 ? "downloaded-file."+type?.[1] : "downloaded-file"; // 기본값
 
     // 파일 다운로드 처리
     const url = window.URL.createObjectURL(new Blob([response.data]));

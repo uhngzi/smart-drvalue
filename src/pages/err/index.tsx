@@ -31,6 +31,8 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { LabelMedium, LabelThin } from "@/components/Text/Label";
 import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
+import { patchAPI } from "@/api/patch";
+import FullChip from "@/components/Chip/FullChip";
 
 const ErrBoardPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -141,6 +143,40 @@ const ErrBoardPage: React.FC & {
     enabled: !!select?.id
   });
   // ------------ 댓글 데이터 세팅 ------------ 끝
+
+
+  useEffect(()=>{
+    if(select?.attachmentFiles && select.attachmentFiles.length > 0)
+      fetchFileInfo();
+  }, [select?.attachmentFiles])
+
+  const fetchFileInfo = async () => {
+    if(select?.attachmentFiles && select.attachmentFiles.length > 0) {
+      let fileArr:any[] = [];
+      for (const file of select.attachmentFiles) {
+        const result = await getAPI({
+          type: 'file-mng',
+          url: `every/file-manager/default/info/${file}`,
+          header: true,
+        });
+        
+        if(result.resultCode === "OK_0000") {
+          const entity = result?.data?.fileEntity;
+          fileArr.push({
+            ...entity,
+            name: entity?.originalName,
+            originFileObj: {
+              name: entity?.originalName,
+              size: entity?.size,
+              type: entity?.type,
+            }
+          });
+        }
+      }
+      setFileList(fileArr);
+      setFileIdList(select.attachmentFiles);
+    }
+  }
   
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [resultMsg, setResultMsg] = useState<string>("");
@@ -227,6 +263,29 @@ const ErrBoardPage: React.FC & {
   }
   // -------------- 댓글 등록 --------------- 끝
 
+  const handleUpdate = async () => {
+    try {
+      if(select?.id && select.status) {
+        const result = await patchAPI({
+          type: 'utility',
+          utype: 'root/',
+          url: 'require-tenant-key/board/bugfix',
+          jsx: 'jsxcrud'
+        }, select.id, { status: select.status });
+        
+        if(result.resultCode === "OK_0000") {
+          showToast("상태 변경 완료", "success");
+        } else {
+          const msg = result.response?.data?.message;
+          setResultMsg(msg);
+          setAlertOpen(true);
+        }
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+
   // 값 초기화
   useEffect(()=>{
     if(!open) {
@@ -298,9 +357,10 @@ const ErrBoardPage: React.FC & {
               key: 'content',
               align: 'center',
               cellAlign: "left",
+              tooltip: "내용을 클릭하시면 세부 내용 확인 및 상태 변경, 댓글 작성을 할 수 있습니다",
               render: (value, record) => (
                 <div
-                  className="w-full h-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1"
+                  className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
                   onClick={()=>{
                     setSelect(record);
                     setFileIdList((record as errBoardType).attachmentFiles ?? []);
@@ -318,15 +378,18 @@ const ErrBoardPage: React.FC & {
               key: 'status',
               align: 'center',
               render: (value, record) => (
-                <div
-                  className="w-full h-full v-h-center cursor-pointer"
-                  onClick={()=>{
-                    setSelect(record);
-                    setFileIdList((record as errBoardType).attachmentFiles ?? []);
-                    setOpen(true);
-                  }}
-                >
-                  {value}
+                <div className="w-full h-full v-h-center">
+                  {value === "REGISTERED" ? 
+                  <FullChip state="mint" label="등록" /> :
+                  value === "NEED_AGREEMENT" ? 
+                  <FullChip state="yellow" label="협의필요" /> :
+                  value === "IN_PROGRESS" ? 
+                  <FullChip state="pink" label="처리중" /> :
+                  value === "COMPLETED" ? 
+                  <FullChip label="처리완료" /> :
+                  value === "CANCELLED" ? 
+                  <FullChip label="취소" /> :
+                  <FullChip label="알수없음" />}
                 </div>
               )
             },
@@ -373,39 +436,26 @@ const ErrBoardPage: React.FC & {
                       const { value } = e.target;
                       setSelect({...select, detailWorkName: value});
                     }}
-                    // placeholder="작업명"
                     readonly={select?.id ? true : false}
                   />
-                  {/* <AntdSelect
-                    options={[
-                      {value: "", label:"등록"},
-                      {value: "", label:"수정"},
-                      {value: "", label:"그외"},
-                    ]}
-                    value={select?.}
-                    onChange={(e)=>{
-                      const value = e+'';
-                      setSelect({...select, status: value});
-                    }}
-                    placeholder={"작업"}
-                  /> */}
                 </div>
                 <div>
                   <LabelThin label="처리 상태"/>
                   <AntdSelect
                     options={[
                       {value: "REGISTERED", label:"등록"},
-                      {value: "UNKNOWN", label:"협의필요"},
-                      {value: "WAITING", label:"처리중"},
+                      {value: "NEED_AGREEMENT", label:"협의필요"},
+                      {value: "IN_PROGRESS", label:"처리중"},
                       {value: "COMPLETED", label:"처리완료"},
+                      {value: "CANCELLED", label:"취소"},
                     ]}
                     value={select?.status ?? "REGISTERED"}
                     onChange={(e)=>{
                       const value = e+'';
                       setSelect({...select, status: value});
+                      handleUpdate();
                     }}
                     styles={{ht:'36px'}}
-                    readonly={select?.id ? true : false}
                   />
                 </div>
                 { !select?.id &&
@@ -426,9 +476,9 @@ const ErrBoardPage: React.FC & {
                     <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
                     <div
                       className="text-[#1890FF] cursor-pointer"
-                      onClick={()=> downloadFileByObjectName(fileId)}
+                      onClick={()=> downloadFileByObjectName(fileId, fileList[index])}
                     >
-                      파일{index+1}
+                      {fileList[index]?.name}
                     </div>
                   </div>
                   ))

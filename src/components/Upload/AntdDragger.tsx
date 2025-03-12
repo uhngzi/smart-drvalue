@@ -116,7 +116,7 @@ const AntdDragger: React.FC<Props> = ({
             {/* 파일 이름/형식/사이즈 */}
             <p 
               className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
-              onClick={() => downloadFileByObjectName(fileIdList[idx])}
+              onClick={() => downloadFileByObjectName(fileIdList[idx], fileList[idx])}
             >
               {sliceByDelimiter(file.name || '', '.', 'front')}.
               {sliceByDelimiter(file.name || '', '.', 'back')}
@@ -134,21 +134,6 @@ const AntdDragger: React.FC<Props> = ({
                 </p>
               </button>
             )}
-
-            {/* 다운로드 버튼 */}
-            {/* <button
-              className="h-center cursor-pointer gap-2"
-              onClick={() => downloadFileByObjectName(fileIdList[idx])}
-            >
-              <p className="text-14 text-[#444444]">다운로드</p>
-              <Download />
-            </button> */}
-
-            {/* 바로보기 버튼 */}
-            {/* <button className="h-center cursor-pointer gap-2">
-              <p className="text-14 text-[#444444]">바로보기</p>
-              <OpenNewWindow color={'#444444'} strokeWidth={1} />
-            </button> */}
           </div>
         ))}
       </div>
