@@ -16,83 +16,86 @@ import Close from "@/assets/svg/icons/s_close.svg";
 import CardInputList from "@/components/List/CardInputList";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
+import useToast from "@/utils/useToast";
+import { projectSchedules } from "@/data/type/base/project";
 
-type Task = {
-  id: string;
-  name: string;
-  color: string;
-  from: string | Date;  // 날짜는 문자열로 표현
-  to: string | Date;
-  progColor: string;
-  progFrom: string;
-  progTo: string;
-};
 
-type Process = {
-  process: string;
-  task: Task[];
-};
-
-type Schedules = Process[];
 
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
 const ProjcetPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
-  
-const [orderOpen, setOrderOpen] = useState<boolean>(false);
-const [processOpen, setProcessOpen] = useState<boolean>(false);
+
+  const { showToast, ToastContainer } = useToast();
+    
+  const [orderOpen, setOrderOpen] = useState<boolean>(false);
+  const [processOpen, setProcessOpen] = useState<boolean>(false);
+  const [selectId, setSelectId] = useState<string | null>(null);
+
 const tempSchedules = [
   {
     process: "설계",
     task: [
-      { id: "1", name:"도면 설계", color: "#FFD699", from: "2025-03-02", to: "2025-03-04", progColor: "#FFA500", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "1", name:"도면 설계", color: "#FFD699", from: "2025-03-02", to: "2025-03-04", progColor: "#FFA500"},
     ],
   },
   {
     process: "성형",
     task: [
-      { id: "3", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "4", name:"Roll Bending", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "5", name:"Head Forming", color: "#AEEEEE", from: "2025-03-12", to: "2025-03-16", progColor: "#008B8B", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "6", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-16", to: "2025-03-20", progColor: "#008B8B", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "3", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
+      { id: "4", name:"Roll Bending", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
+      { id: "5", name:"Head Forming", color: "#AEEEEE", from: "2025-03-12", to: "2025-03-16", progColor: "#008B8B"},
+      { id: "6", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-16", to: "2025-03-20", progColor: "#008B8B"},
     ],
   },
   {
     process: "용접",
     task: [
-      { id: "7", name:"Shell Block Fit-up", color: "#D8BFD8", from: "2025-03-23", to: "2025-03-26", progColor: "#800080", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "8", name:"Internal 용접", color: "#D8BFD8", from: "2025-03-26", to: "2025-03-30", progColor: "#800080", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "9", name:"용접검사", color: "#D8BFD8", from: "2025-03-30", to: "2025-04-03", progColor: "#800080", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "7", name:"Shell Block Fit-up", color: "#D8BFD8", from: "2025-03-23", to: "2025-03-26", progColor: "#800080"},
+      { id: "8", name:"Internal 용접", color: "#D8BFD8", from: "2025-03-26", to: "2025-03-30", progColor: "#800080"},
+      { id: "9", name:"용접검사", color: "#D8BFD8", from: "2025-03-30", to: "2025-04-03", progColor: "#800080"},
     ],
   },
   {
     process: "열처리",
     task: [
-      { id: "10", name:"비파괴검사", color: "#FFB6B6", from: "2025-03-23", to: "2025-03-26", progColor: "#E73E95", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "11", name:"수압검사", color: "#FFB6B6", from: "2025-03-26", to: "2025-03-30", progColor: "#E73E95", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "10", name:"비파괴검사", color: "#FFB6B6", from: "2025-03-23", to: "2025-03-26", progColor: "#E73E95"},
+      { id: "11", name:"수압검사", color: "#FFB6B6", from: "2025-03-26", to: "2025-03-30", progColor: "#E73E95"},
     ],
   },
   {
     process: "도장",
     task: [
-      { id: "12", name:"Blasting", color: "#ADD8E6", from: "2025-03-23", to: "2025-03-26", progColor: "#0055A4", progFrom: "2025-03-03", progTo: "2025-03-04" },
-      { id: "13", name:"Final Paint", color: "#ADD8E6", from: "2025-03-26", to: "2025-03-30", progColor: "#0055A4", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "12", name:"Blasting", color: "#ADD8E6", from: "2025-03-23", to: "2025-03-26", progColor: "#0055A4"},
+      { id: "13", name:"Final Paint", color: "#ADD8E6", from: "2025-03-26", to: "2025-03-30", progColor: "#0055A4"},
     ],
   },
   {
     process: "포장",
     task: [
-      { id: "14", name:"포장", color: "#D3D3D3", from: "2025-03-23", to: "2025-03-26", progColor: "#696969", progFrom: "2025-03-03", progTo: "2025-03-04" },
+      { id: "14", name:"포장", color: "#D3D3D3", from: "2025-03-23", to: "2025-03-26", progColor: "#696969"},
     ],
   },
 ];
 
-const [schedules, setSchedules] = useState<Schedules>(tempSchedules);
+const [schedules, setSchedules] = useState<projectSchedules>(tempSchedules);
 
 function changeDate(date: any, id: string, type: string) {
   const newDate = dayjs(date).format('YYYY-MM-DD')
+  if(type === "from") {
+    const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
+    if (to && dayjs(newDate).isAfter(dayjs(to))) {
+      showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
+      return;
+    }
+  } else {
+    const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
+    if (from && dayjs(newDate).isBefore(dayjs(from))) {
+      showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
+      return;
+    }
+  }
 
   const newSchedules = schedules.map(process => {
     return {
@@ -105,7 +108,7 @@ function changeDate(date: any, id: string, type: string) {
       }),
     };
   });
-
+  
   setSchedules(newSchedules);
 
 }
@@ -115,7 +118,6 @@ function changeDate(date: any, id: string, type: string) {
       <p className="font-medium px-20 h-40">{"다이나모터 지지구조물2  >  Guide vane actuator console 1 welded"}</p>
       <div className="flex rounded-14" style={{border:'1px solid #D9D9D9'}}>
         <div>
-
           <ProjectTable>
             <colgroup>
               <col width="58.5%" />
@@ -145,7 +147,7 @@ function changeDate(date: any, id: string, type: string) {
                           <span>{task.name}</span>
                         </div>
                         <div className="flex items-center gap-5">
-                          <div className="w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>50%</div>
+                          <div className="w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
                           <Dropdown trigger={["click"]} menu={{ items:[
                             {
                               label: <div className="h-center gap-5">
@@ -153,7 +155,7 @@ function changeDate(date: any, id: string, type: string) {
                                         진행관리
                                       </div>,
                               key: 0,
-                              onClick:()=>setProcessOpen(true)
+                              onClick:()=>{setSelectId(task.id), setProcessOpen(true)}
                             },
                             {
                               label: <div className="h-center gap-5">
@@ -161,7 +163,7 @@ function changeDate(date: any, id: string, type: string) {
                                         발주등록
                                       </div>,
                               key: 1,
-                              onClick:()=>setOrderOpen(true)
+                              onClick:()=>{setSelectId(task.id), setOrderOpen(true)}
                             },
                           ]}}>
                             <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
@@ -223,7 +225,14 @@ function changeDate(date: any, id: string, type: string) {
             />
         </section>
       </AntdDrawer>
-      <ProjectDrawer open={processOpen} close={()=>setProcessOpen(false)} />
+      <ProjectDrawer 
+        open={processOpen} 
+        selectId={selectId}
+        schedules={schedules} 
+        setSchedules={setSchedules} 
+        close={()=>{setSelectId(null), setProcessOpen(false)}} 
+      />
+      <ToastContainer />
     </section>
   )
 }
@@ -252,10 +261,12 @@ const ProjectTable = styled.table`
       text-align: left !important;
       padding-left: 10px;
       font-size: 14px;
+      height: 30px !important;
     }
   }
   tr {
     height: 40px;
+    box-sizing: border-box;
   }
   th {
     height: 50px;
@@ -264,14 +275,15 @@ const ProjectTable = styled.table`
     color: #000000D9;
     border-bottom: 1px solid #D9D9D9;
     border-right: 1px solid #D9D9D9;
-    box-sizing: content-box;
+    box-sizing: border-box;
   }
   td {
     text-align: center;
     font-size: 12px;
-    border-bottom: 1px solid #D9D9D9;
+    box-shadow: inset 0 -1px 0 #D9D9D9;
     border-right: 1px solid #D9D9D9;
-    box-sizing: content-box;
+    box-sizing: border-box;
+    height: 40px;
   }
   tr:last-child td{
     border-bottom: none;

@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, DatePicker, Drawer } from "antd"
+import { Button, Card, Checkbox, DatePicker, Drawer, Input } from "antd"
 import styled, { css } from "styled-components";
 
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -6,13 +6,16 @@ import Plus from "@/assets/svg/icons/s_plus_gray.svg"
 import Calendar from "@/assets/svg/icons/newcalendar.svg";
 
 import { TabSmall } from "@/components/Tab/Tabs";
-import { useState } from "react";
+import { SetStateAction, useRef, useState } from "react";
 import CardInputList from "@/components/List/CardInputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDragger from "@/components/Upload/AntdDragger";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdInputFill from "@/components/Input/AntdInputFill";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
+import useToast from "@/utils/useToast";
+import { projectSchedules } from "@/data/type/base/project";
+import dayjs from "dayjs";
 
 const tabList = [
   { key: 1, text: '진행 관리' },
@@ -23,24 +26,19 @@ const tabList = [
 interface Props {
   open: boolean;
   close: ()=>void;
-  placement?: 'right' | 'left' | 'top' | 'bottom';
-  width?: number;
-  maskClosable?: boolean;
-  mask?: boolean;
-  getContainer?: boolean;
-  style?: React.CSSProperties;
+  schedules: projectSchedules;
+  setSchedules: React.Dispatch<SetStateAction<projectSchedules>>;
+  selectId?: string | null;
 }
 
 const ProjectDrawer: React.FC<Props> = ({
   open,
   close,
-  placement = "right",
-  width = 510,
-  maskClosable = true,
-  mask = true,
-  getContainer = true,
-  style,
+  schedules,
+  setSchedules,
+  selectId
 }) => {
+  const { showToast, ToastContainer } = useToast();
 
   const [selectKey, setSelectKey] = useState<number>(1);
 
@@ -50,6 +48,10 @@ const ProjectDrawer: React.FC<Props> = ({
   const [fileIdList, setFileIdList] = useState<string[]>([]);
   const [memoText, setMemoText] = useState<string>('');
   const [memoList, setMemoList] = useState<{id: string|Number, status: string, text: string}[]>([]);
+  const processData = useRef<any>({});
+
+  const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
+  console.log(task)
   
   function addMemo() {
     setMemoText('');
@@ -58,8 +60,52 @@ const ProjectDrawer: React.FC<Props> = ({
   function deleteMemo(id: string|Number) {
     setMemoList((prev:any) => prev.map((memo:any) => memo.id === id ? {...memo, status: 'delete'} : memo));
   }
+
+  function onProcessDataChange(name:string, data: any) {
+    
+    processData.current[name] = data;
+  }
   // -----------------------------------------------------
 
+  // -------------------품질관리 변수, 함수들--------------------
+  const qualityData = useRef<any>({});
+  // -----------------------------------------------------
+
+  // -------------------인력투입 변수, 함수들--------------------
+  const workerData = useRef<any>({});
+  // -----------------------------------------------------
+
+  function processSubmit() {
+    if(selectKey === 1) {
+      if(!processData.current.progressDate || !processData.current.progress) {
+        showToast('진행률과 진행일을 입력해주세요.', 'error');
+        return;
+      }
+      if(task && dayjs(processData.current.progressDate).isBefore(dayjs(task.from))) {
+        showToast('진행일은 시작일 이후로 입력해주세요.', 'error');
+        return;
+      }
+      const newSchedules = schedules.map(process => {
+        return {
+          ...process,
+          task: process.task.map(task => {
+            console.log(task.id, selectId)
+            if (task.id === selectId) {
+              return { ...task, progTo: dayjs(processData.current.progressDate).format("YYYY-MM-DD"), progress: processData.current.progress };
+            }
+            return task;
+          }),
+        };
+      });
+      showToast("저장되었습니다.", "success");
+      setSchedules(newSchedules);
+
+    } else if(selectKey === 2) {
+      console.log('품질관리 저장');
+    } else if(selectKey === 3) {
+      console.log('인력투입 저장');
+    }
+  }
   
   function drawerClose(){
     setSelectKey(1);
@@ -72,16 +118,11 @@ const ProjectDrawer: React.FC<Props> = ({
   return (
     <AntdDrawerStyled
       closeIcon={null}
-      placement={placement}
       open={open}
       onClose={drawerClose}
       width={selectKey === 1 ? 600 : selectKey === 2 ? 800 : 400}
-      maskClosable={maskClosable}
-      mask={mask}
-      getContainer={getContainer ? (typeof window !== 'undefined' ? () => document.body : undefined) : false}
-      style={style}
     >
-      <section className="p-20 flex flex-col gap-20">
+      <section key={selectId} className="p-20 flex flex-col gap-20">
         <div className="flex justify-between items-center">
           <span className="text-16 font-medium" style={{color:'#000000D9'}}>도면설계 계획(진행) 관리</span>
           <div className="flex cursor-pointer" onClick={drawerClose}><Close/></div>
@@ -100,11 +141,16 @@ const ProjectDrawer: React.FC<Props> = ({
                 <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                   <div className="col-span-3">
                     <p className="pb-8">진행관리일</p>
-                    <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>}/>
+                    <DatePicker 
+                      defaultValue={task?.progTo ? dayjs(task.progTo) : ""} 
+                      className="!w-full !rounded-0" 
+                      suffixIcon={<Calendar/>} 
+                      onChange={(date)=> onProcessDataChange("progressDate", date)}
+                    />
                   </div>
                   <div className="col-span-3">
                     <p className="pb-8">진행률</p>
-                    <AntdInput value={""} onChange={()=>{}}/>
+                    <Input type="number" min={0} max={100} className="!rounded-0 py-5" defaultValue={task?.progress || ""} onChange={({target})=> onProcessDataChange("progress", target.value)}/>
                   </div>
                 </div>
                 <div className="flex flex-col gap-10">
@@ -267,8 +313,9 @@ const ProjectDrawer: React.FC<Props> = ({
           </CardInputList>
           )}
         </div>
-        <div className="flex justify-end"><Button type="primary">저장</Button></div>
+        <div className="flex justify-end"><Button type="primary" onClick={processSubmit}>저장</Button></div>
       </section>
+      <ToastContainer/>
     </AntdDrawerStyled>
   )
 }

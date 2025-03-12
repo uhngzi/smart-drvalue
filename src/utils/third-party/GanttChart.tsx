@@ -7,8 +7,7 @@ type Task = {
   from: string | Date;
   to: string | Date;
   progColor: string;
-  progFrom: string | Date;
-  progTo: string | Date;
+  progTo?: string | Date;
 };
 type schdules = {
   process: string;
