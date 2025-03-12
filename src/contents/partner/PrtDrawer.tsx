@@ -155,6 +155,11 @@ const PrtDrawer: React.FC<Props> = ({
   // 거래처 설정 저장 시 실행 함수
   const handleSubmitPrtData = async () => {
     try {
+      if(cdChk) {
+        showToast("이미 존재하는 식별코드입니다", "error");
+        return;
+      }
+      
       if((newPartnerData?.prtTel && !isValidTel(newPartnerData?.prtTel)) ||
         (newPartnerData?.prtEmail && !isValidEmail(newPartnerData.prtEmail))
       ) {
@@ -306,10 +311,6 @@ const PrtDrawer: React.FC<Props> = ({
         partnerId={partnerId}
         newPartnerMngData={newPartnerMngData}
         submitEndFn={()=>{
-          if(cdChk) {
-            showToast("이미 존재하는 식별코드입니다", "error");
-            return;
-          }
           setOpen(false);
           setNewPrtMngOpen(false);
         }}
