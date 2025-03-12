@@ -33,7 +33,10 @@ export const instance = axios.create({
   baseURL,
   headers: {
     // Authorization: isBrowser ? `bearer ${cookie.get(cookieName)}` : '',
-    'x-tenant-code': 'test2',
+    /**
+     * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
+     */
+    'x-tenant-code': isBrowser ? `${cookie.get('x-custom-tenant-code') || 'test2'}` : 'test2',
   },
 });
 
@@ -45,7 +48,10 @@ instance.interceptors.request.use(
     // );
     
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
-    config.headers["x-tenant-code"] = 'test2';
+    /**
+     * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
+     */
+    config.headers["x-tenant-code"] = isBrowser ? `${cookie.get('x-custom-tenant-code') || 'test2'}` : 'test2';
 
     return config;
   },
