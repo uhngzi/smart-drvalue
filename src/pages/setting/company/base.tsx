@@ -201,7 +201,7 @@ const CompanyBaseListPage: React.FC & {
 }
 
 CompanyBaseListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'70px'}}>{page}</SettingPageLayout>
 )
 
 export default CompanyBaseListPage;

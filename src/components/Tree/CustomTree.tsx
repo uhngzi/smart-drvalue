@@ -20,6 +20,7 @@ import AntdDatePicker from "../DatePicker/AntdDatePicker"
 interface Props {
   open?: boolean;
   data: treeType[];
+  isChild?: boolean;
   onSubmit: (newData : any) => void;
   setAddList: Dispatch<SetStateAction<CUtreeType[]>>;
   setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
@@ -31,6 +32,7 @@ interface Props {
 const CustomTree:React.FC<Props> = ({
   open, // 모달에서 트리를 사용하는 경우에만 사용됨, 모달이 열려있는지 여부
   data,
+  isChild = true,
   onSubmit,
   setAddList,
   setEditList,
@@ -374,33 +376,41 @@ const CustomTree:React.FC<Props> = ({
                 <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}`} key={item.id} 
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
-                  { item.open ? (
-                    <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                      <CaretDownFilled />
-                    </Button>
-                    ) : (
-                      <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                        <CaretUpFilled />
-                      </Button>
-                    )}
+                  {isChild ? (
+                    <>
+                      {item.open ? (
+                        <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                          <CaretDownFilled />
+                        </Button>
+                        ) : (
+                          <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                            <CaretUpFilled />
+                          </Button>
+                        )}
+                    </>
+                  ) : (
+                    <div className="w-5 h-5 bg-[#000000] rounded-50" />
+                  )}
                   <span className="flex-1 text-left">{item.label}</span>
                   {!selectId.some(v => v.id.includes(item.id)) ? (
                     <div className={`${item.id === hoverId ? 'visible' : 'invisible'}`}>
-                      <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); handleAddChild(item.id)}}>
-                        <Plus/>
-                      </Button>
-                      <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); setTreeName(item.label)}}>
-                        <Dropdown trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
-                          <a onClick={(e) => e.preventDefault()}>
-                              <div 
-                                className="w-full h-full v-h-center cursor-pointer"
-                                onClick={()=>{}}
-                              >
-                                <p className="w-16 h-16 v-h-center"><Edit /></p>
-                              </div>
-                          </a>
-                        </Dropdown>
-                      </Button>
+                      {isChild && (
+                        <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); handleAddChild(item.id)}}>
+                          <Plus/>
+                        </Button>
+                      )}
+                        <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); setTreeName(item.label)}}>
+                          <Dropdown trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
+                            <a onClick={(e) => e.preventDefault()}>
+                                <div 
+                                  className="w-full h-full v-h-center cursor-pointer"
+                                  onClick={()=>{}}
+                                >
+                                  <p className="w-16 h-16 v-h-center"><Edit /></p>
+                                </div>
+                            </a>
+                          </Dropdown>
+                        </Button>
                     </div>
                   ) : (
                     <BlueCheck/>
