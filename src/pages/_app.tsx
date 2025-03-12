@@ -13,7 +13,6 @@ import '@/styles/globals.css';
 import StyledComponentsRegistry from '@/utils/registry';
 
 import { UserProvider } from '@/data/context/UserContext';
-import { ModelProvider } from '@/data/context/ModelContext';
 import { BaseProvider } from '@/data/context/BaseContext';
 
 
@@ -35,7 +34,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <QueryClientProvider client={client}>
       <UserProvider>
       <BaseProvider>
-      <ModelProvider>
       <ConfigProvider 
         locale={ko_KR}
         theme={{
@@ -55,7 +53,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           </StyledComponentsRegistry>
         </AntdApp>
       </ConfigProvider>
-      </ModelProvider>
       </BaseProvider>
       </UserProvider>
     </QueryClientProvider>

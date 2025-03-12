@@ -14,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { LayerEm } from "@/data/type/enum";
 import { specModelType, specType } from "@/data/type/sayang/sample";
-import { useModels } from "@/data/context/ModelContext";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { modelsMatchRType, modelsType } from "@/data/type/sayang/models";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
@@ -36,23 +35,14 @@ const SayangSampleListPage: React.FC & {
   const router = useRouter();
   const { id, text } = router.query;
   const { showToast, ToastContainer } = useToast();
-  const { models, modelsLoading } = useModels();
 
   // ------------ 대기중 리스트 데이터 세팅 ------------ 시작
-  const [paginationWait, setPaginationWait] = useState({
-    current: 1,
-    size: 10,
-  });
-  const handlePageWaitChange = (page: number, size: number) => {
-    setPaginationWait({ current: page, size: size });
-  };
   const [waitDataLoading, setWaitDataLoading] = useState<boolean>(true);
-  const [waitTotalData, setWaitTotalData] = useState<number>(0);
   const [waitData, setWaitData] = useState<modelsMatchRType[]>([]);
   const { data:queryData, isLoading:waitLoading } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting', paginationWait],
+    queryKey: ['models-match/jsxcrud/many/by-glb-status/spec-status/spec_reg_waiting'],
     queryFn: async () => {
       setWaitDataLoading(true);
       setWaitData([]);
@@ -67,15 +57,14 @@ const SayangSampleListPage: React.FC & {
     },
   });
   useEffect(()=>{
-    if(!waitLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
+    if(!waitLoading && queryData?.resultCode === 'OK_0000') {
       const arr = (queryData?.data?.data ?? []).map((d:modelsMatchRType) => ({
         ...d,
-        model: models.find(f=>f.id === d.model?.id),
+        // model: models.find(f=>f.id === d.model?.id),
       }));
       setWaitData(arr);
-      // setWaitTotalData(queryData?.data.total ?? 0);
     }
-  }, [queryData, models]);
+  }, [queryData]);
   // ------------ 대기중 리스트 데이터 세팅 ------------ 끝
 
   // ------------ 등록중 리스트 데이터 세팅 ------------ 시작
@@ -100,13 +89,13 @@ const SayangSampleListPage: React.FC & {
     },
   });
   useEffect(()=>{
-    if(!ingLoading && !modelsLoading && queryIngData?.resultCode === 'OK_0000') {
+    if(!ingLoading && queryIngData?.resultCode === 'OK_0000') {
       const arr = (queryIngData?.data?.data ?? []).map((data:specType, idx:number) => ({ 
         ...data,
       }))
       setIngData(arr);
     }
-  }, [queryIngData, models]);
+  }, [queryIngData]);
   // ------------ 등록중 리스트 데이터 세팅 ------------ 끝
 
   // ------------ 거래처 드로워 데이터 세팅 ------------ 시작
@@ -170,8 +159,8 @@ const SayangSampleListPage: React.FC & {
   const handleSumbitTemp = async () => {
     try {
       const matchData = waitData.find(d=> d.id === selectedValue?.matchId);
-      console.log(matchData, selectedValue);
-      if(matchData) {
+      console.log(matchData?.model, selectedValue);
+      if(matchData && matchData?.model) {
         const jsonData = changeSayangTemp("new", matchData);
   
         const result = await postAPI({
@@ -199,8 +188,8 @@ const SayangSampleListPage: React.FC & {
   const handleSumbitTempRe = async () => {
     try {
       const specData = ingData.find(d=> d.id === selectedValue?.specId);
-      const matchModel = models.find(d => d.id === selectedValue?.modelId) as modelsType;
-      if(specData && matchModel) {
+      const matchModel = waitData.find(d => d.id === selectedValue?.matchId)?.model as modelsType;
+      if(specData) {
         const jsonData = changeSayangTemp("re", {
           ...specData,
           specModels: [
@@ -328,7 +317,7 @@ const SayangSampleListPage: React.FC & {
   const [resultType, setResultType] = useState<"chkLayerErr" | "cf" | "">("");
   const [msg, setMsg] = useState<string>("");
 
-  if (modelsLoading || ingDataLoading || waitDataLoading) {
+  if (ingDataLoading || waitDataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
     </div>;
@@ -360,7 +349,7 @@ const SayangSampleListPage: React.FC & {
         </div>
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, handleCheckedClick, paginationWait, sayangPopOpen)}
+            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, handleCheckedClick, sayangPopOpen)}
             data={waitData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}

@@ -14,6 +14,7 @@ import { salesOrderCUType, salesOrderProcuctCUType } from "@/data/type/sales/ord
 
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
+import { Popup } from "@/layouts/Body/Popup";
 
 interface Props {
   csList: selectType[];
@@ -60,9 +61,10 @@ const SalesOrderContent: React.FC<Props> = ({
   const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
 
   return (
-    <div className="w-full min-h-[650px] flex flex-col p-30 gap-20 border-bdDefault border-[0.3px] rounded-14 bg-white">
-      <LabelMedium label="고객발주 등록" />
-      <DividerH />
+    <Popup
+      title="고객발주 등록"
+      className="min-h-[650px]"
+    >
       <div
         className="w-full h-center gap-30 overflow-auto"
         ref={el => {if(el)  ref.current = el;}}
@@ -149,7 +151,7 @@ const SalesOrderContent: React.FC<Props> = ({
           </div>
         </div>
       </div>
-    </div>
+    </Popup>
   )
 }
 

@@ -1,7 +1,7 @@
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { modelsType, orderModelType } from "@/data/type/sayang/models";
-import { Dropdown, MenuProps, Radio, Space } from "antd";
+import { Dropdown, MenuProps, Pagination, Radio, Space } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
 
 import Edit from "@/assets/svg/icons/edit.svg";
@@ -14,10 +14,11 @@ import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
+import { apiAuthResponseType } from "@/data/type/apiResponse";
+import { getAPI } from "@/api/get";
 
 interface Props {
   type: 'order' | 'match';
-  models: modelsType[];
   selectId: string | null;
   setSelectId: React.Dispatch<SetStateAction<string | null>>;
   products: orderModelType[] | salesOrderProcuctCUType[];
@@ -30,7 +31,6 @@ interface Props {
 
 const ModelList:React.FC<Props> = ({
   type,
-  models,
   selectId,
   setSelectId,
   products,
@@ -63,7 +63,58 @@ const ModelList:React.FC<Props> = ({
   }, [partnerId])
   // ----------- 거래처 데이터 세팅 ----------- 끝
 
+  const [searchModel, setSearchModel] = useState<string>('');
+
   // ------------ 모델 데이터 세팅 ------------ 시작
+  const [totalData, setTotalData] = useState<number>(0);
+  const [data, setData] = useState<modelsType[]>([]);
+  const [dataLoading, setDataLoading] = useState<boolean>(true);
+
+  const pageSizeOptions = ["10", "20", "50", "100"];
+  if (totalData > 100) {
+    pageSizeOptions.push(totalData.toString()); // "전체 보기" 옵션 추가
+  }
+  const [pagination, setPagination] = useState({
+    current: 1,
+    size: 20,
+  });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
+  };
+  
+  const { refetch } = useQuery<apiAuthResponseType, Error>({
+    queryKey: ["models", searchModel, searchCs],
+    queryFn: async () => {
+      setDataLoading(true);
+      const result = await getAPI({
+        type: "core-d1",
+        utype: "tenant/",
+        url: "models/jsxcrud/many"
+      },{
+        limit: pagination.size,
+        page: pagination.current,
+        s_query: { "$or": [
+          { "$and": [
+            { "prdNm": {"$cont": searchModel}},
+            { "partner.id": {"$eq": searchCs}}
+          ]},
+          searchModel.length < 4 ? { "$and": [
+            { "prdNm": {"$startsL": searchModel}},
+            { "partner.id": {"$eq": searchCs}}
+          ]} : {}
+        ]}
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setData(result.data?.data ?? []);
+        setTotalData(result.data?.total ?? 0);
+        setDataLoading(false);
+      } else {
+        console.log("MODELS ERROR:", result.response);
+      }
+      return result;
+    },
+  });
   // ------------ 모델 데이터 세팅 ------------ 끝
 
   
@@ -87,16 +138,6 @@ const ModelList:React.FC<Props> = ({
       }
     },
   ]
-
-  const [fmodel, setFmodel] = useState<modelsType[]>([]);
-  useEffect(()=>{ setFmodel(models); }, [models]);
-  const [searchModel, setSearchModel] = useState<string>('');
-  useEffect(()=>{
-    setFmodel(models
-      .filter((f:modelsType) => f.partner.id.includes(searchCs ?? ""))
-      .filter((f:modelsType) => f.prdNm.includes(searchModel))
-    );
-  }, [searchModel, searchCs]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
@@ -185,7 +226,7 @@ const ModelList:React.FC<Props> = ({
           </div>
         </div>
       </div>
-      <div className="">
+      <div className="h-[calc(100vh-300px)] overflow-y-auto">
         <AntdTableEdit
           columns={[
             {
@@ -193,12 +234,14 @@ const ModelList:React.FC<Props> = ({
               dataIndex: 'prdNm',
               key: 'prdNm',
               align: 'center',
+              cellAlign: 'left',
             },
             {
               title: 'Rev No',
               dataIndex: 'prdRevNo',
               key: 'prdRevNo',
               align: 'center',
+              cellAlign: 'left',
             },
             {
               title: '층/두께',
@@ -243,8 +286,24 @@ const ModelList:React.FC<Props> = ({
               )
             },
           ]}
-          data={fmodel}
+          data={data}
           styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+        />
+      </div>
+      <div className="h-center justify-end">
+        <Pagination 
+          size="small"
+          defaultCurrent={1}
+          current={pagination.current}
+          total={totalData}
+          onChange={(page: number, size: number) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            handlePageChange?.(page, size);
+          }}
+          pageSize={pagination.size}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          locale={{ items_per_page: "건씩 보기" }}
         />
       </div>
 

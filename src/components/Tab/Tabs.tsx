@@ -8,21 +8,23 @@ interface Props {
   }>;
   selectKey: any;
   setSelectKey: React.Dispatch<SetStateAction<any>>;
+  bd_b?: boolean;
 }
 
 export const TabSmall: React.FC<Props> = ({
   items,
   selectKey,
   setSelectKey,
+  bd_b
 }) => {
   return (
-    <div className="border-b-1 border-line w-full flex">
+    <div className={bd_b === false ? "w-full flex" : "border-b-1 border-line w-full flex"}>
       {
         items.map((i, idx) => (
           <div 
             key={idx}
             className="min-w-67 min-h-46 px-10 py-12 mr-10 text-14 text-center cursor-pointer"
-            style={i.key===selectKey?{color:'#1814F3',borderBottom:'3px solid #1814F3'}:{}}
+            style={i.key===selectKey?{color:'#4880FF',borderBottom:'3px solid #4880FF'}:{}}
             onClick={()=>setSelectKey(i.key)}
           >
             {i.text}

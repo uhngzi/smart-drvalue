@@ -408,7 +408,6 @@ export const sayangSampleWaitClmn = (
   }[]>>,
   handleCheckedAllClick: () => void,
   handleCheckedClick: () => void,
-  pagination?: {current: number, size: number},
   sayangPopOpen?: (value:string, model:string, status:string, record:modelsMatchRType) => void,
 ): CustomColumn[] => [
   {
@@ -419,7 +418,7 @@ export const sayangSampleWaitClmn = (
           onClick={handleCheckedClick}
         >선택한 사양 등록</div>
       </Tooltip>
-      <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>
+      <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds.length === totalData}/>
     </div>,
     width: 80,
     dataIndex: 'check',
@@ -455,7 +454,7 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    render: (_: any, __: any, index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
     title: '관리No',
@@ -1292,7 +1291,6 @@ export const sayangSampleWaitAddClmn = (
 export const sayangModelWaitClmn = (
   totalData: number,
   router:NextRouter,
-  pagination: {current: number, size: number},
   setPartnerData: React.Dispatch<SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<SetStateAction<partnerMngRType | null>>,
 ): CustomColumn[] => [
@@ -1302,7 +1300,7 @@ export const sayangModelWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+    render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
     title: '업체명/코드',

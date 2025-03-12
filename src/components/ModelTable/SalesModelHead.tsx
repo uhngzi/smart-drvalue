@@ -52,7 +52,7 @@ const SalesModelHead:React.FC<Props> = ({
           <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
         }
         <div className="flex flex-col">
-          <Label label="수주 모델명" />
+          <Label label="모델명" />
           <AntdInput
             ref={el => {
               // 자동 스크롤 & 포커싱을 위해 Ref 추가

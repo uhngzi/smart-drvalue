@@ -20,6 +20,7 @@ import { inputTel } from "@/utils/formatPhoneNumber";
 import { inputFax } from "@/utils/formatFax";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { MOCK } from "@/utils/Mock";
+import { Popup } from "@/layouts/Body/Popup";
 
 interface Props {
   csMngList: partnerMngRType[];
@@ -77,8 +78,22 @@ const CsMngContent:React.FC<Props> = ({
   }
 
   return (
-    <div className="w-full min-h-[200px] bg-white flex flex-col rounded-14 border-[0.3px] border-bdDefult mt-10 px-30 py-20 gap-10">
-      <div className="flex gap-10 h-center">
+    <Popup
+      title="담당자 정보"
+      titleEtc={
+      <Button className="w-30 !h-24 v-h-center !p-0"
+        onClick={()=>{
+          if(!formData.partnerId) {
+            showToast("거래처를 선택해주세요.", "error");
+            return;
+          }
+          setNewPrtMngOpen(true);
+        }}
+      ><SplusIcon/>
+      </Button>}
+      className="min-h-[200px]"
+    >
+      {/* <div className="flex gap-10 h-center">
         <LabelMedium label="담당자 정보"/>
         <Button className="w-30 !h-24 v-h-center !p-0"
           onClick={()=>{
@@ -90,7 +105,7 @@ const CsMngContent:React.FC<Props> = ({
           }}
         ><SplusIcon/></Button>
       </div>
-      <DividerH />
+      <DividerH /> */}
     { csMngList.length < 1 && <Empty /> }
     { csMngList.length > 0 && csMngList.map((mng:partnerMngRType) => (
       <div className="w-full h-40 h-center gap-10" key={mng.id}>
@@ -160,7 +175,7 @@ const CsMngContent:React.FC<Props> = ({
       }}
       edit={edit}
     />
-    </div>
+    </Popup>
   )
 }
 

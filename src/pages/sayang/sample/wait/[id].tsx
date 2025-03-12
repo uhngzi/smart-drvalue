@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdModal from "@/components/Modal/AntdModal";
@@ -30,19 +31,14 @@ import useToast from "@/utils/useToast";
 import { filterType } from "@/data/type/filter";
 import { useBase } from "@/data/context/BaseContext";
 import { useUser } from "@/data/context/UserContext";
-import { modelsType } from "@/data/type/sayang/models";
-import { useModels } from "@/data/context/ModelContext";
-import { processRType } from "@/data/type/base/process";
 import { selectType } from "@/data/type/componentStyles";
 import { commonCodeRType } from "@/data/type/base/common";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { sayangSampleWaitAddClmn } from "@/data/columns/Sayang";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
-import { productLinesGroupRType } from "@/data/type/base/product";
 import { specModelType, specType } from "@/data/type/sayang/sample";
-import { deleteAPI } from "@/api/delete";
+
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import AntdInput from "@/components/Input/AntdInput";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;

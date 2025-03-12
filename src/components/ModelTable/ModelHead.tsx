@@ -44,12 +44,32 @@ const ModelHead:React.FC<Props> = ({
   return (
     <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
       <div className="h-full h-center gap-10 p-10">
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <Label label={"발주명"}/>
           <AntdInput
             value={model.orderTit}
             readonly={true}
             className="w-[180px!important]" styles={{ht:'32px', bg:'#F5F5F5'}}
+            disabled={model.completed}
+          />
+        </div> */}
+        <div className="flex flex-col">
+          <Label label="모델명" />
+          <AntdInput
+            ref={el => {
+              // 자동 스크롤 & 포커싱을 위해 Ref 추가
+              if(el && inputRef && inputRef.current && index !== undefined) {
+                inputRef.current[index] = el;
+              }
+            }}
+            value={(model as orderModelType)?.tempPrdInfo?.prdNm ?? model.orderTit}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', e.target.value);
+              handleModelDataChange(model.id ?? '', 'editModel.prdNm', e.target.value);
+              handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value);
+            }}
+            className="w-[180px!important]" styles={{ht:'32px'}}
+            readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.completed}
           />
         </div>
@@ -82,27 +102,6 @@ const ModelHead:React.FC<Props> = ({
       <Divider />
       
       <div className="h-full h-center gap-10 p-10">
-        <div className="flex flex-col">
-          <Label label="모델명" />
-          <AntdInput
-            ref={el => {
-              // 자동 스크롤 & 포커싱을 위해 Ref 추가
-              if(el && inputRef && inputRef.current && index !== undefined) {
-                inputRef.current[index] = el;
-              }
-            }}
-            value={(model as orderModelType)?.tempPrdInfo?.prdNm ?? model.orderTit}
-            onChange={(e)=>{
-              handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', e.target.value);
-              handleModelDataChange(model.id ?? '', 'editModel.prdNm', e.target.value);
-              handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value);
-            }}
-            className="w-[180px!important]" styles={{ht:'32px'}}
-            readonly={selectId === model.id ? !newFlag : undefined}
-            disabled={model.completed}
-          />
-        </div>
-
         <div className="flex flex-col">
           <Label label="원판" />
           <AntdSelect

@@ -18,7 +18,6 @@ import { salesOrderModelReadClmn } from '@/components/ModelTable/Column';
 import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
 import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { useBase } from '@/data/context/BaseContext';
-import { useModels } from '@/data/context/ModelContext';
 import {
   modelReq,
   orderModelType
@@ -40,6 +39,7 @@ import Category from "@/assets/svg/icons/category.svg";
 import SalesModelHead from '@/components/ModelTable/SalesModelHead';
 import { LabelMedium } from '@/components/Text/Label';
 import MainPageLayout from '@/layouts/Main/MainPageLayout';
+import { DividerH } from '@/components/Divider/Divider';
 
 
 const SayangModelAddPage: React.FC & {
@@ -67,7 +67,6 @@ const SayangModelAddPage: React.FC & {
     spPrintSelectList,
     spTypeSelectList,
   } = useBase();
-  const { models, setModels, modelsLoading, refetchModels } = useModels();
 
   // ------------- 발주 데이터 세팅 ------------- 시작
   const [orderModels, setOrderModels] = useState<salesOrderProductRType[]>([]);
@@ -271,7 +270,6 @@ const SayangModelAddPage: React.FC & {
       }, jsonData);
 
       if(resultPost.resultCode === 'OK_0000') {
-        refetchModels();
         const modelId = resultPost.data?.entity?.id;
         console.log('MODEL ID : ', modelId);
         handleConfirm(id, modelId, modelStatus);
@@ -389,7 +387,7 @@ const SayangModelAddPage: React.FC & {
     }
   }, [data])
 
-  if (modelsLoading || dataLoading) {
+  if (dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
     </div>;
@@ -404,13 +402,14 @@ const SayangModelAddPage: React.FC & {
         {/* 테이블 */}
         <div className="w-[calc(100%-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-20">
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto">
+            <LabelMedium label="고객발주 모델" className="mb-20"/>
+            <DividerH />
             <TabSmall
-              items={orderTab}
+              items={orderTab} bd_b={false}
               selectKey={orderModelsSelect}
               setSelectKey={setOrderModelsSelect}
             />
-            <p className="w-full text-18 font-medium">고객발주 모델</p>
             {
               orderModels
               .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
@@ -418,7 +417,7 @@ const SayangModelAddPage: React.FC & {
                 orderModelsSelect === model.id &&
                 <div
                   key={index}
-                  className="flex flex-col gap-15"
+                  className="flex flex-col gap-15 mt-20"
                 >
                   <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
                     <SalesModelHead
@@ -457,19 +456,20 @@ const SayangModelAddPage: React.FC & {
           </div>
           
           {/* 수주 탭 */}
-          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto gap-20">
+          <div className="border-1 bg-white border-line rounded-14 p-20 flex flex-col overflow-auto">
+            <LabelMedium label="모델 등록 및 확정" className="mb-20"/>
+            <DividerH />
             <TabSmall
-              items={orderTab}
+              items={orderTab} bd_b={false}
               selectKey={orderModelsSelect}
               setSelectKey={setOrderModelsSelect}
             />
-            <p className="w-full text-18 font-medium">모델 등록 및 확정</p>
           { !dataLoading && data
             // 모델이 폐기 됐을 경우 필터링
             .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
             .map((model:orderModelType, index:number) => (
               orderModelsSelect === model.id &&
-              <div className="flex flex-col gap-16" key={model.id}
+              <div className="flex flex-col gap-16 mt-20" key={model.id}
                 // style={model.completed?{background:"#F8F8F8"}:{}}
               >
                 <ModelHead
@@ -575,8 +575,6 @@ const SayangModelAddPage: React.FC & {
         setNewFlag={setNewFlag}
         selectId={selectId}
         setSelectId={setSelectId}
-        modelData={models}
-        setModelData={setModels}
         partnerId={data?.[0]?.prtInfo?.prt?.id ?? ""}
       />
 

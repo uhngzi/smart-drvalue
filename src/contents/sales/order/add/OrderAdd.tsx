@@ -8,7 +8,7 @@ import { postAPI } from "@/api/post";
 import { patchAPI } from "@/api/patch";
 import { getPrtCsAPI } from "@/api/cache/client";
 
-import { LabelMedium, LabelThin } from "@/components/Text/Label";
+import { LabelMedium } from "@/components/Text/Label";
 import { DividerH } from "@/components/Divider/Divider";
 import SalesModelTable from "@/components/ModelTable/SalesModelTable";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
@@ -38,12 +38,10 @@ import {
 } from "@/data/type/sales/order";
 import { changeOrderEdit, changeOrderMainNew, changeOrderNew } from "@/data/type/sales/changeData";
 import { useUser } from "@/data/context/UserContext";
-import { useModels } from "@/data/context/ModelContext";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Back from "@/assets/svg/icons/back.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Edit from '@/assets/svg/icons/memo.svg';
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -57,12 +55,14 @@ import CsMngContent from "./CsMngContent";
 import AntdInput from "@/components/Input/AntdInput";
 import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
+import { Popup } from "@/layouts/Body/Popup";
+import { RightTab } from "@/layouts/Body/RightTab";
+import { IconButton } from "@/components/Button/IconButton";
 
 const OrderAddLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   const { me } = useUser();
-  const { models, setModels } = useModels();
   const { showToast, ToastContainer } = useToast();
 
   // 스탭 저장 변수
@@ -613,7 +613,7 @@ const OrderAddLayout = () => {
           </div>
           
           {/* 왼쪽 컨텐츠 */}
-          <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto">
+          <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto flex flex-col gap-20">
             {/* 고객 발주 컨텐츠 */}
             <div
               className="flex"
@@ -708,7 +708,7 @@ const OrderAddLayout = () => {
               }}
             >
               <div className="w-full">
-                <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
+                <Popup className="overflow-auto">
                   <div className="v-between-h-center">
                     <LabelMedium label="모델 등록"/>
                     <div className="h-center gap-8">
@@ -758,23 +758,22 @@ const OrderAddLayout = () => {
                   <SplusIcon/>
                   <span>모델 추가하기</span>
                 </div>
-                </div>
+                </Popup>
               </div>
             </div> }
           </div>
         </div>
 
         {/* 우측 탭 */}
-        <div className="min-w-[80px] w-[3%] h-[calc(100vh-192px)] px-10 py-20 h-center flex-col bg-white rounded-l-14 gap-20" key="contents-tab">
-          <div 
-            className="cursor-pointer rounded-6 bg-back w-45 h-45 v-h-center"
+        <RightTab>
+          <IconButton
+            icon={<Category />}
+            size="lg"
             onClick={()=>{
               setModelDrawerOpen(true);
             }}
-          >
-            <p className="w-20 h-20"><Category /></p>
-          </div>
-        </div>
+          />
+        </RightTab>
 
         {/* 모델 목록 드로워 */}
         <AntdDrawer
@@ -790,8 +789,6 @@ const OrderAddLayout = () => {
             </div>
             <ModelList
               type="order"
-              models={models}
-              setModels={setModels}
               products={newProducts}
               setProductsOrder={setNewProducts}
               selectId={selectId}

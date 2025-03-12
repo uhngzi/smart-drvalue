@@ -280,7 +280,7 @@ export const WKStatusProcClmn = (
 ): CustomColumn[] => [
   {
     title: <div>
-      <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>
+      <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds.length === totalData}/>
     </div>,
     width: 80,
     dataIndex: 'check',
@@ -731,7 +731,7 @@ export const WkStatusOutClmn = (
 ): CustomColumn[] => [
   {
     title: <div>
-      <Checkbox onChange={handleCheckedAllClick} checked={checkeds.length === totalData}/>
+      <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds.length === totalData}/>
     </div>,
     width: 80,
     dataIndex: 'check',

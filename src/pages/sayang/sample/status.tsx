@@ -10,7 +10,6 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { useQuery } from "@tanstack/react-query";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { useModels } from "@/data/context/ModelContext";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import { specStatusClmn } from "@/data/columns/Sayang";
 import { specType } from "@/data/type/sayang/sample";
@@ -26,7 +25,6 @@ const SayangSampleStatPage: React.FC & {
 } = () => {
   const router = useRouter();
   const { showToast, ToastContainer } = useToast();
-  const { models, modelsLoading } = useModels();
 
   // --------------- 리스트 데이터 세팅 -------------- 시작
   const [pagination, setPagination] = useState({
@@ -59,14 +57,14 @@ const SayangSampleStatPage: React.FC & {
     },
   });
   useEffect(()=>{
-    if(!isLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
+    if(!isLoading && queryData?.resultCode === 'OK_0000') {
       const arr = (queryData?.data?.data ?? []).map((data:specType, idx:number) => ({ 
         ...data,
       }))
       setData(arr);
       setTotalData(queryData?.data.total ?? 0);
     }
-  }, [queryData, models]);
+  }, [queryData]);
   // --------------- 리스트 데이터 세팅 -------------- 끝
 
   // ------------ 거래처 드로워 데이터 세팅 ------------ 시작
@@ -97,7 +95,7 @@ const SayangSampleStatPage: React.FC & {
     }
   }
 
-  if (modelsLoading || dataLoading) {
+  if (dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
     </div>;
