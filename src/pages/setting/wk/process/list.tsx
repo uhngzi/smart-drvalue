@@ -55,10 +55,10 @@ const WkProcessGroupListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data.data ?? []);
+        setData(result.data?.data ?? []);
         setTotalData(result.data.total ?? 0);
 
-        const arr = (result.data.data ?? []).map((group:processGroupRType) => ({
+        const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
           children: group.processes.map((process:processRType) => ({

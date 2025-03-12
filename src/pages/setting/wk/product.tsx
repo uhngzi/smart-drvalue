@@ -36,7 +36,7 @@ const WkProductListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        const arr = (result.data.data ?? []).map((d:productLinesGroupRType)=>({
+        const arr = (result.data?.data ?? []).map((d:productLinesGroupRType)=>({
           id: d.id,
           label: d.name,
           open: true
@@ -64,7 +64,7 @@ const WkProductListPage: React.FC & {
   
         if (result.resultCode === 'OK_0000') {
   
-          const arr = (result.data.data ?? []).map((group:processGroupRType) => ({
+          const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
             id: group.id,
             label: group.prcGrpNm,
             children: group.processes.map((process:processRType) => ({

@@ -67,11 +67,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:boardType) => ({
+        const arr = (result.data?.data ?? []).map((d:boardType) => ({
           value: d.id,
           label: d.brdType,
         }))
-        setBoard(result.data.data ?? []);
+        setBoard(result.data?.data ?? []);
         setBoardSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -94,11 +94,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setMetarial(result.data.data ?? []);
+        setMetarial(result.data?.data ?? []);
         setMetarialSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -121,11 +121,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSurface(result.data.data ?? []);
+        setSurface(result.data?.data ?? []);
         setSurfaceSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -148,11 +148,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setUnit(result.data.data ?? []);
+        setUnit(result.data?.data ?? []);
         setUnitSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -175,11 +175,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setVcut(result.data.data ?? []);
+        setVcut(result.data?.data ?? []);
         setVcutSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -202,11 +202,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setOut(result.data.data ?? []);
+        setOut(result.data?.data ?? []);
         setOutSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -229,11 +229,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSmPrint(result.data.data ?? []);
+        setSmPrint(result.data?.data ?? []);
         setSmPrintSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -256,11 +256,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSmColor(result.data.data ?? []);
+        setSmColor(result.data?.data ?? []);
         setSmColorSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -283,11 +283,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSmType(result.data.data ?? []);
+        setSmType(result.data?.data ?? []);
         setSmTypeSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -310,11 +310,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setMkPrint(result.data.data ?? []);
+        setMkPrint(result.data?.data ?? []);
         setMkPrintSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -337,11 +337,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setMkColor(result.data.data ?? []);
+        setMkColor(result.data?.data ?? []);
         setMkColorSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -364,11 +364,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setMkType(result.data.data ?? []);
+        setMkType(result.data?.data ?? []);
         setMkTypeSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -391,11 +391,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSpPrint(result.data.data ?? []);
+        setSpPrint(result.data?.data ?? []);
         setSpPrintSelectList(arr);
       } else {
         console.log("error:", result.response);
@@ -418,11 +418,11 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
           value: d.id,
           label: d.cdNm,
         }))
-        setSpType(result.data.data ?? []);
+        setSpType(result.data?.data ?? []);
         setSpTypeSelectList(arr);
       } else {
         console.log("error:", result.response);

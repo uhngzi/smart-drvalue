@@ -36,11 +36,11 @@ const SalesArrayPage: React.FC & {
       });
 
       if (result.resultCode === "OK_0000") {
-        const arr = (result.data.data ?? []).map((d:boardType) => ({
+        const arr = (result.data?.data ?? []).map((d:boardType) => ({
           value: d.id,
           label: d.brdType,
         }))
-        setBoard(result.data.data ?? []);
+        setBoard(result.data?.data ?? []);
       } else {
         console.log("error:", result.response);
       }

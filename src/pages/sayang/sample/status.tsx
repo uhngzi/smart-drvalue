@@ -60,7 +60,7 @@ const SayangSampleStatPage: React.FC & {
   });
   useEffect(()=>{
     if(!isLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
-      const arr = (queryData.data.data ?? []).map((data:specType, idx:number) => ({ 
+      const arr = (queryData?.data?.data ?? []).map((data:specType, idx:number) => ({ 
         ...data,
       }))
       setData(arr);

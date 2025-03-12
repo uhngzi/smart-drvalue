@@ -68,7 +68,7 @@ const SayangSampleListPage: React.FC & {
   });
   useEffect(()=>{
     if(!waitLoading && !modelsLoading && queryData?.resultCode === 'OK_0000') {
-      const arr = (queryData?.data.data ?? []).map((d:modelsMatchRType) => ({
+      const arr = (queryData?.data?.data ?? []).map((d:modelsMatchRType) => ({
         ...d,
         model: models.find(f=>f.id === d.model?.id),
       }));
@@ -101,9 +101,8 @@ const SayangSampleListPage: React.FC & {
   });
   useEffect(()=>{
     if(!ingLoading && !modelsLoading && queryIngData?.resultCode === 'OK_0000') {
-      const arr = (queryIngData.data.data ?? []).map((data:specType, idx:number) => ({ 
+      const arr = (queryIngData?.data?.data ?? []).map((data:specType, idx:number) => ({ 
         ...data,
-        // index: (Number(queryIngData?.data.total) ?? (queryIngData.data.data ?? 0).length) - idx,
       }))
       setIngData(arr);
     }

@@ -60,7 +60,7 @@ const SayangModelWaitPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      const arr = (queryData?.data.data ?? []).map((item:salesOrderRType) => ({
+      const arr = (queryData?.data?.data ?? []).map((item:salesOrderRType) => ({
         ...item,
         modelCnt: item.products?.length,
       }))

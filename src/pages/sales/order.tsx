@@ -102,13 +102,13 @@ const SalesUserPage: React.FC & {
   
     // 거래처 변경 시 해당 거래처 담당자 리스트 세팅
   useEffect(()=>{
-    if(cs?.data.data?.length) {
-      setCsList(cs.data.data.map((cs:partnerRType) => ({
+    if(cs?.data?.data?.length) {
+      setCsList(cs?.data?.data.map((cs:partnerRType) => ({
         value:cs.id,
         label:cs.prtNm
       })));
     }
-  }, [cs?.data.data]);
+  }, [cs?.data?.data]);
   // ------------- 필요 데이터 세팅 ------------- 끝
 
   // --------------- 고객 발주  --------------- 시작
@@ -139,7 +139,7 @@ const SalesUserPage: React.FC & {
     });
 
     if(result.resultCode === "OK_0000") {
-      const data = result.data.data as salesOrderDetailRType;
+      const data = result.data?.data as salesOrderDetailRType;
       setFormData({
         id: data?.id,
         partnerId: data.prtInfo?.prt?.id,
@@ -184,8 +184,8 @@ const SalesUserPage: React.FC & {
 
     // 발주 내 거래처 변경 시 해당 담당자 리스트 세팅
   useEffect(()=>{
-    if(formData.partnerId !== '' && cs?.data.data?.length) {
-      const data = cs?.data.data as partnerRType[];
+    if(formData.partnerId !== '' && cs?.data?.data?.length) {
+      const data = cs?.data?.data as partnerRType[];
       const mng = data.find((cu:partnerRType) => cu.id === formData.partnerId)?.managers;
       setCsMngList(mng ?? []);
       if (mng && mng.length > 0) {

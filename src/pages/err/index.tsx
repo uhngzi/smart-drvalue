@@ -67,8 +67,8 @@ const ErrBoardPage: React.FC & {
       });
 
       if (result.resultCode === "OK_0000") {
-        setData(result.data.data ?? []);
-        setTotalData(result?.data.total ?? 0);
+        setData(result.data?.data ?? []);
+        setTotalData(result?.data?.total ?? 0);
         setDataLoading(false);
         
       } else {
@@ -247,7 +247,7 @@ const ErrBoardPage: React.FC & {
         
         if(result.resultCode === "OK_0000") {
           commentsRefetch();
-          const entity = result.data.data as errCommentType;
+          const entity = result.data?.data as errCommentType;
           setComments([ entity, ...comments]);
           setMyCmt({ ...myCmt, message: "", reMessage: undefined, parentId: undefined});
           showToast("등록 완료", "success");

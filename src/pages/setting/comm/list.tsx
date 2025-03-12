@@ -51,10 +51,7 @@ const CommonListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        // setGroupData(result.data.data ?? []);
-        // setData(result.data.data ?? []);
-        // setTotalData(result.data.total ?? 0);
-        const arr = (result.data.data ?? []).map((d:commonCodeGroupType) => ({
+        const arr = (result.data?.data ?? []).map((d:commonCodeGroupType) => ({
           id: d.id,
           label: d.cdGrpNm,
           children: (d.codes ?? []).map((c:commonCodeRType) => ({
@@ -72,32 +69,6 @@ const CommonListPage: React.FC & {
       return result;
     },
   });
-  // const { data:queryDataCode, refetch:codeRefetch, isFetching: codeFetching } = useQuery<
-  //   apiGetResponseType, Error
-  // >({
-  //   queryKey: ['setting', 'comm', 'code'],
-  //   queryFn: async () => {
-  //     const result = await getAPI({
-  //       type: 'baseinfo', 
-  //       utype: 'tenant/',
-  //       url: `common-code/jsxcrud/many/`
-  //     });
-      
-  //     if (result.resultCode === 'OK_0000') {
-  //       setDataCode(result.data.data ?? []);
-  //       // setTotalData(result.data.total ?? 0);
-  //     } else {
-  //       console.log('error:', result.response);
-  //     }
-  //     return result;
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   console.log('groupData:', groupData);
-  //   console.log('codeData:', dataCode);
-
-  // },[groupFetching, codeFetching]);
 
     // 그룹 등록 함수
   const handleSubmit = async () => {
@@ -167,109 +138,6 @@ const CommonListPage: React.FC & {
     }
   }, [data])
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<string | number | null>(null);
-
-  
-  // const { data:queryDataCode, refetch:codeRefetch } = useQuery<
-  //   apiGetResponseType, Error
-  // >({
-  //   queryKey: ['setting', 'comm', 'code', selectedRowKeys],
-  //   queryFn: async () => {
-  //     const result = await getAPI({
-  //       type: 'baseinfo', 
-  //       utype: 'tenant/',
-  //       url: `common-code/jsxcrud/many/by-cd-grp-idx/${selectedRowKeys}`
-  //     });
-      
-  //     if (result.resultCode === 'OK_0000') {
-  //       setDataCode(result.data.data ?? []);
-  //       // setTotalData(result.data.total ?? 0);
-  //     } else {
-  //       console.log('error:', result.response);
-  //     }
-  //     return result;
-  //   },
-  //   enabled: !!selectedRowKeys
-  // });
-
-  // 등록 함수
-// const handleSubmitCode = async () => {
-//   try {
-//     const newData = dataCode[editIndexCode];
-    
-//     if(newData.id?.includes('new')){
-//       const val = validReq(newData, commonCodeReq());
-//       if(!val.isValid) {
-//         showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
-//         return;
-//       }
-
-//       const result = await postAPI({
-//         type: 'baseinfo',
-//         utype: 'tenant/',
-//         url: 'common-code',
-//         jsx: 'jsxcrud'
-//       }, {
-//         cdNm: newData.cdNm,
-//         cdDesc: newData.cdDesc,
-//         codeGroup: { id: newData.codeGroup?.id },
-//         useYn: newData.useYn,
-//       } as commonCodeCUType);
-
-//       if(result.resultCode === 'OK_0000') {
-//         showToast("공통코드 등록 완료", "success");
-    
-//         refetch();
-//         codeRefetch();
-//         setEditIndexCode(-1);
-//       } else {
-//         const msg = result?.response?.data?.message;
-//         if(msg.includes("Duplicate entry")) {
-//           showToast("중복된 코드값이 있습니다.", "error");
-//           return;
-//         }
-//         showToast(result?.response?.data?.message, "error");
-//       }
-//     } else {
-//       const result = await patchAPI({
-//         type: 'baseinfo',
-//         utype: 'tenant/',
-//         url: 'common-code',
-//         jsx: 'jsxcrud'
-//       },
-//       newData.id || '',
-//       {
-//         cdNm: newData.cdNm,
-//         cdDesc: newData.cdDesc,
-//         codeGroup: { id: newData.codeGroup?.id },
-//         useYn: newData.useYn,
-//       } as commonCodeCUType);
-
-//       if(result.resultCode === 'OK_0000') {
-//         showToast("공통코드 수정 완료", "success");
-    
-//         codeRefetch();
-//         setEditIndexCode(-1);
-//       } else {
-//         showToast(result?.response?.data?.message, "error");
-//       }
-//     }
-//   } catch(e) {
-//     console.log(e);
-//     showToast("공통코드 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.", "error");
-
-//     codeRefetch();
-//     setEditIndexCode(-1);
-//   }
-// }
-
-// 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
-// useEffect(()=>{
-//   if(editIndexCode > -1) {
-//     handleSubmitCode();
-//   }
-// }, [dataCode])
-
   return (
     <>
       {dataLoading && <>Loading...</>}
@@ -279,126 +147,11 @@ const CommonListPage: React.FC & {
         <div className="p-20 h-[900px] h-full">
         <CustomTree
             data={treeData}
-            // handleDataChange={handleTreeDataChange}
             onSubmit={()=>{}}
             setAddList={setAddList}
             setEditList={setEditList}
             setDelList={setDeleteList}
           />
-          {/* <div className="w-[50%] h-full">
-            <div className="h-center justify-between p-20">
-              <p>총 {totalData}건</p>
-              <div
-                className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-                onClick={()=>{
-                  setData([{...newDataCommonCodeGroupType(), id:'new-'+data.length+1}, ...data]);
-                }}
-              >
-                등록
-              </div>
-            </div>
-            <AntdTableEdit
-              columns={[
-                {
-                  title: '그룹명',
-                  width: 130,
-                  dataIndex: 'cdGrpNm',
-                  key: 'cdGrpNm',
-                  align: 'center',
-                  editable: true,
-                },
-                {
-                  title: '설명',
-                  dataIndex: 'cdGrpDesc',
-                  key: 'cdGrpDesc',
-                  align: 'center',
-                  editable: true,
-                },
-                
-                {
-                  title: '사용여부',
-                  width: 80,
-                  dataIndex: 'useYn',
-                  key: 'useYn',
-                  align: 'center',
-                  editable: true,
-                  editType: 'toggle',
-                  render: (value:number) => {
-                    return value > 0 ? '사용' : '미사용'
-                  }
-                },
-              ]}
-              data={data}
-              setData={setData}
-              setEditIndex={setEditIndex}
-              selectedRowKey={selectedRowKeys}
-              setSelectedRowKey={setSelectedRowKeys}
-            />
-          </div>
-          
-          <div className="w-[50%] h-full">
-            <div className="h-center justify-between p-20">
-              <p>{
-                selectedRowKeys? 
-                '선택한 공통코드 그룹 : '+data.find(d => d.id === selectedRowKeys)?.cdGrpNm
-                :
-                '공통코드 그룹을 선택해주세요.'
-              }</p>
-              <div
-                className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-                onClick={()=>{
-                  setDataCode([{...newDataCommonCode(), id:'new-'+dataCode.length+1, codeGroup: {id: selectedRowKeys?.toString() || ''}}, ...dataCode]);
-                }}
-              >
-                등록
-              </div>
-            </div>
-            <AntdTableEdit
-              columns={[
-                {
-                  title: '코드명',
-                  width: 130,
-                  dataIndex: 'cdNm',
-                  key: 'cdGrpNm',
-                  align: 'center',
-                  editable: true,
-                },
-                {
-                  title: '그룹명',
-                  width: 130,
-                  dataIndex: 'codeGroup.cdGrpNm',
-                  key: 'codeGroup.cdGrpNm',
-                  align: 'center',
-                  editable: true,
-                  editType: 'select',
-                  selectOptions: dataSelect,
-                  selectValue: 'codeGroup.id'
-                },
-                {
-                  title: '설명',
-                  dataIndex: 'cdDesc',
-                  key: 'cdDesc',
-                  align: 'center',
-                  editable: true,
-                },
-                {
-                  title: '사용여부',
-                  width: 80,
-                  dataIndex: 'useYn',
-                  key: 'useYn',
-                  align: 'center',
-                  editable: true,
-                  editType: 'toggle',
-                  render: (value:number) => {
-                    return value > 0 ? '사용' : '미사용'
-                  }
-                },
-              ]}
-              data={dataCode}
-              setData={setDataCode}
-              setEditIndex={setEditIndexCode}
-            />
-          </div> */}
         </div>
       </>}
       <ToastContainer/>

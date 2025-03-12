@@ -53,11 +53,11 @@ const HrUserListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        console.log(result.data.data)
+        console.log(result.data?.data)
         let arr = [];
         console.log(newTitle)
         if(newTitle === 'dept'){
-          arr = (result.data.data ?? []).map((group:any) => ({
+          arr = (result.data?.data ?? []).map((group:any) => ({
             id: group.id,
             label: group.deptNm,
             children: group.teams.map((team:any) => ({

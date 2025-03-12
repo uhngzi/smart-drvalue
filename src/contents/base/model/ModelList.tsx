@@ -50,13 +50,13 @@ const ModelList:React.FC<Props> = ({
     queryFn: () => getPrtCsAPI(),
   });
   useEffect(()=>{
-    if(cs?.data.data?.length) {
-      setCsList(cs.data.data.map((cs:partnerRType) => ({
+    if(cs?.data?.data?.length) {
+      setCsList(cs.data?.data.map((cs:partnerRType) => ({
         value:cs.id,
         label:cs.prtNm
       })));
     }
-  }, [cs?.data.data]);
+  }, [cs?.data?.data]);
 
   const [searchCs, setSearchCs] = useState<string>("");
   useEffect(()=>{

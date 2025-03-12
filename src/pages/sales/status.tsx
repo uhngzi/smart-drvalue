@@ -76,13 +76,13 @@ const SalesOrderStatusPage: React.FC & {
   
     // 거래처 변경 시 해당 거래처 담당자 리스트 세팅
   useEffect(()=>{
-    if(cs?.data.data?.length) {
-      setCsList(cs.data.data.map((cs:partnerRType) => ({
+    if(cs?.data?.data?.length) {
+      setCsList(cs?.data?.data.map((cs:partnerRType) => ({
         value:cs.id,
         label:cs.prtNm
       })));
     }
-  }, [cs?.data.data]);
+  }, [cs?.data?.data]);
   // ------------- 필요 데이터 세팅 ------------- 끝
   
   // ---------------- 거래처  ---------------- 시작

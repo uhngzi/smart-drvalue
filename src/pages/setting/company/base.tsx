@@ -37,7 +37,7 @@ const CompanyBaseListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data.data ?? {});
+        setData(result.data?.data ?? {});
       } else {
         console.log('error:', result.response);
       }

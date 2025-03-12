@@ -60,7 +60,7 @@ const ProcessSelection: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        const data = result.data.data ?? [];
+        const data = result.data?.data ?? [];
         setDataProcessGrp(data);
       } else {
         console.log('error:', result.response);
@@ -168,7 +168,7 @@ const ProcessSelection: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataProcess(result.data.data ?? []);
+        setDataProcess(result.data?.data ?? []);
       } else {
         console.log('error:', result.response);
       }
@@ -197,7 +197,7 @@ const ProcessSelection: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        const arr = (result.data.data ?? []).map((d:productLinesGroupRType)=>({
+        const arr = (result.data?.data ?? []).map((d:productLinesGroupRType)=>({
           value: d.id,
           label: d.name
         }))
@@ -286,7 +286,7 @@ const ProcessSelection: React.FC<Props> = ({
   useEffect(()=>{
     if((detailData.specPrdGroupPrcs ?? []).length > 0) {
       // 제품군 디폴트 선택
-      const rdata = prdGrpQueryData?.data.data as productLinesGroupRType[];
+      const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
       const prc = rdata?.find(f=> f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id);
       if(prc) {
         setSelectPrdGrp(prc);
@@ -324,7 +324,7 @@ const ProcessSelection: React.FC<Props> = ({
                 value={selectPrdGrp?.id}
                 onChange={(e) => {
                   const value = e+"" as string;
-                  const rdata = prdGrpQueryData?.data.data as productLinesGroupRType[];
+                  const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
                   const prc = rdata.find(f=> f.id === value);
                   console.log(prc, rdata);
 

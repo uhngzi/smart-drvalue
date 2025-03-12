@@ -93,7 +93,7 @@ const SayangSampleAddPage: React.FC & {
         });
   
         if (result.resultCode === "OK_0000") {
-          const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+          const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
             value: d.id,
             label: d.cdNm,
           }))
@@ -115,7 +115,7 @@ const SayangSampleAddPage: React.FC & {
         });
   
         if (result.resultCode === "OK_0000") {
-          const arr = (result.data.data ?? []).map((d:commonCodeRType) => ({
+          const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
             value: d.id,
             label: d.cdNm,
           }))

@@ -63,8 +63,8 @@ const SayangModelStatPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      setData(queryData?.data.data ?? []);
-      setTotalData(queryData?.data.total ?? 0);
+      setData(queryData?.data?.data ?? []);
+      setTotalData(queryData?.data?.total ?? 0);
       setDataLoading(false);
     }
   }, [queryData]);

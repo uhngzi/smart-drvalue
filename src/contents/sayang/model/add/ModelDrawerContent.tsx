@@ -42,7 +42,7 @@ const ModelDrawerContent: React.FC<Props> = ({
   useEffect(()=>{
     setOrderDataLoading(true);
     if(!orderQueryLoading && orderQueryData?.resultCode === "OK_0000") {
-      setOrderData(orderQueryData?.data.data ?? null);
+      setOrderData(orderQueryData?.data?.data ?? null);
       setOrderDataLoading(false);
     }
   }, [orderQueryData]);

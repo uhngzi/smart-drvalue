@@ -46,7 +46,7 @@ const WkProcessListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataGroup(result.data.data ?? []);
+        setDataGroup(result.data?.data ?? []);
       } else {
         console.log('error:', result.response);
       };
@@ -72,7 +72,7 @@ const WkProcessListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data.data ?? []);
+        setData(result.data?.data ?? []);
         setTotalData(result.data.total ?? 0);
         console.log(result.data);
       } else {

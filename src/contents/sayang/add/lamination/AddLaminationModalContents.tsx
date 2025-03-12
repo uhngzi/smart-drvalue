@@ -116,7 +116,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        setSpecSources(result.data.data ?? []);
+        setSpecSources(result.data?.data ?? []);
       } else {
         console.log('error:', result.response);
       }

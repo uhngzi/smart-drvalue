@@ -54,7 +54,7 @@ const WkProcessVendorListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        const arr = (result.data.data ?? []).map((group:processGroupRType) => ({
+        const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
           children: group.processes.map((process:processRType) => ({
@@ -90,8 +90,8 @@ const WkProcessVendorListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataVendor(result.data.data ?? []);
-        console.log('vendor : ', result.data.data);
+        setDataVendor(result.data?.data ?? []);
+        console.log('vendor : ', result.data?.data);
       } else {
         console.log('error:', result.response);
       }
@@ -113,8 +113,8 @@ const WkProcessVendorListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataGroup(result.data.data ?? []);
-        console.log('group : ', result.data.data);
+        setDataGroup(result.data?.data ?? []);
+        console.log('group : ', result.data?.data);
       } else {
         console.log('error:', result.response);
       };
@@ -136,8 +136,8 @@ const WkProcessVendorListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataProcess(result.data.data ?? []);
-        console.log('process : ', result.data.data);
+        setDataProcess(result.data?.data ?? []);
+        console.log('process : ', result.data?.data);
       } else {
         console.log('error:', result.response);
       }
@@ -165,9 +165,9 @@ const WkProcessVendorListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data.data ?? []);
+        setData(result.data?.data ?? []);
         setTotalData(result.data.total ?? 0);
-        console.log('data : ', result.data.data);
+        console.log('data : ', result.data?.data);
       } else {
         console.log('error:', result.response);
       }

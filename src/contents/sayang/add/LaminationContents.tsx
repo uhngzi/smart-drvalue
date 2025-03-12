@@ -52,7 +52,7 @@ const LaminationContents: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        setBaseLamination(result.data.data ?? []);
+        setBaseLamination(result.data?.data ?? []);
       } else {
         console.log('error:', result.response);
       }

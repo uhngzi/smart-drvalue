@@ -88,7 +88,7 @@ const SayangModelAddPage: React.FC & {
   });
   useEffect(()=>{
     if(!orderModelLoading && queryOrderModelData?.resultCode === "OK_0000") {
-      const products = (queryOrderModelData.data?.data as salesOrderDetailRType)?.products;
+      const products = (queryOrderModelData?.data?.data as salesOrderDetailRType)?.products;
       const omodels = products.map((item:salesOrderProductRType, index:number) => ({
         ...item,
         index: index + 1,
@@ -121,7 +121,7 @@ const SayangModelAddPage: React.FC & {
   useEffect(()=>{
     setDataLoading(true);
     if(!isLoading && queryData?.resultCode === "OK_0000") {
-      const rdata:orderModelType[] = queryData.data.data ?? [];
+      const rdata:orderModelType[] = queryData?.data?.data ?? [];
 
       const arr = rdata.map((d:orderModelType, index:number) => ({
         ...d,
@@ -565,7 +565,7 @@ const SayangModelAddPage: React.FC & {
       </div>
 
       <AddDrawer
-        order={(queryOrderModelData?.data.data ?? {}) as salesOrderDetailRType}
+        order={(queryOrderModelData?.data?.data ?? {}) as salesOrderDetailRType}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
         selectTabDrawer={selectTabDrawer}
