@@ -55,7 +55,6 @@ const WKStatusProcPage: {
 
       if(result.resultCode === "OK_0000") {
         setVendorList(result?.data ?? []);
-        console.log(result.data);
       }
 
       return result;
@@ -82,7 +81,7 @@ const WKStatusProcPage: {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykeys: {applyAutoFilter:true, procVenderIdx: selectVendor?.vendorId},
+        anykeys: {applyAutoFilter:false, procVenderIdx: selectVendor?.vendorId},
       });
     }
   });
@@ -94,6 +93,7 @@ const WKStatusProcPage: {
         ...item,
         m2: Math.floor(((item.specModel?.spec?.wksizeH ?? 0) * (item.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.specModel?.prdCnt ?? 0) * 100) / 100,
       }))
+      console.log(queryData, arr);
       setData(arr);
       setTotalData(queryData?.data?.total ?? 0);
       setDataLoading(false);

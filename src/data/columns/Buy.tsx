@@ -43,16 +43,16 @@ export const BuyCostOutClmn = (
     align: 'center',
   },
   {
-    title: '제품모델명',
+    title: '모델명',
     minWidth: 180,
     dataIndex: 'specModel.prdNm',
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
-    tooltip: "제품모델명을 클릭하면 외주처 단가를 등록할 수 있어요",
+    tooltip: "모델명을 클릭하면 외주처 단가를 등록할 수 있어요",
     render: (_, record) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           setSelect(record);
         }}
@@ -315,11 +315,11 @@ export const BuyCostOutPriceClmn = (
       <div className="v-h-center w-full h-full" style={{background:select===record.id?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}>
         <input
           type="radio" className="cursor-pointer"
-          name={record.process.id} value={value}
+          name={record.process.id} checked={select===record.id?true:false}
           onChange={()=>{
             setSelectPrice([
               ...selectPrice.filter(f=>f.processId !== record.process.id),
-              {id:record?.id, processId: record?.process?.id, vendorId: record.vendor.id, value:record.priceUnit}
+              {id:record?.id, processId: record?.process?.id, vendorId: (record?.vendor?.id ?? ""), value:record.priceUnit}
             ])
           }}
         />
@@ -509,16 +509,16 @@ export const BuyCostOutStatusClmn = (
     align: 'center',
   },
   {
-    title: '제품모델명',
+    title: '모델명',
     minWidth: 180,
     dataIndex: 'specModel.prdNm',
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
-    tooltip: "제품모델명을 클릭하면 외주처 단가 등록 내용을 볼 수 있어요",
+    tooltip: "모델명을 클릭하면 외주처 단가 등록 내용을 볼 수 있어요",
     render: (_, record) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer justify-left text-shadow-hover"
         onClick={()=>{
           setSelect(record);
         }}

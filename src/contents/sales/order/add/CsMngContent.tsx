@@ -93,20 +93,7 @@ const CsMngContent:React.FC<Props> = ({
       </Button>}
       className="min-h-[200px]"
     >
-      {/* <div className="flex gap-10 h-center">
-        <LabelMedium label="담당자 정보"/>
-        <Button className="w-30 !h-24 v-h-center !p-0"
-          onClick={()=>{
-            if(!formData.partnerId) {
-              showToast("거래처를 선택해주세요.", "error");
-              return;
-            }
-            setNewPrtMngOpen(true);
-          }}
-        ><SplusIcon/></Button>
-      </div>
-      <DividerH /> */}
-    { csMngList.length < 1 && <Empty /> }
+    { csMngList.length < 1 && <Empty imageStyle={{ height: 50 }} /> }
     { csMngList.length > 0 && csMngList.map((mng:partnerMngRType) => (
       <div className="w-full h-40 h-center gap-10" key={mng.id}>
         <p className="w-100 h-center gap-8">

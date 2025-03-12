@@ -1,5 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
-import { Button, Empty } from "antd";
+import { Button, Empty, Spin } from "antd";
 
 import Memo from '@/assets/svg/icons/memo.svg';
 import MessageOn from "@/assets/svg/icons/message_on.svg";
@@ -35,32 +35,27 @@ const LaminationContents: React.FC<Props> = ({
   const [open, setOpen] = useState<boolean>(false);
 
   // ------------ 베이스 데이터 세팅 ----------- 시작
-  const [ baseLaminationLoading, setBaseLaminationLoading ] = useState<boolean>(true);
   const [ baseLamination, setBaseLamination ] = useState<Array<laminationRType>>([]);
-  const { refetch:baseLaminationRefetch } = useQuery<
+  const { data:baseLaminationData, isLoading:baseLaminationLoading, refetch:baseLaminationRefetch } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['lamination-source/jsxcrud/many'],
     queryFn: async () => {
-      setBaseLaminationLoading(true);
-      setBaseLamination([]);
-
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'lamination-source/jsxcrud/many'
       });
 
-      if (result.resultCode === 'OK_0000') {
-        setBaseLamination(result.data?.data ?? []);
-      } else {
-        console.log('error:', result.response);
-      }
-
-      setBaseLaminationLoading(false);
       return result;
     },
   });
+  useEffect(()=>{
+    if(!baseLaminationLoading && baseLaminationData?.resultCode === 'OK_0000') {
+      setBaseLamination(baseLaminationData?.data?.data ?? []);
+      console.log(baseLaminationData.data?.data);
+    }
+  }, [baseLaminationData])
   // ------------ 베이스 데이터 세팅 ----------- 끝
 
   const [lamination, setLamination] = useState<laminationRType[]>([]);
@@ -96,11 +91,21 @@ const LaminationContents: React.FC<Props> = ({
     <div className="flex flex-col gap-20">
       <div className="v-between-h-center">
         <TitleIcon title="적층구조" icon={<MessageOn />}/>
-        <Button size="small" onClick={()=>setOpen(true)}><span className="w-16 h-16"><Memo/></span>선택</Button>
+        <Button
+          className="h-32 rounded-6"
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <p className="w-16 h-16">
+            <Memo/>
+          </p>
+          선택
+        </Button>
       </div>
-      { (detailData.specLamination?.lamNo ?? lamNo) &&
+      { (detailData.specLamNo ?? detailData.specLamination?.lamNo ?? lamNo) &&
       <div className="w-full flex v-between-h-center h-24 text-14">
-        <span>코드 : {detailData.specLamination?.lamNo ?? lamNo}</span>
+        <span>코드 : {detailData.specLamNo ?? detailData.specLamination?.lamNo ?? lamNo}</span>
       </div>}
 
       <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
@@ -133,9 +138,7 @@ const LaminationContents: React.FC<Props> = ({
           setDetailData={setDetailData}
           handleSumbitTemp={handleSumbitTemp}
           baseLamination={baseLamination}
-          setBaseLamination={setBaseLamination}
           baseLaminationLoading={baseLaminationLoading}
-          baseLaminationRefetch={baseLaminationRefetch}
           color={color}
           mainLamination={lamination}
           setMainLamination={setLamination}

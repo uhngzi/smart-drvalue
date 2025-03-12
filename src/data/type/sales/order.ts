@@ -114,11 +114,11 @@ export const newDataSalesOrderCUType = ():salesOrderCUType => {
 export const salesOrderReq = () => {
   return [
     { field: 'partnerId', label: '고객' },
-    { field: 'partnerManagerId', label: '담당자 정보' },
+    // { field: 'partnerManagerId', label: '담당자 정보' },
     { field: 'orderTxt', label: '발주 메일 내용' },
     // { field: 'orderDt', label: '발주일' },
     // { field: 'hotGrade', label: '긴급 상태' },
-    // { field: 'orderName', label: '발주명' },
+    { field: 'orderName', label: '발주명' },
     // { field: 'totalOrderPrice', label: '총 수주 금액' },
     // { field: 'orderRepDt', label: '납기요청일' },
     // { field: 'empId', label: '영업 담당' },

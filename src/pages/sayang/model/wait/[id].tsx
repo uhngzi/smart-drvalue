@@ -242,6 +242,7 @@ const SayangModelAddPage: React.FC & {
 
     // 기존에 있는 모델을 선택한 것이 아닐 경우 새로 생성해야 함
     const tempData = data.find((d:orderModelType) => d.id === id);
+    console.log(tempData);
     if(tempData) {
       const jsonData = changeModelAddNewModel(
         tempData,
@@ -319,9 +320,13 @@ const SayangModelAddPage: React.FC & {
         setData(newArray);
       }
       handleSumbitTemp(id, false);
-      setNewFlag(true);
-      setResultOpen(true);
-      setResultType("success");
+      const completedCnt = data.filter(f=>f.completed);
+      console.log(data.filter(f=>f.completed))
+      if(completedCnt.length === data.length) {
+        setNewFlag(true);
+        setResultOpen(true);
+        setResultType("success");
+      }
     } else {
       const msg = resultPatch?.response?.data?.message;
       setErrMsg(msg);
@@ -376,19 +381,6 @@ const SayangModelAddPage: React.FC & {
         );
     }
   }, [orderModels])
-  const [matchTab, setMatchTab] = useState<{key:string, text:string}[]>([]);
-  useEffect(()=>{
-    if(data.length > 0) {
-      setMatchTab(
-        data
-        .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
-        .map((m)=>({
-          key: m.id,
-          text: m.prtOrderNo ?? "",
-        }))
-      );
-    }
-  }, [data])
 
   if (dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
@@ -406,7 +398,7 @@ const SayangModelAddPage: React.FC & {
         <div className="w-[calc(100%-100px)] flex flex-col gap-40">
           {/* 고객 발주 목록 */}
           <Popup
-            className="overflow-auto gap-0"
+            className="overflow-auto !gap-0"
           >
             <LabelMedium label="고객발주 모델" className="mb-20"/>
             <DividerH />
@@ -462,7 +454,7 @@ const SayangModelAddPage: React.FC & {
           
           {/* 수주 탭 */}
           <Popup
-            className="overflow-auto gap-0"
+            className="overflow-auto !gap-0"
           >
             <LabelMedium label="모델 등록 및 확정" className="mb-20"/>
             <DividerH />
@@ -525,11 +517,15 @@ const SayangModelAddPage: React.FC & {
                       }
 
                       //그대로 등록일 경우에는 바로 확정만 진행
-                      if(!newFlag && selectId === model.id) {
+                      if(!newFlag && selectId === model.id)
                         handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
-                        return;
-                      }
-                      handleSubmit(model.id);
+
+                      // 고객발주(수주)에서 그대로 등록일 경우에도 바로 확정만 진행
+                      else if(model.model?.id)
+                        handleConfirm(model.id, model?.model?.id, model.modelStatus);
+
+                      // 그 외에는 무조건 새로 생성해야 함 (수정, 신규)
+                      else  handleSubmit(model.id);
                     }}
                     label="확정저장"
                   />

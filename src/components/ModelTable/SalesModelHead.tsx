@@ -51,38 +51,6 @@ const SalesModelHead:React.FC<Props> = ({
         { !read &&
           <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
         }
-        <div className="flex flex-col">
-          <Label label="모델명" />
-          <AntdInput
-            ref={el => {
-              // 자동 스크롤 & 포커싱을 위해 Ref 추가
-              if(el &&inputRef && inputRef.current && model.index) {
-                inputRef.current[model.index] = el;
-              }
-            }}
-            value={model.orderTit}
-            onChange={(e)=>{
-              handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
-            }}
-            readonly={read ? true : selectId === model.id ? !newFlag : undefined}
-            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
-            disabled={model.completed}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <Label label="고객측 관리번호" />
-          <AntdInput
-            value={model.prtOrderNo}
-            onChange={(e)=>{
-              handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
-            }}
-            readonly={read}
-            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
-            disabled={model.completed}
-          />
-        </div>
-
         <AntdSelect
           options={[
             {value:ModelStatus.NEW,label:'신규'},
@@ -102,6 +70,38 @@ const SalesModelHead:React.FC<Props> = ({
           // disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
           readonly={read}
         />
+
+        <div className="flex flex-col">
+          <Label label="모델명" />
+          <AntdInput
+            ref={el => {
+              // 자동 스크롤 & 포커싱을 위해 Ref 추가
+              if(el &&inputRef && inputRef.current && model.index) {
+                inputRef.current[model.index] = el;
+              }
+            }}
+            value={model.orderTit}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
+            }}
+            readonly={read ? true : selectId === model.id ? !newFlag : undefined}
+            className="w-[250px!important]" styles={{ht:'32px', bg:'#FFF'}}
+            disabled={model.completed}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <Label label="고객측 관리번호" />
+          <AntdInput
+            value={model.prtOrderNo}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
+            }}
+            readonly={read}
+            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
+            disabled={model.completed}
+          />
+        </div>
       </div>
 
       <Divider />
@@ -113,7 +113,7 @@ const SalesModelHead:React.FC<Props> = ({
             options={boardSelectList}
             value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
-            className="w-[125px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             readonly={read}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
@@ -123,7 +123,7 @@ const SalesModelHead:React.FC<Props> = ({
           <AntdInput 
             value={model.currPrdInfo?.mnfNm}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
-            className="w-[120px!important]" styles={{ht:'32px'}}
+            className="w-[160px!important]" styles={{ht:'32px'}}
             readonly={read ? read : selectId === model.id ? !newFlag : undefined}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
@@ -135,7 +135,7 @@ const SalesModelHead:React.FC<Props> = ({
             options={metarialSelectList}
             value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
-            className="w-[155px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
             readonly={read}
           />
@@ -144,10 +144,10 @@ const SalesModelHead:React.FC<Props> = ({
 
       <Divider />
 
-      <div className="h-full h-center gap-20 p-10">
+      <div className="h-full h-center gap-20 p-10 flex-1">
         { read && model.orderPrdDueDt ?<div className="flex flex-col">
           <Label label="납기" />
-          <div className="h-32">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div>
+          <div className="h-32 h-center">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div>
         </div>: null}
         { !read && <>
           <div className="flex flex-col">
@@ -157,7 +157,7 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
               suffixIcon={'cal'}
               styles={{bw:'0',bg:'none', pd:"0"}}
-              className="!w-[106px]"
+              className="!w-[110px]"
               placeholder=""
               afterDate={new Date()}
             />
@@ -168,7 +168,7 @@ const SalesModelHead:React.FC<Props> = ({
             <AntdInput 
               value={model.orderPrdCnt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
-              className="w-[120px!important]" styles={{ht:'32px'}} type="number"
+              className="w-[160px!important]" styles={{ht:'32px'}} type="number"
               // readonly={selectId === model.id ? !newFlag : undefined}
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
             />
@@ -179,7 +179,7 @@ const SalesModelHead:React.FC<Props> = ({
             <AntdInput 
               value={model.orderPrdPrice}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
-              className="w-[120px!important]" styles={{ht:'32px'}} type="number"
+              className="w-[160px!important]" styles={{ht:'32px'}} type="number"
               // readonly={selectId === model.id ? !newFlag : undefined}
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
             />

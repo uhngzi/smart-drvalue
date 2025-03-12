@@ -151,7 +151,8 @@ const SayangSampleListPage: React.FC & {
       setSayangRegOpen(true);
     } else {
       setSelectedValue({...selectedValue, matchId: matchId});
-      handleSumbitTemp();
+      setSayangRegOpen(true);
+      // handleSumbitTemp();
     }
   }
 
@@ -159,7 +160,6 @@ const SayangSampleListPage: React.FC & {
   const handleSumbitTemp = async () => {
     try {
       const matchData = waitData.find(d=> d.id === selectedValue?.matchId);
-      console.log(matchData?.model, selectedValue);
       if(matchData && matchData?.model) {
         const jsonData = changeSayangTemp("new", matchData);
   

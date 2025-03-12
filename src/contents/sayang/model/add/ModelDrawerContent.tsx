@@ -13,6 +13,7 @@ import { salesOrderDetailRType } from "@/data/type/sales/order";
 import Call from "@/assets/svg/icons/s_call.svg";
 import Mobile from "@/assets/svg/icons/mobile.svg";
 import Mail from "@/assets/svg/icons/mail.svg";
+import { Empty } from "antd";
 
 interface Props {
   orderId: string | string[] | undefined;
@@ -76,19 +77,21 @@ const ModelDrawerContent: React.FC<Props> = ({
         <div className="flex flex-col gap-10">
           <div className="w-full text-16 font-medium" >담당자 정보</div>
           <div className="w-full" style={{borderBottom:'1px solid #d9d9d9'}}/>
-          <p className="">{orderData?.prtInfo.mng.prtMngNm}</p>
-          <div className="w-full h-40 h-center gap-10">
-            <div className="w-[200px]">
-              <LabelIcon label={orderData?.prtInfo.mng.prtMngTel ?? ''} icon={<Call />}/>
+          { !orderData?.prtInfo?.mng && <Empty />}
+          { orderData?.prtInfo?.mng && <>
+            <p className="">{orderData?.prtInfo?.mng?.prtMngNm}</p>
+            <div className="w-full h-40 h-center gap-10">
+              <div className="w-[200px]">
+                <LabelIcon label={orderData?.prtInfo?.mng?.prtMngTel ?? ''} icon={<Call />}/>
+              </div>
+              <div className="w-[200px]">
+                <LabelIcon label={orderData?.prtInfo?.mng?.prtMngMobile ?? ''} icon={<Mobile />}/>
+              </div>
+              <div className="flex-1">
+                <LabelIcon label={orderData?.prtInfo?.mng?.prtMngEmail ?? ''} icon={<Mail />}/>
+              </div>
             </div>
-            <div className="w-[200px]">
-              <LabelIcon label={orderData?.prtInfo.mng.prtMngMobile ?? ''} icon={<Mobile />}/>
-            </div>
-            <div className="flex-1">
-              <LabelIcon label={orderData?.prtInfo.mng.prtMngEmail ?? ''} icon={<Mail />}/>
-            </div>
-          </div>
-
+          </>}
         </div>
       </CardList>
       <CardList items={[]} title="" btnLabel="" btnClick={()=>{}}>

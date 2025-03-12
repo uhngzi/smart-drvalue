@@ -144,11 +144,6 @@ const YieldCalculate: React.FC<Props> = ({
 
   const handleCalculdate = async () => {
     try {
-      if(disk.length < 1) {
-        showToast("원판을 선택해주세요.", "error");
-        return;
-      }
-
       const val = validReq(yielddata, yieldInputReq());
       if(!val.isValid) {
         showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
@@ -181,6 +176,11 @@ const YieldCalculate: React.FC<Props> = ({
   }
 
   function calculdate(){
+    if(disk.length < 1) {
+      showToast("원판을 선택해주세요.", "error");
+      return;
+    }
+
     handleCalculdate();
   }
 

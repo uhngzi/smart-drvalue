@@ -12,6 +12,9 @@ import AntdAlertModal from "./AntdAlertModal";
 import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 import { isValidEmail } from "@/utils/formatEmail";
 import { inputFax } from "@/utils/formatFax";
+import { useQuery } from "@tanstack/react-query";
+import { getPrtCsAPI } from "@/api/cache/client";
+import { partnerRType } from "@/data/type/base/partner";
 
 interface Option {
   value: string | number | boolean ;
@@ -111,6 +114,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
     }).open();
   };
 
+  const { data:cs } = useQuery({
+    queryKey: ["getClientCs"],
+    queryFn: () => getPrtCsAPI(),
+  });
+  const [cdChk, setCdChk] = useState<boolean>(false);
+
   return (
     <AntdEditModal
       open={open}
@@ -166,7 +175,16 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <Input 
                           name={item.name}
                           value={formData[item.name] || ''}
-                          onChange={(e) => handleInputChange(item.name, e.target.value)}
+                          onChange={(e) => {
+                            handleInputChange(item.name, e.target.value)
+                            if(item.name === "prtRegCd") {
+                              const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
+                              if(csData)  setCdChk(true);
+                              else        setCdChk(false);
+                            } else {
+                              setCdChk(false);
+                            }
+                          }}
                           placeholder={item.placeholder}
                         />
                       )}
@@ -204,6 +222,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           <p className="w-15 h-15"><Hint/></p>
                           올바르지 않은 전화번호입니다.
                         </div> :
+                      // 식별코드 체크
+                      item.name.toLowerCase().includes("prtregcd") && cdChk ?
+                      <div className="h-center gap-3 text-[red]">
+                        <p className="w-15 h-15"><Hint/></p>
+                        이미 존재하는 식별코드입니다.
+                      </div> :
                       <></>
                     }
                   </div>

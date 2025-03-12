@@ -77,6 +77,10 @@ const OrderAddLayout = () => {
   // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
 
+  // 업데이트 후 저장 여부 확인 변수 (false일 경우 저장됨 / true일 경우 저장 안됨)
+  const [update, setUpdate] = useState<boolean>(false);
+  useEffect(()=>{ setUpdate(true); }, [formData])
+
   // id가 NEW일 경우 생성, 아닐 경우 수정
   const [orderId, setOrderId] = useState<string>("");
   useEffect(()=>{
@@ -229,12 +233,12 @@ const OrderAddLayout = () => {
       // 자동으로 스탭2
       setStepCurrent(1);
     }
+    setUpdate(false);
   }
 
   // 데이터 세팅 시 파일 목록이 있을 경우 파일 정보 가져와서 세팅
   useEffect(()=>{
     if(detailChk) {
-      console.log(formData.files);
       fetchFileInfo();
     }
   }, [detailChk])
@@ -271,124 +275,87 @@ const OrderAddLayout = () => {
   useEffect(()=>{console.log(fileList)}, [fileList]);
   // -------- 수정 시 디테일 데이터 세팅 -------- 끝
   
-  // ---------- 발주 신규 등록 함수 ----------- 시작
-  const handleSubmitOrder = async (model: salesOrderProcuctCUType) => {
-    const jsonData = changeOrderNew(formData, [model], me);
-    console.log('NEW !! ', JSON.stringify(jsonData));
+  // ------------ 모델 저장 함수 ------------- 시작
+  const handleSubmitModel = async (model: salesOrderProcuctCUType) => {
+    try {
+      console.log('sub : ', model.orderPrdDueDt);
 
-    // 발주 내 필수 값 입력 체크
-    const ordVal = validReq(jsonData, salesOrderReq());
-    if(!ordVal.isValid) {
-      showToast(ordVal.missingLabels+'은(는) 필수 입력입니다.', "error");
-      return;
-    }
-
-    // 모델 내 필수 값 입력 체크
-    const prdVal = validReq(model, salesOrderProcuctReq());
-    if(!prdVal.isValid) {
-      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
-      return;
-    }
-
-    const result = await postAPI({
-      type: 'core-d1',
-      utype: 'tenant/',
-      url: 'sales-order',
-      jsx: 'default'},
-      jsonData
-    );
-
-    if(result.resultCode === 'OK_0000') {
-      const entity = result.data.entity as salesOrderDetailRType;
-      if(entity) {
-        setFormData({
-          id: entity.id,
-          partnerId: entity.prtInfo.prt.id,
-          partnerManagerId: entity.prtInfo.mng.id,
-          orderName: entity.orderNm,
-          orderDt: dayjs(entity.orderDt, 'YYYY-MM-DD'),
-          orderRepDt: entity.orderRepDt,
-          orderTxt: entity.orderTxt,
-          totalOrderPrice: entity.totalOrderPrice,
-          empId: entity.emp.id,
-          hotGrade: entity.hotGrade ?? HotGrade.NORMAL,
-          files: entity.files?.map((file) => { return file.storageId }),
-        });
+      const jsonData = {
+        currPrdInfo: model.currPrdInfo,
+        partnerId: formData.partnerId,
+        partnerManagerId: formData.partnerManagerId,
+        order: { id: formData.id },
+        model: { id: model.modelId },
+        modelStatus: model.modelStatus,
+        orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+        orderTit: model.orderTit,
+        prtOrderNo: model.prtOrderNo,
+        orderPrdRemark: model.orderPrdRemark,
+        orderPrdCnt: model.orderPrdCnt,
+        orderPrdUnitPrice: model.orderPrdUnitPrice,
+        orderPrdPrice: model.orderPrdPrice,
+        orderPrdDueReqDt: model.orderPrdDueReqDt,
+        orderPrdDueDt: model.orderPrdDueDt ? dayjs(model.orderPrdDueDt).format("YYYY-MM-DD") : null,
+        orderPrdHotGrade: model.orderPrdHotGrade ?? "normal",
       }
-      
-      // 신규 발주 등록 후 등록중이던 기존 모델들은 냅둔 채 저장을 누른 모델에만 아이디 값이 저장 될 수 있게 변경해줌
-      // 이후는 수정 모드로 전환되어 발주 신규 등록이 아닌 모델 저장 함수로 들어가게 됨
-      const products = result.data.products as salesOrderProductRType[];
-      if(products.length > 0) {
-        const updateData = [ ...newProducts ];
-        const index = updateData.findIndex(f => f.id === model.id);
-        if(index > -1) {
-          updateData[index] = { 
-            ...products[0],
-            currPrdInfo: products[0]?.currPrdInfo.length ? JSON.parse(products[0].currPrdInfo ?? "") : {}
-          };
-
-          setNewProducts([
-            ...updateData.slice(0, index),
-            updateData[index],
-            ...updateData.slice(index + 1),
-          ]);
+      console.log(JSON.stringify(jsonData));
+  
+      const prdVal = validReq(model, salesOrderProcuctReq());
+      if(!prdVal.isValid) {
+        showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
+        return;
+      }
+  
+      if(model.id?.includes("new")) {
+        const result = await postAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'sales-order/product',
+          jsx: 'jsxcrud' },
+          jsonData
+        );
+    
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장 완료", "success");
+          const entity = result.data?.entity;
+          const updateData = newProducts;
+          const index = updateData.findIndex(f=> f.id === model?.id);
+          if(index > -1) {
+            updateData[index] = { ...updateData[index], ...entity };
+    
+            const newArray = [
+              ...updateData.slice(0, index),
+              updateData[index],
+              ...updateData.slice(index + 1)
+            ];
+            setNewProducts(newArray);
+          }
+        } else {
+          const msg = result?.response?.data?.message;
+          setErrMsg(msg);
+          setAlertType("error");
+          setAlertOpen(true);
+        }
+      } else if(model.id) {
+        const result = await patchAPI({
+          type: 'core-d1',
+          utype: 'tenant/',
+          url: 'sales-order/product',
+          jsx: 'jsxcrud' },
+          model?.id, jsonData
+        );
+    
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setErrMsg(msg);
+          setAlertType("error");
+          setAlertOpen(true);
         }
       }
-
-      // 이후 수정을 위해 새 아이디로 변경
-      setOrderId(entity?.id ?? "");
-      // 수정 모드로 전환
-      setEdit(true);
-
-      showToast("고객 발주가 완료되었습니다.", "success");
-    } else {
-      const msg = result?.response?.data?.message;
-      setErrMsg(msg);
-      setAlertType("error");
-      setAlertOpen(true);
-    }
-  }
-  // ---------- 발주 신규 등록 함수 ----------- 끝
-
-  // ------------ 모델 저장 함수 ------------- 시작
-  const handleEditOrder = async (model: salesOrderProcuctCUType) => {
-    const jsonData = changeOrderEdit({ ...formData, id: orderId}, [model], me);
-    console.log('EDIT !! ', JSON.stringify(jsonData), model);
-
-    // 발주 내 필수 값 입력 체크
-    const ordVal = validReq(jsonData.order, salesOrderReq());
-    if(!ordVal.isValid) {
-      showToast(ordVal.missingLabels+'은(는) 필수 입력입니다.', "error");
-      return;
-    }
-
-    // 모델 내 필수 값 입력 체크
-    const prdVal = validReq(model, salesOrderProcuctReq());
-    if(!prdVal.isValid) {
-      showToast(prdVal.missingLabels+'은(는) 필수 입력입니다.', "error");
-      return;
-    }
-
-    const result = await postAPI({
-      type: 'core-d1',
-      utype: 'tenant/',
-      url: 'sales-order/default/multiple-save',
-      jsx: 'default',
-      etc: true },
-      jsonData
-    );
-
-    if(result.resultCode === 'OK_0000') {
-      showToast("저장 완료", "success");
-      console.log(result);
-      fetchDetail();
-    } else {
-      console.log(result);
-      const msg = result?.response?.data?.message;
-      setErrMsg(msg);
-      setAlertType("error");
-      setAlertOpen(true);
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
     }
   }
   // ------------ 모델 저장 함수 ------------- 끝
@@ -447,6 +414,7 @@ const OrderAddLayout = () => {
   // ------------ 발주 폐기 함수 ------------- 끝
 
   // ------------ 발주 등록 함수 ------------- 시작
+
   const handleAddOrderMain = async () => {
     const jsonData = changeOrderMainNew({ ...formData, id: orderId}, me);
     console.log(JSON.stringify(jsonData));
@@ -467,6 +435,14 @@ const OrderAddLayout = () => {
 
     if(result.resultCode === "OK_0000") {
       showToast("발주 등록 완료", "success");
+      const entity = result.data?.entity;
+      setEdit(true);
+      setFormData({
+        ...formData,
+        id: entity?.id,
+      })
+      console.log(entity);
+      setUpdate(false);
     } else {
       const msg = result.response?.data?.message;
       setErrMsg(msg);
@@ -490,6 +466,7 @@ const OrderAddLayout = () => {
 
     if(result.resultCode === "OK_0000") {
       showToast("발주 수정 완료", "success");
+      setUpdate(false);
     } else {
       const msg = result.response?.data?.message;
       setErrMsg(msg);
@@ -568,7 +545,6 @@ const OrderAddLayout = () => {
   const [selectId, setSelectId] = useState<string | null>(null);
   // 그대로 등록일 경우 false, 복사하여 등록일 경우 true
   const [newFlag, setNewFlag] = useState<boolean>(true);
-  useEffect(()=>{console.log('new :: ',newFlag)}, [newFlag]);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
@@ -581,7 +557,7 @@ const OrderAddLayout = () => {
         className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
         onClick={(()=>{
           let flag = false;
-          //고객 발주를 저장하지 않았을 경우
+          //모델을 저장하지 않았을 경우
           if(id?.includes("new") && formData.id?.includes("new")) {
             flag = true;
           } else {
@@ -592,8 +568,9 @@ const OrderAddLayout = () => {
               }
             });
           }
+          console.log(update);
 
-          if(flag) {
+          if(flag || update) {
             setAlertOpen(true);
             setAlertType("close");
           } else {
@@ -604,16 +581,16 @@ const OrderAddLayout = () => {
         <Close />
       </p>
     </div>
-    <div className="w-full overflow-auto pl-20 pb-20">
-      <div className="w-full v-between-h-center gap-20">
-        <div className="w-[calc(100%-100px)]">
+    <div className="w-full overflow-auto pl-20 pb-20 h-[calc(100vh-95px)]">
+      <div className="w-full v-between-h-center gap-20 h-full">
+        <div className="w-[calc(100%-100px)] h-full">
           {/* 스탭 */}
           <div className="w-full h-80 p-30 v-between-h-center">
             <Steps current={stepCurrent} items={[{title:'고객 발주'}, {title:'고객 발주 모델 등록'}]} />
           </div>
           
           {/* 왼쪽 컨텐츠 */}
-          <div className="w-full !h-[calc(100vh-272px)] overflow-y-auto flex flex-col gap-20">
+          <div className="w-full !h-[calc(100%-80px)] overflow-y-auto flex flex-col gap-20">
             {/* 고객 발주 컨텐츠 */}
             <div
               className="flex"
@@ -647,7 +624,7 @@ const OrderAddLayout = () => {
             />
 
             {/* 발주 하단 버튼 */}
-            <div className="w-full h-32 v-between-h-center">
+            <div className="w-full v-between-h-center">
               {stepCurrent < 1 ?
               <>
                 <Button 
@@ -736,9 +713,9 @@ const OrderAddLayout = () => {
                     inputRef={inputRef}
                     handleSubmitOrderModel={(model:salesOrderProcuctCUType)=>{
                       if(edit) {
-                        handleEditOrder(model);
+                        handleSubmitModel(model);
                       } else {
-                        handleSubmitOrder(model);
+                        showToast("발주 등록 후 모델을 저장할 수 있습니다.", "error");
                       }
                     }}
                   />
@@ -779,6 +756,7 @@ const OrderAddLayout = () => {
         <AntdDrawer
           open={modelDrawerOpen}
           close={()=>{setModelDrawerOpen(false);}}
+          width={700}
         >
           <div className="w-full px-20 py-30 flex flex-col gap-20">
             <div className="v-between-h-center">

@@ -6,7 +6,6 @@ import { postAPI } from "@/api/post";
 import styled from "styled-components";
 
 import AntdSelect from "@/components/Select/AntdSelect";
-import TitleModalSub from "@/components/Text/TitleModalSub";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 import useToast from "@/utils/useToast";
@@ -21,31 +20,62 @@ import Star from "@/assets/svg/icons/star.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import AntdInput from "@/components/Input/AntdInput";
+import { Popup } from "@/layouts/Body/Popup";
+import { LabelMedium } from "@/components/Text/Label";
 
 interface Props {
   open: boolean;
   detailData: specType;
+  setDetailData: React.Dispatch<SetStateAction<specType>>;
   setUpdatePrc: React.Dispatch<SetStateAction<boolean>>;
+  prdGrpQueryData: apiGetResponseType | undefined;
+  prdGrpSelectList: selectType[];
+  selectPrdGrp: productLinesGroupRType | null;
+  selectPrc: processRType[];
+  selectedKeys: string[];
+  selectedVendors: {
+    pid: string;
+    vid: string;
+    vname: string;
+  }[];
+  setSelectPrdGrp: React.Dispatch<SetStateAction<productLinesGroupRType | null>>;
+  setSelectPrc: React.Dispatch<SetStateAction<processRType[]>>;
+  setSelectedKeys: React.Dispatch<SetStateAction<string[]>>;
+  setSelectedVendors: React.Dispatch<SetStateAction<{
+    pid: string;
+    vid: string;
+    vname: string;
+  }[]>>;
 }
 
 const ProcessSelection: React.FC<Props> = ({
+  open,
   detailData,
+  setDetailData,
   setUpdatePrc,
+  prdGrpQueryData,
+  prdGrpSelectList,
+  selectPrdGrp,
+  selectPrc,
+  selectedKeys,
+  selectedVendors,
+  setSelectPrdGrp,
+  setSelectPrc,
+  setSelectedKeys,
+  setSelectedVendors,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
   // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<"already" | "error" | "">("");
+  const [selectPrdGrpTmp, setSelectPrdGrpTmp] = useState<productLinesGroupRType | null>(null);
   const [errMsg, setErrMsg] = useState<string>("");
 
-  // 체크 박스 값
-  const [ selectedKeys, setSelectedKeys ] = useState<string[]>([]);
 
   // ------------- 트리 데이터 세팅 ----------- 시작
   const [ dataLoading, setDataLoading ] = useState<boolean>(true);
   const [ dataProcessGrp, setDataProcessGrp ] = useState<processGroupRType[]>([]);
-  const [selectedVendors, setSelectedVendors] = useState<{pid:string, vid:string, vname:string}[]>([]);
   const { data:queryData } = useQuery<
     apiGetResponseType, Error
   >({
@@ -98,14 +128,14 @@ const ProcessSelection: React.FC<Props> = ({
                   )?.vid || ""
                 }
               >
-                {process.processVendors.map((pvendor) => (
+                {process?.processVendors?.map((pvendor) => (
                   <Radio
                     className="vendor-node"
                     key={pvendor.vendor.id}
                     value={pvendor.vendor.id}
                     onClick={(e)=>{
                       e.stopPropagation();
-                      handleVendorSelect(process.id, pvendor.vendor.id, pvendor.vendor.prtNm);
+                      handleVendorSelect(process.id, (pvendor?.vendor?.id ?? ""), (pvendor?.vendor?.prtNm ?? ""));
                     }}
                   >
                     {pvendor?.vendor?.prtNm}
@@ -148,8 +178,6 @@ const ProcessSelection: React.FC<Props> = ({
       }
     });
   };
-  
-  const [prcData, setPrcData] = useState<any>();
   // ------------- 트리 데이터 세팅 ----------- 끝
 
   // ------------- 공정 데이터 세팅 ----------- 시작
@@ -172,66 +200,35 @@ const ProcessSelection: React.FC<Props> = ({
       } else {
         console.log('error:', result.response);
       }
-
-      setPrdGrpLoading(false);
       return result;
     },
   });
   // ------------ 공정 데이터 세팅 ------------ 끝
 
-  // ------------ 제품군 데이터 세팅 ----------- 시작
-  const [ prdGrpLoading, setPrdGrpLoading ] = useState<boolean>(true);
-  const [ prdGrpSelectList, setPrdGrpSelectList ] = useState<selectType[]>([]);
-  const { data:prdGrpQueryData } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['product-lines-group/jsxcrud/many'],
-    queryFn: async () => {
-      setPrdGrpLoading(true);
-      setPrdGrpSelectList([]);
-
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'product-lines-group/jsxcrud/many'
-      });
-
-      if (result.resultCode === 'OK_0000') {
-        const arr = (result.data?.data ?? []).map((d:productLinesGroupRType)=>({
-          value: d.id,
-          label: d.name
-        }))
-        setPrdGrpSelectList(arr);
-      } else {
-        console.log('error:', result.response);
-      }
-
-      setPrdGrpLoading(false);
-      return result;
-    },
-  });
-  // ---------- 제품군 그룹 데이터 세팅 ---------- 끝
-
-  // 제품군 그룹 선택값
-  const [ selectPrdGrp, setSelectPrdGrp ] = useState<productLinesGroupRType | null>(null);
   // 선택한 제품군의 공정들
   const [ selectPrdPrcGrp, setSelectPrdPrcGrp ] = useState<processRType[]>([]);
-  // 사용자가 선택한 공정들 (저장될 값 / 공정을 임의로 추가, 삭제할 수 있으므로 따로 저장)
-  const [ selectPrc, setSelectPrc ] = useState<processRType[]>([]);
 
   // 제품군 그룹 선택 후 공정 변경 시 실행 함수
-  const handleChangePrc = () => {
+  const handleChangePrc = (processes?:processRType[]) => {
     let arr = [] as string[];
     let varr = [] as {pid:string, vid:string, vname:string}[];
-    console.log(selectPrdPrcGrp);
-    selectPrdPrcGrp?.map((item:processRType) => {
-      arr.push(item.id);
-      const vid = dataProcessGrp.find(f=>f.id === item.processGroup?.id)?.processes.find(f=>f.id === item.id)?.processVendors?.[0]?.vendor;
-      if(vid) varr.push({pid: item.id, vid: vid?.id, vname: vid?.prtNm})
-    })
+    if(processes) {
+      processes?.map((item:processRType) => {
+        arr.push(item.id);
+        const vid = dataProcessGrp.find(f=>f.id === item.processGroup?.id)?.processes.find(f=>f.id === item.id)?.processVendors?.[0]?.vendor;
+        if(vid) varr.push({pid: item.id, vid: (vid?.id ?? ""), vname: (vid?.prtNm ?? "")})
+      })
+      setSelectPrc(processes);
+    } else {
+      selectPrdPrcGrp.map((item:processRType) => {
+        arr.push(item.id);
+        const vid = dataProcessGrp.find(f=>f.id === item.processGroup?.id)?.processes.find(f=>f.id === item.id)?.processVendors?.[0]?.vendor;
+        if(vid) varr.push({pid: item.id, vid: (vid?.id ?? ""), vname: (vid?.prtNm ?? "")})
+      })
+      setSelectPrc(selectPrdPrcGrp);
+    }
     setSelectedKeys(arr);
     setSelectedVendors(varr);
-    setSelectPrc(selectPrdPrcGrp);
   }
 
   // 공정 저장을 눌렀을 경우 실행
@@ -242,6 +239,7 @@ const ProcessSelection: React.FC<Props> = ({
         return;
       }
   
+      console.log(selectPrc);
       if(selectPrc.length < 1) {
         showToast("공정을 선택해주세요.", "error");
         return;
@@ -270,7 +268,20 @@ const ProcessSelection: React.FC<Props> = ({
 
       if(result.resultCode === "OK_0000") {
         showToast("저장 완료", "success");
+        // 값 변경 후 저장 시 true
+        // 닫을 때 alert창 안 뜨게 하기 위함
         setUpdatePrc(true);
+        setDetailData({
+          ...detailData,
+          specPrdGroupPrcs: jsonData?.data?.map((item, index) => ({
+              ordNo: item.order,
+              prcWkRemark: item.prcWkRemark,
+              prdGrpNm: selectPrdGrp.name,
+              process: {id: item.prcIdx },
+              productLinesGroup: { id: selectPrdGrp.id },
+              vendor: { id: item.vendorIdx },
+          }))
+        })
       } else {
         const msg = result?.response?.data?.message;
         setErrMsg(msg);
@@ -282,39 +293,12 @@ const ProcessSelection: React.FC<Props> = ({
     }
   }
 
-  // 디플트 값 세팅
-  useEffect(()=>{
-    if((detailData.specPrdGroupPrcs ?? []).length > 0) {
-      // 제품군 디폴트 선택
-      const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
-      const prc = rdata?.find(f=> f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id);
-      if(prc) {
-        setSelectPrdGrp(prc);
-      }
-      
-      // 스팩 내 선택된 공정 추가
-      let defaultPrc = [] as processRType[];
-      let defaultKey = [] as string[];
-      let defaultVndr = [] as {pid:string, vid:string, vname:string}[];
-      detailData.specPrdGroupPrcs?.map((item) => {
-        if(item.process) {
-          defaultPrc.push({ ...item.process, remark: item.prcWkRemark });
-          defaultKey.push(item.process.id);
-          if(item.vendor) {
-            defaultVndr.push({pid:item.process.id, vid:item.vendor.id, vname:item.vendor?.prtNm});
-          }
-        }
-      });
-      setSelectPrc(defaultPrc);
-      setSelectedKeys(defaultKey);
-      setSelectedVendors(defaultVndr);
-    }
-  }, [detailData.specPrdGroupPrcs, prdGrpQueryData]);
-
   return (
     <div className="w-full h-full h-center gap-10">
-      <div className="w-1/3 h-[650px] bg-white rounded-14 p-30 flex flex-col gap-20 border-[0.3px] border-line">
-        <TitleModalSub title="선택 제품군의 공정 지정" />
+      <Popup
+        className="!w-1/3 !h-[650px] !flex-col"
+      >
+        <LabelMedium label="선택 제품군의 공정 지정" />
         <div className="w-full flex flex-col gap-10">
           <div className="w-full h-32 h-center gap-10">
             <p className="flex-none">제품군 선택</p>
@@ -326,17 +310,14 @@ const ProcessSelection: React.FC<Props> = ({
                   const value = e+"" as string;
                   const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
                   const prc = rdata.find(f=> f.id === value);
-                  console.log(prc, rdata);
-
-                  if(prc) {
-                    if(prc.productLines) {
-                      let arr = [] as processRType[];
-                      prc.productLines.map((item:productLinesRType) => {
-                        if(item.process)  arr.push({...item.process, remark:item.prcWkRemark});
-                      });
-                      setSelectPrdPrcGrp(arr);
-                    }
-                    setSelectPrdGrp(prc);
+                  
+                  let arr = [] as processRType[];
+                  if(prc && prc.productLines) {
+                    prc.productLines.map((item:productLinesRType) => {
+                      if(item.process)  arr.push({...item.process, remark:item.prcWkRemark});
+                    });
+                    setSelectPrdPrcGrp(arr);
+                    setSelectPrdGrpTmp(prc);
                   }
 
                   if(selectedKeys.length > 0) {
@@ -344,7 +325,8 @@ const ProcessSelection: React.FC<Props> = ({
                     setResultType("already");
                   } else {
                     setResultType("");
-                    handleChangePrc();
+                    handleChangePrc(arr);
+                    setSelectPrdGrp(prc ?? null);
                   }
                 }}
               />
@@ -380,7 +362,7 @@ const ProcessSelection: React.FC<Props> = ({
                     if (vendors && vendors.length > 0) {
                       setSelectedVendors(prev => [
                         ...prev,
-                        { pid: addData.id, vid: vendors?.[0].vendor?.id, vname: vendors?.[0]?.vendor?.prtNm}
+                        { pid: addData.id, vid: (vendors?.[0].vendor?.id ?? ""), vname: (vendors?.[0]?.vendor?.prtNm ?? "")}
                       ]);
                     }
                   }
@@ -395,7 +377,6 @@ const ProcessSelection: React.FC<Props> = ({
                 }
               }}
               onClick={(_, info) => {
-                console.log("1");
                 if(!selectPrdGrp?.id) {
                   showToast("제품군을 선택해주세요.", "error");
                   return;
@@ -410,11 +391,30 @@ const ProcessSelection: React.FC<Props> = ({
                       // ... 근데 만약에 2개를 이미 선택했고 전체를 선택하고 싶은 경우에는.. 미정...
                       setSelectedKeys((prev:Array<string>) => prev.filter((key:string) => key !== id));
                       addArr = addArr.filter(f => f.id !== id);
+                      // 라디오 버튼 선택 해제
+                      setSelectedVendors(prev => prev.filter(item => item.pid !== id));
                     } else {
                       // 자식의 키를 추가
                       setSelectedKeys((prev:Array<string>) => [...prev, id]);
                       const addData = dataProcess.find(f=> f.id === id);
+                      console.log(addData);
                       if(addData) addArr.push(addData as processRType);
+                      // 라디오 버튼 선택
+                      const vendorCandidates = dataProcessGrp
+                        .find(group => group.id === addData?.processGroup?.id)
+                        ?.processes.find(proc => proc.id === id)
+                        ?.processVendors;
+                      // 벤더 후보가 있다면 첫 번째 벤더 자동 선택
+                      if (vendorCandidates && vendorCandidates.length > 0) {
+                        setSelectedVendors(prev => [
+                          ...prev,
+                          {
+                            pid: id,
+                            vid: (vendorCandidates[0].vendor?.id ?? ""),
+                            vname: (vendorCandidates[0].vendor?.prtNm ?? ""),
+                          },
+                        ]);
+                      }
                     }
                   });
                   setSelectPrc(addArr);
@@ -423,9 +423,12 @@ const ProcessSelection: React.FC<Props> = ({
             />}
           </TreeStyled>
         </div>
-      </div>
-      <div className="w-2/3 h-[650px] bg-white rounded-14 p-30 gap-20 border-[0.3px] border-line">
-        <TitleModalSub title="선택된 공정별 작업 방법" />
+      </Popup>
+
+      <Popup
+        className="!w-2/3 !h-[650px]"
+      >
+        <LabelMedium label="선택된 공정별 작업 방법" />
         <div className="w-full h-[calc(100%-80px)] flex flex-col gap-10 overflow-y-auto">
           {
             dataProcessGrp.map((group:processGroupRType) => (
@@ -483,7 +486,7 @@ const ProcessSelection: React.FC<Props> = ({
             <Arrow /> 공정 저장
           </Button>
         </div>
-      </div>
+      </Popup>
       
       <AntdAlertModal
         open={resultOpen}
@@ -495,7 +498,7 @@ const ProcessSelection: React.FC<Props> = ({
           ""
         }
         contents={
-          resultType === "already" ? <div>해당 제품군의 공정으로 변경하시겠습니까?</div> : 
+          resultType === "already" ? <div>현재 공정에 설정한 메모도 사라집니다.<br/>정말 해당 제품군의 공정으로 변경하시겠습니까?</div> : 
           resultType === "error" ? <div>{errMsg}</div> : 
           // resultType === "close" ? <div>저장하지 않고 닫을 경우 입력한 데이터가 삭제됩니다.<br/>정말 닫으시겠습니까?</div> : 
           <div></div>}
@@ -503,6 +506,7 @@ const ProcessSelection: React.FC<Props> = ({
         onOk={()=>{
           if(resultType === "already"){
             handleChangePrc();
+            setSelectPrdGrp(selectPrdGrpTmp);
           }
           setResultOpen(false);
         }}
@@ -510,8 +514,15 @@ const ProcessSelection: React.FC<Props> = ({
           setResultOpen(false);
         }}
         hideCancel={resultType === "error" ? true : false}
-        okText="선택한 제품군의 공정으로 변경 할래요"
-        cancelText="현재 공정으로 할래요"
+        okText={
+          resultType === "already" ? "선택한 제품군의 공정으로 변경 할래요" :
+          "확인"
+        }
+        cancelText={
+          resultType === "already" ? "현재 공정으로 할래요" :
+          "취소"
+        }
+        maskClosable={false}
       />
       <ToastContainer/>
     </div>

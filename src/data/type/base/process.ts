@@ -15,13 +15,13 @@ export type processRType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   },
-  processVendors:{
+  processVendors?:{
     id: string;
     useYn: 0 | 1;
     vendor: partnerRType;
   }[];
-  prcNm: string;
-  useYn: boolean;
+  prcNm?: string;
+  useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

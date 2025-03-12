@@ -8,6 +8,7 @@ import { Button } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
 import SayangYieldCalculate from "./YieldCalculate";
 import { changeSayangTemp } from "@/data/type/sayang/changeData";
+import Memo from '@/assets/svg/icons/memo.svg';
 
 interface Props {
   board: boardType[];
@@ -30,7 +31,7 @@ const ArrayContents: React.FC<Props> = ({
   const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
-  const [kit, setKit] = useState<{id:string, x:number, y:number, cnt:number}[]>([{id:"new-0", x:0, y:0, cnt:1}]);
+  const [kit, setKit] = useState<{id:string, nm:string, x:number, y:number, cnt:number}[]>([{id:"new-0", nm:"KIT-1", x:0, y:0, cnt:1}]);
   const [resultData, setResultData] = useState<arrayCalType[]>([]);
   const [selectData, setSelectData] = useState<arrayCalType>();
 
@@ -65,13 +66,20 @@ const ArrayContents: React.FC<Props> = ({
   }, [detailData.board])
 
   useEffect(()=>{
-    if(!yieldPopOpen) {
-      setKit([{id:"new-0", x:0, y:0, cnt: 1}]);
+    if(!yieldPopOpen && detailData.specModels && detailData.specModels?.length > 0) {
+      setKit(detailData.specModels?.map((item, index) => ({
+        // id: item.id ?? "",
+        id: "kit-"+index,
+        nm: item.prdNm ?? "",
+        x: item.kitW ?? 0,
+        y: item.kitL ?? 0,
+        cnt: 1
+      })));
       setResultData([]);
     } else {
       setYielddata({kitGapX:5.0, kitGapY: 5.0, marginLongSide: 20, marginShortSide: 10});
     }
-  }, [yieldPopOpen])
+  }, [yieldPopOpen, detailData])
 
   return (
     <div className="w-full flex flex-col gap-20">
@@ -82,17 +90,19 @@ const ArrayContents: React.FC<Props> = ({
         />
         <Button
           className="h-32 rounded-6"
-          style={{color:"#444444E0"}}
           onClick={() => {
             setYieldPopOpen(true);
           }}
         >
-          배열도면선택
+          <p className="w-16 h-16">
+            <Memo/>
+          </p>
+          선택
         </Button>
       </div>
 
       <div className="w-full h-[310px] flex flex-col gap-30 items-center">
-        <div className="h-[111px] border-1 border-line flex w-full">
+        <div className="h-[111px] border-1 border-line border-b-0 flex w-full">
           <div className="flex-grow-[1] h-[110px] border-r-1 border-line">
             <div className="h-55 flex">
               <div className="w-60 text-12 bg-back v-h-center p-5">{'① 배열'}</div>

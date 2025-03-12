@@ -57,10 +57,10 @@ const PrtDrawer: React.FC<Props> = ({
     if(partnerData !== null) {
       setDrawerPrtItems([
         { label: '거래처명', value: partnerData?.prtNm ?? '-', widthType: 'full' },
-        { label: '거래처 식별코드', value: partnerData?.prtRegCd ?? '-', widthType: 'half' },
-        { label: '거래처 축약명', value: partnerData?.prtSnm ?? '-', widthType: 'half' },
-        { label: '거래처 영문명', value: partnerData?.prtEngNm ?? '-', widthType: 'half' },
-        { label: '거래처 영문 축약명', value: partnerData?.prtEngSnm ?? '-', widthType: 'half' },
+        { label: '식별코드', value: partnerData?.prtRegCd ?? '-', widthType: 'half' },
+        { label: '축약명', value: partnerData?.prtSnm ?? '-', widthType: 'half' },
+        { label: '영문명', value: partnerData?.prtEngNm ?? '-', widthType: 'half' },
+        { label: '영문 축약명', value: partnerData?.prtEngSnm ?? '-', widthType: 'half' },
         { label: '사업자등록번호', value: partnerData?.prtRegNo ?? '-', widthType: 'half' },
         { label: '법인등록번호', value: partnerData?.prtCorpRegNo ?? '-', widthType: 'half' },
         { label: '업태', value: partnerData?.prtBizType ?? '-', widthType: 'half' },
@@ -250,12 +250,6 @@ const PrtDrawer: React.FC<Props> = ({
                 <TrArrow/>
                 <span>저장</span>
               </Button>
-              // <Button type="primary" size="large" onClick={handleSubmitPrtData} 
-              //   className="w-full flex h-center gap-8 !h-full" 
-              //   style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
-              //   <TrArrow/>
-              //   <span>저장</span>
-              // </Button>
             }
             items={[
             { value:newPartnerData?.prtNm,

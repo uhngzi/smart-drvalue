@@ -6,27 +6,35 @@ import { getPrtCsAPI } from "@/api/cache/client";
 import { getAPI } from "@/api/get";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
 
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
 import PrtDrawer from "@/contents/partner/PrtDrawer";
+import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
 
 import { useUser } from "@/data/context/UserContext";
 import { salesOrderStatusClmn } from "@/data/columns/Sales";
-import { salesOrderWorkSheetType } from "@/data/type/sales/order";
+import { salesOrderRType, salesOrderWorkSheetType } from "@/data/type/sales/order";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { specModelType } from "@/data/type/sayang/sample";
+
+import Close from "@/assets/svg/icons/s_close.svg";
 
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
+import CardList from "@/components/List/CardList";
+import { ModelTypeEm } from "@/data/type/enum";
+import dayjs from "dayjs";
 
 const SalesOrderStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-
   const { me } = useUser();
-
   const { showToast, ToastContainer } = useToast();
+
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -101,7 +109,7 @@ const SalesOrderStatusPage: React.FC & {
   // ---------------- 거래처  ---------------- 끝
 
   const handlePageMenuClick = (key:number)=>{
-    const clmn = salesOrderStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination)
+    const clmn = salesOrderStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, setOrderId, setSpecData, setDrawerModelOpen)
     .map((item) => ({
       title: item.title?.toString() as string,
       dataIndex: item.dataIndex,
@@ -114,7 +122,18 @@ const SalesOrderStatusPage: React.FC & {
       exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);
     }
   }
-  
+
+  const [drawerModelOpen, setDrawerModelOpen] = useState<boolean>(false);
+
+  const [orderId, setOrderId] = useState<string>("");
+  const [specData, setSpecData] = useState<specModelType | null>(null);
+  useEffect(()=>{
+    if(!drawerModelOpen) {
+      setOrderId("");
+      setSpecData(null);
+    }
+  }, [drawerModelOpen])
+
   return (
     <>
       <ListPagination
@@ -126,7 +145,7 @@ const SalesOrderStatusPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={salesOrderStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination)}
+          columns={salesOrderStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, setOrderId, setSpecData, setDrawerModelOpen)}
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
@@ -155,14 +174,70 @@ const SalesOrderStatusPage: React.FC & {
         }}
       />
 
-      {/* <AntdDrawer
-        open={orderDrawer}
-        close={()=>{setOrderDrawer(false); setOrderId('')}}
+      <AntdDrawer
+        open={drawerModelOpen}
+        close={()=>{setDrawerModelOpen(false); setOrderId('')}}
         width={600}
       >
-        <div className="flex flex-col gap-15 p-20 !pr-5">
-        </div>
-      </AntdDrawer> */}
+        { orderId && orderId !== "" &&
+          <div className="flex flex-col gap-15 p-20 !pr-5">
+            <div className="v-between-h-center">
+              <p className="text-16 font-medium">고객 발주 정보</p>
+              <div className="flex justify-end cursor-pointer" onClick={() => setDrawerModelOpen(false)}><Close/></div>
+            </div>
+            <ModelDrawerContent orderId={orderId} />
+          </div>
+        }
+        { specData &&
+          <div className="flex flex-col gap-15 p-20 !pr-5">
+            <div className="v-between-h-center">
+              <p className="text-16 font-medium">사양 정보</p>
+              <div className="flex justify-end cursor-pointer" onClick={() => setDrawerModelOpen(false)}><Close/></div>
+            </div>
+            <CardList items={[
+              { label: '모델명', value: specData?.prdNm ?? '-', widthType: 'half' },
+              { label: '관리No', value: specData?.prdMngNo ?? '-', widthType: 'half' },
+              { label: '제조사', value: specData?.mnfNm ?? '-', widthType: 'half' },
+              { label: 'REV', value: specData?.prdRevNo ?? '-', widthType: 'half' },
+              { label: '구분', value: specData?.modelTypeEm === ModelTypeEm.SAMPLE ? "샘플" : specData?.modelTypeEm === ModelTypeEm.PRODUCTION ? "양산" : '-', widthType: 'half' },
+              { label: '층', value: specData?.layerEm?.replace("L","") ?? '-', widthType: 'half' },
+              { label: '두께', value: specData?.thk ?? '-', widthType: 'half' },
+              { label: '단위', value: specData?.unit?.cdNm ?? '-', widthType: 'half' },
+              { label: '재질', value: specData?.material?.cdNm ?? '-', widthType: 'half' },
+              { label: '외형가공형태', value: specData?.aprType?.cdNm ?? '-', widthType: 'half' },
+              { label: '동박내층', value: specData?.copIn ?? '-', widthType: 'half' },
+              { label: '동박외층', value: specData?.copOut ?? '-', widthType: 'half' },
+              { label: 'S/M 인쇄', value: specData?.smPrint?.cdNm ?? '-', widthType: 'half' },
+              { label: 'M/K 인쇄', value: specData?.mkPrint?.cdNm ?? '-', widthType: 'half' },
+              { label: 'S/M 색상', value: specData?.smColor?.cdNm ?? '-', widthType: 'half' },
+              { label: 'M/K 색상', value: specData?.mkColor?.cdNm ?? '-', widthType: 'half' },
+              { label: 'S/M 종류', value: specData?.smType?.cdNm ?? '-', widthType: 'half' },
+              { label: 'M/K 종류', value: specData?.mkType?.cdNm ?? '-', widthType: 'half' },
+              { label: '특수인쇄', value: specData?.spPrint?.cdNm ?? '-', widthType: 'half' },
+              { label: '특수인쇄종류', value: specData?.spType?.cdNm ?? '-', widthType: 'half' },
+              { label: '도금 두께', value: specData?.pltThk ?? '-', widthType: 'half' },
+              { label: '도금 두께 여유', value: specData?.pltAlph ?? '-', widthType: 'half' },
+              { label: '특별도금(Au)', value: specData?.spPltAu ?? '-', widthType: 'half' },
+              { label: '특별도금여유(Au)', value: specData?.spPltAuAlph ?? '-', widthType: 'half' },
+              { label: '특별도금(Ni)', value: specData?.spPltNi ?? '-', widthType: 'half' },
+              { label: '특별도금여유(Ni)', value: specData?.spPltNiAlph ?? '-', widthType: 'half' },
+              { label: '핀 수', value: specData?.pinCnt ?? '-', widthType: 'half' },
+              { label: 'KIT X/Y', value: specData?.kitW && specData?.kitL ? specData?.kitW+"/"+specData?.kitL: '-', widthType: 'half' },
+              { label: 'PCS X/Y', value: specData?.pcsW && specData?.pcsL ? specData?.pcsW+"/"+specData?.pcsL : '-', widthType: 'half' },
+              { label: 'PNL X/Y', value: specData?.pnlW && specData?.pnlL ? specData?.pnlW+"/"+specData?.pnlL : '-', widthType: 'half' },
+              { label: 'kitPcs', value: specData?.kitPcs ?? '-', widthType: 'half' },
+              { label: 'pnlKit', value: specData?.pnlKit ?? '-', widthType: 'half' },
+              { label: 'sthPcs', value: specData?.sthPcs ?? '-', widthType: 'half' },
+              { label: 'sthPnl', value: specData?.sthPnl ?? '-', widthType: 'half' },
+              { label: '브이컷유무', value: specData?.vcutYn ?? '-', widthType: 'half' },
+              { label: '브이컷형태', value: specData?.vcutType?.cdNm ?? '-', widthType: 'half' },
+              { label: '연조KIT', value: specData?.ykitW && specData?.ykitL ? specData?.ykitW+' '+specData?.ykitL : '-', widthType: 'half' },
+              { label: '연조PNL', value: specData?.ypnlW && specData?.ypnlL ? specData?.ypnlW+"/"+specData?.ypnlL : '-', widthType: 'half' },
+              { label: '등록일', value: dayjs(specData?.createdAt).format("YYYY-MM-DD HH:ss") ?? '-', widthType: 'half' },
+            ]} title="" btnLabel="" btnClick={()=>{}}/>
+          </div>
+        }
+      </AntdDrawer>
       
       <ToastContainer />
     </>

@@ -26,6 +26,7 @@ import SpecSourceRow from "./SpecSourceRow";
 import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
 import { patchAPI } from "@/api/patch";
+import { Popup } from "@/layouts/Body/Popup";
 
 interface Props {
   defaultLayerEm?: LayerEm;
@@ -33,9 +34,7 @@ interface Props {
   setDetailData: React.Dispatch<SetStateAction<specType>>;
   handleSumbitTemp: () => void;
   baseLamination: laminationRType[],
-  setBaseLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
   baseLaminationLoading: boolean;
-  baseLaminationRefetch: () => void;
   color: string[];
   mainLamination: laminationRType[];
   setMainLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
@@ -50,9 +49,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   setDetailData,
   handleSumbitTemp,
   baseLamination,
-  setBaseLamination,
   baseLaminationLoading,
-  baseLaminationRefetch,
   color,
   mainLamination,
   setMainLamination,
@@ -74,7 +71,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"sel" | "oz" | "">("");
+  const [resultType, setResultType] = useState<"sel" | "oz" | "cf" | "">("");
   const [result, setResult] = useState<laminationRType | null>(null);
 
   // 라이브러리 ID 선택 값 저장
@@ -133,6 +130,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   // 라이브러리 선택 시 구성 요소 보여주는 함수
   const handleSelectSource = (selectedSource?:specLaminationType) => {
     let arr = [] as laminationRType[];
+    console.log(selectedSource);
     if(selectedSource) {
       const specDetail = selectedSource.specDetail as {
         data?: {
@@ -140,10 +138,12 @@ const AddLaminationModalContents: React.FC<Props> = ({
             specLamIdx: string;
         }[]
       };
+      console.log(specDetail);
       specDetail.data?.map((detail) => {
         const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
         if(item)  arr.push(item);
       });
+      console.log(arr, baseLamination);
       setLamination(arr);
       setSelect(selectedSource.id);
     } else if(selectSource && typeof selectSource.specDetail !== "string") {
@@ -226,7 +226,13 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleDragStart = (index: number) => {
-    console.log(index);
+    if(index === 0) {
+      showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
+      return;
+    } else if(index === lamination.length - 1) {
+      showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
+      return;
+    }
     setDraggedItemIndex(index);
   };
 
@@ -237,6 +243,14 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
     e.preventDefault();
+
+    console.log('dropIndex : ',dropIndex);
+    // 맨 위/아래 고정 로직
+    if (lamination.length > 1 && (dropIndex === 0 || dropIndex === lamination.length)) {
+      showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
+      setDragOverIndex(null);
+      return;
+    }
 
     // 1) 오른쪽(BaseLaminationRow)에서 드래그해 온 데이터인지 확인
     const baseItemStr = e.dataTransfer.getData("application/base-lamination");
@@ -267,10 +281,11 @@ const AddLaminationModalContents: React.FC<Props> = ({
         }
         
         // CF 아닐 때
-        if (dropIndex === 0 || (lamination.length > 2 && dropIndex === lamination.length)) {
+        if (dropIndex === 0 || (lamination.length > 1 && dropIndex === lamination.length)) {
           showToast("맨 위/맨 아래에는 추가할 수 없습니다.", "error");
           return;
         }
+
         setLamination((prev) => [
           ...prev.slice(0, dropIndex),
           newItem,
@@ -293,14 +308,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
     // 2) 왼쪽 목록 내부 재정렬
     if (draggedItemIndex === null || draggedItemIndex === dropIndex) {
       // 드롭 실패 or 같은 위치 드롭
-      setDragOverIndex(null);
-      return;
-    }
-
-    // 맨 위/아래 고정 로직
-    if (dropIndex === 0 || dropIndex === lamination.length - 1 ||
-      draggedItemIndex === 0 || draggedItemIndex === lamination.length - 1) {
-      showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
       setDragOverIndex(null);
       return;
     }
@@ -379,6 +386,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
+        specSourcesRefetch();
         const entity = result.data.entity as specLaminationType;
         setSpecSources([{ ...entity, confirmYn: cf ? 1 : 0 }, ...specSources]);
         // 생성 후 라이브러리 자동 선택
@@ -411,13 +419,20 @@ const AddLaminationModalContents: React.FC<Props> = ({
         }, selectSource?.id ?? entity?.id);
   
         if(result.resultCode === 'OK_0000') {
+          const entity = result.data?.entity;
+          setSelectSpecLamiFilter({...selectSpecLamiFilter, cf:1});
+          specSourcesRefetch();
+          setSelect(entity?.id);
+          setSelectSource({...entity, confirmYn: 1});
+
           if(!cf) {
-            showToast("확정 저장", "success");
-            specSourcesRefetch();
+            setResultType("cf");
+            setResultOpen(true);
           } else {
             setDetailData({
               ...detailData,
-              specLamination: { id: select },
+              specLamination: { id: entity?.id, lamNo: entity?.lamNo },
+              specLamNo: entity?.lamNo,
             });
             setLamNo(entity?.lamNo);
             setSubmitFlag(true);
@@ -439,10 +454,12 @@ const AddLaminationModalContents: React.FC<Props> = ({
     setMainLamination(lamination);
     
     // 선택된 라이브러리가 있을 경우
+    console.log(select, selectSource);
     if(select && selectSource) {
       setDetailData({
         ...detailData,
-        specLamination: { id: select },
+        specLamination: { id: select, lamNo: selectSource.lamNo },
+        specLamNo: selectSource.lamNo,
       });
       setLamNo(selectSource?.lamNo ?? "");
       setSubmitFlag(true);
@@ -456,7 +473,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   return (
     <div className="v-h-center gap-20 px-10">
-      <div className="min-w-[319px] h-[612px] bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30 flex flex-col gap-20">
+      <Popup
+        className="!min-w-[319px] !h-[612px]"
+      >
         <div className="v-between-h-center h-40">
           <LabelMedium label="적층구조 라이브러리" />
           <div className="w-96 h-24 flex v-h-center">
@@ -573,216 +592,228 @@ const AddLaminationModalContents: React.FC<Props> = ({
             ))
           }
         </div>
-      </div>
-      <div className="min-w-[665px] h-[612px] v-h-center gap-5">
-        <div className="min-w-[298px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
-          <div className="v-between-h-center h-40 w-full mb-20">
-            <div style={{ position: "relative", zIndex: 9999 }}>
-              <Tooltip
-                title="마우스 Drag & Drop으로 순서 변경"
-                getPopupContainer={() => document.body}
-              >
-                <span>
-                  <LabelMedium label="적층구조 라이브러리 구성/편집" />
-                </span>
-              </Tooltip>
-            </div>
-            <div
-              className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
-              onClick={()=>{
-                setLamination(mainLamination);
-                setTimeout(()=>{
-                  setSelect(detailData?.specLamination?.id);
-                }, 100)
-              }}
-            >
-              <Tooltip
-                title="편집 이전 상태로 초기화"
-                getPopupContainer={() => document.body}
-              >
-                <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
-              </Tooltip>
-            </div>
-          </div>
-          <div 
-            className="h-[440px] overflow-y-auto"
-            style={selectSource?.confirmYn === 1?{cursor:"no-drop"}:{}}
-          >
-            <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
-              { Array.isArray(lamination) && lamination.length > 0 &&
-                lamination.map((item: laminationRType, i: number) => (
-                <div key={item.id + ":" + i} style={{ position: "relative" }}>
-                  {/* 드래그 시 내려놓을 위치 표시 */}
-                  {dragOverIndex === i && (
-                    <div
-                      style={{
-                        height: 10,
-                        backgroundColor: "#EBF3FF", // 원하는 색상
-                        border: "1px dashed #4880FF",
-                      }}
-                    />
-                  )}
-                  {/* 실제 아이템 영역 (드래그 이벤트들) */}
-                  <div
-                    draggable={selectSource?.confirmYn === 1 ? false : true}
-                    onDragStart={() => handleDragStart(i)}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setDragOverIndex(i);
-                    }}
-                    onDrop={(e) => {
-                      handleDrop(e, i);
-                      setDragOverIndex(null); // 드롭하면 초기화
-                    }}
-                    onDragEnd={handleDragEnd}
-                    style={{
-                      cursor: item.lamDtlTypeEm !== "cf" && selectSource?.confirmYn !== 1 ? "grab" : "no-drop",
-                    }}
-                  >
-                    <LaminationRow
-                      key={item.id + ":" + i}
-                      item={item}
-                      index={i}
-                      color={color}
-                      lamination={lamination}
-                      setLamination={setLamination}
-                      disable={selectSource?.confirmYn === 1 ? true : false}
-                    />
-                  </div>
-                </div>
-              ))}
-              <div
-                style={{ height: 26 }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragOverIndex(lamination.length);
-                }}
-                onDragEnd={handleDragEnd}
-                onDrop={(e) => {
-                  handleDrop(e, lamination.length);
-                  setDragOverIndex(null);
-                }}
-              />
-            </div>
-          </div>
-          <div className="w-full v-h-center gap-10">
-            {
-              selectSpecLamiFilter.cf === 1 ?
-              <Button
-                className="h-32 rounded-6"
-                onClick={()=>{
-                  handleSubmitSelectSource();
-                }}
-              >
-                <p className="w-16 h-16 text-[#222222]"><Check /></p> 선택
-              </Button>
-              : <>
-              <Button
-                className="h-32 rounded-6"
-                onClick={()=>{
-                  handleSubmitSaveSource(false);
-                }}
-              >
-                임시 저장
-              </Button>
-              <Button
-                className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={()=>{
-                  if(selectSource?.id) {
-                    handleSubmitSaveSourceCf(false);
-                  } else {
-                    showToast("확정할 라이브러리를 선택해주세요.", "error");
-                  }
-                }}
-              >
-                <Arrow /> 확정 저장
-              </Button>
-              </>
-            }
-          </div>
-        </div>
-        <div className="min-w-[333px] h-full bg-white rounded-14 border-[1.3px] border-[#B9B9B9] p-30">
-          <div className="v-between-h-center h-40 w-full mb-20">
-            <p className="text-16 font-medium">적층구조 구성요소</p>
-            <div className="w-[128px] h-24 flex v-h-center">
-              <div
-                className="w-43 v-h-center cursor-pointer"
-                onClick={()=>{setSeletLamiEm('cf')}}
-                style={selectLamiEm==='cf'?
-                  {border:'1.6px solid #4880FF',color:'#4880FF'}
-                  :
-                  {border:'1px solid #D5D5D5',color:'#22222285'}
-                }
-              >
-                C/F
-              </div>
-              <div 
-                className="w-42 v-h-center cursor-pointer"
-                onClick={()=>{setSeletLamiEm('pp')}}
-                style={selectLamiEm==='pp'?
-                  {border:'1.6px solid #4880FF',color:'#4880FF'}
-                  :
-                  {border:'1px solid #D5D5D5',color:'#22222285'}
-                }
-              >
-                P/P
-              </div>
-              <div
-                className="w-45 v-h-center cursor-pointer"
-                onClick={()=>{setSeletLamiEm('ccl')}}
-                style={selectLamiEm==='ccl'?
-                  {border:'1.6px solid #4880FF',color:'#4880FF'}
-                  :
-                  {border:'1px solid #D5D5D5',color:'#22222285'}
-                }
-              >
-                CCL
-              </div>
-            </div>
-          </div>
-          <div className="h-[440px] overflow-y-auto text-12">
+      </Popup>
+      <Popup
+        className="!min-w-[298px] !h-[612px] !v-h-center"
+      >
+        <div className="v-between-h-center h-40 w-full mb-20">
+          <div style={{ position: "relative", zIndex: 9999 }}>
             <Tooltip
-              title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
+              title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 순서 변경"}
               getPopupContainer={() => document.body}
             >
-            <div className="h-40 bg-back v-between-h-center">
-              <p className="w-70 v-h-center">재질</p>
-              <p className="w-56 v-h-center">동박</p>
-              <p className="w-56 v-h-center">두께</p>
-              <p className="w-56 v-h-center">실두께</p>
-              <div className="w-34 v-h-center"></div>
-            </div>
+              <span>
+                <LabelMedium label="적층구조 라이브러리 구성/편집" />
+              </span>
             </Tooltip>
-            <div>
-            {
-              !baseLaminationLoading && baseLamination
-                .filter((f:laminationRType) => f.lamDtlTypeEm === selectLamiEm)
-                .map((item:laminationRType, index:number) => 
-              (
-                <BaseLaminationRow
-                  key={item.id+':'+index}
-                  item={item}
-                  onMenuClick={handleMenuClick}
-                  index={index}
+          </div>
+          <div
+            className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
+            onClick={()=>{
+              setLamination(mainLamination);
+              setTimeout(()=>{
+                setSelect(detailData?.specLamination?.id);
+              }, 100)
+            }}
+          >
+            <Tooltip
+              title="편집 이전 상태로 초기화"
+              getPopupContainer={() => document.body}
+            >
+              <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
+            </Tooltip>
+          </div>
+        </div>
+        <div 
+          className="h-[440px] overflow-y-auto"
+          style={selectSource?.confirmYn === 1?{cursor:"no-drop"}:{}}
+        >
+          <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
+            { Array.isArray(lamination) && lamination.length > 0 &&
+              lamination.map((item: laminationRType, i: number) => (
+              <div key={item.id + ":" + i} style={{ position: "relative" }}>
+                {/* 드래그 시 내려놓을 위치 표시 */}
+                {dragOverIndex === i && (
+                  <div
+                    style={{
+                      height: 10,
+                      backgroundColor: "#EBF3FF", // 원하는 색상
+                      border: "1px dashed #4880FF",
+                    }}
+                  />
+                )}
+                {/* 실제 아이템 영역 (드래그 이벤트들) */}
+                <div
+                  draggable={selectSource?.confirmYn === 1 ? false : true}
+                  onDragStart={() => handleDragStart(i)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOverIndex(i);
+                  }}
+                  onDrop={(e) => {
+                    handleDrop(e, i);
+                    setDragOverIndex(null); // 드롭하면 초기화
+                  }}
                   onDragEnd={handleDragEnd}
-                  disabled={selectSource?.confirmYn === 1 ? true : false}
-                />
-              ))
-            }
+                  style={{
+                    cursor: item.lamDtlTypeEm !== "cf" && selectSource?.confirmYn === 1 ? "no-drop" : "grab",
+                  }}
+                >
+                  <LaminationRow
+                    key={item.id + ":" + i}
+                    item={item}
+                    index={i}
+                    color={color}
+                    lamination={lamination}
+                    setLamination={setLamination}
+                    disable={selectSource?.confirmYn === 1 ? true : false}
+                  />
+                </div>
+              </div>
+            ))}
+            <div
+              style={{ height: 26 }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverIndex(lamination.length);
+              }}
+              onDragEnd={handleDragEnd}
+              onDrop={(e) => {
+                handleDrop(e, lamination.length);
+                setDragOverIndex(null);
+              }}
+            />
+          </div>
+        </div>
+        <div className="w-full v-h-center gap-10">
+          {
+            selectSpecLamiFilter.cf === 1 ?
+            <Button
+              className="h-32 rounded-6"
+              onClick={()=>{
+                handleSubmitSelectSource();
+              }}
+            >
+              <p className="w-16 h-16 text-[#222222]"><Check /></p> 선택
+            </Button>
+            : <>
+            <Button
+              className="h-32 rounded-6"
+              onClick={()=>{
+                handleSubmitSaveSource(false);
+              }}
+            >
+              임시 저장
+            </Button>
+            <Button
+              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+              onClick={()=>{
+                if(selectSource?.id) {
+                  handleSubmitSaveSourceCf(false);
+                } else {
+                  showToast("확정할 라이브러리를 선택해주세요.", "error");
+                }
+              }}
+            >
+              <Arrow /> 확정 저장
+            </Button>
+            </>
+          }
+        </div>
+      </Popup>
+      <Popup
+        className="!min-w-[333px] !h-[612px]"
+      >
+        <div className="v-between-h-center h-40 w-full">
+          <p className="text-16 font-medium">적층구조 구성요소</p>
+          <div className="w-[128px] h-24 flex v-h-center">
+            <div
+              className="w-43 v-h-center cursor-pointer"
+              onClick={()=>{setSeletLamiEm('cf')}}
+              style={selectLamiEm==='cf'?
+                {border:'1.6px solid #4880FF',color:'#4880FF'}
+                :
+                {border:'1px solid #D5D5D5',color:'#22222285'}
+              }
+            >
+              C/F
+            </div>
+            <div 
+              className="w-42 v-h-center cursor-pointer"
+              onClick={()=>{setSeletLamiEm('pp')}}
+              style={selectLamiEm==='pp'?
+                {border:'1.6px solid #4880FF',color:'#4880FF'}
+                :
+                {border:'1px solid #D5D5D5',color:'#22222285'}
+              }
+            >
+              P/P
+            </div>
+            <div
+              className="w-45 v-h-center cursor-pointer"
+              onClick={()=>{setSeletLamiEm('ccl')}}
+              style={selectLamiEm==='ccl'?
+                {border:'1.6px solid #4880FF',color:'#4880FF'}
+                :
+                {border:'1px solid #D5D5D5',color:'#22222285'}
+              }
+            >
+              CCL
             </div>
           </div>
         </div>
-      </div>
+        <div className="h-[440px] overflow-y-auto text-12">
+          <Tooltip
+            title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
+            getPopupContainer={() => document.body}
+          >
+          <div className="h-40 bg-back v-between-h-center">
+            <p className="w-70 v-h-center">재질</p>
+            <p className="w-56 v-h-center">동박</p>
+            <p className="w-56 v-h-center">두께</p>
+            <p className="w-56 v-h-center">실두께</p>
+            <div className="w-34 v-h-center"></div>
+          </div>
+          </Tooltip>
+          <div>
+          {
+            !baseLaminationLoading && baseLamination
+              .filter((f:laminationRType) => f.lamDtlTypeEm === selectLamiEm)
+              .map((item:laminationRType, index:number) => 
+            (
+              <BaseLaminationRow
+                key={item.id+':'+index}
+                item={item}
+                onMenuClick={handleMenuClick}
+                index={index}
+                onDragEnd={handleDragEnd}
+                disabled={selectSource?.confirmYn === 1 ? true : false}
+              />
+            ))
+          }
+          </div>
+        </div>
+      </Popup>
       
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "sel" ? "편집중인 라이브러리가 저장되지 않은 상태입니다." :"OZ는 하나만 추가할 수 있습니다."}
-        contents={resultType === "sel" ? <div>변경된 내용을 저장하지 않고 선택한 라이브러리로 변경하시겠습니까?</div> : <div>선택하신 OZ로 변경하시겠습니까?</div>}
+        title={
+          resultType === "sel" ? "편집중인 라이브러리가 저장되지 않은 상태입니다." :
+          resultType === "cf" ? "라이브러리 확정 완료" :
+          "OZ는 하나만 추가할 수 있습니다."
+        }
+        contents={
+          resultType === "sel" ? <div>변경된 내용을 저장하지 않고 선택한 라이브러리로 변경하시겠습니까?</div> :
+          resultType === "cf" ? <div>라이브러리를 확정하였습니다.<br/>해당 라이브러리로 변경하시겠습니까?</div> :
+          <div>선택하신 OZ로 변경하시겠습니까?</div>
+        }
         type="warning"
         onOk={()=>{
           if(resultType === "sel") {
             handleSelectSource(selectSource ?? {});
+          } else if(resultType === "cf") {
+            handleSubmitSelectSource();
           } else {
             if(result) {
               const newLami = lamination.slice(1, -1);

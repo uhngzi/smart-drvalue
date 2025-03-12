@@ -40,6 +40,8 @@ import { specModelType, specType } from "@/data/type/sayang/sample";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { Popup } from "@/layouts/Body/Popup";
+import { productLinesGroupRType } from "@/data/type/base/product";
+import { processRType } from "@/data/type/base/process";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -256,18 +258,6 @@ const SayangSampleAddPage: React.FC & {
   // --------------- 확정 저장 --------------- 시작
   const handleSubmitConfirm = async () => {
     try {
-      let flag = false;
-      detailData.specModels?.map(f=>{
-        if((f.prdCnt ?? 0) < 1) {
-          flag = true;
-          return;
-        }
-      })
-      if(flag) {
-        showToast("모델 내 생산 수량을 입력해주세요.", "error");
-        return;
-      }
-
       const result = await patchAPI({
         type: 'core-d1',
         utype: 'tenant/',
@@ -291,15 +281,110 @@ const SayangSampleAddPage: React.FC & {
   }
   // --------------- 확정 저장 --------------- 끝
   
+
+  // ------------ 제품군 데이터 세팅 ----------- 시작
+  const [ prdGrpSelectList, setPrdGrpSelectList ] = useState<selectType[]>([]);
+  const { data:prdGrpQueryData } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['product-lines-group/jsxcrud/many'],
+    queryFn: async () => {
+      setPrdGrpSelectList([]);
+
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'product-lines-group/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data ?? []).map((d:productLinesGroupRType)=>({
+          value: d.id,
+          label: d.name
+        }))
+        setPrdGrpSelectList(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+  // ------------ 제품군 데이터 세팅 ----------- 끝
+
   // --------------- 공정 지정 --------------- 시작
-    // 공정 지정 팝업
+  // 공정 지정 팝업
   const [open, setOpen] = useState<boolean>(false);
-  const [updatePrc, setUpdatePrc] = useState<boolean>(false);
+  // 값 저장 여부 체크
+  const [updatePrc, setUpdatePrc] = useState<boolean>(true);
+
+  // 제품군 그룹 선택값
+  const [ selectPrdGrp, setSelectPrdGrp ] = useState<productLinesGroupRType | null>(null);
+  // 사용자가 선택한 공정들 (저장될 값 / 공정을 임의로 추가, 삭제할 수 있으므로 따로 저장)
+  const [ selectPrc, setSelectPrc ] = useState<processRType[]>([]);
+  // 체크 박스 값 (프로세스)
+  const [ selectedKeys, setSelectedKeys ] = useState<string[]>([]);
+  // 라디오 박스 값 (공급처)
+  const [selectedVendors, setSelectedVendors] = useState<{pid:string, vid:string, vname:string}[]>([]);
+
+  // 디플트 값 세팅
+  useEffect(()=>{
+    if (!open) {
+      // 모달이 닫혔을 때 상태 초기화
+      if ((detailData.specPrdGroupPrcs ?? []).length > 0) {
+        // 제품군 디폴트 선택
+        const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
+        const prc = rdata?.find(
+          f => f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id
+        );
+        if (prc) {
+          setSelectPrdGrp(prc);
+        }
+        // 스팩 내 선택된 공정들 초기화
+        let defaultPrc = [] as processRType[];
+        let defaultKey = [] as string[];
+        let defaultVndr = [] as { pid: string; vid: string; vname: string }[];
+        detailData.specPrdGroupPrcs?.forEach(item => {
+          if (item.process) {
+            defaultPrc.push({ ...item.process, remark: item.prcWkRemark });
+            defaultKey.push(item.process.id);
+            if (item.vendor) {
+              defaultVndr.push({
+                pid: item.process.id,
+                vid: (item.vendor?.id ?? ""),
+                vname: (item.vendor?.prtNm ?? ""),
+              });
+            }
+          }
+        });
+        setSelectPrc(defaultPrc);
+        setSelectedKeys(defaultKey);
+        setSelectedVendors(defaultVndr);
+      } else {
+        console.log("elnono");
+        // 초기값 없을 경우 모두 리셋
+        setSelectPrdGrp(null);
+        setSelectPrc([]);
+        setSelectedKeys([]);
+        setSelectedVendors([]);
+      }
+    }
+  }, [open, detailData.specPrdGroupPrcs, prdGrpQueryData]);
+
+  // 값 변경 시 false
+  // 닫을 때 값이 변경되었는지 체크하기 위함 (저장이 안 됐을 경우 alert)
+  useEffect(()=>{
+    if(!open) {
+      // 초기화 되었을 경우에는 true로 설정
+      setUpdatePrc(true);
+    } else {
+      setUpdatePrc(false);
+    }
+  }, [selectPrc, selectPrdGrp, selectedVendors])
   // --------------- 공정 지정 --------------- 끝
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"cf" | "error" | "del" | "">("");
+  const [resultType, setResultType] = useState<"cf" | "error" | "del" | "processClose" | "">("");
   const [resultMsg, setResultMsg] = useState<string>("");
 
   // 로딩 후 결재창 보여주기
@@ -439,7 +524,7 @@ const SayangSampleAddPage: React.FC & {
               }}
             >모델추가</Button>
             {
-              updatePrc || (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
+              (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
               <Button
                 className="!border-[#444444] !w-[107px]"
                 icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
@@ -533,6 +618,23 @@ const SayangSampleAddPage: React.FC & {
 
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{
+          if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
+            showToast("공정을 선택해주세요.", "error");
+            return;
+          }
+
+          let flag = false;
+          detailData.specModels?.map(f=>{
+            if((f.prdCnt ?? 0) < 1) {
+              flag = true;
+              return;
+            }
+          })
+          if(flag) {
+            showToast("모델 내 생산 수량을 입력해주세요.", "error");
+            return;
+          }
+          
           handleSumbitTemp(false, true);
         }}/>
         <FullSubButton label="임시저장" click={()=>{
@@ -549,11 +651,29 @@ const SayangSampleAddPage: React.FC & {
         <ProcessSelection
           open={open}
           detailData={detailData}
+          setDetailData={setDetailData}
           setUpdatePrc={setUpdatePrc}
+          prdGrpQueryData={prdGrpQueryData}
+          prdGrpSelectList={prdGrpSelectList}
+          selectPrdGrp={selectPrdGrp}
+          setSelectPrdGrp={setSelectPrdGrp}
+          selectPrc={selectPrc}
+          setSelectPrc={setSelectPrc}
+          selectedKeys={selectedKeys}
+          setSelectedKeys={setSelectedKeys}
+          selectedVendors={selectedVendors}
+          setSelectedVendors={setSelectedVendors}
         />}
         width={1050}
         onClose={()=>{
-          setOpen(false);
+          // 저장하지 않은 상태일 경우
+          if(!updatePrc) {
+            setResultType("processClose");
+            setResultOpen(true);
+          } else {
+            setUpdatePrc(true);
+            setOpen(false);
+          }
         }}
       />
       
@@ -564,18 +684,21 @@ const SayangSampleAddPage: React.FC & {
           resultType === "cf"? "사양 확정 완료" :
           resultType === "error"? "요청 실패" :
           resultType === "del"? "해당 모델을 삭제하시겠습니까?" :
+          resultType === "processClose"? "공정 지정을 하지 않고 닫으시겠습니까?" :
           ""
         }
         contents={
           resultType === "cf" ? <div className="h-40">사양 확정에 성공하였습니다.</div> :
           resultType === "error" ? <div className="h-40">{resultMsg}</div> :
           resultType === "del" ? <div className="h-40">해당 모델의 사양 등록을 취소하시겠습니까?</div> :
+          resultType === "processClose" ? <div className="h-40">저장되지 않은 공정이 있습니다.<br/>정말 저장하지 않고 닫으시겠습니까?</div> :
           <div className="h-40"></div>
         }
         type={
           resultType === "cf" ? "success" :
           resultType === "error" ? "error" :
           resultType === "del" ? "warning" :
+          resultType === "processClose" ? "warning" :
           "success"
         }
         onOk={()=>{
@@ -584,21 +707,25 @@ const SayangSampleAddPage: React.FC & {
             router.push('/sayang/sample/wait');
           } else if(resultType === "del") {
             handleDeleteModel();
+          } else if(resultType === "processClose") {
+            setOpen(false);
+            setUpdatePrc(true);
           }
         }}
         onCancle={()=>{
           setResultOpen(false);
           setDeleted(null);
         }}
-        hideCancel={resultType === "del" ? false : true}
+        hideCancel={resultType === "del" || resultType === "processClose"  ? false : true}
         okText={
           resultType === "cf" ? "목록으로 이동" :
           resultType === "error" ? "확인" :
           resultType === "del" ? "네 사양 등록 대기로 변경하겠습니다" :
+          resultType === "processClose" ? "네 닫을래요" :
           "목록으로 이동"
         }
         cancelText={
-          resultType === "del" ? "아니요 계속 등록할게요" :
+          resultType === "del" || resultType === "processClose" ? "아니요 계속 등록할게요" :
           ""
         }
       />

@@ -124,6 +124,19 @@ const EditableCell: React.FC<
                 }
                 onFieldChange(value);
               }}
+              onFocus={(e) => {
+                if(dataIndex === "wkProcStCnt") {
+                  if(record.rowIndex === 0 && (!value || value === "")) {
+                    onFieldChange(record.prdCnt);
+                  }
+                  // 두 번째 이상의 행이면 이전 행의 완료량을 자동 입력
+                  if(record.rowIndex > 0 && (!value || value === "")) {
+                    if(record.prevWkProcEdCnt !== undefined) {
+                      onFieldChange(record.prevWkProcEdCnt);
+                    }
+                  }
+                }
+              }}
               type={inputType}
               readonly={record?.disabled ?? undefined}
               styles={{bg:"none"}}
@@ -225,6 +238,7 @@ const AntdTableEdit: React.FC<Props> = ({
     const updatedDataSource = (data ?? []).map((item: any, index: number) => ({
       ...item,
       key: item.key ?? index?.toString(),
+      rowIndex: index, // 행 번호 추가
     }));
 
     setDataSource(updatedDataSource);
@@ -269,12 +283,28 @@ const AntdTableEdit: React.FC<Props> = ({
         set(newData[index], dataIndex, value);
       }
     
-      // 공정현황 내 추가 로직 : wkProcEdCnt가 변경되면 자동으로 wkProcBadCnt 업데이트
+      // 인수량 변경 시 불량 자동 계산 (인수량 - 완료량)
+      if(dataIndex === "wkProcStCnt") {
+        const edCnt = Number(newData[index]["wkProcEdCnt"]) || 0;
+        // 완료량이 유효한 숫자이고 0 이상일 경우에만 불량 계산
+        if (!isNaN(edCnt) && edCnt > 0) {
+          const stCnt = Number(value) || 0;
+          set(newData[index], "wkProcBadCnt", stCnt - edCnt);
+        }
+        // 인수일 자동 입력
+        if(!newData[index]["wkProcStDtm"]) {
+          set(newData[index], "wkProcStDtm", new Date());
+        }
+      }
+
+      // 완료량 변경 시 불량 자동 계산 및 완료일 자동 입력
       if(dataIndex === "wkProcEdCnt") {
         const stCnt = Number(newData[index]["wkProcStCnt"]) || 0;
         const edCnt = Number(value) || 0;
-        const badCnt = stCnt - edCnt;
-        set(newData[index], "wkProcBadCnt", badCnt);
+        set(newData[index], "wkProcBadCnt", stCnt - edCnt);
+        if(!newData[index]["wkProcEdDtm"]) {
+          set(newData[index], "wkProcEdDtm", new Date());
+        }
       }
 
       setDataSource(newData);

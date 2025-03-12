@@ -43,7 +43,7 @@ const ModelHead:React.FC<Props> = ({
 }) => {
   return (
     <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
-      <div className="h-full h-center gap-10 p-10">
+      <div className="h-full h-center gap-20 p-10">
         {/* <div className="flex flex-col">
           <Label label={"발주명"}/>
           <AntdInput
@@ -53,6 +53,20 @@ const ModelHead:React.FC<Props> = ({
             disabled={model.completed}
           />
         </div> */}
+        <AntdSelect
+          options={[
+            {value:ModelStatus.NEW,label:'신규'},
+            {value:ModelStatus.REPEAT,label:'반복'},
+            {value:ModelStatus.MODIFY,label:'수정'},
+          ]}
+          value={model.modelStatus}
+          onChange={(e)=>{
+            handleModelDataChange(model.id ?? '', 'modelStatus', e);
+          }}
+          className="w-[54px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+          disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
+        />
+        
         <div className="flex flex-col">
           <Label label="모델명" />
           <AntdInput
@@ -68,7 +82,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'editModel.prdNm', e.target.value);
               handleModelDataChange(model.id ?? '', 'model.prdNm', e.target.value);
             }}
-            className="w-[180px!important]" styles={{ht:'32px'}}
+            className="w-[250px!important]" styles={{ht:'32px'}}
             readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.completed}
           />
@@ -83,25 +97,11 @@ const ModelHead:React.FC<Props> = ({
             disabled={model.completed}
           />
         </div>
-
-        <AntdSelect
-          options={[
-            {value:ModelStatus.NEW,label:'신규'},
-            {value:ModelStatus.REPEAT,label:'반복'},
-            {value:ModelStatus.MODIFY,label:'수정'},
-          ]}
-          value={model.modelStatus}
-          onChange={(e)=>{
-            handleModelDataChange(model.id ?? '', 'modelStatus', e);
-          }}
-          className="w-[54px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
-          disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
-        />
       </div>
 
       <Divider />
       
-      <div className="h-full h-center gap-10 p-10">
+      <div className="h-full h-center gap-20 p-10">
         <div className="flex flex-col">
           <Label label="원판" />
           <AntdSelect
@@ -111,7 +111,7 @@ const ModelHead:React.FC<Props> = ({
                 handleModelDataChange(model.id ?? '', 'model.board.id', e)
                 handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
             }}
-            className="w-[125px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
         </div>
@@ -124,7 +124,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
               handleModelDataChange(model.id ?? '', 'tempPrdInfo.mnfNm', e.target.value)
             }}
-            className="w-[120px!important]" styles={{ht:'32px'}}
+            className="w-[160px!important]" styles={{ht:'32px'}}
             readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
@@ -140,7 +140,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.material.id', e)
               handleModelDataChange(model.id ?? '', 'tempPrdInfo.material.id', e)
             }}
-            className="w-[155px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
         </div>
@@ -159,14 +159,17 @@ const ModelHead:React.FC<Props> = ({
             }}
             suffixIcon={'cal'}
             styles={{bw:'0',bg:'none', pd:"0"}}
-            className="!w-[106px] !h-32"
+            className="!w-[110px] !h-32"
             placeholder=""
             afterDate={new Date()}
           />
         </div>
       </div>
 
-      <div className="flex-1 flex jutify-end">
+      <div className="flex-1 flex justify-end">
+      { !model.completed && (model as orderModelType).temp && <>
+        <p className="h-center text-11 pr-20">{dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")} 임시저장 완료</p>
+      </>}
       { (model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING) &&
         !model.completed && !(model as orderModelType).temp &&
         <FullChip label="대기중" state="yellow" className="!mr-20 !w-80 !h-30"/>
@@ -176,16 +179,12 @@ const ModelHead:React.FC<Props> = ({
         <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/> : <></>
       }
       { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&<>
-        <FullChip label="확정" state="purple" className="!mr-20 !w-80 !h-30"/>
         <p className="h-center">저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}</p>
+        <FullChip label="확정" state="purple" className="!mx-20 !w-80 !h-30"/>
       </>}
       { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED &&
         <FullChip label="폐기" className="!mr-20 !w-80 !h-30"/>
       }
-      { !model.completed && (model as orderModelType).temp && <>
-        {/* <FullChip label="임시저장 완료" className="!mr-20 !w-[120px] !h-30"/> */}
-        <p className="h-center text-11">{dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")} 임시저장 완료</p>
-      </>}
       </div>
     </div>
   )

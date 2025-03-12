@@ -83,7 +83,7 @@ const ModelList:React.FC<Props> = ({
   };
   
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["models", searchModel, searchCs],
+    queryKey: ["models", searchModel, searchCs, pagination],
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI({
@@ -225,6 +225,22 @@ const ModelList:React.FC<Props> = ({
             <p className="w-16 h-16 text-[#2D2D2D45]"><SearchIcon /></p>
           </div>
         </div>
+      </div>
+      <div className="h-center justify-end">
+        <Pagination 
+          size="small"
+          defaultCurrent={1}
+          current={pagination.current}
+          total={totalData}
+          onChange={(page: number, size: number) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            handlePageChange?.(page, size);
+          }}
+          pageSize={pagination.size}
+          showSizeChanger={true}
+          pageSizeOptions={pageSizeOptions}
+          locale={{ items_per_page: "건씩 보기" }}
+        />
       </div>
       <div className="h-[calc(100vh-300px)] overflow-y-auto">
         <AntdTableEdit

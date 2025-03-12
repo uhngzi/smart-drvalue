@@ -22,13 +22,11 @@ import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
 
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import { ExportOutlined } from "@ant-design/icons";
 
 const WKStatusProcPage: {
@@ -112,8 +110,11 @@ const WKStatusProcPage: {
       });
 
       if(result.resultCode === "OK_0000") {
-        const procs = (result?.data?.data as wkDetailType).procs?.map((item) => ({
+        const rdata = (result?.data?.data as wkDetailType).procs?.sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)) as wkProcsType[];
+        const procs = (rdata ?? []).map((item, index) => ({
           ...item,
+          prdCnt: select?.specModel?.prdCnt,
+          prevWkProcEdCnt: index > 0 ? rdata[index-1].wkProcEdCnt : 0,
           wkProcStCnt: (item?.wkProcStCnt ?? 0) < 0 ? 0 : item?.wkProcStCnt,
           wkProcEdCnt: (item?.wkProcEdCnt ?? 0) < 0 ? 0 : item?.wkProcEdCnt,
           wkProcBadCnt: (item?.wkProcBadCnt ?? 0) < 0 ? 0 : item?.wkProcBadCnt,

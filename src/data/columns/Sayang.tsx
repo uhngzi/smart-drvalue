@@ -44,14 +44,14 @@ export const specStatusClmn = (
   },
   {
     title: '업체명/코드',
-    width: 120,
+    width: 180,
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
@@ -222,7 +222,7 @@ export const specIngClmn = (
   },
   {
     title: '업체명/코드',
-    width: 120,
+    width: 180,
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
@@ -248,7 +248,7 @@ export const specIngClmn = (
     cellAlign: 'left',
     tooltip: "모델명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+      <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           router?.push(`/sayang/sample/wait/${record.id}`);
         }}
@@ -414,7 +414,7 @@ export const sayangSampleWaitClmn = (
     title: <div>
       <Tooltip title="클릭 시 선택한 사양들을 조합하여 등록할 수 있어요">
         <div
-          className="text-11 w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+          className="text-11 w-full v-h-center cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
           onClick={handleCheckedClick}
         >선택한 사양 등록</div>
       </Tooltip>
@@ -465,14 +465,14 @@ export const sayangSampleWaitClmn = (
   },
   {
     title: '업체명/코드',
-    width: 120,
+    width: 180,
     dataIndex: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
     key: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.orderModel?.prtInfo.prt ?? null);
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
@@ -494,7 +494,7 @@ export const sayangSampleWaitClmn = (
     tooltip: "모델명을 클릭하면 조합하거나 신규 등록을 할 수 있어요",
     render: (value, record) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{sayangPopOpen?.(record.id, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
       >
         {record?.model?.prdNm}
@@ -669,7 +669,7 @@ export const sayangSampleWaitAddClmn = (
     children: [
       {
         title:'업체명/코드',
-        width: 80,
+        width: 180,
         dataIndex: 'user',
         key:'user',
         align: 'center',
@@ -1304,14 +1304,14 @@ export const sayangModelWaitClmn = (
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
     key: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record.prtInfo.prt);
           setPartnerMngData(record.prtInfo.mng);
@@ -1332,7 +1332,7 @@ export const sayangModelWaitClmn = (
     cellAlign: 'left',
     tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value, record) => (
-      <div className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+      <div className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{router.push(`/sayang/model/wait/${record?.id}`)}}
       >
         {value}
@@ -1471,7 +1471,7 @@ export const sayangModelWaitAddClmn = (
     align: 'center',
     render: (value: any, record: any) => (
       <>
-        <div className="h-[50%] w-[100%] v-h-center ">
+        <div className="h-[100%] w-[100%] pt-5">
         <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
         </div>
         {/* <div className="h-[50%] w-[100%] v-h-center">

@@ -13,6 +13,8 @@ import { salesOrderProcuctCUType, salesOrderProductRType } from "@/data/type/sal
 import AntdInputFill from "../Input/AntdInputFill";
 import AntdSelectFill from "../Select/AntdSelectFill";
 import { SetStateAction } from "react";
+import AntdInput from "../Input/AntdInput";
+import AntdSelect from "../Select/AntdSelect";
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
 const divTopClass = "h-[100%] flex flex-col items-start";
@@ -837,8 +839,8 @@ export const salesOrderModelReadClmn = (
     align: 'center',
     render: (value:any, record:any, index:number) => (
       <>
-        <div className="h-[50%] w-[100%] v-h-center ">
-          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
+        <div className="h-[100%] w-[100%] pt-5">
+          <p className="w-24 h-24 bg-back rounded-6 flex v-h-center">{record?.index}</p>
         </div>
       </>
     ),
@@ -859,17 +861,18 @@ export const salesOrderModelReadClmn = (
         render: (value:any, record:any) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.prdRevNo}
                 className='!text-12'
                 readonly={true}
+                styles={{bc:"#0000000F"}}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill
+              <AntdSelect
                 options={unitSelectList}
                 value={record.currPrdInfo?.unit?.id ?? unitSelectList[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
@@ -893,18 +896,20 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelectFill
+              <AntdSelect
                 options={generateFloorOptions()}
                 value={record.currPrdInfo?.layerEm ?? "L1"}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.thk}
                 className='!text-12'
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -928,17 +933,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.copOut}
                 className="!text-12" 
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.copIn}
                 className="!text-12" 
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -962,24 +971,30 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pltThk}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.pltAlph}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pinCnt}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1003,27 +1018,35 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.spPltNi}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.spPltNiAlph}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.spPltAu}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
-              <AntdInputFill 
+              <AntdInput
                 value={record.currPrdInfo?.spPltAuAlph}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1047,26 +1070,26 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={smPrintSelectList} 
                 value={record.currPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={smColorSelectList} 
                 value={record.currPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={smTypeSelectList} 
                 value={record.currPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
@@ -1091,26 +1114,26 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelectFill
+              <AntdSelect
                 options={mkPrintSelectList}
                 value={record.currPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill
+              <AntdSelect
                 options={mkColorSelectList}
                 value={record.currPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill
+              <AntdSelect
                 options={mkTypeSelectList}
                 value={record.currPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
@@ -1135,26 +1158,26 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={spPrintSelectList}
                 value={record.currPrdInfo?.spPrint?.id}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={spTypeSelectList}
                 value={record.currPrdInfo?.spType?.id}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
                 value={record.currPrdInfo?.modelTypeEm ?? "sample"}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
@@ -1179,29 +1202,29 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 className='w-[90px]'
                 options={outSelectList} 
                 value={record.currPrdInfo?.aprType?.id}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 className='w-[90px]'
                 options={[{value:false,label:'무'},{value:true,label:'유'}]}
                 value={record.currPrdInfo?.vcutYn ?? false}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
             <div className={divClass}>
-              <AntdSelectFill 
+              <AntdSelect
                 className='w-[90px]'
                 options={vcutSelectList}
                 value={record.currPrdInfo?.vcutType?.id}
-                styles={{fs:'12px'}}
+                styles={{fs:'12px', bc:"#0000000F"}}
                 readonly={true}
               />
             </div>
@@ -1226,10 +1249,11 @@ export const salesOrderModelReadClmn = (
         render: (_, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.doNum}
                 className='w-[100px] !text-12'
                 readonly={true}
+                styles={{bc:"#0000000F"}}
               />
             </div>
           </div>
@@ -1253,17 +1277,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pcsL}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pcsW}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1287,17 +1315,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.kitL}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.kitW}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1321,17 +1353,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pnlL}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pnlW}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1355,27 +1391,35 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+" gap-3"}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.ykitL}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.ykitW}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass+" gap-3"}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.ypnlL}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.ypnlW}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1399,17 +1443,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.kitPcs}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.pnlKit}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>
@@ -1433,17 +1481,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.sthPnl}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
+              <AntdInput
                 value={record.currPrdInfo?.sthPcs}
                 className="!text-12"
                 readonly={true}
+                styles={{bc:"#0000000F"}}
+                type="number"
               />
             </div>
           </div>

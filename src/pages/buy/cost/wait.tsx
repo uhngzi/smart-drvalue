@@ -136,6 +136,8 @@ const BuyCostWaitPage: React.FC & {
     if(!open) {
       setSelect(null);
       setDetailData(null);
+      setSelectPrice([]);
+      setTot(0);
     }
   }, [open])
 
@@ -249,6 +251,7 @@ const BuyCostWaitPage: React.FC & {
     }
   }
   // ---------------- 비용 저장 --------------- 끝
+
   return (
     <>
       <ListPagination

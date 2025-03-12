@@ -50,7 +50,7 @@ const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): Table
   },
   {
     title: '업체명/코드',
-    width: 130,
+    width: 180,
     dataIndex: 'no',
     align: 'center',
     key: 'cuName',

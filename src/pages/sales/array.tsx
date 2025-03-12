@@ -198,10 +198,10 @@ const SalesArrayPage: React.FC & {
           </div>
         </div>
         <div className="w-full h-center justify-end gap-20">
-          <Button className="v-h-center">
+          {/* <Button className="v-h-center">
             <span className='w-16 h-16 text-[#222222]'><Print/></span>
             <span>인쇄</span>
-          </Button>
+          </Button> */}
           <Button type="primary" className="v-h-center" onClick={calculdate}>
             <span className='w-16 h-16'><Calculate/></span>
             <span>계산</span>
@@ -209,7 +209,7 @@ const SalesArrayPage: React.FC & {
         </div>
       </div>
 
-      <div className="w-full v-between-h-center gap-30">
+      <div className="w-full flex gap-30">
         <div className='p-30 bg-white rounded-14 border border-[#D9D9D9] min-h-[300px]'>
           <LabelMedium label="계산 결과"/>
           <AntdTable

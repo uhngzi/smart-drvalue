@@ -23,7 +23,7 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
-    title: '제품모델명',
+    title: '모델명',
     minWidth: 170,
     dataIndex: 'specModel.prdNm',
     key: 'specModel.prdNm',
@@ -360,14 +360,14 @@ export const WKStatusProcClmn = (
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
@@ -386,7 +386,7 @@ export const WKStatusProcClmn = (
     tooltip: "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           setSelect(record);
         }}
@@ -612,14 +612,14 @@ export const WKStatusInClmn = (
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
@@ -779,14 +779,14 @@ export const WkStatusOutClmn = (
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}

@@ -11,12 +11,16 @@ import Trash from "@/assets/svg/icons/s_trash.svg";
 import { SetStateAction } from 'react';
 import { NextRouter } from 'next/router';
 import { Tooltip } from 'antd';
+import { specModelType } from '../type/sayang/sample';
 
 export const salesOrderStatusClmn = (
   totalData: number,
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
   pagination: {current: number, size: number},
+  setOrderId: React.Dispatch<SetStateAction<string>>,
+  setSpecData: React.Dispatch<SetStateAction<specModelType | null>>,
+  setDrawerModelOpen: React.Dispatch<SetStateAction<boolean>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -39,17 +43,22 @@ export const salesOrderStatusClmn = (
     dataIndex: 'worksheet.specModel.prdMngNo',
     key: 'worksheet.specModel.prdMngNo',
     align: 'center',
+    render: (_, record:salesOrderWorkSheetType) => (
+      <div className="w-full v-h-venter">
+        { record?.worksheet?.specModel?.prdMngNo ? record?.worksheet?.specModel?.prdMngNo : "사양미확정"}
+      </div>
+    )
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderWorkSheetType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt ?? null);
           setPartnerMngData(record?.prtInfo?.mng ?? null);
@@ -60,17 +69,43 @@ export const salesOrderStatusClmn = (
     )
   },
   {
-    title: '제품명',
+    title: '사양모델명',
     minWidth: 150,
     dataIndex: 'worksheet.specModel.prdNm',
     key: 'worksheet.specModel.prdNm',
     align: 'center', 
     cellAlign: 'left',
-    render: (_, record) => (
-      <div className="w-full h-full v-between-h-center">
-        {
-          record?.worksheet?.specModel?.prdNm ?? record?.orderTit
-        }
+    tooltip: "사양모델명을 클릭하면 사양 상세 정보를 볼 수 있어요",
+    render: (value:string, record:salesOrderWorkSheetType) => (
+      <div
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        onClick={()=>{
+          const dt = record.worksheet?.specModel as specModelType;
+          setSpecData(dt ?? null);
+          setDrawerModelOpen(true);
+        }}
+      >
+        {record?.worksheet?.specModel?.prdNm}
+      </div>
+    )
+  },
+  {
+    title: '수주모델명',
+    minWidth: 150,
+    dataIndex: 'orderTit',
+    key: 'orderTit',
+    align: 'center', 
+    cellAlign: 'left',
+    tooltip: "수주모델명을 클릭하면 고객발주 정보를 볼 수 있어요",
+    render: (value:string, record:salesOrderWorkSheetType) => (
+      <div
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        onClick={()=>{
+          setOrderId(record.order?.id ?? "");
+          setDrawerModelOpen(true);
+        }}
+      >
+        {value}
       </div>
     )
   },
@@ -178,14 +213,14 @@ export const salesUserOrderClmn = (
   },
   {
     title: '업체명/코드',
-    width: 150,
+    width: 180,
     dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
     align: 'center',
     tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-shadow-hover text-left"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt);
           setPartnerMngData(record?.prtInfo?.mng);
@@ -205,7 +240,7 @@ export const salesUserOrderClmn = (
     tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value:string, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer jutify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=> {
           if(!record.isDiscard && (record.finalGlbStatus === FinalGlbStatus.REGISTERING || record.finalGlbStatus === FinalGlbStatus.WAITING)) {
             // 완료 및 폐기가 아닐 경우에는 페이지 이동
@@ -214,7 +249,7 @@ export const salesUserOrderClmn = (
             // 완료 및 폐기 또는 unknown일 경우에는 드로워 세팅
             setOrderId(record.id);
             setOrderDrawer(true);
-          }  
+          }
         }}
       >
         {value}
@@ -297,41 +332,15 @@ export const salesUserOrderClmn = (
     render: (value:any, record:salesOrderRType) => (
       <div className="w-full h-full v-h-center">
         { record.isDiscard ? (
-          <FullChip label="폐기"
-            // click={()=>{
-            //   setOrderId(record.id);
-            //   setOrderDrawer(true);
-            // }}
-          />
+          <FullChip label="폐기" />
         ): value === FinalGlbStatus.WAITING ? (
-          <FullChip label="대기" state="yellow" 
-            // click={()=>{
-            //   router.push(`/sales/order/${record.id}`);
-            // }}
-          />
+          <FullChip label="대기" state="yellow" />
         ) : value === FinalGlbStatus.COMPLETED ? (
-          <FullChip label="완료"
-            // click={()=>{
-            //   setOrderId(record.id);
-            //   setOrderDrawer(true);
-            // }}
-          />
+          <FullChip label="완료" />
         ) : value === FinalGlbStatus.REGISTERING ? (
-        // ) : (
-          <FullChip
-            label="등록중" state="mint" 
-            // click={()=>{
-            //   router.push(`/sales/order/${record.id}`);
-            // }}
-          />
-         )
-        : (
-          <FullChip label="폐기"
-            // click={()=>{
-            //   setOrderId(record.id);
-            //   setOrderDrawer(true);
-            // }}
-          />
+          <FullChip label="등록중" state="mint" />
+        ) : (
+          <FullChip label="폐기" />
         )}
       </div>
     )

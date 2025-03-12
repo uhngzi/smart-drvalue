@@ -403,7 +403,7 @@ const WkProcessVendorListPage: React.FC & {
                 label: '공정',
                 type: 'select',
                 value: newData.process.id,
-                option: dataProcess?.filter((item:processRType)=>item?.processGroup?.id === newData.processGroup.id).map((item)=>({value:item.id,label:item.prcNm})) ?? []
+                option: dataProcess?.filter((item:processRType)=>item?.processGroup?.id === newData.processGroup.id).map((item)=>({value:item.id,label:(item?.prcNm ?? "")})) ?? []
               },
               { 
                 name: 'vendor',
@@ -411,7 +411,7 @@ const WkProcessVendorListPage: React.FC & {
                 label: '공급처',
                 type: 'select',
                 value: newData.vendor.id,
-                option: dataVendor?.map((item)=>({value:item.id,label:item.prtNm})) ?? []
+                option: dataVendor?.map((item)=>({value:item.id,label:(item?.prtNm ?? "")})) ?? []
               },
               { 
                 name: 'useYn',

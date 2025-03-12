@@ -57,6 +57,8 @@ const CustomAutoComplete: React.FC<Props> = ({
     if (value) {
       const label = option?.find((f) => f.value === value)?.label;
       if (label) setInputValue(label);
+    } else {
+      setInputValue("");
     }
   }, [value, option]); // 값 추가 후 refetch 됐을 때도 확인하기 위해 option도 조건에 넣음
 

@@ -254,7 +254,7 @@ const SiderStyled = styled.div<{
 
   width: ${({ $width }) => $width};
   height: 100%;
-  max-height: 100%;
+  max-height: 100vh;
 
   background: white;
   

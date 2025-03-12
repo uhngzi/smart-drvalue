@@ -26,6 +26,7 @@ import Check from "@/assets/svg/icons/s_check.svg";
 import { ColumnsType } from 'antd/es/table';
 import { AnyObject } from 'antd/es/_util/type';
 import AntdAlertModal from '@/components/Modal/AntdAlertModal';
+import { IconButton } from '@/components/Button/IconButton';
 
 interface Props {
   board: boardType[];
@@ -41,8 +42,8 @@ interface Props {
     diskWidth:number;
     diskHeight:number;
   }[]>>;
-  kit: {id:string, x:number, y:number, cnt:number}[];
-  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number}[]>>;
+  kit: {id:string, nm:string, x:number, y:number, cnt:number}[];
+  setKit: React.Dispatch<SetStateAction<{id:string, nm:string, x:number, y:number, cnt:number}[]>>;
   resultData: arrayCalType[];
   setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
   selectData?: arrayCalType;
@@ -101,17 +102,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
 
   const handleCalculdate = async () => {
     try {
-      if(disk.length < 1) {
-        showToast("원판을 선택해주세요.", "error");
-        return;
-      }
-  
       setCalLoading(true);
 
       const jsonData = { 
         extraMargin: 0,
         boards:disk.map(board=>({boardId:board.id,width:board.diskWidth,height:board.diskHeight})),
-        kits: kit.map((kit, index)=>({kitId:'kit'+index, width:kit.x, height:kit.y, targetCount: 100})),
+        kits: kit.map((kit, index)=>({kitId:kit.id, width:kit.x, height:kit.y, targetCount: 100})),
         panelSpacing: {
           horizontalPadding: yielddata?.marginLongSide,
           verticalPadding: yielddata?.marginShortSide,
@@ -131,11 +127,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
         url:'spec/board-array-calc/default/calculate',
         etc: true,
       }, jsonData);
-      console.log(result);
+      
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as arrayCalType[];
         setResultData(rdata);
         setCalLoading(false);
+        setCalChk(true);
       } else {
         const msg = result?.response?.data?.message;
         setErrMsg(msg);
@@ -149,8 +146,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
   }
 
   function calculdate(){
+    if(disk.length < 1) {
+      showToast("원판을 선택해주세요.", "error");
+      return;
+    }
+
     handleCalculdate();
-    setCalChk(true);
   }
 
   const handleDataChange = (
@@ -351,10 +352,13 @@ const SayangYieldCalculate: React.FC<Props> = ({
                   >
                     <div className="w-full v-between-h-center">
                       <div className="h-center gap-3">
-                        KIT
-                        <p className="w-15 h-15 border-1 border-black rounded-50 text-11 v-h-center">
-                          {index + 1}
-                        </p>
+                        { item.nm.includes("new") && <>
+                          KIT
+                          <p className="w-15 h-15 border-1 border-black rounded-50 text-11 v-h-center">
+                            {index + 1}
+                          </p>
+                        </>}
+                        { !item.nm.includes("new") && item.nm}
                       </div>
                       <Dropdown trigger={['click']} menu={{ items:[
                         {
@@ -364,7 +368,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           </div>,
                           key: 0,
                           onClick: () => {
-                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
+                            setKit([ ...kit, {id:"new-"+(kit.length+1), nm:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
                           }
                         },
                         {
@@ -382,9 +386,10 @@ const SayangYieldCalculate: React.FC<Props> = ({
                       ]}}>
                         <a onClick={(e) => e.preventDefault()}>
                           <Space>
-                            <div className="w-24 h-24 cursor-pointer v-h-center bg-[#E9EDF5]">
+                            <IconButton icon={<Edit />} />
+                            {/* <div className="w-24 h-24 cursor-pointer v-h-center bg-[#E9EDF5]">
                               <p className="w-16 h-16"><Edit/></p>
-                            </div>
+                            </div> */}
                           </Space>
                         </a>
                       </Dropdown>

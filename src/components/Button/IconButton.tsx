@@ -13,9 +13,9 @@ export const IconButton:React.FC<Props> = ({
 }) => {
   return (
     <div 
-      className={"cursor-pointer rounded-6 bg-back v-h-center " + className}
+      className={"cursor-pointer bg-back v-h-center " + className}
       onClick={onClick}
-      style={size==="lg" ? {width:45, height:45} : {width: 20, height: 20}}
+      style={size==="lg" ? {width:45, height:45, borderRadius:6} : {width: 24, height: 24, borderRadius:4}}
     >
       <p className={size === "lg" ? "w-20 h-20" : "w-16 h-16"}>
         {icon}

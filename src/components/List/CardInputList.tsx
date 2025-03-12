@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -11,6 +11,9 @@ import { isValidTel } from "@/utils/formatPhoneNumber";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import dayjs from "dayjs";
 import styled from "styled-components";
+import { useQuery } from "@tanstack/react-query";
+import { getPrtCsAPI } from "@/api/cache/client";
+import { partnerRType } from "@/data/type/base/partner";
 
 interface Item {
   name: string;
@@ -44,8 +47,26 @@ interface CardInputListProps {
   children?: React.ReactNode;
 }
 
-const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, titleIcon, styles, btnClick, innerBtnContents, handleDataChange, children}) => {
-  
+const CardInputList: React.FC<CardInputListProps> = ({ 
+  items, title, btnLabel, titleIcon, styles, btnClick, innerBtnContents, handleDataChange, children
+}) => {
+  const { data:cs } = useQuery({
+    queryKey: ["getClientCs"],
+    queryFn: () => getPrtCsAPI(),
+  });
+  const [temp, setTemp] = useState<number>(0);
+  const [cdChk, setCdChk] = useState<boolean>(false);
+  useEffect(()=>{
+    if(temp === 0) {
+      items.map(item => {
+        if(item.name === "prtRegCd") {
+          setTemp(item.value);
+          return;
+        }
+      })
+    }
+  }, [items])
+
   return (
     <StyledCardInputList 
       $bg={styles?.bg ? styles.bg : "#F8F8FA"}
@@ -85,7 +106,20 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   {item.type === "input" && (
                     <AntdInput 
                       value={item.value ?? undefined}
-                      onChange={(e)=>handleDataChange(e, item.name, 'input')}
+                      onChange={(e)=>{
+                        handleDataChange(e, item.name, 'input')
+                        if(item.name === "prtRegCd") {
+                          if(temp === Number(e.target.value)) {
+                            setCdChk(false);
+                            return;
+                          }
+                          const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
+                          if(csData)  setCdChk(true);
+                          else        setCdChk(false);
+                        } else {
+                          setCdChk(false);
+                        }
+                      }}
                       placeholder={item?.placeholder}
                     />
                   )}
@@ -104,6 +138,12 @@ const CardInputList: React.FC<CardInputListProps> = ({ items, title, btnLabel, t
                   )}
                 </div>
                 { item.value ?
+                  // 식별코드 체크
+                  item.name.toLowerCase().includes("prtregcd") && cdChk ?
+                  <div className="h-center gap-3 text-[red]">
+                    <p className="w-15 h-15"><Hint/></p>
+                    이미 존재하는 식별코드입니다.
+                  </div> :
                   // 이메일 형식 체크
                   item.name.toLowerCase().includes("email") && !isValidEmail(item?.value?.toString()) ?
                   <div className="h-center gap-3 text-[red]">

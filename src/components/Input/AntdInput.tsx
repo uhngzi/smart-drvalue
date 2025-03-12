@@ -18,6 +18,7 @@ interface Props {
   onClick?: MouseEventHandler<HTMLInputElement>;
   tabIndex?: number;
   maxPoint?: number;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 const AntdInput = forwardRef<InputRef, Props>((
@@ -36,6 +37,7 @@ const AntdInput = forwardRef<InputRef, Props>((
     onClick,
     tabIndex,
     maxPoint,
+    onFocus,
   },
   ref
 ) => {
@@ -146,6 +148,7 @@ const AntdInput = forwardRef<InputRef, Props>((
         disabled={disabled}
         onClick={onClick}
         tabIndex={tabIndex}
+        onFocus={onFocus}
       />
     </AntdInputStyled>
   );

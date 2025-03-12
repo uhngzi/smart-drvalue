@@ -54,6 +54,7 @@ const SalesModelTable:React.FC<Props> = ({
   ) => {
     // 데이터를 복사
     const updatedData = data.map((item) => {
+      console.log(value);
       if (item.id === id) {
         const keys = name.split(".");
         const updatedItem = { ...item };
@@ -102,14 +103,14 @@ const SalesModelTable:React.FC<Props> = ({
   }
 
   return (
-    <div className="gap-40 flex flex-col overflow-auto min-w-[1500px]">
+    <div className="gap-40 flex flex-col overflow-auto">
     { data.length > 0 && data
       // 삭제되지 않은 모델만 가져오기
       .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
       .map((model:salesOrderProcuctCUType, index:number) => (
         <div
           key={model.id}
-          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15"
+          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 min-w-[1700px]"
         >
           <SalesModelHead
             model={model}

@@ -21,6 +21,7 @@ interface Props {
   theme?: 'main' | 'base';
   okText?: string;
   cancelText?: string;
+  maskClosable?: boolean;
 }
 
 const iconMap = {
@@ -52,6 +53,7 @@ const AntdAlertModal: React.FC<Props> = ({
   theme = 'main',
   okText = '확인',
   cancelText = '취소',
+  maskClosable = true,
 }) => {
   const IconComponent = type ? iconMap[type].icon : null;
 
@@ -72,6 +74,7 @@ const AntdAlertModal: React.FC<Props> = ({
       cancelButtonProps={{ style: { display: hideCancel ? 'none' : 'inline-block' } }}
       okText={okText}
       cancelText={cancelText}
+      maskClosable={maskClosable}
     >
       {contents}
     </CustomModal>
