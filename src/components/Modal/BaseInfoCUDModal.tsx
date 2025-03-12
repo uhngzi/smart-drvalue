@@ -15,6 +15,7 @@ import { inputFax } from "@/utils/formatFax";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
+import useToast from "@/utils/useToast";
 
 interface Option {
   value: string | number | boolean ;
@@ -70,7 +71,8 @@ interface CardInputListProps {
 const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles}: CardInputListProps
 ): JSX.Element => {
-  
+  const {showToast, ToastContainer} = useToast();
+
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
   const dataRef = useRef<{ [key: string]: any }>({})
   const getData = () => ({...dataRef.current})
@@ -121,6 +123,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   const [cdChk, setCdChk] = useState<boolean>(false);
 
   return (
+    <>
     <AntdEditModal
       open={open}
       width={popWidth || 600}
@@ -236,7 +239,14 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
           </section>
           {data?.id ? (
             <div className="flex gap-10">
-              <Button type="primary" size="large" onClick={()=>onSubmit(getData())}
+              <Button type="primary" size="large"
+                onClick={()=>{
+                  if(cdChk) {
+                    showToast("이미 존재하는 식별코드입니다.", "error");
+                    return;
+                  }
+                  onSubmit(getData());
+                }}
                 className="w-full flex h-center gap-8 !h-[50px]" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
                 <span>수정</span>
@@ -249,7 +259,14 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
               </Button>
             </div>
           ) : (
-            <Button type="primary" size="large" onClick={()=>onSubmit(getData())}
+            <Button type="primary" size="large"
+              onClick={()=>{
+                if(cdChk) {
+                  showToast("이미 존재하는 식별코드입니다.", "error");
+                  return;
+                }
+                onSubmit(getData())
+              }}
               className="w-full flex h-center gap-8 !h-[50px]" 
               style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
               <span>등록</span>
@@ -269,6 +286,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
         </StyledCardInputList>
       }
       />
+      <ToastContainer/>
+      </>
   );
 };
 

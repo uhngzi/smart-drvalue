@@ -218,6 +218,8 @@ const PrtDrawer: React.FC<Props> = ({
     }).open();
   };
 
+  const [cdChk, setCdChk] = useState<boolean>(false);
+
   return (
     <>
       <AntdDrawer
@@ -291,6 +293,8 @@ const PrtDrawer: React.FC<Props> = ({
               name:'prtEmail', label:'이메일', type:'input', widthType:'half' },
             ]}
             handleDataChange={(e, name, type)=>handlePrtDataChange('prt', e, name, type)}
+            cdChk={cdChk}
+            setCdChk={setCdChk}
           />
         </>}
       />
@@ -302,6 +306,10 @@ const PrtDrawer: React.FC<Props> = ({
         partnerId={partnerId}
         newPartnerMngData={newPartnerMngData}
         submitEndFn={()=>{
+          if(cdChk) {
+            showToast("이미 존재하는 식별코드입니다", "error");
+            return;
+          }
           setOpen(false);
           setNewPrtMngOpen(false);
         }}

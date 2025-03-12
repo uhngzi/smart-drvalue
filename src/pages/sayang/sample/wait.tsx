@@ -176,7 +176,9 @@ const SayangSampleListPage: React.FC & {
           router.push(`/sayang/sample/wait/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
-          showToast(msg, "error");
+          setMsg(msg);
+          setResultType("error");
+          setOpen(true);
         }
       }
     } catch (e) {
@@ -218,7 +220,9 @@ const SayangSampleListPage: React.FC & {
           router.push(`/sayang/sample/wait/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
-          showToast(msg, "error");
+          setMsg(msg);
+          setResultType("error");
+          setOpen(true);
         }
       }
     } catch (e) {
@@ -246,7 +250,9 @@ const SayangSampleListPage: React.FC & {
           router.push(`/sayang/sample/wait/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
-          showToast(msg, "error");
+          setMsg(msg);
+          setResultType("error");
+          setOpen(true);
         }
       }
     } catch (e) {
@@ -314,7 +320,7 @@ const SayangSampleListPage: React.FC & {
   }
 
   const [open, setOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"chkLayerErr" | "cf" | "">("");
+  const [resultType, setResultType] = useState<"chkLayerErr" | "error" | "cf" | "">("");
   const [msg, setMsg] = useState<string>("");
 
   if (ingDataLoading || waitDataLoading) {
@@ -431,11 +437,13 @@ const SayangSampleListPage: React.FC & {
         setOpen={setOpen}
         title={
           resultType === "chkLayerErr" ? "층이 다른 모델이 존재합니다." :
+          resultType === "error" ? "오류 발생" :
           resultType === "cf" ? "아래의 조합으로 등록하시겠습니까?" :
           ""
         }
         contents={
           resultType === "chkLayerErr" ? <div>같은 층의 모델만 조합 가능합니다.<br/>선택한 층을 확인해주세요.</div> :
+          resultType === "error" ? <div>{msg}</div> :
           resultType === "cf" ? <div className="h-center gap-10">
             {(msg.split(",") ?? [])?.map((item, index) => (
               <div key={index} className="rounded-20 border-1 border-line w-fit p-10">{item}</div>
@@ -443,12 +451,10 @@ const SayangSampleListPage: React.FC & {
             </div> :
           <></>
         }
-        hideCancel={
-          resultType === "chkLayerErr" ? true :
-          false
-        }
+        hideCancel={resultType === "cf"}
         type={
           resultType === "chkLayerErr" ? "warning" :
+          resultType === "error" ? "error" :
           "success"
         }
         onOk={()=>{
@@ -460,7 +466,7 @@ const SayangSampleListPage: React.FC & {
         okText={
           resultType === "chkLayerErr" ? "확인" :
           resultType === "cf" ? "네 이대로 조합할게요" :
-          ""
+          "확인"
         }
         cancelText={
           resultType === "cf" ? "아니요 변경할래요" :

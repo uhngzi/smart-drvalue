@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { Button } from "antd";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -45,17 +45,18 @@ interface CardInputListProps {
     type: 'input' | 'select' | 'date' | 'other',
   ) => void;
   children?: React.ReactNode;
+  cdChk?: boolean;
+  setCdChk?: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const CardInputList: React.FC<CardInputListProps> = ({ 
-  items, title, btnLabel, titleIcon, styles, btnClick, innerBtnContents, handleDataChange, children
+  items, title, btnLabel, titleIcon, styles, btnClick, innerBtnContents, handleDataChange, children, cdChk, setCdChk,
 }) => {
   const { data:cs } = useQuery({
     queryKey: ["getClientCs"],
     queryFn: () => getPrtCsAPI(),
   });
   const [temp, setTemp] = useState<number>(0);
-  const [cdChk, setCdChk] = useState<boolean>(false);
   useEffect(()=>{
     if(temp === 0) {
       items.map(item => {
@@ -110,14 +111,14 @@ const CardInputList: React.FC<CardInputListProps> = ({
                         handleDataChange(e, item.name, 'input')
                         if(item.name === "prtRegCd") {
                           if(temp === Number(e.target.value)) {
-                            setCdChk(false);
+                            setCdChk?.(false);
                             return;
                           }
                           const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
-                          if(csData)  setCdChk(true);
-                          else        setCdChk(false);
+                          if(csData)  setCdChk?.(true);
+                          else        setCdChk?.(false);
                         } else {
-                          setCdChk(false);
+                          setCdChk?.(false);
                         }
                       }}
                       placeholder={item?.placeholder}

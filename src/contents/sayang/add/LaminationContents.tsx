@@ -36,7 +36,7 @@ const LaminationContents: React.FC<Props> = ({
 
   // ------------ 베이스 데이터 세팅 ----------- 시작
   const [ baseLamination, setBaseLamination ] = useState<Array<laminationRType>>([]);
-  const { data:baseLaminationData, isLoading:baseLaminationLoading, refetch:baseLaminationRefetch } = useQuery<
+  const { data:baseLaminationData, isLoading:baseLaminationLoading } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['lamination-source/jsxcrud/many'],

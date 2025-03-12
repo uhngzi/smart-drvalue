@@ -601,7 +601,6 @@ const SayangSampleAddPage: React.FC & {
             <ArrayContents
               board={board}
               handleSumbitTemp={handleSumbitTemp}
-              refetch={refetch}
               detailData={detailData}
               setDetailData={setDetailData}
             />

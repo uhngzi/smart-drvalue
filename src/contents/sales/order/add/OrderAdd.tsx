@@ -441,7 +441,7 @@ const OrderAddLayout = () => {
         ...formData,
         id: entity?.id,
       })
-      console.log(entity);
+      setOrderId(entity?.id);
       setUpdate(false);
     } else {
       const msg = result.response?.data?.message;
@@ -462,7 +462,7 @@ const OrderAddLayout = () => {
       url: `sales-order/default/update/${orderId}`,
       jsx: 'default',
       etc: true,
-    }, orderId, { ...formData, id: undefined });
+    }, orderId, { ...formData, id: undefined, products: undefined });
 
     if(result.resultCode === "OK_0000") {
       showToast("발주 수정 완료", "success");

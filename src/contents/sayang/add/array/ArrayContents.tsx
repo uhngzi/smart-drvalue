@@ -13,7 +13,6 @@ import Memo from '@/assets/svg/icons/memo.svg';
 interface Props {
   board: boardType[];
   handleSumbitTemp: () => void;
-  refetch: () => void;
   detailData: specType;
   setDetailData: React.Dispatch<SetStateAction<specType>>;
 }
@@ -21,7 +20,6 @@ interface Props {
 const ArrayContents: React.FC<Props> = ({
   board,
   handleSumbitTemp,
-  refetch,
   detailData,
   setDetailData,
 }) => {
