@@ -16,6 +16,7 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
+import { generateFloorOptions, LayerEm } from "@/data/type/enum";
 
 const WkProcessVendorPriceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -326,6 +327,13 @@ const WkProcessVendorPriceListPage: React.FC & {
                 type: 'input',
                 inputType: 'number',
                 value: newData.priceUnit,
+              },
+              { 
+                name: 'layerEm',
+                label: '층',
+                type: 'select',
+                option: generateFloorOptions(),
+                value: newData.layerEm,
               },
               { 
                 name: 'modelTypeEm',
