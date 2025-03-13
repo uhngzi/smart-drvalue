@@ -19,13 +19,16 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=80
 
+# 빌드 단계에서 생성된 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
 
-RUN yarn install --production --frozen-lockfile
+# runner 단계에서도 Corepack 활성화 후 프로덕션 의존성 설치
+RUN corepack enable && yarn install --production --frozen-lockfile
 
 EXPOSE 80
 
+# 애플리케이션 실행
 CMD ["yarn", "start"]
