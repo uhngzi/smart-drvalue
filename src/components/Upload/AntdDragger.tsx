@@ -88,7 +88,7 @@ const AntdDragger: React.FC<Props> = ({
         disabled={disabled}
         name="files"
         headers={{
-         'x-tenant-code' : 'test',
+         'x-tenant-code' : 'gpntest-sebuk-ver',
           Authorization: `bearer ${cookie.get(cookieName)}`,
         }}
         action={`http://115.68.221.100:3300/api/serv/file-mng/v1/tenant/file-manager/upload/multiple`}
