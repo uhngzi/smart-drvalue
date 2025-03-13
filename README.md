@@ -74,7 +74,9 @@ git pull
   개인 계정명
   개인 토큰
 yarn build
-pm2 restart 0
+pm2 restart 31 또는 pm2 restart smart80
+
+  *** 서버 내 yarnrc.yml 파일 내 nodeLinker는 node-modules로 실행 (yarn berry ~ pnp로 진행할 경우 에러 발생되므로...)
 ```
 
 

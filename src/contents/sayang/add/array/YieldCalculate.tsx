@@ -42,8 +42,8 @@ interface Props {
     diskWidth:number;
     diskHeight:number;
   }[]>>;
-  kit: {id:string, nm:string, x:number, y:number, cnt:number}[];
-  setKit: React.Dispatch<SetStateAction<{id:string, nm:string, x:number, y:number, cnt:number}[]>>;
+  kit: {id:string, x:number, y:number, cnt:number}[];
+  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number}[]>>;
   resultData: arrayCalType[];
   setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
   selectData?: arrayCalType;
@@ -352,13 +352,10 @@ const SayangYieldCalculate: React.FC<Props> = ({
                   >
                     <div className="w-full v-between-h-center">
                       <div className="h-center gap-3">
-                        { item.nm.includes("new") && <>
-                          KIT
-                          <p className="w-15 h-15 border-1 border-black rounded-50 text-11 v-h-center">
-                            {index + 1}
-                          </p>
-                        </>}
-                        { !item.nm.includes("new") && item.nm}
+                        KIT
+                        <p className="w-15 h-15 border-1 border-black rounded-50 text-11 v-h-center">
+                          {index + 1}
+                        </p>
                       </div>
                       <Dropdown trigger={['click']} menu={{ items:[
                         {
@@ -368,7 +365,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           </div>,
                           key: 0,
                           onClick: () => {
-                            setKit([ ...kit, {id:"new-"+(kit.length+1), nm:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
+                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
                           }
                         },
                         {

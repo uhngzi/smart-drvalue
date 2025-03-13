@@ -94,11 +94,12 @@ const OrderAddLayout = () => {
   }, [id]);
   
   useEffect(()=>{
+    console.log(id);
     // 수정일 경우에만 실행
-    if(orderId && !(id+"").includes("new")) {
-      fetchDetail();
+    if(!(id+"").includes("new")) {
+      fetchDetail(id?.toString());
     }
-  }, [orderId])
+  }, [id])
 
   // ----------- 거래처 데이터 세팅 ----------- 시작
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
@@ -181,7 +182,7 @@ const OrderAddLayout = () => {
     const result = await getAPI({
       type: 'core-d1',
       utype: 'tenant/',
-      url: `sales-order/detail/jsxcrud/one/${orderId}`
+      url: `sales-order/detail/jsxcrud/one/${id}`
     });
 
     if(result.resultCode === "OK_0000") {
@@ -271,15 +272,11 @@ const OrderAddLayout = () => {
       setDetailChk(false);
     }
   }
-
-  useEffect(()=>{console.log(fileList)}, [fileList]);
   // -------- 수정 시 디테일 데이터 세팅 -------- 끝
   
   // ------------ 모델 저장 함수 ------------- 시작
   const handleSubmitModel = async (model: salesOrderProcuctCUType) => {
     try {
-      console.log('sub : ', model.orderPrdDueDt);
-
       const jsonData = {
         currPrdInfo: model.currPrdInfo,
         partnerId: formData.partnerId,
@@ -330,23 +327,31 @@ const OrderAddLayout = () => {
             ];
             setNewProducts(newArray);
           }
+
+          // 발주도 자동 저장
+          handleEditOrderMain(true);
         } else {
           const msg = result?.response?.data?.message;
           setErrMsg(msg);
           setAlertType("error");
           setAlertOpen(true);
         }
-      } else if(model.id) {
+      } else if(model?.id) {
         const result = await patchAPI({
           type: 'core-d1',
           utype: 'tenant/',
-          url: 'sales-order/product',
-          jsx: 'jsxcrud' },
+          url: `sales-order/product/jsxcrud/update/no-change-status/${model?.id}`,
+          jsx: 'jsxcrud',
+          etc: true,
+         },
           model?.id, jsonData
         );
     
         if(result.resultCode === 'OK_0000') {
           showToast("저장 완료", "success");
+
+          // 발주도 자동 저장
+          handleEditOrderMain(true);
         } else {
           const msg = result?.response?.data?.message;
           setErrMsg(msg);
@@ -414,7 +419,6 @@ const OrderAddLayout = () => {
   // ------------ 발주 폐기 함수 ------------- 끝
 
   // ------------ 발주 등록 함수 ------------- 시작
-
   const handleAddOrderMain = async () => {
     const jsonData = changeOrderMainNew({ ...formData, id: orderId}, me);
     console.log(JSON.stringify(jsonData));
@@ -453,7 +457,7 @@ const OrderAddLayout = () => {
   // ------------ 발주 등록 함수 ------------- 끝
 
   // ------------ 발주 수정 함수 ------------- 시작
-  const handleEditOrderMain = async () => {
+  const handleEditOrderMain = async (auto?:boolean) => {
     console.log(orderId, JSON.stringify(formData));
     
     const result = await patchAPI({
@@ -465,7 +469,7 @@ const OrderAddLayout = () => {
     }, orderId, { ...formData, id: undefined, products: undefined });
 
     if(result.resultCode === "OK_0000") {
-      showToast("발주 수정 완료", "success");
+      if(!auto)  showToast("발주 수정 완료", "success");
       setUpdate(false);
     } else {
       const msg = result.response?.data?.message;
@@ -632,6 +636,8 @@ const OrderAddLayout = () => {
                   style={{color:"#444444E0"}}
                   onClick={() => {
                     setFormData(newDataSalesOrderCUType());
+                    setFileIdList([]);
+                    setFileList([]);
                     stepRef.current[0].scrollIntoView({
                       behavior: 'smooth',
                       block: 'start',

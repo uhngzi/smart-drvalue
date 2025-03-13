@@ -29,7 +29,7 @@ const ArrayContents: React.FC<Props> = ({
   const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
-  const [kit, setKit] = useState<{id:string, nm:string, x:number, y:number, cnt:number}[]>([{id:"new-0", nm:"KIT-1", x:0, y:0, cnt:1}]);
+  const [kit, setKit] = useState<{id:string, x:number, y:number, cnt:number}[]>([{id:"new-0", x:0, y:0, cnt:1}]);
   const [resultData, setResultData] = useState<arrayCalType[]>([]);
   const [selectData, setSelectData] = useState<arrayCalType>();
 
@@ -68,7 +68,6 @@ const ArrayContents: React.FC<Props> = ({
       setKit(detailData.specModels?.map((item, index) => ({
         // id: item.id ?? "",
         id: "kit-"+index,
-        nm: item.prdNm ?? "",
         x: item.kitW ?? 0,
         y: item.kitL ?? 0,
         cnt: 1
