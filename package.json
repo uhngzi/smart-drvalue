@@ -15,6 +15,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@nestjsx/crud-request": "^5.0.0-alpha.3",
+    "@swc/helpers": "^0.5.15",
     "@tanstack/react-query": "^5.62.11",
     "antd": "^5.24.0",
     "antd-style": "^3.7.1",
