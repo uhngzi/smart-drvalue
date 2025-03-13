@@ -150,6 +150,7 @@ const WkProcessVendorPriceListPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string,
   ) => {
+    console.log(name, type, e);
     if(type === "input" && typeof e !== "string") {
       const { value } = e.target;
       setNewData({...newData, [name]: value});
@@ -173,7 +174,7 @@ const WkProcessVendorPriceListPage: React.FC & {
         utype: 'tenant/',
         url: 'process-vendor-price',
         jsx: 'jsxcrud'
-      }, {...newData, layerEm: "2L"});
+      }, {...newData});
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
@@ -342,13 +343,6 @@ const WkProcessVendorPriceListPage: React.FC & {
                 option: [{value:'sample',label:"샘플"},{value:'mass',label:"양산"}],
                 value: newData.modelTypeEm,
               },
-              // { 
-              //   name: 'layerEm',
-              //   label: '레이어',
-              //   type: 'select',
-              //   option: [{value:true,label:"사용"},{value:false,label:"미사용"}],
-              //   value: newData.layerEm,
-              // },
               { 
                 name: 'thk',
                 label: '두께',
