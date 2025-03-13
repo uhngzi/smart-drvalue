@@ -51,10 +51,10 @@ const SalesOrderContent: React.FC<Props> = ({
   useEffect(()=>{
     if(!detailChk) {
       setFormData({ ...formData, files:fileIdList });
-      console.log(formData, fileIdList);
+      console.log(fileIdList, fileList);
     }
-  }, [fileIdList]);
-  useEffect(()=>{console.log(formData.files)}, [formData.files]);
+  }, [fileIdList, fileList]);
+  useEffect(()=>{console.log(formData)}, [formData]);
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
   // 전체 div의 크기를 가져오기 위한 변수

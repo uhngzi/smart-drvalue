@@ -36,7 +36,7 @@ export const instance = axios.create({
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    'x-tenant-code': isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'test2',
+    'x-tenant-code': isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'gpntest-sebuk-ver',
   },
 });
 
@@ -51,7 +51,7 @@ instance.interceptors.request.use(
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    config.headers["x-tenant-code"] = isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'test2';
+    config.headers["x-tenant-code"] = isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'gpntest-sebuk-ver';
 
     return config;
   },
