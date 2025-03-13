@@ -25,10 +25,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
 
-# runner 단계에서도 Corepack 활성화 후 프로덕션 의존성 설치
-RUN corepack enable && yarn install --production --frozen-lockfile
+# runner 단계에서 Corepack 활성화 후 Yarn 4.6.0 준비 및 프로덕션 의존성 설치
+RUN corepack enable && corepack prepare yarn@4.6.0 --activate && yarn install --production --frozen-lockfile
 
 EXPOSE 80
 
-# 애플리케이션 실행
 CMD ["yarn", "start"]
