@@ -26,7 +26,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
 
 # runner 단계에서 Corepack 활성화 후 Yarn 4.6.0 준비 및 프로덕션 의존성 설치
-RUN corepack enable && corepack prepare yarn@4.6.0 --activate && yarn install --production --frozen-lockfile
+RUN corepack enable && corepack prepare yarn@4.6.0 --activate && yarn install --immutable
 
 EXPOSE 80
 
