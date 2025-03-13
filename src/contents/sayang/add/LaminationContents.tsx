@@ -74,6 +74,7 @@ const LaminationContents: React.FC<Props> = ({
         if(item)  arr.push(item);
       });
       setLamination(arr);
+      console.log(detailData.specLamination,detail,arr);
     }
   }, [detailData.specLamination, baseLaminationLoading]);
 

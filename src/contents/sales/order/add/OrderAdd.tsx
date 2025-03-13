@@ -280,7 +280,7 @@ const OrderAddLayout = () => {
       const jsonData = {
         currPrdInfo: model.currPrdInfo,
         partnerId: formData.partnerId,
-        partnerManagerId: formData.partnerManagerId,
+        partnerManagerId: formData.partnerManagerId === "" ? null : formData.partnerManagerId,
         order: { id: formData.id },
         model: { id: model.modelId },
         modelStatus: model.modelStatus,
@@ -466,7 +466,12 @@ const OrderAddLayout = () => {
       url: `sales-order/default/update/${orderId}`,
       jsx: 'default',
       etc: true,
-    }, orderId, { ...formData, id: undefined, products: undefined });
+    }, orderId, {
+      ...formData,
+      id: undefined,
+      products: undefined, 
+      partnerManagerId: formData.partnerManagerId === "" ? null : formData.partnerManagerId
+    });
 
     if(result.resultCode === "OK_0000") {
       if(!auto)  showToast("발주 수정 완료", "success");
