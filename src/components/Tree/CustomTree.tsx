@@ -42,9 +42,9 @@ const CustomTree:React.FC<Props> = ({
   const [ treeName, setTreeName ] = useState<string>('');
 
   const customEditItems = (type: "main" | "child", id: string, parentId?: string) => (
-    <div className="flex flex-col gap-12 px-16 py-9 bg-white rounded-8" style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
+    <div className="flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[200px]" style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
       <div className="relative h-center mb-10">
-        <AntdInput className="w-[120px]" value={treeName} 
+        <AntdInput className="w-full" value={treeName} 
           onChange={(e) => setTreeName(e.target.value)}
           onKeyDown={(e) => {
             if(e.key === "Enter") {
@@ -73,6 +73,9 @@ const CustomTree:React.FC<Props> = ({
   const [selectId, setSelectId] = useState<{id: string, type: string}[]>([]);
   const [hoverId, setHoverId] = useState<string | null>(null);
 
+  const [isSearch, setIsSearch] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
+
   useEffect(() => {
     setSelectId([]);
     setList(data);
@@ -95,6 +98,25 @@ const CustomTree:React.FC<Props> = ({
     }
   }, [list]);
   
+  const treeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    if(value === '') {
+      setList(data);
+    } else{
+      // list와 list 안에 child를 flat하게 만들어서 검색
+      const flatTree = data.flatMap(node => [
+          { id: node.id, label: node.label, open: node.open }, // 현재 노드 포함
+          ...(node.children?.map(child => ({
+            id: child.id,
+            label: child.label,
+            open: node.open, // 부모의 `open` 상태를 유지할지 결정
+          })) ?? []) // children을 추가
+        ]);
+  
+      setList(flatTree.filter(item => item.label.includes(value)));
+    }
+  }
 
   // tree 데이터를 수정할때 사용하는 함수
   const handleDataUpdate = async (
@@ -311,7 +333,7 @@ const CustomTree:React.FC<Props> = ({
 
   return (
     <section className="flex flex-col h-full justify-between">
-    <div className="w-full flex flex-col gap-20 h-full overflow-y-auto">
+    <div className="w-full flex flex-col gap-20 h-full min-h-[500px] overflow-y-auto">
       {/* <div className="flex flex-col">
         <p className="pb-8">적용일</p>
         <AntdDatePicker
@@ -327,9 +349,23 @@ const CustomTree:React.FC<Props> = ({
         <p>전체 ({list.length})</p>
 
         <div className="h-center gap-8">
-          <p className="w-16 h-16 cursor-pointer" style={{color:'#00000073'}}>
-            <Search />
-          </p>
+          {!isSearch ? (
+            <p className="w-16 h-16 cursor-pointer" style={{color:'#00000073'}} onClick={() => setIsSearch(true)}>
+              <Search />
+            </p>
+          ) : (
+            <div className="w-full h-35 flex gap-10 px-5 items-center" style={{border:'1px solid #09BB1B'}}>
+                <p className="w-24 h-24"><Search /></p>
+                <input
+                  className="h-full focus:outline-none"
+                  style={{border:'0'}}
+                  value={searchText}
+                  onChange={(e) => treeSearch(e)}
+                  onBlur={() => {setSearchText(''); setIsSearch(false); setList(data);}}
+                  placeholder="검색"
+              />
+            </div>
+          )}
           <p className="w-16 h-16 cursor-pointer" onClick={handleAddList}>
             <Plus />
           </p>
@@ -376,7 +412,7 @@ const CustomTree:React.FC<Props> = ({
                 <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}`} key={item.id} 
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
-                  {isChild ? (
+                  {(isChild && searchText === '') ? (
                     <>
                       {item.open ? (
                         <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
