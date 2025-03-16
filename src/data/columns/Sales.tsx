@@ -129,6 +129,7 @@ export const salesOrderStatusClmn = (
     dataIndex: 'orderPrdCnt',
     key: 'orderPrdCnt',
     align: 'center',
+    cellAlign: 'right',
     render: (value) => {
       return value ? Number(value).toLocaleString() : 0;
     }
@@ -139,6 +140,7 @@ export const salesOrderStatusClmn = (
     dataIndex: 'worksheet.specModel.m2',
     key: 'worksheet.specModel.m2',
     align: 'center',
+    cellAlign: 'right',
     
   },
   {

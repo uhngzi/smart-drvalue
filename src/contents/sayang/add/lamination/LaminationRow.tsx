@@ -17,7 +17,7 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(({ item, index, color, 
   return (
     <div
       key={item.id}
-      className="h-26 v-between-h-center border-1 border-line rounded-4"
+      className="w-full h-26 v-between-h-center border-1 border-line rounded-4"
       style={{
         background:
           item.lamDtlTypeEm === LamDtlTypeEm.CF

@@ -7,7 +7,6 @@ import { arrayCalType, specType, yieldInputType } from "@/data/type/sayang/sampl
 import { Button } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
 import SayangYieldCalculate from "./YieldCalculate";
-import { changeSayangTemp } from "@/data/type/sayang/changeData";
 import Memo from '@/assets/svg/icons/memo.svg';
 
 interface Props {

@@ -516,15 +516,17 @@ const SayangModelAddPage: React.FC & {
                         return;
                       }
 
-                      //그대로 등록일 경우에는 바로 확정만 진행
-                      if(!newFlag && selectId === model.id)
-                        handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
+                      // 그대로 등록일 경우에는 바로 확정만 진행 (...필요없는 프로세스였음...)
+                      // if(!newFlag && selectId !== "" && selectId !== null && selectId === model.id) {
+                      //   handleConfirm(model.id, model?.editModel?.id, model.modelStatus);
+                      // }
 
-                      // 고객발주(수주)에서 그대로 등록일 경우에도 바로 확정만 진행
-                      else if(model.model?.id)
+                      // 그대로 등록 또는 복사하여 수정일 경우 바로 확정만 진행
+                      else if(model.model?.id) {
                         handleConfirm(model.id, model?.model?.id, model.modelStatus);
+                      }
 
-                      // 그 외에는 무조건 새로 생성해야 함 (수정, 신규)
+                      // 신규일 경우 새로 생성
                       else  handleSubmit(model.id);
                     }}
                     label="확정저장"

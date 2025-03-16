@@ -322,10 +322,7 @@ export type modelsMatchRType = {
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
     },
-    model: {
-      id: string;
-      prdMngNo: string;
-    },
+    model: modelsType;
     modelStatus: ModelStatus;
     orderNo: string;
     orderTit: string;
@@ -344,6 +341,7 @@ export type modelsMatchRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
+  tempModel?: any;
 }
 
 export type modelsMatchDetail = {

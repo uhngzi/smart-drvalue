@@ -36,7 +36,7 @@ import {
   salesOrderProductRType,
   salesOrderReq
 } from "@/data/type/sales/order";
-import { changeOrderEdit, changeOrderMainNew, changeOrderNew } from "@/data/type/sales/changeData";
+import { changeOrderMainNew } from "@/data/type/sales/changeData";
 import { useUser } from "@/data/context/UserContext";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
@@ -77,8 +77,13 @@ const OrderAddLayout = () => {
   // 수정 시 필요 변수
   const [ edit, setEdit ] = useState<boolean>(false);
 
+  // 수정 시 파일 세팅을 위한 디폴트 확인 변수 (false일 경우 디폴트 파일이 없거나 디폴트 세팅 후 / true일 경우 파일이 있으며 디폴트 세팅 전)
+  const [detailChk, setDetailChk] = useState<boolean>(false);
+  
   // 업데이트 후 저장 여부 확인 변수 (false일 경우 저장됨 / true일 경우 저장 안됨)
   const [update, setUpdate] = useState<boolean>(false);
+
+  // 값이 변경되었을 때 "저장되지 않음" 세팅
   useEffect(()=>{ setUpdate(true); }, [formData])
 
   // id가 NEW일 경우 생성, 아닐 경우 수정
@@ -90,16 +95,9 @@ const OrderAddLayout = () => {
     } else {
       setEdit(true);
       setOrderId(id+"");
-    }
-  }, [id]);
-  
-  useEffect(()=>{
-    console.log(id);
-    // 수정일 경우에만 실행
-    if(!(id+"").includes("new")) {
       fetchDetail(id?.toString());
     }
-  }, [id])
+  }, [id]);
 
   // ----------- 거래처 데이터 세팅 ----------- 시작
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
@@ -176,8 +174,6 @@ const OrderAddLayout = () => {
   // ----------- 거래처 데이터 등록 ----------- 끝
 
   // -------- 수정 시 디테일 데이터 세팅 -------- 시작
-  const [detailChk, setDetailChk] = useState<boolean>(false);
-
   const fetchDetail = async (modelId?: string) => {
     const result = await getAPI({
       type: 'core-d1',
@@ -201,8 +197,8 @@ const OrderAddLayout = () => {
         files: data?.files.map((file) => { return file.storageId }),
       });
       if(data?.files?.length > 0) {
+        // 파일이 있을 경우 세팅을 해야 하므로 true
         setDetailChk(true);
-        console.log(formData.files);
       }
 
       const prdArr = data.products
@@ -216,6 +212,7 @@ const OrderAddLayout = () => {
       setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
         id: prd.id,
         index: index+1,
+        glbStatus: prd.glbStatus,
         currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
         modelStatus: prd.modelStatus,
         orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
@@ -230,11 +227,13 @@ const OrderAddLayout = () => {
         orderPrdDueDt: prd.orderPrdDueDt ? dayjs(prd.orderPrdDueDt, 'YYYY-MM-DD') : null,
         orderPrdHotGrade: prd.orderPrdHotGrade ?? HotGrade.NORMAL,
         disabled: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING ? false : true,
+        completed: prd.glbStatus.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? true : false,
       })));
       // 자동으로 스탭2
       setStepCurrent(1);
     }
-    setUpdate(false);
+    // 약간의 텀을 두고 update 값 변경 (form에 적용되는 세팅 시간이 있으므로 텀이 필요함)
+    setTimeout(()=>setUpdate(false), 100);
   }
 
   // 데이터 세팅 시 파일 목록이 있을 경우 파일 정보 가져와서 세팅
@@ -242,6 +241,8 @@ const OrderAddLayout = () => {
     if(detailChk) {
       fetchFileInfo();
     }
+    // 약간의 텀을 두고 update 값 변경 (form에 적용되는 세팅 시간이 있으므로 텀이 필요함)
+    setTimeout(()=>setUpdate(false), 100);
   }, [detailChk])
 
   const fetchFileInfo = async () => {
@@ -269,6 +270,7 @@ const OrderAddLayout = () => {
       }
       setFileList(fileArr);
       setFileIdList(formData.files);
+      // 세팅이 완료되었으므로 false (이후 실행을 방지)
       setDetailChk(false);
     }
   }
@@ -318,7 +320,8 @@ const OrderAddLayout = () => {
           const updateData = newProducts;
           const index = updateData.findIndex(f=> f.id === model?.id);
           if(index > -1) {
-            updateData[index] = { ...updateData[index], ...entity };
+            const currPrdInfo = JSON.parse(entity?.currPrdInfo);
+            updateData[index] = { ...updateData[index], ...entity, currPrdInfo: currPrdInfo };
     
             const newArray = [
               ...updateData.slice(0, index),
@@ -614,12 +617,7 @@ const OrderAddLayout = () => {
                 setFileList={setFileList}
                 fileIdList={fileIdList}
                 setFileIdList={setFileIdList}
-                setViewKey={setViewKey}
-                setPriceFlag={setPriceFlag}
-                newProducts={newProducts}
                 setAddPartner={setAddPartner}
-                detailChk={detailChk}
-                setDetailChk={setDetailChk}
               />
             </div>
 
@@ -729,6 +727,7 @@ const OrderAddLayout = () => {
                         showToast("발주 등록 후 모델을 저장할 수 있습니다.", "error");
                       }
                     }}
+                    showToast={showToast}
                   />
                   <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
                     onClick={() => {

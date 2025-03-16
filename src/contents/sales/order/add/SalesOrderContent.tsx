@@ -10,7 +10,7 @@ import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 
 import { HotGrade } from "@/data/type/enum";
 import { selectType } from "@/data/type/componentStyles";
-import { salesOrderCUType, salesOrderProcuctCUType } from "@/data/type/sales/order";
+import { salesOrderCUType } from "@/data/type/sales/order";
 
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
@@ -24,12 +24,7 @@ interface Props {
   setFileList: React.Dispatch<SetStateAction<any[]>>;
   fileIdList: string[];
   setFileIdList: React.Dispatch<SetStateAction<string[]>>;
-  setViewKey: React.Dispatch<SetStateAction<number | null>>;
-  setPriceFlag: React.Dispatch<SetStateAction<boolean>>;
-  newProducts: salesOrderProcuctCUType[];
   setAddPartner: React.Dispatch<SetStateAction<boolean>>;
-  detailChk: boolean;
-  setDetailChk: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const SalesOrderContent: React.FC<Props> = ({
@@ -40,21 +35,12 @@ const SalesOrderContent: React.FC<Props> = ({
   setFileList,
   fileIdList,
   setFileIdList,
-  setViewKey,
-  setPriceFlag,
-  newProducts,
   setAddPartner,
-  detailChk,
-  setDetailChk,
 }) => {
   // 첨부파일 변경 시 FORM에 세팅
   useEffect(()=>{
-    if(!detailChk) {
-      setFormData({ ...formData, files:fileIdList });
-      console.log(fileIdList, fileList);
-    }
-  }, [fileIdList, fileList]);
-  useEffect(()=>{console.log(formData)}, [formData]);
+    setFormData({ ...formData, files:fileIdList });
+  }, [fileIdList]);
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
   // 전체 div의 크기를 가져오기 위한 변수

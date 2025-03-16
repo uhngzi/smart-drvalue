@@ -16,7 +16,7 @@ import { LayerEm } from "@/data/type/enum";
 import { specModelType, specType } from "@/data/type/sayang/sample";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { modelsMatchRType, modelsType } from "@/data/type/sayang/models";
-import { changeSayangTemp } from "@/data/type/sayang/changeData";
+import { changeSayangTemp, changeTempModel } from "@/data/type/sayang/changeData";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
 import { sayangSampleWaitClmn, specIngClmn } from "@/data/columns/Sayang";
 
@@ -58,10 +58,14 @@ const SayangSampleListPage: React.FC & {
   });
   useEffect(()=>{
     if(!waitLoading && queryData?.resultCode === 'OK_0000') {
-      const arr = (queryData?.data?.data ?? []).map((d:modelsMatchRType) => ({
-        ...d,
-        // model: models.find(f=>f.id === d.model?.id),
-      }));
+      let arr:modelsMatchRType[] = [];
+      (queryData?.data?.data ?? []).map((d:modelsMatchRType) => {
+        const tempModel = JSON.parse(d.orderModel?.tempPrdInfo);
+        arr.push({
+          ...d,
+          tempModel : changeTempModel(d, tempModel),
+        })
+      });
       setWaitData(arr);
     }
   }, [queryData]);
@@ -131,13 +135,12 @@ const SayangSampleListPage: React.FC & {
     // 리스트 내 사양 등록 클릭 시 팝업 발생
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
-    console.log(matchId, modelId, statusId, record);
 
     // 조합일 경우
     if(id) {
       const sd = ingData.find(f=>f.id === id);
       // 모델의 층이 다르면 선택할 수 없게 변경
-      if(sd?.specModels?.[0]?.layerEm !== record.model?.layerEm) {
+      if(sd?.specModels?.[0]?.layerEm !== record.tempModel?.layerEm) {
         setSelectedValue({matchId:matchId, modelId:modelId, statusId:statusId, specId: "", text: ""});
       } else {
         setSelectedValue({matchId:matchId, modelId:modelId, statusId:statusId, specId: id+"", text: text+"과(와) 조합하여 등록"});
@@ -146,13 +149,12 @@ const SayangSampleListPage: React.FC & {
       return;
     }
     
-    if(ingData.filter(f=>f.specModels?.[0]?.layerEm === record?.model?.layerEm).length > 0) {
+    if(ingData.filter(f=>f.specModels?.[0]?.layerEm === record?.tempModel?.layerEm).length > 0) {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       setSayangRegOpen(true);
     } else {
       setSelectedValue({...selectedValue, matchId: matchId});
       setSayangRegOpen(true);
-      // handleSumbitTemp();
     }
   }
 
@@ -190,7 +192,7 @@ const SayangSampleListPage: React.FC & {
   const handleSumbitTempRe = async () => {
     try {
       const specData = ingData.find(d=> d.id === selectedValue?.specId);
-      const matchModel = waitData.find(d => d.id === selectedValue?.matchId)?.model as modelsType;
+      const matchModel = waitData.find(d => d.id === selectedValue?.matchId)?.tempModel as modelsType;
       if(specData) {
         const jsonData = changeSayangTemp("re", {
           ...specData,
@@ -199,7 +201,7 @@ const SayangSampleListPage: React.FC & {
               ...matchModel,
               id: undefined,
               unit: { id: matchModel?.unit?.id },
-              board: { id: matchModel?.board.id },
+              board: { id: matchModel?.board?.id },
               matchId: selectedValue?.matchId,
               glbStatus: { id: selectedValue?.statusId },
             } as specModelType,
@@ -269,10 +271,6 @@ const SayangSampleListPage: React.FC & {
     record: modelsMatchRType,
   }[]>([]);
 
-  useEffect(()=>{
-    console.log(checkeds);
-  }, [checkeds]);
-
   const handleCheckedAllClick = () => {
     if(checkeds.length === waitData.length) {
       setCheckeds([]);
@@ -281,7 +279,7 @@ const SayangSampleListPage: React.FC & {
         matchId: record.id,
         modelId: record?.model?.id ?? "",
         statusId: record.glbStatus?.id ?? "",
-        layerEm: record.model?.layerEm,
+        layerEm: record.tempModel?.layerEm,
         record: record
       })))
     }
@@ -377,7 +375,7 @@ const SayangSampleListPage: React.FC & {
                     key={data.id}
                     value={data.id}
                     onClick={()=>{
-                      if(data.specModels?.[0]?.layerEm !== record?.model?.layerEm) {
+                      if(data.specModels?.[0]?.layerEm !== record?.tempModel?.layerEm) {
                         showToast("같은 층의 모델만 조합하실 수 있습니다.", "error");
                       } else {
                         if(selectedValue?.specId !== data.id)
@@ -390,7 +388,7 @@ const SayangSampleListPage: React.FC & {
                         else  setSelectedValue({matchId:selectedValue?.matchId})
                       }
                     }}
-                    disabled={data.specModels?.[0]?.layerEm !== record?.model?.layerEm}
+                    disabled={data.specModels?.[0]?.layerEm !== record?.tempModel?.layerEm}
                   >
                     {data.specNo ?? (ingData.length - index)?.toString()}
                   </Radio.Button>
@@ -403,7 +401,7 @@ const SayangSampleListPage: React.FC & {
               <LabelIcon label={
                 "조합하려는 모델과 층이 다른 모델은 조합할 수 없습니다.\n"+
                 ingData.find(f=>f.id === id)?.specNo+" : "+ingData.find(f=>f.id === id)?.specModels?.[0]?.layerEm?.replace("L","")+"층 / "+
-                "현재 선택 모델 : "+record?.model?.layerEm.replace("L","")+"층"
+                "현재 선택 모델 : "+record?.tempModel?.layerEm.replace("L","")+"층"
               }
               icon={<Info/>} className="!text-[red]"
               />

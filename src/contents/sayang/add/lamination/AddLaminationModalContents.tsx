@@ -625,7 +625,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
           </div>
         </div>
         <div 
-          className="h-[440px] overflow-y-auto"
+          className="w-full h-[440px] overflow-y-auto"
           style={selectSource?.confirmYn === 1?{cursor:"no-drop"}:{}}
         >
           <div className="w-full text-12 text-[#292828] flex flex-col gap-3">

@@ -333,12 +333,9 @@ const SayangSampleAddPage: React.FC & {
       if ((detailData.specPrdGroupPrcs ?? []).length > 0) {
         // 제품군 디폴트 선택
         const rdata = prdGrpQueryData?.data?.data as productLinesGroupRType[];
-        const prc = rdata?.find(
-          f => f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id
-        );
-        if (prc) {
-          setSelectPrdGrp(prc);
-        }
+        const prc = rdata?.find(f => f.id === detailData.specPrdGroupPrcs?.[0]?.productLinesGroup?.id);
+        if(prc) setSelectPrdGrp(prc);
+        
         // 스팩 내 선택된 공정들 초기화
         let defaultPrc = [] as processRType[];
         let defaultKey = [] as string[];
@@ -360,7 +357,6 @@ const SayangSampleAddPage: React.FC & {
         setSelectedKeys(defaultKey);
         setSelectedVendors(defaultVndr);
       } else {
-        console.log("elnono");
         // 초기값 없을 경우 모두 리셋
         setSelectPrdGrp(null);
         setSelectPrc([]);

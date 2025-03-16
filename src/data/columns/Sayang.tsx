@@ -436,7 +436,7 @@ export const sayangSampleWaitClmn = (
               { matchId: record.id,
                 modelId: record?.model?.id ?? "",
                 statusId: record.glbStatus?.id ?? "",
-                layerEm: record.model?.layerEm,
+                layerEm: record.tempModel?.layerEm,
                 record: record
               }
             ]);
@@ -497,15 +497,15 @@ export const sayangSampleWaitClmn = (
         className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{sayangPopOpen?.(record.id, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
       >
-        {record?.model?.prdNm}
+        {record?.tempModel?.prdNm}
       </div>
     )
   },
   {
     title: 'Rev',
     width: 100,
-    dataIndex: 'model.prdRevNo',
-    key: 'model.prdRevNo',
+    dataIndex: 'tempModel.prdRevNo',
+    key: 'tempModel.prdRevNo',
     align: 'center',
   },
   {
@@ -547,28 +547,28 @@ export const sayangSampleWaitClmn = (
   {
     title: '두께',
     width: 80,
-    dataIndex: 'model.thk',
-    key: 'model.thk',
+    dataIndex: 'tempModel.thk',
+    key: 'tempModel.thk',
     align: 'center',
   },
   {
     title: '층',
     width: 50,
-    dataIndex: 'model.layerEm',
-    key: 'model.layerEm',
+    dataIndex: 'tempModel.layerEm',
+    key: 'tempModel.layerEm',
     align: 'center',
     render: (value, record:modelsMatchRType) => {
-      return record.model?.layerEm?.replace("L", "");
+      return record.tempModel?.layerEm?.replace("L", "");
     }
   },
   {
     title: 'PCS',
     width: 100,
-    dataIndex: 'model.pcsW',
-    key: 'model.pcsW',
+    dataIndex: 'tempModel.pcsW',
+    key: 'tempModel.pcsW',
     align: 'center',
     render: (_, record:modelsMatchRType) => {
-      return record.model?.pcsL+'/'+record.model?.pcsW;
+      return record.tempModel?.pcsL+'/'+record.model?.pcsW;
     }
   },
   {
@@ -585,23 +585,6 @@ export const sayangSampleWaitClmn = (
     key: 'orderModel.order.orderDt',
     align: 'center',
   },
-  // {
-  //   title: '사양등록',
-  //   width: 100,
-  //   dataIndex: 'id',
-  //   key: 'id',
-  //   align: 'center',
-  //   render: (value, record:modelsMatchRType) => (
-  //     <div className="w-full h-full v-h-center">
-  //       <div 
-  //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
-  //         onClick={()=>{sayangPopOpen?.(value, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
-  //       >
-  //         <p className="w-18 h-18"><Edit /></p>
-  //       </div>
-  //     </div>
-  //   )
-  // },
 ];
 
 const divClass = "h-35 w-[100%] h-center justify-left ";

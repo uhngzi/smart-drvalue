@@ -101,7 +101,7 @@ const ModelDrawerContent: React.FC<Props> = ({
           <table>
             <colgroup>
               <col style={{width:'auto'}}/>
-              <col style={{width:'auto'}}/>
+              <col style={{width:'20%'}}/>
               <col style={{width:'17%'}}/>
               <col style={{width:'10%'}}/>
               <col style={{width:'20%'}}/>
@@ -118,7 +118,7 @@ const ModelDrawerContent: React.FC<Props> = ({
             <tbody>
               {(orderData?.products ?? []).map((m, idx) => (
                 <tr key={idx}>
-                  <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderTit}</td>
+                  <td className="text-left py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderTit}</td>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.prtOrderNo}</td>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{m.orderPrdDueDt ? dayjs(m.orderPrdDueDt).format('YYYY-MM-DD') : null}</td>
                   <td className="text-center py-8" style={{borderBottom: '1px solid #0000000F'}}>{Number(m.orderPrdCnt).toLocaleString()}</td>

@@ -54,17 +54,6 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
           </p>
         </Dropdown>
       }
-      {/* <div
-        className="w-34 v-h-center cursor-pointer"
-        onClick={() => onSelect(source)}
-      >
-        <p
-          className="w-16 h-16"
-          style={{ color: isSelected ? "#4880FF" : "#00000080" }}
-        >
-          {isSelected ? <Check /> : <Edit />}
-        </p>
-      </div> */}
     </div>
   );
 };

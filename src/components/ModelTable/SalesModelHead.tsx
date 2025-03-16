@@ -11,6 +11,7 @@ import AntdSelect from "../Select/AntdSelect";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
 
 import Edit from "@/assets/svg/icons/edit.svg";
+import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
@@ -32,6 +33,7 @@ interface Props {
   inputRef?: RefObject<InputRef[]>;
   index?: number;
   handleDelete?: (model:salesOrderProcuctCUType) => void;
+  handleEdit?: (model:salesOrderProcuctCUType) => void;
 }
 
 const SalesModelHead:React.FC<Props> = ({
@@ -44,6 +46,7 @@ const SalesModelHead:React.FC<Props> = ({
   metarialSelectList,
   inputRef,
   handleDelete,
+  handleEdit,
 }) => {
   return (
     <div className="w-full min-h-60 h-center">
@@ -160,6 +163,7 @@ const SalesModelHead:React.FC<Props> = ({
               className="!w-[110px]"
               placeholder=""
               afterDate={new Date()}
+              disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
             />
           </div>
 
@@ -189,12 +193,21 @@ const SalesModelHead:React.FC<Props> = ({
       {
         !read &&
         <Dropdown trigger={['click']} menu={{ items:[{
-          label: <div className="text-[red] h-center gap-5">
+          label: model.completed ? 
+          <div className="h-center gap-5">
+            <p className="w-16 h-16"><Memo /></p>
+            수정사항
+          </div>
+          :
+          <div className="text-[red] h-center gap-5">
             <p className="w-16 h-16"><Trash /></p>
             삭제
           </div>,
           key: 0,
-          onClick:()=>{handleDelete?.(model)}}
+          onClick:()=>{
+            if(model.completed) handleEdit?.(model);
+            else                handleDelete?.(model)
+          }}
         ]}}>
           <a onClick={(e) => e.preventDefault()}>
             <Space>

@@ -34,7 +34,11 @@ const LaminationContents: React.FC<Props> = ({
   // 모달 창 띄우기
   const [open, setOpen] = useState<boolean>(false);
 
-  // ------------ 베이스 데이터 세팅 ----------- 시작
+  const [lamination, setLamination] = useState<laminationRType[]>([]);
+  const [submitFlag, setSubmitFlag] = useState<boolean>(false);
+  const [lamNo, setLamNo] = useState<string>("");
+
+  // ------------ 적층구조 구성요소 세팅 ----------- 시작
   const [ baseLamination, setBaseLamination ] = useState<Array<laminationRType>>([]);
   const { data:baseLaminationData, isLoading:baseLaminationLoading } = useQuery<
     apiGetResponseType, Error
@@ -53,30 +57,38 @@ const LaminationContents: React.FC<Props> = ({
   useEffect(()=>{
     if(!baseLaminationLoading && baseLaminationData?.resultCode === 'OK_0000') {
       setBaseLamination(baseLaminationData?.data?.data ?? []);
-      console.log(baseLaminationData.data?.data);
     }
   }, [baseLaminationData])
-  // ------------ 베이스 데이터 세팅 ----------- 끝
+  // ------------ 적층구조 구성요소 세팅 ----------- 끝
 
-  const [lamination, setLamination] = useState<laminationRType[]>([]);
-  const [submitFlag, setSubmitFlag] = useState<boolean>(false);
-  const [lamNo, setLamNo] = useState<string>("");
-
-  useEffect(()=>{
-    if(submitFlag)  return;
-
-    setLamination([]);
-    if(detailData.specLamination && typeof detailData.specLamination?.specDetail === "string"  && !baseLaminationLoading){
-      const detail = JSON.parse(detailData.specLamination?.specDetail?.toString() ?? "");
-      let arr = [] as laminationRType[];
-      (detail.data ?? []).map((d:{index:number, specLamIdx:string}) => {
-        const item = baseLamination.find((f) => f.id === d.specLamIdx) as laminationRType;
-        if(item)  arr.push(item);
+  // ----------- 사양 적층구조 기본값 세팅 ---------- 시작
+  const { data:baseLaminationSourceData } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['spec/lamination-source/jsxcrud/one'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: `spec/lamination-source/jsxcrud/one/${detailData.specLamination?.id}`
       });
-      setLamination(arr);
-      console.log(detailData.specLamination,detail,arr);
-    }
-  }, [detailData.specLamination, baseLaminationLoading]);
+
+      if(result.resultCode === "OK_0000") {
+        const specLamination = result.data?.data?.specDetail?.data as {index:number, data:any, mappingResult: laminationRType}[];
+        let arr:laminationRType[] = [];
+        if(specLamination && specLamination.length > 0) {
+          specLamination.sort((a, b) => a.index - b.index).map((item) => {
+            arr.push(item.mappingResult);
+          })
+        }
+        setLamination(arr);
+      }
+
+      return result;
+    },
+    enabled: !!detailData.specLamination?.id && !submitFlag,
+  });
+  // ----------- 사양 적층구조 기본값 세팅 ---------- 끝
 
   useEffect(()=>{
     if(submitFlag) {

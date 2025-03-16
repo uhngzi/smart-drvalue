@@ -239,7 +239,6 @@ const ProcessSelection: React.FC<Props> = ({
         return;
       }
   
-      console.log(selectPrc);
       if(selectPrc.length < 1) {
         showToast("공정을 선택해주세요.", "error");
         return;
@@ -279,7 +278,7 @@ const ProcessSelection: React.FC<Props> = ({
               prdGrpNm: selectPrdGrp.name,
               process: {id: item.prcIdx },
               productLinesGroup: { id: selectPrdGrp.id },
-              vendor: { id: item.vendorIdx },
+              vendor: { id: item.vendorIdx, prtNm:selectedVendors.find(f=>f.vid === item.vendorIdx)?.vname },
           }))
         })
       } else {
@@ -397,7 +396,6 @@ const ProcessSelection: React.FC<Props> = ({
                       // 자식의 키를 추가
                       setSelectedKeys((prev:Array<string>) => [...prev, id]);
                       const addData = dataProcess.find(f=> f.id === id);
-                      console.log(addData);
                       if(addData) addArr.push(addData as processRType);
                       // 라디오 버튼 선택
                       const vendorCandidates = dataProcessGrp

@@ -96,7 +96,7 @@ const CsMngContent:React.FC<Props> = ({
     { csMngList.length < 1 && <Empty imageStyle={{ height: 50 }} /> }
     { csMngList.length > 0 && csMngList.map((mng:partnerMngRType) => (
       <div className="w-full h-40 h-center gap-10" key={mng.id}>
-        <p className="w-100 h-center gap-8">
+        <p className="w-[300px] h-center gap-8">
           <Radio
             name="csMng"
             checked={formData.partnerManagerId === mng.id}
@@ -115,9 +115,9 @@ const CsMngContent:React.FC<Props> = ({
         <div className="flex-1 px-12">
           <LabelIcon label={mng.prtMngEmail} icon={<Mail />}/>
         </div>
-        <div className="w-40 h-40 v-h-center">
+        <div className="w-24 h-24 v-h-center">
           <p
-            className="w-24 h-24 cursor-pointer"
+            className="w-16 h-16 cursor-pointer"
             onClick={()=>{
               setEdit(true);
               setNewPartnerMngData({...mng});
