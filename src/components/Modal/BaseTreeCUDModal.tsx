@@ -115,7 +115,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
         setOpen={setOpen}
         onClose={closeModal}
         contents={
-          <div className="px-5 pt-25 h-[900px] h-full flex flex-col gap-30">
+          <div className="px-5 pt-25 min-h-[650px] max-h-[900px] h-full flex flex-col gap-30">
             <div className="w-full flex justify-between items-center h-[24px]">
               <div className="flex items-center gap-10">
                   {title.icon}
