@@ -51,7 +51,6 @@ const ProjectDrawer: React.FC<Props> = ({
   const processData = useRef<any>({});
 
   const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
-  console.log(task)
   
   function addMemo() {
     setMemoText('');
