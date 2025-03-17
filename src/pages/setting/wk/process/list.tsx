@@ -159,7 +159,7 @@ const WkProcessGroupListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="p-20 h-[900px] h-full">
+        <div className="h-[900px] h-full">
           <CustomTree
             data={treeData}
             // handleDataChange={handleTreeDataChange}
@@ -170,7 +170,7 @@ const WkProcessGroupListPage: React.FC & {
           />
         </div>
 
-        {/* <div className="v-between-h-center p-20">
+        {/* <div className="v-between-h-center">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"

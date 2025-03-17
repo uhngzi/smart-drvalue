@@ -146,7 +146,7 @@ const WkProcessListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="v-between-h-center p-20">
+        <div className="v-between-h-center">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"

@@ -143,8 +143,7 @@ const CommonListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        
-        <div className="p-20 h-[900px] h-full">
+        <div className="h-[900px] h-full">
         <CustomTree
             data={treeData}
             onSubmit={()=>{}}

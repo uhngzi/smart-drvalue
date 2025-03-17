@@ -101,7 +101,7 @@ const WkProcessVendorListPage: React.FC & {
   const { data:queryDataGroup } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process', 'group'],
+    queryKey: ['process-group/jsxcrud/many'],
     queryFn: async () => {
       setDataGroup([]);
       const result = await getAPI({
@@ -124,7 +124,7 @@ const WkProcessVendorListPage: React.FC & {
   const { data:queryDataProcess } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process'],
+    queryKey: ['process/jsxcrud/many'],
     queryFn: async () => {
       setDataProcess([]);
       const result = await getAPI({
@@ -243,14 +243,14 @@ const WkProcessVendorListPage: React.FC & {
       {!dataLoading &&
       <>
         <div className="w-full flex gap-30">
-          <div className="p-20 w-[30%]">
+          <div className="w-[30%]">
             <CustomTreeCheck
               data={treeData}
               childCheck={true}
               onChange={handleCheck}
             />
           </div>
-          <div className="p-20 w-[70%]">
+          <div className="w-[70%]">
             <AntdTableEdit
               columns={[
                 {
@@ -315,7 +315,7 @@ const WkProcessVendorListPage: React.FC & {
             />
           </div>
         </div>
-        <div className="v-between-h-center p-20">
+        <div className="v-between-h-center">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"

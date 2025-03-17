@@ -173,6 +173,10 @@ const SettingSider: React.FC<Props> = ({ }) => {
       ]
     },
     {
+      type: 'divider',
+      style: {margin: 10},
+    },
+    {
       key: 'comm',
       title:'',
       label: '공통 코드',
