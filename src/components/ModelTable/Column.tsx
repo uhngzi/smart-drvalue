@@ -5,6 +5,7 @@ import Trash from "@/assets/svg/icons/trash.svg";
 
 import { 
   generateFloorOptions,
+  ModelStatus,
   ModelTypeEm,
   SalesOrderStatus
 } from "@/data/type/enum";
@@ -60,7 +61,7 @@ export const salesOrderModelClmn = (
                 className='!text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
                 placeholder={"Rev No 입력"}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+1}
               />
             </div>
@@ -71,7 +72,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.unit.id', e)}
                 styles={{fs:'12px'}}
                 placeholder={"단위 입력"}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+2}
               />
             </div>
@@ -101,7 +102,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.layerEm', e)}
                 styles={{fs:'12px'}}
                 placeholder={"층 입력"}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+3}
               />
             </div>
@@ -113,7 +114,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"두께 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+4}
               />
             </div>
@@ -145,7 +146,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"외층 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+5}
                 />
             </div>
@@ -157,7 +158,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"내층 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+6}
               />
             </div>
@@ -189,7 +190,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"도금 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+7}
               />
             </div>
@@ -201,7 +202,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"도금± 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+8}
               />
             </div>
@@ -213,7 +214,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 placeholder={"핀수 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+9}
               />
             </div>
@@ -244,7 +245,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Ni 입력"}
                 tabIndex={record.index*40+10}
               />
@@ -254,7 +255,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Au 입력"}
                 tabIndex={record.index*40+12}
               />
@@ -266,7 +267,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Ni± 입력"}
                 tabIndex={record.index*40+11}
               />
@@ -276,7 +277,7 @@ export const salesOrderModelClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Au± 입력"}
                 tabIndex={record.index*40+13}
               />
@@ -307,7 +308,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.smPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M인쇄 입력"}
                 tabIndex={record.index*40+14}
               />
@@ -318,7 +319,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.smColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M색상 입력"}
                 tabIndex={record.index*40+15}
               />
@@ -329,7 +330,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.smType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M종류 입력"}
                 tabIndex={record.index*40+16}
               />
@@ -360,7 +361,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.mkPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K인쇄 입력"}
                 tabIndex={record.index*40+17}
               />
@@ -371,7 +372,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.mkColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K색상 입력"}
                 tabIndex={record.index*40+18}
               />
@@ -382,7 +383,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.mkType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K종류 입력"}
                 tabIndex={record.index*40+19}
               />
@@ -413,7 +414,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"특수인쇄 입력"}
                 tabIndex={record.index*40+20}
               />
@@ -424,7 +425,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.spType?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"특수인쇄종류 입력"}
                 tabIndex={record.index*40+21}
               />
@@ -435,7 +436,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.modelTypeEm ?? "sample"}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.modelTypeEm', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"구분 입력"}
                 tabIndex={record.index*40+22}
               />
@@ -467,7 +468,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.aprType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"외형가공형태 입력"}
                 tabIndex={record.index*40+23}
               />
@@ -479,7 +480,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.vcutYn ?? false}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.vcutYn', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"브이컷 유무 입력"}
                 tabIndex={record.index*40+24}
               />
@@ -491,7 +492,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.vcutType?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.vcutType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"브이컷 형태 입력"}
                 tabIndex={record.index*40+25}
               />
@@ -523,7 +524,7 @@ export const salesOrderModelClmn = (
                 className='w-[100px] !text-12'
                 placeholder="도면번호 입력"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 tabIndex={record.index*40+26}
               />
             </div>
@@ -554,7 +555,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"X 입력"}
                 tabIndex={record.index*40+27}
               />
@@ -566,7 +567,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Y 입력"}
                 tabIndex={record.index*40+28}
               />
@@ -598,7 +599,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"X 입력"}
                 tabIndex={record.index*40+29}
               />
@@ -610,7 +611,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Y 입력"}
                 tabIndex={record.index*40+30}
               />
@@ -642,7 +643,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"X 입력"}
                 tabIndex={record.index*40+31}
               />
@@ -654,7 +655,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Y 입력"}
                 tabIndex={record.index*40+32}
               />
@@ -686,7 +687,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"X 입력"}
                 tabIndex={record.index*40+33}
               />
@@ -696,7 +697,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"X 입력"}
                 tabIndex={record.index*40+35}
               />
@@ -708,7 +709,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Y 입력"}
                 tabIndex={record.index*40+34}
               />
@@ -718,7 +719,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Y 입력"}
                 tabIndex={record.index*40+36}
               />
@@ -750,7 +751,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"KIT/PCS"}
                 tabIndex={record.index*40+37}
               />
@@ -762,7 +763,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"PNL/KIT"}
                 tabIndex={record.index*40+38}
               />
@@ -794,7 +795,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"STH/PNL"}
                 tabIndex={record.index*40+39}
               />
@@ -806,7 +807,7 @@ export const salesOrderModelClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"STH/PCS"}
                 tabIndex={record.index*40+40}
               />

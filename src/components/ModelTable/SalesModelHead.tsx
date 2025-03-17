@@ -70,7 +70,6 @@ const SalesModelHead:React.FC<Props> = ({
             {ht:'32px', bw:'0', pd:'0'}
           }
           disabled={model.completed}
-          // disabled={model.completed ?? selectId === model.id ? !newFlag : undefined}
           readonly={read}
         />
 
@@ -89,7 +88,7 @@ const SalesModelHead:React.FC<Props> = ({
             }}
             readonly={read ? true : selectId === model.id ? !newFlag : undefined}
             className="w-[250px!important]" styles={{ht:'32px', bg:'#FFF'}}
-            disabled={model.completed}
+            disabled={model.completed || model.modelStatus === ModelStatus.REPEAT}
           />
         </div>
 
@@ -118,7 +117,7 @@ const SalesModelHead:React.FC<Props> = ({
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
             className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
             readonly={read}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
           />
         </div>
         <div className="flex flex-col">
@@ -128,7 +127,7 @@ const SalesModelHead:React.FC<Props> = ({
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
             className="w-[160px!important]" styles={{ht:'32px'}}
             readonly={read ? read : selectId === model.id ? !newFlag : undefined}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
           />
         </div>
 
@@ -139,7 +138,7 @@ const SalesModelHead:React.FC<Props> = ({
             value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
             onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
             className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             readonly={read}
           />
         </div>
@@ -173,7 +172,6 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.orderPrdCnt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
               className="w-[160px!important]" styles={{ht:'32px'}} type="number"
-              // readonly={selectId === model.id ? !newFlag : undefined}
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
             />
           </div>
@@ -184,7 +182,6 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.orderPrdPrice}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
               className="w-[160px!important]" styles={{ht:'32px'}} type="number"
-              // readonly={selectId === model.id ? !newFlag : undefined}
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
             />
           </div>
