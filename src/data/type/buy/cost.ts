@@ -5,8 +5,7 @@ import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatu
 import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
 
-export type buyCostOutType = 
-{
+export type buyCostOutType = {
   id?: string;
   progress?: number;
   wkLatestMemo?: string;
@@ -314,4 +313,8 @@ export type buyCostOutDetailType = {
       deletedAt?: Date | Dayjs | null;
     }
   ],
+}
+
+export type buyOrderType = {
+  id?: string;
 }

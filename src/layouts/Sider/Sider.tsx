@@ -138,6 +138,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           title: 'buy/cost/wait',
           label: '외주처 단가 등록 및 현황',
         },
+        {
+          key: 'buy/order',
+          title: 'buy/order',
+          label: '구매 및 발주',
+        },
       ]
     },
     // {
