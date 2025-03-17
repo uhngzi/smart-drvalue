@@ -59,16 +59,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
 }) => {
   const { showToast, ToastContainer } = useToast();
 
-  useEffect(()=>{
-    if(detailData.specLamination) {
-      setSelect(detailData.specLamination.id);
-      const detail = typeof detailData?.specLamination?.specDetail === "string"
-        && JSON.parse(detailData?.specLamination?.specDetail);
-      setSelectSource({ ...detailData.specLamination, specDetail: detail});
-      setLamination(mainLamination);
-    }
-  }, [detailData.specLamNo])
-
   // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<"sel" | "oz" | "cf" | "">("");
@@ -454,7 +444,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
     setMainLamination(lamination);
     
     // 선택된 라이브러리가 있을 경우
-    console.log(select, selectSource);
     if(select && selectSource) {
       setDetailData({
         ...detailData,

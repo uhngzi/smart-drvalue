@@ -122,8 +122,7 @@ const LaminationContents: React.FC<Props> = ({
       </div>}
 
       <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
-        {
-          Array.isArray(lamination) && lamination.length > 0 &&
+        { Array.isArray(lamination) && lamination.length > 0 &&
           lamination.map((item:laminationRType, index:number) => (
             <LaminationRow
               key={item.id+':'+index}
@@ -133,10 +132,8 @@ const LaminationContents: React.FC<Props> = ({
             />
           ))
         }
-        {
-          (!Array.isArray(lamination) || lamination?.length < 1) &&
-          <Empty />
-        }
+        { (!Array.isArray(lamination) || lamination?.length < 1) &&
+          <Empty />}
       </div>
 
 
