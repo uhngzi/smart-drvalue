@@ -132,9 +132,11 @@ export type salesOrderProductRType = {
   glbStatus: {  // 현재 모델 상태
     id: string;
     salesOrderStatus: SalesOrderStatus;
+    salesOrderStatusChangeJson: string;
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
+    json?: any;
   },
   worksheet: {
     createdAt?: Date | Dayjs | null;
@@ -190,6 +192,11 @@ export type salesOrderProcuctCUType = {
     specStatus?: SpecStatus;
     anyStatus?: AnyStatus;
     relation?: string;
+    json?: {
+      date: Date | Dayjs | null;
+      content: string;
+      isApproved: boolean;
+    }[];
   },
   customPartnerManagerId?: string;
   currPrdInfo?: any,

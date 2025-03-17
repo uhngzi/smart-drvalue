@@ -212,7 +212,10 @@ const OrderAddLayout = () => {
       setNewProducts(prdArr.map((prd: salesOrderProductRType, index:number) => ({
         id: prd.id,
         index: index+1,
-        glbStatus: prd.glbStatus,
+        glbStatus: {
+          ...prd.glbStatus,
+          json: JSON.parse(prd.glbStatus.salesOrderStatusChangeJson)
+        },
         currPrdInfo: prd.currPrdInfo && typeof prd.currPrdInfo === "string" ? JSON.parse(prd.currPrdInfo) : {},
         modelStatus: prd.modelStatus,
         orderDt: dayjs(prd.orderDt, 'YYYY-MM-DD'),
