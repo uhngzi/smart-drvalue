@@ -19,6 +19,7 @@ export const BuyCostOutClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
@@ -485,6 +486,7 @@ export const BuyCostOutStatusClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
@@ -763,5 +765,50 @@ export const BuyCostOutStatusClmn = (
     dataIndex: 'wsRemark',
     key: 'wsRemark',
     align: 'center',
+  },
+]
+
+export const BuyOrderClmn = (
+  totalData: number,
+  pagination: {current: number, size: number},
+  setOrderDocumentFormOpen: React.Dispatch<SetStateAction<boolean>>,
+): CustomColumn[] => [
+  {
+    title: 'No',
+    width: 50,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    leftPin: true,
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+  },
+  {
+    title: '주문번호',
+    width: 130,
+    dataIndex: 'orderNo',
+    key: 'orderNo',
+    align: 'center',
+  },
+  {
+    title: '발주서',
+    width: 130,
+    dataIndex: 'orderNo',
+    key: 'orderNo',
+    align: 'center',
+    render: (_) => (
+      <div
+        onClick={()=>{setOrderDocumentFormOpen(true)}}
+      >
+        발주서
+      </div>
+    )
+  },
+  {
+    title: '프로젝트명',
+    minWidth: 130,
+    dataIndex: 'project',
+    key: 'project',
+    align: 'center',
+    cellAlign: 'left',
   },
 ]

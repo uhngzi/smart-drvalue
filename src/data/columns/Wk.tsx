@@ -19,6 +19,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
     editable: false,
   },
@@ -286,6 +287,7 @@ export const WKStatusProcClmn = (
     dataIndex: 'check',
     key: 'check',
     align: 'center',
+    leftPin: true,
     render: (_: any, record: wkPlanWaitType) => (
       <Checkbox
         checked={checkeds.filter(f=>f.id === record.id).length > 0}
@@ -310,6 +312,7 @@ export const WKStatusProcClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
@@ -490,9 +493,9 @@ export const WKStatusProcClmn = (
   },
   {
     title: '업데이트',
-    width: 80,
-    dataIndex: 'index',
-    key: 'index',
+    width: 150,
+    dataIndex: 'wkLatestDtm',
+    key: 'wkLatestDtm',
     align: 'center',
   },
   {
@@ -601,6 +604,7 @@ export const WKStatusInClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
@@ -737,6 +741,7 @@ export const WkStatusOutClmn = (
     dataIndex: 'check',
     key: 'check',
     align: 'center',
+    leftPin: true,
     render: (_: any, record: wkPlanWaitType) => (
       <Checkbox
         checked={checkeds.filter(f=>f.id === record.id).length > 0}
@@ -761,6 +766,7 @@ export const WkStatusOutClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {

@@ -163,7 +163,9 @@ export type CustomColumn = ColumnType<any>
   & { req?: boolean }                                                 // 수정 시 필수 여부
   & { inputType?: 'string' | 'number' }                               // 셀의 타입이 INPUT일 경우의 INPUT의 TYPE
   & { selectOptions?: any[] }                                         // 셀의 타입이 SELECT일 경우의 SELECT 옵션
-  & { selectValue?: any };                                            // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
+  & { selectValue?: any }                                             // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
+  & { leftPin?: boolean }                                             // 셀 고정 여부 (왼쪽)
+  & { rightPin?: boolean };                                           // 셀 고정 여부 (오른쪽)
 
 // 테이블 테마 스타일
 const AntdTableTheme = {
@@ -368,52 +370,61 @@ const AntdTableEdit: React.FC<Props> = ({
     }
   
     const column = col as CustomColumn; // 일반 컬럼으로 변환
+    let mergedCol: CustomColumn;
   
     // 생성 모드 시
-    if(create) {
+    if (create) {
       if (column.editable === false) {
-        return {
+        mergedCol = {
           render: (value: any, record: any) => {
-            // 객체 안에 객체 값이 있을 때(ex. vendor.prtNm)는 value로 못 가져오므로 구분해서 실행
-            // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
-            // 날짜일 경우 format 변경
-            if(value) {
-              if(!Number.isNaN(value))
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+            if (value) {
+              if (!Number.isNaN(value))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {value}
+                  </div>
+                );
+              if (dayjs(value).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(value).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
                   {value}
-                </div>;
-              if(dayjs(value).isValid())
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                  {dayjs(value).format('YYYY-MM-DD')}
-                </div>;
-              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                {value}
-              </div>;
+                </div>
+              );
             } else {
               const v = get(record, column.dataIndex);
-              if(!Number.isNaN(value))
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+              if (!Number.isNaN(v))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {v}
+                  </div>
+                );
+              if (dayjs(v).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(v).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
                   {v}
-                </div>;
-              if(dayjs(v).isValid())
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                  {dayjs(value).format('YYYY-MM-DD')}
-                </div>;
-              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                {v}
-              </div>;
+                </div>
+              );
             }
           },
-          // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
           ...column,
           title: column.tooltip ? (
             <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
               <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
             </Tooltip>
-          ) as React.ReactNode : column.title,
+          ) : column.title,
         };
       } else {
-        return {
+        mergedCol = {
           onCell: (record: DataType) => ({
             cellAlign: column.cellAlign,
             title: typeof column.title === "string" ? column.title : undefined,
@@ -427,8 +438,8 @@ const AntdTableEdit: React.FC<Props> = ({
             selectOptions: column.selectOptions,
             selectValue: get(record, column.selectValue),
             tooltip: column.tooltip,
-            // 값 변경 시 실행되는 함수이며 생성 모드 시에는 바로 즉각 저장됨
-            onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
+            onFieldChange: (value: any, label?: string) =>
+              handleFieldChange(record.key, column.dataIndex as string, value, column.editType, column.selectValue, label),
             enterSubmit: column.enterSubmit,
           }),
           ...column,
@@ -436,93 +447,109 @@ const AntdTableEdit: React.FC<Props> = ({
             <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
               <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
             </Tooltip>
-          ) as React.ReactNode : column.title,
+          ) : column.title,
         };
       }
     } else {
-      // 수정 모드가 아닐 때
+      // 수정 모드일 때
       if (!column.editable) {
-        return {
+        mergedCol = {
           render: (value: any, record: any) => {
-            // 객체 안에 객체 값이 있을 때(ex. vendor.prtNm)는 value로 못 가져오므로 구분해서 실행
-            // 숫자일 경우 그대로 출력 (dayjs.isValid()가 숫자도 true로 반환하기에 따로 분류)
-            // 날짜일 경우 format 변경
-            if(value) {
-              if(!Number.isNaN(value))
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+            if (value) {
+              if (!Number.isNaN(value))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {value}
+                  </div>
+                );
+              if (dayjs(value).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(value).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
                   {value}
-                </div>;
-              if(dayjs(value).isValid())
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                  {dayjs(value).format('YYYY-MM-DD')}
-                </div>;
-              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                {value}
-              </div>;
+                </div>
+              );
             } else {
               const v = get(record, column.dataIndex);
-              if(!Number.isNaN(value))
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
+              if (!Number.isNaN(v))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {v}
+                  </div>
+                );
+              if (dayjs(v).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(v).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
                   {v}
-                </div>;
-              if(dayjs(v).isValid())
-                return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                  {dayjs(value).format('YYYY-MM-DD')}
-                </div>;
-              return <div className="w-full h-full h-center" style={{justifyContent:column.cellAlign??"center"}}>
-                {v}
-              </div>;
+                </div>
+              );
             }
           },
-          // column 내부에 render가 있을 경우 column의 render를 우선으로 실행하기 위해 ...column이 뒤로 옴
           ...column,
           title: column.tooltip ? (
             <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
               <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
             </Tooltip>
-          ) as React.ReactNode : column.title,
+          ) : column.title,
+        };
+      } else {
+        mergedCol = {
+          render: (value: any, record: any) => {
+            if (value) {
+              if (typeof value === "number")
+                return value;
+              if (dayjs(value).isValid())
+                return dayjs(value).format('YYYY-MM-DD');
+              return value;
+            } else {
+              const v = get(record, column.dataIndex);
+              if (typeof v === "number")
+                return v;
+              if (dayjs(v).isValid())
+                return dayjs(v).format('YYYY-MM-DD');
+              return v;
+            }
+          },
+          ...column,
+          onCell: (record: DataType) => ({
+            cellAlign: column.cellAlign,
+            title: typeof column.title === "string" ? column.title : undefined,
+            dataIndex: column.dataIndex,
+            editing: (column.allEdit || isEditing(record)) ? "true" : undefined,
+            value: get(record, column.dataIndex),
+            editType: column.editType,
+            record: record,
+            req: column.req,
+            inputType: column.inputType,
+            selectOptions: column.selectOptions,
+            selectValue: get(record, column.selectValue),
+            tooltip: column.tooltip,
+            onFieldChange: (value: any, label?: string) =>
+              handleFieldChange(record.key, column.dataIndex as string, value, column.editType, column.selectValue, label),
+            enterSubmit: column.enterSubmit,
+          }),
         };
       }
-    
-      // 수정 모드일 때
-      return {
-        render: (value: any,record: any) => {
-          if(value) {
-            if(typeof value === "number")
-              return value;
-            if(dayjs(value).isValid())
-              return dayjs(value).format('YYYY-MM-DD');
-            return value;
-          } else {
-            const v = get(record, column.dataIndex);
-            if(typeof value === "number")
-              return v;
-            if(dayjs(v).isValid())
-              return dayjs(value).format('YYYY-MM-DD');
-            return v;
-          }
-        },
-        ...column,
-        // 수정 모드에 필요한 변수 및 함수들 (EditableCellProps, EditableCell)
-        onCell: (record: DataType) => ({
-          cellAlign: column.cellAlign,
-          title: typeof column.title === "string" ? column.title : undefined,
-          dataIndex: column.dataIndex,
-          editing: (column.allEdit || isEditing(record)) ? "true" : undefined,
-          value: get(record, column.dataIndex),
-          editType: column.editType,
-          record: record,
-          req: column.req,
-          inputType: column.inputType,
-          selectOptions: column.selectOptions,
-          selectValue: get(record, column.selectValue),
-          tooltip: column.tooltip,
-          // 값 변경 시 실행되는 함수   ** 값 저장 아님
-          onFieldChange: (value: any, label?: string) => handleFieldChange(record.key, col.dataIndex as string, value, column.editType, column.selectValue, label),
-          enterSubmit: column.enterSubmit,
-        }),
-      };
     }
+    
+    // leftPin/rightPin 처리
+    if (column.leftPin) {
+      mergedCol.fixed = "left";
+    }
+    if (column.rightPin) {
+      mergedCol.fixed = "right";
+    }
+    
+    return mergedCol;
   });
   
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -634,13 +661,51 @@ const AntdTableStyled = styled.div<{
 }>`
   width: 100%;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-  
+
   .ant-table { 
     background: none;
-
     scrollbar-width: thin;
     scrollbar-color: #eaeaea transparent;
     scrollbar-gutter: stable;
+  }
+
+  /* 고정 컬럼 (헤더, 바디 모두) */
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    position: sticky !important;
+    background: inherit;
+    z-index: 2;
+  }
+  /* 헤더 고정 컬럼은 좀 더 높은 z-index 적용 */
+  .ant-table-thead .ant-table-cell-fix-left,
+  .ant-table-thead .ant-table-cell-fix-right {
+    z-index: 3;
+    background-color: ${({ $thBackground }) => $thBackground} !important;
+  }
+
+  /* 바디 고정 컬럼: $tdBackground 적용 */
+  .ant-table-tbody .ant-table-cell-fix-left,
+  .ant-table-tbody .ant-table-cell-fix-right {
+    background-color: ${({ $tdBackground }) => $tdBackground} !important;
+  }
+    
+  /* 바디 영역의 고정 셀에 left/right 값 적용 */
+  /* 첫 번째 left 고정 셀 */
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left-first {
+    left: 0 !important;
+  }
+  /* 나머지 left 고정 셀들은 누적 너비(offset)를 계산해서 적용해야 하지만,
+     간단하게 모두 0으로 지정할 수도 있습니다. */
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left:not(.ant-table-cell-fix-left-first) {
+    left: 0 !important;
+  }
+  /* 첫 번째 right 고정 셀 */
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right-last {
+    right: 0 !important;
+  }
+  /* 나머지 right 고정 셀 */
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right:not(.ant-table-cell-fix-right-last) {
+    right: 0 !important;
   }
 
   .ant-table-thead { 
@@ -651,16 +716,12 @@ const AntdTableStyled = styled.div<{
     & .ant-table-cell {
       height: ${({ $thHeight }) => $thHeight};
       padding: ${({ $thPadding }) => $thPadding};
-
       text-align: center;
-
       font-weight: ${({ $thFontWeight }) => $thFontWeight};
       font-size: ${({ $fs }) => $fs};
       color: #444444;
-
       background-color: transparent;
       border: 0;
-
       ::before {
         background-color: transparent;
       }
@@ -693,9 +754,7 @@ const AntdTableStyled = styled.div<{
       padding: ${({ $tdPadding }) => $tdPadding};
       border: 0;
       border-top: 1px solid #0000000F;
-
       text-align: ${({ $tdTextAlign }) => $tdTextAlign };
-
       font-weight: 400;
       font-size: ${({ $fs }) => $fs};
       color: #444444;
@@ -723,7 +782,7 @@ const AntdTableStyled = styled.div<{
     
     & tr:last-child td:first-child {
       border-radius: 0 0 0 ${({ $round }) => $round };
-      border-bottom: 1px solid #0000000F;;
+      border-bottom: 1px solid #0000000F;
       border-left: ${({ $line }) => $line};
     }
   }

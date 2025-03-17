@@ -325,6 +325,7 @@ const ErrBoardPage: React.FC & {
               dataIndex: 'index',
               key: 'index',
               align: 'center',
+              leftPin: true,
               render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
             },
             {

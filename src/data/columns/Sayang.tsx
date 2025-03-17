@@ -33,6 +33,7 @@ export const specStatusClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_,__,index: number) => pagination ? totalData - ((pagination.current - 1) * pagination.size + index) : totalData - index, // 역순 번호 매기기
   },
   {
@@ -211,6 +212,7 @@ export const specIngClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_,__,index: number) => totalData - index, // 역순 번호 매기기
   },
   {
@@ -424,6 +426,7 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'check',
     key: 'check',
     align: 'center',
+    leftPin: true,
     render: (_: any, record: modelsMatchRType) => (
       <Checkbox
         checked={checkeds.filter(f=>f.matchId === record.id).length > 0}
@@ -454,6 +457,7 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
@@ -1283,6 +1287,7 @@ export const sayangModelWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
@@ -2263,6 +2268,7 @@ export const sayangModelStatusClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
