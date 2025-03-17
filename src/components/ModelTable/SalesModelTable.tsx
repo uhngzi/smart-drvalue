@@ -277,7 +277,7 @@ const SalesModelTable:React.FC<Props> = ({
             <div className="w-full bg-white mb-10 flex flex-col gap-5 px-10 pb-10">
               { model.glbStatus.json && model.glbStatus.json?.length > 0 && 
                 model.glbStatus.json.map((item, idx) => (
-                <div className="w-full h-40 h-center gap-10">
+                <div className="w-full h-40 h-center gap-10" key={idx}>
                   <div className="w-[110px]">{dayjs(item.date).format("YYYY-MM-DD")}</div>
                   <div className="flex-1">{item.content}</div>
                   <div className="w-[110px] h-center gap-5">
