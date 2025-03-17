@@ -262,7 +262,9 @@ const SayangModelAddPage: React.FC & {
       
       const val = validReq(jsonData, modelReq());
       if(!val.isValid) {
-        showToast(val.missingLabels+'은(는) 필수 입력입니다.', "error");
+        setErrMsg(val.missingLabels+'은(는) 필수 입력입니다.');
+        setResultType("error");
+        setResultOpen(true);
         return;
       }
 
