@@ -81,7 +81,7 @@ const WKStatusProcPage: {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykeys: {applyAutoFilter:false, procVenderIdx: selectVendor?.vendorId},
+        anykeys: {applyAutoFilter:true, procVenderIdx: selectVendor?.vendorId},
       });
     }
   });
