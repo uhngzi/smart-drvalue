@@ -68,6 +68,7 @@ const WKStatusProcPage: {
       const arr = (queryData?.data?.data ?? []).map((item:wkPlanWaitType) => ({
         ...item,
         progress: (item?.progress ?? 0) * 100,
+        wkLatestDtm: item.wkLatestDtm ? dayjs(item.wkLatestDtm).format("YYYY-MM-DD") : null,
         make: item.wkLatestProc?.wkProcStDtm && item.wsStDt
         ? (() => {
             const diffMs = dayjs(item.wkLatestProc.wkProcStDtm).diff(item.wsStDt);
