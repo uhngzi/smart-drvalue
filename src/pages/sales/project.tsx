@@ -345,11 +345,11 @@ function changeDate(date: any, id: string, type: string) {
                   <div className="flex items-center gap-3 w-[240px] py-5 px-2 border border-[#D9D9D9]">
                     <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
                       value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
-                      onChange={(date) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanStart: date} : item))} />
+                      onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
                     <p className="w-32 flex justify-center"><RightArrow/></p>
                     <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={<Calendar/>} allowClear={false} 
                       value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
-                      onChange={(date) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanEnd: date} : item))} />
+                      onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
                   </div>
                   <Dropdown trigger={["click"]} menu={{ items:[
                     {
