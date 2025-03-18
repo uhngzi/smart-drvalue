@@ -50,7 +50,7 @@ const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, c
                 }`}
               >
                 <p className="pb-8">{item.label}</p>
-                <p className="pb-24 font-medium">{item.value}</p>
+                <div className="pb-24 font-medium whitespace-pre-wrap break-words">{item.value}</div>
               </div>
             ))}
           </div>
