@@ -65,6 +65,7 @@ const SalesOrderStatusPage: React.FC & {
     if(!isLoading) {
       const arr = (queryData?.data?.data ?? []).map((item:salesOrderWorkSheetType) => ({
         ...item,
+        m2: Math.floor(((item.worksheet?.specModel?.spec?.wksizeH ?? 0) * (item.worksheet?.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.worksheet?.specModel?.prdCnt ?? 0) * 100) / 100,
       }))
       setData(arr);
       setTotalData(queryData?.data.total ?? 0);

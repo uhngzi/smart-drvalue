@@ -131,15 +131,17 @@ export const salesOrderStatusClmn = (
     key: 'orderPrdCnt',
     align: 'center',
     cellAlign: 'right',
-    render: (value) => {
-      return value ? Number(value).toLocaleString() : 0;
-    }
+    render: (value) => (
+      <div className="w-full h-center justify-end">
+        {value ? Number(value).toLocaleString() : 0}
+      </div>
+    )
    },
   {
     title: '수주매수',
     width: 80,
-    dataIndex: 'worksheet.specModel.m2',
-    key: 'worksheet.specModel.m2',
+    dataIndex: 'm2',
+    key: 'm2',
     align: 'center',
     cellAlign: 'right',
     

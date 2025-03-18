@@ -341,6 +341,26 @@ export type salesOrderWorkSheetType = {
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
+      spec?: {
+        createdAt?: Date | Dayjs | null;
+        updatedAt?: Date | Dayjs | null;
+        deletedAt?: Date | Dayjs | null;
+        id?: string;
+        specNo?: string;
+        specNoCount?: number;
+        specLamNo?: string;
+        specLamThk?: number;
+        brdArrYldRate?: number;
+        wksizeW?: number;
+        wksizeH?: number;
+        stdW?: number;
+        stdH?: number;
+        cutCnt?: number;
+        jYn?: boolean;
+        brdArrStorageKey?: string;
+        prcNotice?: string;
+        camNotice?: string;
+      }
     },
     wkPrdCnt?: number;
     wkProcCnt?: number;
