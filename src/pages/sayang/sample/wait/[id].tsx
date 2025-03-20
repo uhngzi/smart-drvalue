@@ -81,50 +81,50 @@ const SayangSampleAddPage: React.FC & {
   const [approval, setApproval] = useState<boolean>(false);
 
   // ------------ 필요 데이터 세팅 ------------ 시작
-    const [ul1SelectList, setUl1TypeSelectList] = useState<selectType[]>([]);
-    const { data:ul1Data } = useQuery<apiGetResponseType, Error>({
-      queryKey: ["ul1"],
-      queryFn: async () => {
-        const result = await getAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'common-code/jsxcrud/many/by-cd-grp-nm/UL1'
-        });
-  
-        if (result.resultCode === "OK_0000") {
-          const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
-            value: d.id,
-            label: d.cdNm,
-          }))
-          setUl1TypeSelectList(arr);
-        } else {
-          console.log("error:", result.response);
-        }
-        return result;
-      },
-    });
-    const [ul2SelectList, setUl2SelectList] = useState<selectType[]>([]);
-    const { data:ul2Data } = useQuery<apiGetResponseType, Error>({
-      queryKey: ["ul2"],
-      queryFn: async () => {
-        const result = await getAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'common-code/jsxcrud/many/by-cd-grp-nm/UL2'
-        });
-  
-        if (result.resultCode === "OK_0000") {
-          const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
-            value: d.id,
-            label: d.cdNm,
-          }))
-          setUl2SelectList(arr);
-        } else {
-          console.log("error:", result.response);
-        }
-        return result;
-      },
-    });
+  const [ul1SelectList, setUl1TypeSelectList] = useState<selectType[]>([]);
+  const { data:ul1Data } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["ul1"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/UL1'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
+          value: d.id,
+          label: d.cdNm,
+        }))
+        setUl1TypeSelectList(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
+  const [ul2SelectList, setUl2SelectList] = useState<selectType[]>([]);
+  const { data:ul2Data } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["ul2"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/UL2'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
+          value: d.id,
+          label: d.cdNm,
+        }))
+        setUl2SelectList(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
   // ------------ 필요 데이터 세팅 ------------ 끝
 
   // ------------ 제조/캠 전달사항 ------------ 시작
@@ -162,7 +162,15 @@ const SayangSampleAddPage: React.FC & {
   useEffect(()=>{
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
-      setDetailData(rdata);
+      const models = rdata.specModels?.map((model:specModelType, index:number) => ({
+        ...model,
+        index: index+1,
+        pcsCnt: model.pcsCnt ?? model.modelMatch?.orderModel.orderPrdCnt ?? 1,
+      }))
+      setDetailData({
+        ...rdata,
+        specModels: models,
+      });
       setPrcNotice(rdata.prcNotice ?? "");
       setCamNotice(rdata.camNotice ?? "");
       setTimeout(() => {
@@ -568,10 +576,8 @@ const SayangSampleAddPage: React.FC & {
           />
         </div>
       </Popup>}
-      <Popup
-        className="!gap-40 !flex-row"
-      >
-        <div className="min-w-[300px]">
+      <div className="flex gap-40 flex-row">
+        <Popup className="!w-[300px] flex-grow-[20]">
           {/* 적층 구조 */}
           <LaminationContents
             defaultLayerEm={detailData.specModels?.[0]?.layerEm}
@@ -581,35 +587,33 @@ const SayangSampleAddPage: React.FC & {
               handleSumbitTemp();
             }}
           />
-        </div>
-        <div className="w-full flex gap-40">
-          <div className="min-w-[300px] flex-grow-[44]">
-            {/* 전달 사항 */}
-            <MessageContents
-              prcNotice={prcNotice}
-              setPrcNotice={setPrcNotice}
-              camNotice={camNotice}
-              setCamNotice={setCamNotice}
-            />
-          </div>
-          <div className="min-w-[400px] flex-grow-[32]">
-            {/* 배열 도면 */}
-            <ArrayContents
-              board={board}
-              handleSumbitTemp={handleSumbitTemp}
-              detailData={detailData}
-              setDetailData={setDetailData}
-            />
-          </div>
-          <div className="min-w-[300px] flex-grow-[24]">
-            {/* 재단 사이즈 */}
-            <CutSizeContents
-              specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
-              detailData={detailData}
-            />
-          </div>
-        </div>
-      </Popup>
+        </Popup>
+        <Popup className="!w-[400px] flex-grow-[40]">
+          {/* 배열 도면 */}
+          <ArrayContents
+            board={board}
+            handleSumbitTemp={handleSumbitTemp}
+            detailData={detailData}
+            setDetailData={setDetailData}
+          />
+        </Popup>
+        {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
+          {/* 재단 사이즈 */}
+          {/* <CutSizeContents
+            specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
+            detailData={detailData}
+          />
+        </Popup> */}
+        <Popup className="!w-[300px] flex-grow-[20]">
+          {/* 전달 사항 */}
+          <MessageContents
+            prcNotice={prcNotice}
+            setPrcNotice={setPrcNotice}
+            camNotice={camNotice}
+            setCamNotice={setCamNotice}
+          />
+        </Popup>
+      </div>
 
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{
