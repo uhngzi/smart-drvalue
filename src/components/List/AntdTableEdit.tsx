@@ -162,7 +162,7 @@ export type CustomColumn = ColumnType<any>
   & { enterSubmit?: (id:string, value:any) => void }                  // 수정 시 엔터 호출
   & { req?: boolean }                                                 // 수정 시 필수 여부
   & { inputType?: 'string' | 'number' }                               // 셀의 타입이 INPUT일 경우의 INPUT의 TYPE
-  & { selectOptions?: any[] }                                         // 셀의 타입이 SELECT일 경우의 SELECT 옵션
+  & { selectOptions?: any[] | ((record:any) => any[]) }               // 셀의 타입이 SELECT일 경우의 SELECT 옵션
   & { selectValue?: any }                                             // SELECT시 VALUE 값을 넣어줄 곳 (ex. process : id - value / prcNm - label)
   & { leftPin?: boolean }                                             // 셀 고정 여부 (왼쪽)
   & { rightPin?: boolean };                                           // 셀 고정 여부 (오른쪽)
@@ -435,7 +435,10 @@ const AntdTableEdit: React.FC<Props> = ({
             record: record,
             req: column.req,
             inputType: column.inputType,
-            selectOptions: column.selectOptions,
+            selectOptions: 
+              typeof column.selectOptions === 'function'
+                ? column.selectOptions(record)
+                : column.selectOptions,
             selectValue: get(record, column.selectValue),
             tooltip: column.tooltip,
             onFieldChange: (value: any, label?: string) =>
@@ -530,7 +533,10 @@ const AntdTableEdit: React.FC<Props> = ({
             record: record,
             req: column.req,
             inputType: column.inputType,
-            selectOptions: column.selectOptions,
+            selectOptions: 
+              typeof column.selectOptions === 'function'
+                ? column.selectOptions(record)
+                : column.selectOptions,
             selectValue: get(record, column.selectValue),
             tooltip: column.tooltip,
             onFieldChange: (value: any, label?: string) =>

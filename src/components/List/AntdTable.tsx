@@ -1,5 +1,6 @@
 import { ConfigProvider, Table, TableProps, ThemeConfig } from 'antd';
 import { createStyles } from 'antd-style';
+import { SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 
 const AntdTableTheme: ThemeConfig = {
@@ -33,9 +34,21 @@ interface Props {
     split?: 'none';
   };
   loading?: boolean;
+  selectedRowId?: string | null;
+  setSelectedRowId?: React.Dispatch<SetStateAction<string | null>>;
 }
 
-const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tableProps, loading }) => {
+const AntdTable: React.FC<Props> = ({ 
+  columns,
+  data,
+  styles,
+  className,
+  tableProps,
+  loading,
+  selectedRowId,
+  setSelectedRowId,
+}) => {
+
   return (
     <AntdTableStyled 
       className={className}
@@ -68,6 +81,14 @@ const AntdTable: React.FC<Props> = ({ columns, data, styles, className, tablePro
           pagination={false}
           scroll={{ x: 'max-content' }}
           loading={loading}
+          onRow={(record) => ({
+            onClick: () => {
+              setSelectedRowId?.(record?.id ?? "");
+            },
+          })}
+          rowClassName={(record) =>
+            record?.id === selectedRowId ? 'selected-row' : ''
+          }
         />
       </ConfigProvider>
     </AntdTableStyled>
@@ -187,6 +208,10 @@ const AntdTableStyled = styled.div<{
       border-bottom: 1px solid #0000000F;;
       border-left: ${({ $line }) => $line};
     }
+  }
+
+  .selected-row {
+    background-color: #F0F5FF !important;
   }
 `;
 
