@@ -60,9 +60,13 @@ export type selectType = {
 export type treeType = {
   id: string;
   label: string;
+  odNum?: number;
+  useYn?: boolean;
   children?: Array<{
     id: string;
     label: string;
+    odNum?: number;
+    useYn?: boolean;
   }>;
   open: boolean;
 }
@@ -71,4 +75,6 @@ export type CUtreeType = {
   parentId?: string;
   id: string;
   label: string;
+  odNum?: number;
+  useYn?: boolean;
 }

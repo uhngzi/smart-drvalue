@@ -6,12 +6,14 @@ import CustomTree from "@/components/Tree/CustomTree";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { commonCodeCUType, commonCodeGroupType, commonCodeGrpReq, commonCodeReq, commonCodeRType, newDataCommonCode, newDataCommonCodeGroupType } from "@/data/type/base/common";
 import { deptRType } from "@/data/type/base/hr";
-import { treeType } from "@/data/type/componentStyles";
+import { selectType, treeType } from "@/data/type/componentStyles";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+
+
 
 const CommonListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -19,27 +21,29 @@ const CommonListPage: React.FC & {
   const { showToast, ToastContainer } = useToast();
 
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
-  const [ dataCode, setDataCode ] = useState<Array<commonCodeRType | commonCodeCUType>>([]);
-  const [ groupData, setGroupData ] = useState<Array<commonCodeGroupType>>([]);
 
   // ---------- 신규 tree 데이터 시작 ----------
   const [ addList, setAddList ] = useState<any[]>([]);
   const [ editList, setEditList ] = useState<any[]>([]);
   const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
+  const [teamList, setTeamList] = useState<selectType[]>([]);
+  const [ addEditsInfo, setAddEditsInfo ] = useState<any[]>([]);
 
-  
+  const addEdits = {
+    info: addEditsInfo, 
+    setInfo: setAddEditsInfo,
+    addEditList:[
+      {type:"input", key:"cdGrpDesc", name:"시스템사용"},
+      {type:"select", key:"teamId", name:"부서", selectData:teamList,}
+    ]
+  }
 
   // --------- 리스트 데이터 시작 ---------
   const [editIndex, setEditIndex] = useState<number>(-1);
-  const [editIndexCode, setEditIndexCode] = useState<number>(-1);
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
-  const [totalData, setTotalData] = useState<number>(1);
-  const [ dataSelect, setDataSelect ] = useState<Array<{value:string, label:string}[]>>([]);
   const [ data, setData ] = useState<Array<commonCodeGroupType>>([]);
-  const { data:queryData, refetch, isFetching: groupFetching } = useQuery<
-    apiGetResponseType, Error
-  >({
+  const { data:queryData, refetch, isFetching: groupFetching } = useQuery< apiGetResponseType, Error>({
     queryKey: ['setting', 'comm'],
     queryFn: async () => {
       setDataLoading(true);
@@ -60,12 +64,41 @@ const CommonListPage: React.FC & {
           })),
           open:true
         }))
+        const addInfoArr = (result.data?.data ?? []).map((d:commonCodeGroupType) => ({
+          id: d.id,
+          cdGrpDesc: d.cdGrpDesc,
+          team: d.team?.id,
+        }))
+
         setTreeData(arr);
+        setAddEditsInfo(addInfoArr);
       } else {
         console.log('error:', result.response);
       }
 
       setDataLoading(false);
+      return result;
+    },
+  });
+
+  const { data:deptData } = useQuery< apiGetResponseType, Error>({
+    queryKey: ['setting', 'dept'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'dept/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = result.data.data
+        const teams = arr.map((v:any) => v.teams.flat())[0]
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",teams.map((v:any) => ({value:v.id, label:v.teamNm})))
+        setTeamList(teams.map((v:any) => ({value:v.id, label:v.teamNm})))
+      } else {
+        console.log('error:', result.response);
+      }
+
       return result;
     },
   });
@@ -130,7 +163,7 @@ const CommonListPage: React.FC & {
       setEditIndex(-1);
     }
   }
-
+  console.log(addEditsInfo)
   // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
   useEffect(()=>{
     if(editIndex > -1) {
@@ -150,6 +183,7 @@ const CommonListPage: React.FC & {
             setAddList={setAddList}
             setEditList={setEditList}
             setDelList={setDeleteList}
+            addEdits={addEdits}
           />
         </div>
       </>}

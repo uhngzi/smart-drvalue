@@ -7,6 +7,14 @@ export type commonCodeGroupType = {
   cdGrpNm: string;
   cdGrpDesc: string;
   useYn: boolean;
+  team?: {
+    id: string;
+    deptNm?: string;
+    useYn?: boolean;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+    deletedAt?: Date | null;
+  },
   dept?: {
     id: string;
     deptNm?: string;
