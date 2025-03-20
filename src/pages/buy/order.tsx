@@ -720,22 +720,21 @@ const BuyOrderPage: React.FC & {
                     height="20"
                     title="비고"
                     childClassName="!p-0"
-                    children={
-                      <AntdInput 
-                        value={order?.orderRoot?.remarks}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              remarks: e.target.value,
-                            }
-                          })
-                        }}
-                        styles={{bw:"0"}} placeholder="비고 입력"
-                      />
-                    }
-                  />
+                  >
+                    <AntdInput 
+                      value={order?.orderRoot?.remarks}
+                      onChange={(e)=>{
+                        setOrder({
+                          ...order,
+                          orderRoot: {
+                            ...order?.orderRoot,
+                            remarks: e.target.value,
+                          }
+                        })
+                      }}
+                      styles={{bw:"0"}} placeholder="비고 입력"
+                    />
+                  </DescriptionItems>
                 </Description>
               }
             </Popup>
