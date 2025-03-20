@@ -9,7 +9,7 @@ import Calendar from "@/assets/svg/icons/newcalendar.svg";
 
 interface Props {
   value?: any;
-  onChange: (date: Date) => void;
+  onChange: (date: Date | null) => void;
   picker?: "date" | "month" | "time" | "year" | "quarter" | "week";
   format?: string;
   className?: string;
@@ -82,7 +82,11 @@ const AntdDatePicker: React.FC<Props> = ({
       <DatePicker
         value={dayjs(value).isValid() ? dayjs(value) : null}
         onChange={(date) => {
-          onChange(date?.toDate() || new Date());
+          if (!date) {
+            onChange(null);
+          } else {
+            onChange(date.toDate());
+          }
         }}
         onOpenChange={(open) => {
           if (open && !value) {
