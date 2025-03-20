@@ -374,7 +374,7 @@ export type buyOrderType = {
     inventoryCheckDt?: Date | Dayjs | null;
     isCancel?: boolean;
     details?: {
-      id?: Date | Dayjs | null;
+      id?: string;
       material?: materialType;
       order?: number;
       mtOrderQty?: number;
@@ -427,30 +427,34 @@ export type buyOrderType = {
     wkId?: string;
     wkPrcId?: string;
   };
-  orderDetail?: {
-    id?: string;
-    materialIdx?: string;
-    order?: number;
-    mtOrderQty?: number;
-    mtOrderSizeW?: number;
-    mtOrderSizeH?: number;
-    mtOrderWeight?: number;
-    mtOrderThk?: number;
-    mtOrderPrice?: number;
-    mtOrderInputPrice?: number;
-    mtOrderAmount?: number;
-    mtOrderUnit?: string;
-    mtOrderTxtur?: string;
-    mtOrderArrivalQty?: number;
-    mtOrderArrivalDate?: Date | Dayjs | null;
-    mtOrderInputDate?: Date | Dayjs | null;
-    mtOrderInputQty?: number;
-    mtOrderInvenQty?: number;
-    mtOrderBadQty?: number;
-    requestMaterialQuality?: {
-      badNm?: string;
-      badCnt?: number;
-      materialBadIdx?: string;
-    }[];
-  }[];
+
+  orderDetail?: buyOrderDetailType[];
+}
+
+export type buyOrderDetailType = {
+  id?: string;
+  materialIdx?: string;
+  order?: number;
+  mtOrderQty?: number;
+  mtOrderSizeW?: number;
+  mtOrderSizeH?: number;
+  mtOrderWeight?: number;
+  mtOrderThk?: number;
+  mtOrderPrice?: number;
+  mtOrderInputPrice?: number;
+  mtOrderAmount?: number;
+  mtOrderUnit?: string;
+  mtOrderTxtur?: string;
+  mtOrderArrivalQty?: number;
+  mtOrderArrivalDate?: Date | Dayjs | null;
+  mtOrderInputDate?: Date | Dayjs | null;
+  mtOrderInputQty?: number;
+  mtOrderInvenQty?: number;
+  mtOrderBadQty?: number;
+  requestMaterialQuality?: {
+    badNm?: string;
+    badCnt?: number;
+    materialBadIdx?: string;
+  }
+  mtNm?: string;
 }

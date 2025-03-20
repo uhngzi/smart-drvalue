@@ -1,12 +1,11 @@
 import { CustomColumn } from "@/components/List/AntdTableEdit";
-import { partnerMngRType, partnerRType } from "../type/base/partner";
-import { buyCostOutType } from "../type/buy/cost";
-import { LayerEm, ModelTypeEm } from "../type/enum";
+import { buyCostOutType, buyOrderDetailType, buyOrderType } from "../type/buy/cost";
+import { LayerEm } from "../type/enum";
 import FullChip from "@/components/Chip/FullChip";
 import { SetStateAction } from "react";
-import { Radio } from "antd";
 import { processVendorPriceRType } from "../type/base/process";
 import { materialPriceType } from "../type/base/material_back";
+import Trash from "@/assets/svg/icons/trash.svg";
 
 export const BuyCostOutClmn = (
   totalData: number,
@@ -773,6 +772,7 @@ export const BuyOrderClmn = (
   totalData: number,
   pagination: {current: number, size: number},
   setOrderDocumentFormOpen: React.Dispatch<SetStateAction<boolean>>,
+  setOrder: React.Dispatch<SetStateAction<buyOrderType | null>>,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -789,6 +789,15 @@ export const BuyOrderClmn = (
     dataIndex: 'orderNo',
     key: 'orderNo',
     align: 'center',
+    tooltip: "주문번호를 클릭하시면 상세 내용 및 수정을 할 수 있어요",
+    render: (value:string, record:buyOrderType) => (
+      <div
+        className="w-full v-h-center cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>setOrder(record)}
+      >
+        {value}
+      </div>
+    )
   },
   {
     title: '발주서',
@@ -908,8 +917,8 @@ export const BuyOrderClmn = (
 ]
 
 export const BuyOrderMtPriceClmn = (
-  selectPrice: materialPriceType[],
-  setSelectPrice: React.Dispatch<SetStateAction<materialPriceType[]>>,
+  selectPrice: buyOrderDetailType[],
+  setSelectPrice: React.Dispatch<SetStateAction<buyOrderDetailType[]>>,
 ):CustomColumn[] => [
   {
     title: '원자재명',
@@ -917,12 +926,29 @@ export const BuyOrderMtPriceClmn = (
     dataIndex: 'material.mtNm',
     key: 'material.mtNm',
     align: 'center',
+    tooltip: "원자재명을 클릭하여 발주 품목을 추가할 수 있어요",
     render: (_, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
-        className="w-full h-full h-center justify-left cursor-pointer"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        className="w-full h-full h-center justify-left cursor-copy px-10"
         onClick={() => {
-          setSelectPrice([...selectPrice, record])
+          setSelectPrice([
+            ...selectPrice,
+            {
+              mtNm: record?.material?.mtNm,
+              materialIdx: record?.material?.id,
+              mtOrderQty: record?.cntMin,
+              mtOrderSizeW: record?.sizeW,
+              mtOrderSizeH: record?.sizeH,
+              mtOrderWeight: record?.wgtMin,
+              mtOrderThk: record?.thicMin,
+              mtOrderPrice: record?.priceUnit,
+              mtOrderInputPrice: record?.priceUnit,
+              mtOrderAmount: record?.cntMin,
+              mtOrderUnit: record?.unitType,
+              mtOrderTxtur: record?.txturType,
+            }
+          ])
         }}
       >
         {record?.material?.mtNm}
@@ -937,8 +963,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left px-10"
       >
         {value}
       </div>
@@ -952,8 +978,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left px-10"
       >
         {value}
       </div>
@@ -967,8 +993,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left px-10"
       >
         {value}
       </div>
@@ -982,8 +1008,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full v-h-center px-10"
       >
         {value || record?.sizeH ? (value ?? "~")+" * "+(record?.sizeH ?? "~") : ""}
       </div>
@@ -997,8 +1023,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full v-h-center"
       >
         {value || record?.thicMax ? (value ?? "~")+" * "+(record?.thicMax ?? "~") : ""}
       </div>
@@ -1012,8 +1038,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full v-h-center"
       >
         {value || record?.wgtMax ? (value ?? "~")+" * "+(record?.wgtMax ?? "~") : ""}
       </div>
@@ -1027,8 +1053,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full v-h-center"
       >
         {value || record?.cntMax ? (value ?? "~")+" * "+(record?.cntMax ?? "~") : ""}
       </div>
@@ -1042,8 +1068,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-end px-10"
       >
         {value.toLocaleString()}
       </div>
@@ -1057,8 +1083,8 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
-        className="w-full h-full h-center justify-left"
+        style={{background:selectPrice.filter(f=>f.materialIdx===record.id).length > 0 ?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        className="w-full h-full h-center px-10"
       >
         {value}
       </div>
@@ -1067,10 +1093,10 @@ export const BuyOrderMtPriceClmn = (
 ]
 
 export const BuyOrderMtClmn = (
-
+  handleDeleteMt: (index:number) => void,
 ):CustomColumn[] => [
   {
-    title: 'No',
+    title: '순서',
     width: 50,
     dataIndex: 'index',
     key: 'index',
@@ -1080,9 +1106,9 @@ export const BuyOrderMtClmn = (
   },
   {
     title: '원자재명',
-    minWidth: 100,
-    dataIndex: 'material.mtNm',
-    key: 'material.mtNm',
+    width: 60,
+    dataIndex: 'mtNm',
+    key: 'mtNm',
     align: 'center',
     cellAlign: 'left',
     editable: false,
@@ -1090,36 +1116,87 @@ export const BuyOrderMtClmn = (
   {
     title: '단위',
     width: 80,
-    dataIndex: 'unitType',
-    key: 'unitType',
+    dataIndex: 'mtOrderUnit',
+    key: 'mtOrderUnit',
     align: 'center',
   },
   {
     title: '재질',
     width: 80,
-    dataIndex: 'txturType',
-    key: 'txturType',
-    align: 'center',
-  },
-  {
-    title: '금속',
-    width: 80,
-    dataIndex: 'materialType',
-    key: 'materialType',
+    dataIndex: 'mtOrderTxtur',
+    key: 'mtOrderTxtur',
     align: 'center',
   },
   {
     title: 'W',
-    width: 40,
-    dataIndex: 'sizeW',
-    key: 'sizeW',
+    width: 80,
+    dataIndex: 'mtOrderSizeW',
+    key: 'mtOrderSizeW',
     align: 'center',
+    inputType: 'number',
   },
   {
     title: 'H',
-    width: 40,
-    dataIndex: 'sizeH',
-    key: 'sizeH',
+    width: 80,
+    dataIndex: 'mtOrderSizeH',
+    key: 'mtOrderSizeH',
     align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'mtOrderThk',
+    key: 'mtOrderThk',
+    align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '무게',
+    width: 80,
+    dataIndex: 'mtOrderWeight',
+    key: 'mtOrderWeight',
+    align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '수량',
+    width: 80,
+    dataIndex: 'mtOrderQty',
+    key: 'mtOrderQty',
+    align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '단가',
+    width: 80,
+    dataIndex: 'mtOrderInputPrice',
+    key: 'mtOrderInputPrice',
+    align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '금액',
+    width: 80,
+    dataIndex: 'mtOrderAmount',
+    key: 'mtOrderAmount',
+    align: 'center',
+    inputType: 'number',
+  },
+  {
+    title: '삭제',
+    width: 50,
+    dataIndex: 'materialIdx',
+    key: 'materialIdx',
+    align: 'center',
+    editable: false,
+    render: (_, __, index:number) => (
+      <div
+        className="w-full h-full v-h-center cursor-pointer ml-5"
+        onClick={()=>handleDeleteMt(index)}
+      >
+        <p className="w-16 h-16 text-[red]"><Trash /></p>
+      </div>
+    )
   },
 ]
