@@ -1,5 +1,5 @@
 import { getAPI } from "@/api/get";
-import { materialType } from "@/data/type/base/material";
+import { materialType } from "@/data/type/base/material_back";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
