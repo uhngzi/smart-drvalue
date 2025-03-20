@@ -72,7 +72,7 @@ const InputList: React.FC<Props> = ({
                 item.type === 'date' ?
                 <AntdDatePicker 
                   value={item.value}
-                  onChange={(e:Date)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
+                  onChange={(e:Date|null)=>handleDataChange(JSON.stringify(e), item.name, 'date')}
                   className={item.className+" "+(width??"w-full")}
                   styles={{...item.styles, ht:height, bc:'#D9D9D9', bw:'1px', br: '0px'}}
                   suffixIcon="cal"
