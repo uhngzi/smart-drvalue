@@ -1,32 +1,30 @@
-// 원판 수율 검사라는 팝업이 여기저기서 쓰인다고 하셔서 따로 만들었습니다.
-
-// make typescript react component
-
-import { Button, Checkbox, Dropdown, Radio, Space, Spin } from 'antd';
+import Image from 'next/image';
+import { Button, Checkbox, Dropdown, Space, Spin } from 'antd';
 import React, { SetStateAction, useEffect, useState } from 'react';
+import { baseURL } from '@/api/lib/config';
+import { ColumnsType } from 'antd/es/table';
+import { AnyObject } from 'antd/es/_util/type';
+import { postAPI } from '@/api/post';
 
 import Calculate from "@/assets/svg/icons/calculate.svg";
-import Print from "@/assets/svg/icons/print.svg";
-import Close from "@/assets/svg/icons/s_close.svg";
-import Down from "@/assets/svg/icons/s_drop_down.svg";
-import Right from "@/assets/svg/icons/s_drop_right.svg";
-import AntdInput from '@/components/Input/AntdInput';
-import AntdTable from '@/components/List/AntdTable';
-import { arrayCalType, yieldCalType, yieldInputReq, yieldInputType } from '@/data/type/sayang/sample';
-import { postAPI } from '@/api/post';
-import useToast from '@/utils/useToast';
-import { validReq } from '@/utils/valid';
-import { boardType } from '@/data/type/base/board';
-import Image from 'next/image';
-import { baseURL } from '@/api/lib/config';
 import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Plus from "@/assets/svg/icons/s_plus.svg";
 import Check from "@/assets/svg/icons/s_check.svg";
-import { ColumnsType } from 'antd/es/table';
-import { AnyObject } from 'antd/es/_util/type';
+import Down from "@/assets/svg/icons/s_drop_down.svg";
+import Right from "@/assets/svg/icons/s_drop_right.svg";
+import Hint from "@/assets/svg/icons/s_excalm.svg";
+
+import AntdInput from '@/components/Input/AntdInput';
+import AntdTable from '@/components/List/AntdTable';
 import AntdAlertModal from '@/components/Modal/AntdAlertModal';
 import { IconButton } from '@/components/Button/IconButton';
+
+import { arrayCalType, specType, yieldInputType } from '@/data/type/sayang/sample';
+import { boardType } from '@/data/type/base/board';
+
+import useToast from '@/utils/useToast';
+import { get } from 'lodash';
 
 interface Props {
   board: boardType[];
@@ -42,10 +40,11 @@ interface Props {
     diskWidth:number;
     diskHeight:number;
   }[]>>;
-  kit: {id:string, x:number, y:number, cnt:number}[];
-  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number}[]>>;
+  kit: {id:string, x:number, y:number, minX:number, minY:number, cnt:number}[];
+  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, minX:number, minY:number, cnt:number}[]>>;
   resultData: arrayCalType[];
   setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
+  detailData: specType;
   selectData?: arrayCalType;
   setSelectData?: React.Dispatch<SetStateAction<arrayCalType | undefined>>;
 }
@@ -61,7 +60,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
   setKit,
   resultData,
   setResultData,
-  selectData,
+  detailData,
   setSelectData,
 }) => {
   const { showToast, ToastContainer } = useToast();
@@ -71,6 +70,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
   const [calChk, setCalChk] = useState<boolean>(false);
   const [calLoading, setCalLoading] = useState<boolean>(false);
 
+  const [selectCalRowId, setSelectCalRowId] = useState<string | null>(null);
 
   useEffect(()=>{
     if(board.length > 0) {
@@ -79,17 +79,15 @@ const SayangYieldCalculate: React.FC<Props> = ({
   }, [board]);
 
   useEffect(()=>{
-    if(yielddata === null) {
+    if(resultData.length < 1) {
       setCalLoading(false);
-      setResultData([]);
       setCalChk(false);
+      setSelectCalRowId(null);
     }
-  }, [yielddata]);
+  }, [resultData]);
 
 
   const items = [
-    // {value:yielddata?.extraMargin, name:'extraMargin', label:'추가 여백', type:'input', widthType:'full'},
-    // {value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
@@ -107,7 +105,9 @@ const SayangYieldCalculate: React.FC<Props> = ({
       const jsonData = { 
         extraMargin: 0,
         boards:disk.map(board=>({boardId:board.id,width:board.diskWidth,height:board.diskHeight})),
-        kits: kit.map((kit, index)=>({kitId:kit.id, width:kit.x, height:kit.y, targetCount: 100})),
+        kits: kit.map((kit, index)=>({kitId:kit.id, width:kit.x, height:kit.y,
+          // minWidth:kit.minX, minHeight:kit.minY,
+          targetCount: kit.cnt})),
         panelSpacing: {
           horizontalPadding: yielddata?.marginLongSide,
           verticalPadding: yielddata?.marginShortSide,
@@ -130,7 +130,10 @@ const SayangYieldCalculate: React.FC<Props> = ({
       
       if(result.resultCode === "OK_0000") {
         const rdata = (result.data ?? []) as arrayCalType[];
-        setResultData(rdata);
+        setResultData(rdata.map(((r, index) => ({
+          id: index+"",
+          ...r,
+        }))));
         setCalLoading(false);
         setCalChk(true);
       } else {
@@ -192,7 +195,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
   const maxKitCount = Math.max(...resultData.map((row) => row.kitsInfo.length), 0);
 
   const kitColumns = Array.from({ length: maxKitCount }, (_, i) => ({
-    title: `Kit${i + 1}`,  // or '키트' + (i+1)
+    title: `Kit${i + 1}`,
     children: [
       {
         title: 'X.Y',
@@ -233,6 +236,17 @@ const SayangYieldCalculate: React.FC<Props> = ({
   // 3) 최종 columns
   const columns: ColumnsType<AnyObject> = [
     {
+      title: '등분',
+      width: 20,
+      dataIndex: 'panelsPerBoard',
+      key: 'panelsPerBoard',
+      render: (value) => (
+        <div className="w-full v-h-center">
+          {value}
+        </div>
+      )
+    },
+    {
       title: '원판',
       children: [
         {
@@ -266,6 +280,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
+  const [hint, setHint] = useState<{flag:boolean, name: string, msg:string}>({flag: false, name: "", msg: ""});
 
   return (
     <section className='flex gap-10 w-full flex-col'>
@@ -325,13 +340,24 @@ const SayangYieldCalculate: React.FC<Props> = ({
                       type="number"
                       onChange={(e)=>{
                         let { value } = e.target;
-                        if(item.name === "minYield" && Number(value ?? 0) > 100) {
-                          setYielddata({
-                            ...yielddata,
-                            [item.name]: 100,
-                          });
-                          return;
-                        }
+                        if(item.name.includes("Side") && detailData.specModels && detailData.specModels?.length > 0) {
+                          const layer = Number(detailData.specModels[0]?.layerEm?.replace("L", "") ?? 0);
+                          const min = Number(layer <= 2 ? 16 : layer === 4 ? 26 : (layer === 6 || layer === 8 || layer >= 10) ? 30 : 0);
+                          const other = item.name === "marginLongSide" ? yielddata?.marginShortSide : yielddata?.marginLongSide;
+                          console.log(other);
+                          
+                          if((layer === 6 || layer === 8 || layer >= 10)) {
+                            if(Number(other) < 30 && Number(value) < 30)
+                              setHint({flag: true, name: item.name, msg: layer+"층은 여분 중 적어도 하나는 30 이상이어야 합니다."})
+                            else
+                              setHint({flag: false, name: item.name, msg: ""})
+                          } else {
+                            if(Number(value) < min)
+                              setHint({flag: true, name: item.name, msg: layer+"층은 여분이 "+min+" 이상이어야 합니다."});
+                            else
+                              setHint({flag: false, name: item.name, msg: ""})
+                          }
+                        } else  setHint({flag: false, name: item.name, msg: ""})
 
                         setYielddata({
                           ...yielddata,
@@ -340,6 +366,12 @@ const SayangYieldCalculate: React.FC<Props> = ({
                       }}
                     />
                   </div>
+                  { hint.flag && item.name === hint.name && 
+                    <div className="text-[red] flex h-center gap-5">
+                      <p className="w-16 h-16"><Hint /></p>
+                      {hint.msg}
+                    </div>
+                  }
                 </div>
               ))}
             </div>
@@ -348,7 +380,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                 kit.map((item, index) => (
                   <div
                     key={item.id}
-                    className="w-full h-[145px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14"
+                    className="w-full h-[200px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14"
                   >
                     <div className="w-full v-between-h-center">
                       <div className="h-center gap-3">
@@ -365,7 +397,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           </div>,
                           key: 0,
                           onClick: () => {
-                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, cnt: 1} ])
+                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, minX:0, minY:0, cnt: 1} ])
                           }
                         },
                         {
@@ -391,7 +423,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                         </a>
                       </Dropdown>
                     </div>
-                    <div className="v-h-center gap-15">
+                    <div className="h-center gap-15">
                       <div>
                         <p className='pb-8'>Kit긴쪽길이</p>
                         <div className="h-center gap-10 w-80">
@@ -432,6 +464,34 @@ const SayangYieldCalculate: React.FC<Props> = ({
                         </div>
                       </div>
                     </div>
+                    <div className="h-center gap-15">
+                      <div>
+                        <p className='pb-8'>Kit긴쪽최소</p>
+                        <div className="h-center gap-10 w-80">
+                          <AntdInput 
+                            value={item.minX}
+                            type="number"
+                            onChange={(e)=>{
+                              let { value } = e.target;
+                              handleDataChange(item.id, "minX", value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <p className='pb-8'>Kit짧은쪽최소</p>
+                        <div className="h-center gap-10 w-80">
+                          <AntdInput 
+                            value={item.minY}
+                            type="number"
+                            onChange={(e)=>{
+                              let { value } = e.target;
+                              handleDataChange(item.id, "minY", value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))
               }
@@ -453,14 +513,20 @@ const SayangYieldCalculate: React.FC<Props> = ({
           data={resultData}
           loading={calLoading}
           styles={{ th_bg: '#EEEEEE', td_bg: '#FFF', td_ht: '40px', th_ht: '40px', round: '0px', th_pd: '0' }}
+          selectedRowId={selectCalRowId}
+          setSelectedRowId={setSelectCalRowId}
         />
       </div>
         
       <section className='flex flex-col gap-10 w-full min-h-[400px]'>
         <div className="relative flex flex-wrap gap-30 w-full p-30 bg-white rounded-14 border border-[#D9D9D9]" style={{ flex: 1 }}>
-          { calLoading && <div className="w-full h-full v-h-center"><Spin tip="계산중..." /></div>}
-          { !calLoading && resultData.length > 0 && resultData
-            .map((data, rowIndex) => (
+          { calLoading && <div className="w-full min-h-[400px] h-full v-h-center"><Spin tip="계산중..." /></div>}
+          { !calLoading && resultData.length > 0 && !selectCalRowId && selectCalRowId !== "" && 
+            <div className="w-full min-h-[400px] h-full v-h-center">계산 결과를 선택하여 이미지를 확인할 수 있습니다.</div>
+          }
+          { !calLoading && resultData.length > 0 && selectCalRowId && selectCalRowId !== "" &&
+            resultData.map((data, rowIndex) => (
+              data.id === selectCalRowId &&
               <div key={rowIndex} className="w-full flex flex-col gap-20">
                 <div className="flex w-full min-h-[400px] gap-30">
                   <section className="relative" style={{ flex: 1.5 }}>
