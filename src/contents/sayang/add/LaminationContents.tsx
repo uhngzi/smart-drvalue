@@ -101,7 +101,7 @@ const LaminationContents: React.FC<Props> = ({
   const color = ['#CEE4B3','#F1F4F9','#7551E933','#F5D9B1','#F5B1A1'];
 
   return (
-    <div className="flex flex-col gap-20">
+    <div className="flex flex-col h-full gap-20">
       <div className="v-between-h-center">
         <TitleIcon title="적층구조" icon={<MessageOn />}/>
         <Button
@@ -121,7 +121,7 @@ const LaminationContents: React.FC<Props> = ({
         <span>코드 : {detailData.specLamNo ?? detailData.specLamination?.lamNo ?? lamNo}</span>
       </div>}
 
-      <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
+      <div className="flex-1 text-12 text-[#292828] flex flex-col gap-3">
         { Array.isArray(lamination) && lamination.length > 0 &&
           lamination.map((item:laminationRType, index:number) => (
             <LaminationRow
@@ -133,7 +133,7 @@ const LaminationContents: React.FC<Props> = ({
           ))
         }
         { (!Array.isArray(lamination) || lamination?.length < 1) &&
-          <Empty />}
+          <div className="w-full h-full v-h-center"><Empty /></div>}
       </div>
 
 
