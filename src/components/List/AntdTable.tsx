@@ -87,7 +87,7 @@ const AntdTable: React.FC<Props> = ({
             },
           })}
           rowClassName={(record) =>
-            record?.id === selectedRowId ? 'selected-row' : ''
+            selectedRowId && record?.id === selectedRowId ? 'selected-row' : ''
           }
         />
       </ConfigProvider>

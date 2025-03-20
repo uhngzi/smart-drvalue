@@ -455,6 +455,6 @@ export type buyOrderDetailType = {
     badNm?: string;
     badCnt?: number;
     materialBadIdx?: string;
-  }
+  }[]
   mtNm?: string;
 }

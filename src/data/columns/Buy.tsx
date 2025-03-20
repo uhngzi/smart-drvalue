@@ -68,10 +68,10 @@ export const BuyCostOutClmn = (
     dataIndex: 'priceUnitChkYn',
     key: 'priceUnitChkYn',
     align: 'center',
-    render: (value:0 | 1, record:buyCostOutType) => (
+    render: (value:0 | 1 | boolean, record:buyCostOutType) => (
       <div className="w-full h-full v-h-center">
         {
-          value === 0 ? <FullChip state="yellow" label="등록전"/> :
+          value === 0 || value === false ? <FullChip state="yellow" label="등록전"/> :
           <FullChip state="mint" label="등록완료"/>
         }
       </div>
@@ -535,10 +535,10 @@ export const BuyCostOutStatusClmn = (
     dataIndex: 'priceUnitChkYn',
     key: 'priceUnitChkYn',
     align: 'center',
-    render: (value:0 | 1, record:buyCostOutType) => (
+    render: (value:0 | 1 | boolean, record:buyCostOutType) => (
       <div className="w-full h-full v-h-center">
         {
-          value === 0 ? <FullChip state="yellow" label="등록전" /> :
+          value === 0 || value === false ? <FullChip state="yellow" label="등록전"/> :
           <FullChip state="mint" label="등록완료"/>
         }
       </div>
