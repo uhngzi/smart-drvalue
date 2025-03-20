@@ -96,7 +96,7 @@ const AntdDatePicker: React.FC<Props> = ({
         presets={presets === "pre" ? datePresetsPre : presets === "post" ? datePresetsPost : []}
         placeholder={placeholder}
         suffixIcon={suffixIcon === "down" ? <DownOutlined /> : suffixIcon === "cal" ? <Calendar /> : null}
-        allowClear={false}
+        // allowClear={false}
       />
     </AntdDatePickerStyled>
     </ConfigProvider>
@@ -119,10 +119,6 @@ const AntdDatePickerStyled = styled.div<{
     border-color: ${({ $bc }) => $bc};
     padding: ${({ $pd }) => $pd};
     font-family: "Spoqa Han Sans Neo", "sans-serif";
-  }
-  
-  & .ant-picker-clear {
-    display: none !important;
   }
 `;
 

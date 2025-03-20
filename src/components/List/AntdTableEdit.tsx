@@ -74,6 +74,8 @@ const EditableCell: React.FC<
                         inputEl.focus();
                       }
                     }, 0);
+                  } else {
+                    onFieldChange(null);
                   }
                 }}
                 onOpenChange={(open) => {
@@ -132,7 +134,7 @@ const EditableCell: React.FC<
                   // 두 번째 이상의 행이면 이전 행의 완료량을 자동 입력
                   if(record.rowIndex > 0 && (!value || value === "")) {
                     if(record.prevWkProcEdCnt !== undefined) {
-                      onFieldChange(record.prevWkProcEdCnt);
+                      onFieldChange(record?.prevWkProcEdCnt);
                     }
                   }
                 }
@@ -376,7 +378,13 @@ const AntdTableEdit: React.FC<Props> = ({
     if (create) {
       if (column.editable === false) {
         mergedCol = {
-          render: (value: any, record: any) => {
+          ...column,
+          title: column.tooltip ? (
+            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
+              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
+            </Tooltip>
+          ) : column.title,
+          render: column.render ? column.render : (value: any, record: any) => {
             if (value) {
               if (!Number.isNaN(value))
                 return (
@@ -416,12 +424,6 @@ const AntdTableEdit: React.FC<Props> = ({
               );
             }
           },
-          ...column,
-          title: column.tooltip ? (
-            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
-              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
-            </Tooltip>
-          ) : column.title,
         };
       } else {
         mergedCol = {
@@ -451,13 +453,59 @@ const AntdTableEdit: React.FC<Props> = ({
               <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
             </Tooltip>
           ) : column.title,
+          render: column.render ? column.render : (value: any, record: any) => {
+            if (value) {
+              if (!Number.isNaN(value))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {value}
+                  </div>
+                );
+              if (dayjs(value).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(value).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                  {value}
+                </div>
+              );
+            } else {
+              const v = get(record, column.dataIndex);
+              if (!Number.isNaN(v))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {v}
+                  </div>
+                );
+              if (dayjs(v).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(v).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                  {v}
+                </div>
+              );
+            }
+          },
         };
       }
     } else {
-      // 수정 모드일 때
+      // 수정 모드 아닐 때
       if (!column.editable) {
         mergedCol = {
-          render: (value: any, record: any) => {
+          ...column,
+          title: column.tooltip ? (
+            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
+              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
+            </Tooltip>
+          ) : column.title,
+          render: column.render ? column.render : (value: any, record: any) => {
             if (value) {
               if (!Number.isNaN(value))
                 return (
@@ -497,31 +545,10 @@ const AntdTableEdit: React.FC<Props> = ({
               );
             }
           },
-          ...column,
-          title: column.tooltip ? (
-            <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
-              <span className="cursor-pointer">{typeof column.title === "string" ? column.title : ""}</span>
-            </Tooltip>
-          ) : column.title,
         };
       } else {
+        // 수정모드일 때
         mergedCol = {
-          render: (value: any, record: any) => {
-            if (value) {
-              if (typeof value === "number")
-                return value;
-              if (dayjs(value).isValid())
-                return dayjs(value).format('YYYY-MM-DD');
-              return value;
-            } else {
-              const v = get(record, column.dataIndex);
-              if (typeof v === "number")
-                return v;
-              if (dayjs(v).isValid())
-                return dayjs(v).format('YYYY-MM-DD');
-              return v;
-            }
-          },
           ...column,
           onCell: (record: DataType) => ({
             cellAlign: column.cellAlign,
@@ -543,6 +570,46 @@ const AntdTableEdit: React.FC<Props> = ({
               handleFieldChange(record.key, column.dataIndex as string, value, column.editType, column.selectValue, label),
             enterSubmit: column.enterSubmit,
           }),
+          render: column.render ? column.render : (value: any, record: any) => {
+            if (value) {
+              if (!Number.isNaN(value))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {value}
+                  </div>
+                );
+              if (dayjs(value).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(value).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                  {value}
+                </div>
+              );
+            } else {
+              const v = get(record, column.dataIndex);
+              if (!Number.isNaN(v))
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {v}
+                  </div>
+                );
+              if (dayjs(v).isValid())
+                return (
+                  <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                    {dayjs(v).format('YYYY-MM-DD')}
+                  </div>
+                );
+              return (
+                <div className="w-full h-full h-center" style={{ justifyContent: column.cellAlign ?? "center" }}>
+                  {v}
+                </div>
+              );
+            }
+          },
         };
       }
     }
