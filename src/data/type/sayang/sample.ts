@@ -30,6 +30,8 @@ export type specType = {
   specPrdGroupPrcs?: specPrdGroupPrcs[];
   index?: number;   // 샘플로 넣은 값
   wkPrdCnt?: number;
+  kitGapX?: number;
+  kitGapY?: number;
 }
 
 export type specModelType = {
@@ -114,6 +116,9 @@ export type specModelType = {
   deletedAt?: Date | Dayjs | null;
   matchId?: string;
   prdCnt?: number;
+  pcsCnt?: number;
+  impedanceCnt?: number;
+  index?: number;
 }
 
 export type specPrdGroupPrcs = {
@@ -204,6 +209,7 @@ export type yieldCalType = {
 }
 
 export type arrayCalType = {
+  id?: string,
   imageName: "sihun.vLg4DUH.20250227183155-ofmgtvccst.panel_kit1:1x2_kit2:1x2.png",
   stdInfo: {
     x: number;
