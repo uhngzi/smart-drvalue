@@ -398,62 +398,6 @@ const SayangModelAddPage: React.FC & {
       >
         {/* 테이블 */}
         <div className="w-[calc(100%-100px)] flex flex-col gap-40">
-          {/* 고객 발주 목록 */}
-          <Popup
-            className="overflow-auto !gap-0"
-          >
-            <LabelMedium label="고객발주 모델" className="mb-20"/>
-            <DividerH />
-            <TabSmall
-              items={orderTab} bd_b={false}
-              selectKey={orderModelsSelect}
-              setSelectKey={setOrderModelsSelect}
-            />
-            {
-              orderModels
-              .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
-              .map((model:salesOrderProductRType, index:number) => (
-                orderModelsSelect === model.id &&
-                <div
-                  key={index}
-                  className="flex flex-col gap-15 mt-20"
-                >
-                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
-                    <SalesModelHead
-                      read={true}
-                      model={model}
-                      handleModelDataChange={handleModelDataChange}
-                      boardSelectList={boardSelectList}
-                      metarialSelectList={metarialSelectList}
-                      selectId={selectId ?? ""}
-                      newFlag={newFlag}
-                      inputRef={inputRef}
-                      index={index}
-                    />
-                    <AntdTable
-                      columns={salesOrderModelReadClmn(
-                        unitSelectList,
-                        vcutSelectList,
-                        outSelectList,
-                        smPrintSelectList,
-                        smColorSelectList,
-                        smTypeSelectList,
-                        mkPrintSelectList,
-                        mkColorSelectList,
-                        mkTypeSelectList,
-                        spPrintSelectList,
-                        spTypeSelectList,
-                      )}
-                      data={[model]}
-                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
-                      tableProps={{split:'none'}}
-                    />
-                  </div>
-                </div>
-              ))
-            }
-          </Popup>
-          
           {/* 수주 탭 */}
           <Popup
             className="overflow-auto !gap-0"
@@ -545,6 +489,62 @@ const SayangModelAddPage: React.FC & {
               </div>
             ))
           }
+          </Popup>
+
+          {/* 고객 발주 목록 */}
+          <Popup
+            className="overflow-auto !gap-0"
+          >
+            <LabelMedium label="고객발주 모델" className="mb-20"/>
+            <DividerH />
+            <TabSmall
+              items={orderTab} bd_b={false}
+              selectKey={orderModelsSelect}
+              setSelectKey={setOrderModelsSelect}
+            />
+            {
+              orderModels
+              .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+              .map((model:salesOrderProductRType, index:number) => (
+                orderModelsSelect === model.id &&
+                <div
+                  key={index}
+                  className="flex flex-col gap-15 mt-20"
+                >
+                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
+                    <SalesModelHead
+                      read={true}
+                      model={model}
+                      handleModelDataChange={handleModelDataChange}
+                      boardSelectList={boardSelectList}
+                      metarialSelectList={metarialSelectList}
+                      selectId={selectId ?? ""}
+                      newFlag={newFlag}
+                      inputRef={inputRef}
+                      index={index}
+                    />
+                    <AntdTable
+                      columns={salesOrderModelReadClmn(
+                        unitSelectList,
+                        vcutSelectList,
+                        outSelectList,
+                        smPrintSelectList,
+                        smColorSelectList,
+                        smTypeSelectList,
+                        mkPrintSelectList,
+                        mkColorSelectList,
+                        mkTypeSelectList,
+                        spPrintSelectList,
+                        spTypeSelectList,
+                      )}
+                      data={[model]}
+                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
+                      tableProps={{split:'none'}}
+                    />
+                  </div>
+                </div>
+              ))
+            }
           </Popup>
         </div>
 
