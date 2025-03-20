@@ -8,6 +8,8 @@ interface Props {
   errorMessage?: string;
   isError?: boolean;
   height?: string;
+  titleClassName?: string;
+  childClassName?: string;
 }
 
 const DescriptionItems: React.FC<Props> = ({
@@ -17,11 +19,13 @@ const DescriptionItems: React.FC<Props> = ({
   children,
   errorMessage,
   isError,
+  titleClassName,
+  childClassName,
   height = 60,
 }) => {
   return (
     <div className="flex">
-      <div className={`flex w-[150px] flex-col justify-center bg-back py-15 pl-20 text-14`}>
+      <div className={`flex w-[150px] flex-col justify-center bg-back py-15 pl-20 text-14 ${titleClassName ?? ""}`}>
         <div className={`flex h-${height} items-center gap-8 text-[#222222]`}>
           {/* 제목 */}
           <p>{title}</p>
@@ -32,7 +36,7 @@ const DescriptionItems: React.FC<Props> = ({
       </div>
 
       {/* 내용 */}
-      <div className={`w-[calc(100%-150px)] h-${height} h-center self-center px-20 py-10`}>
+      <div className={`w-[calc(100%-150px)] h-${height} h-center self-center px-20 py-10 ${childClassName ?? ""}`}>
         {children}
       </div>
     </div>
