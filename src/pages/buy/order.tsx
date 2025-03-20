@@ -325,7 +325,7 @@ const BuyOrderPage: React.FC & {
             mtOrderInputQty: item.mtOrderInputQty,
             mtOrderInvenQty: item.mtOrderInvenQty,
             mtOrderBadQty: item.mtOrderBadQty,
-            requestMaterialQuality: item.requestMaterialQuality,
+            requestMaterialQuality: item.requestMaterialQuality ?? [],
             mtNm: item.material?.mtNm,
           }))
         });
