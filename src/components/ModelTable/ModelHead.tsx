@@ -162,6 +162,7 @@ const ModelHead:React.FC<Props> = ({
             className="!w-[110px] !h-32"
             placeholder=""
             afterDate={new Date()}
+            allowClear={false}
           />
         </div>
       </div>

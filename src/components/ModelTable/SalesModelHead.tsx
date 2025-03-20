@@ -163,6 +163,7 @@ const SalesModelHead:React.FC<Props> = ({
               placeholder=""
               afterDate={new Date()}
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
+              allowClear={false}
             />
           </div>
 

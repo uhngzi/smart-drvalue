@@ -313,6 +313,7 @@ const SalesModelTable:React.FC<Props> = ({
                     suffixIcon="cal"
                     styles={{ bw: "0", bg: "none", pd: "0" }}
                     className="w-[110px]"
+                    allowClear={false}
                   />
                   <div className="flex-1">
                     <AntdInput
