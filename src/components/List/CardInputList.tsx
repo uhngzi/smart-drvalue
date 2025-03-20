@@ -127,7 +127,7 @@ const CardInputList: React.FC<CardInputListProps> = ({
                   {item.type === "date" && (
                     <AntdDatePicker
                       value={item.value ?? undefined}
-                      onChange={(e:Date)=>handleDataChange(dayjs(e).startOf('day').format('YYYY-MM-DDTHH:mm:ss'), item.name, 'date')}
+                      onChange={(e:Date | null)=>handleDataChange(dayjs(e).startOf('day').format('YYYY-MM-DDTHH:mm:ss'), item.name, 'date')}
                       placeholder={item?.placeholder}
                       className="w-full !rounded-0 h-32"
                       styles={{bc: '#e5e7eb', wd: '100%'}}
