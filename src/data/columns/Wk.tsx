@@ -313,7 +313,6 @@ export const WKStatusProcClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
@@ -522,6 +521,11 @@ export const WkStatusProcPopClmn = (
     align: 'center',
     cellAlign: 'left',
     editable: false,
+    render: (_, record) => (
+      <div className="w-full h-center justify-left ml-10">
+        {record?.specPrdGrp?.process?.prcNm}
+      </div>
+    )
   },
   {
     title: '공정업체',
@@ -548,6 +552,11 @@ export const WkStatusProcPopClmn = (
     align: 'center',
     cellAlign: 'left',
     editable: false,
+    render: (_, record) => (
+      <div className="w-full h-center justify-left ml-10">
+        {record?.specPrdGrp?.prcWkRemark}
+      </div>
+    )
   },
   {
     title: '인수량',
