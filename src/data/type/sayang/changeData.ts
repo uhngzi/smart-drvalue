@@ -171,7 +171,7 @@ export const changeSayangTemp = (
         specSpace: item?.tempModel?.specSpace,
         specDr: item?.tempModel?.specDr,
         specPad: item?.tempModel?.specPad,
-      }))
+      })) as specModelType[]
       :
       [
         {
@@ -231,7 +231,7 @@ export const changeSayangTemp = (
           specSpace: model?.specSpace,
           specDr: model?.specDr,
           specPad: model?.specPad,
-        }
+        } as specModelType
       ]
     } as specType
   } else {
@@ -252,7 +252,8 @@ export const changeSayangTemp = (
         jYn: specData.jYn,
         prcNotice: specData.prcNotice,
         camNotice: specData.camNotice,
-        // wkPrdCnt: specData.wkPrdCnt,
+        // kitGapX: specData.kitGapX,
+        // kitGapY: specData.kitGapY,
       },
       models: (modelsData ?? []).map((model:specModelType) => ({
         id: model.id,
@@ -313,6 +314,8 @@ export const changeSayangTemp = (
         specDr: model.specDr,
         specPad: model.specPad,
         prdCnt: model.prdCnt,
+        // impedanceCnt: model.impedanceCnt,
+        // pcsCnt: model.pcsCnt,
       })),
     }
     if(specData?.specPrdGroupPrcs && specData.specPrdGroupPrcs.length > 0){
