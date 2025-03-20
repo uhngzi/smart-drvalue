@@ -278,6 +278,23 @@ const WKStatusProcPage: {
     }
   }
 
+  useEffect(() => {
+    setProcs((prevProcs) => {
+      // 이전 행의 wkProcEdCnt 값을 다음 행의 prevWkProcEdCnt로 업데이트
+      const updatedProcs = prevProcs.map((row, index) => {
+        if (index > 0) {
+          const newPrevValue = prevProcs[index - 1].wkProcEdCnt;
+          // 이미 값이 동일하면 그대로 반환하여 불필요한 재렌더링 방지
+          if (row.prevWkProcEdCnt !== newPrevValue) {
+            return { ...row, prevWkProcEdCnt: newPrevValue };
+          }
+        }
+        return row;
+      });
+      return updatedProcs;
+    });
+  }, [procs.map((row) => row.wkProcEdCnt).join(",")]);
+
   return (<>
     <ListPagination
       titleBtn={
