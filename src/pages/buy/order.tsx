@@ -327,7 +327,7 @@ const BuyOrderPage: React.FC & {
             mtOrderBadQty: item.mtOrderBadQty,
             requestMaterialQuality: item.requestMaterialQuality ?? [],
             mtNm: item.material?.mtNm,
-          }))
+          })) as buyOrderDetailType[]
         });
         setEdit(true);
         setOpen(true);
