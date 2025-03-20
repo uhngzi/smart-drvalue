@@ -91,7 +91,7 @@ type ConditionOperator =
 export interface QueryCondition {
   key: string;
   oper: ConditionOperator | 'or' | 'and';
-  value: string;
+  value: string | number;
 }
 
 // 필드 조건: 필드명에 해당하는 조건 객체 (예: { "prdNm": { "$cont": "DSF" } })
