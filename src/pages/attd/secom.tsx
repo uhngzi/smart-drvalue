@@ -891,6 +891,7 @@ const AtdSecomPage: React.FC & {
             className="!w-[200px] !h-30 !border-line"
             format="YYYY-MM"
             picker="month"
+            allowClear={false}
           />
         }
         </div>
