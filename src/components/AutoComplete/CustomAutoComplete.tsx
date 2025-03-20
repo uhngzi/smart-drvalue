@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 interface Props {
   option?: { value: any; label: any }[];
   onChange?: (value: any) => void;
+  className?: string;
   inputClassName?: string;
   addLabel?: string;
   handleAddData?: () => void;
@@ -15,6 +16,7 @@ interface Props {
 const CustomAutoComplete: React.FC<Props> = ({
   option = [],
   onChange,
+  className,
   inputClassName,
   handleAddData,
   value,
@@ -82,6 +84,7 @@ const CustomAutoComplete: React.FC<Props> = ({
       onSelect={handleSelect} // 선택하면 ID 저장, label 표시
       onSearch={setInputValue} // 검색할 때 label 기준으로 필터링
       placeholder={placeholder}
+      className={className}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
