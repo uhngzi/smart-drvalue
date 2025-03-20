@@ -6,6 +6,7 @@ import FullChip from "@/components/Chip/FullChip";
 import { SetStateAction } from "react";
 import { Radio } from "antd";
 import { processVendorPriceRType } from "../type/base/process";
+import { materialPriceType } from "../type/base/material_back";
 
 export const BuyCostOutClmn = (
   totalData: number,
@@ -804,11 +805,321 @@ export const BuyOrderClmn = (
     )
   },
   {
-    title: '프로젝트명',
+    title: '생산제품명',
     minWidth: 130,
-    dataIndex: 'project',
-    key: 'project',
+    dataIndex: 'productName',
+    key: 'productName',
     align: 'center',
     cellAlign: 'left',
+  },
+  {
+    title: '구매처명',
+    width: 130,
+    dataIndex: 'vendorName',
+    key: 'vendorName',
+    align: 'center',
+    cellAlign: 'left',
+  },
+  {
+    title: '총액',
+    width: 100,
+    dataIndex: 'totalAmount',
+    key: 'totalAmount',
+    align: 'center',
+    cellAlign: 'right',
+  },
+  {
+    title: '상태',
+    width: 100,
+    dataIndex: 'status',
+    key: 'status',
+    align: 'center',
+  },
+  {
+    title: '발주확정일',
+    width: 100,
+    dataIndex: 'orderConfirmDate',
+    key: 'orderConfirmDate',
+    align: 'center',
+  },
+  {
+    title: '발주예정일',
+    width: 100,
+    dataIndex: 'orderExpectedDate',
+    key: 'orderExpectedDate',
+    align: 'center',
+  },
+  {
+    title: '발주일',
+    width: 100,
+    dataIndex: 'orderDate',
+    key: 'orderDate',
+    align: 'center',
+  },
+  {
+    title: '납품요구일',
+    width: 100,
+    dataIndex: 'deliveryDate',
+    key: 'deliveryDate',
+    align: 'center',
+  },
+  {
+    title: '도착일',
+    width: 100,
+    dataIndex: 'arrivalDate',
+    key: 'arrivalDate',
+    align: 'center',
+  },
+  {
+    title: '재고확인일',
+    width: 100,
+    dataIndex: 'inventoryCheckDate',
+    key: 'inventoryCheckDate',
+    align: 'center',
+  },
+  {
+    title: '결제조건',
+    width: 100,
+    dataIndex: 'paymentCondition',
+    key: 'paymentCondition',
+    align: 'center',
+  },
+  {
+    title: '담당자',
+    width: 100,
+    dataIndex: 'responsible',
+    key: 'responsible',
+    align: 'center',
+  },
+  {
+    title: '영업담당',
+    width: 100,
+    dataIndex: 'salesResponsible',
+    key: 'salesResponsible',
+    align: 'center',
+  },
+  {
+    title: '비고',
+    width: 100,
+    dataIndex: 'note',
+    key: 'note',
+    align: 'center',
+  },
+]
+
+export const BuyOrderMtPriceClmn = (
+  selectPrice: materialPriceType[],
+  setSelectPrice: React.Dispatch<SetStateAction<materialPriceType[]>>,
+):CustomColumn[] => [
+  {
+    title: '원자재명',
+    minWidth: 100,
+    dataIndex: 'material.mtNm',
+    key: 'material.mtNm',
+    align: 'center',
+    render: (_, record:materialPriceType) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        className="w-full h-full h-center justify-left cursor-pointer"
+        onClick={() => {
+          setSelectPrice([...selectPrice, record])
+        }}
+      >
+        {record?.material?.mtNm}
+      </div>
+    ),
+  },
+  {
+    title: '단위',
+    width: 80,
+    dataIndex: 'unitType',
+    key: 'unitType',
+    align: 'center',
+    render: (value:string, record:materialPriceType) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value}
+      </div>
+    ),
+  },
+  {
+    title: '재질',
+    width: 80,
+    dataIndex: 'txturType',
+    key: 'txturType',
+    align: 'center',
+    render: (value:string, record:materialPriceType) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value}
+      </div>
+    ),
+  },
+  {
+    title: '금속',
+    width: 80,
+    dataIndex: 'materialType',
+    key: 'materialType',
+    align: 'center',
+    render: (value:string, record:materialPriceType) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value}
+      </div>
+    ),
+  },
+  {
+    title: '규격',
+    width: 80,
+    dataIndex: 'sizeW',
+    key: 'sizeW',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value || record?.sizeH ? (value ?? "~")+" * "+(record?.sizeH ?? "~") : ""}
+      </div>
+    )
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'thicMin',
+    key: 'thicMin',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value || record?.thicMax ? (value ?? "~")+" * "+(record?.thicMax ?? "~") : ""}
+      </div>
+    )
+  },
+  {
+    title: '무게',
+    width: 80,
+    dataIndex: 'wgtMin',
+    key: 'wgtMin',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value || record?.wgtMax ? (value ?? "~")+" * "+(record?.wgtMax ?? "~") : ""}
+      </div>
+    )
+  },
+  {
+    title: '수량',
+    width: 80,
+    dataIndex: 'cntMin',
+    key: 'cntMin',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value || record?.cntMax ? (value ?? "~")+" * "+(record?.cntMax ?? "~") : ""}
+      </div>
+    )
+  },
+  {
+    title: '단가',
+    width: 80,
+    dataIndex: 'priceUnit',
+    key: 'priceUnit',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"#F0F5FF":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value.toLocaleString()}
+      </div>
+    )
+  },
+  {
+    title: '단가 적용일',
+    width: 100,
+    dataIndex: 'appDt',
+    key: 'appDt',
+    align: 'center',
+    render: (value, record) => (
+      <div
+        style={{background:selectPrice.filter(f=>f.id===record.id).length > 0 ?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        className="w-full h-full h-center justify-left"
+      >
+        {value}
+      </div>
+    )
+  },
+]
+
+export const BuyOrderMtClmn = (
+
+):CustomColumn[] => [
+  {
+    title: 'No',
+    width: 50,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    editable: false,
+    render: (_: any, __: any, index: number) => index+1, // 역순 번호 매기기
+  },
+  {
+    title: '원자재명',
+    minWidth: 100,
+    dataIndex: 'material.mtNm',
+    key: 'material.mtNm',
+    align: 'center',
+    cellAlign: 'left',
+    editable: false,
+  },
+  {
+    title: '단위',
+    width: 80,
+    dataIndex: 'unitType',
+    key: 'unitType',
+    align: 'center',
+  },
+  {
+    title: '재질',
+    width: 80,
+    dataIndex: 'txturType',
+    key: 'txturType',
+    align: 'center',
+  },
+  {
+    title: '금속',
+    width: 80,
+    dataIndex: 'materialType',
+    key: 'materialType',
+    align: 'center',
+  },
+  {
+    title: 'W',
+    width: 40,
+    dataIndex: 'sizeW',
+    key: 'sizeW',
+    align: 'center',
+  },
+  {
+    title: 'H',
+    width: 40,
+    dataIndex: 'sizeH',
+    key: 'sizeH',
+    align: 'center',
   },
 ]

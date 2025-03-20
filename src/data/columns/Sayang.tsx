@@ -458,7 +458,6 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {

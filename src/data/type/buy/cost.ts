@@ -1,9 +1,10 @@
 import { Dayjs } from "dayjs";
 import { processRType } from "../base/process";
-import { partnerRType } from "../base/partner";
+import { partnerMngRType, partnerRType } from "../base/partner";
 import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
 import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
+import { materialType } from "../base/material_back";
 
 export type buyCostOutType = {
   id?: string;
@@ -317,4 +318,139 @@ export type buyCostOutDetailType = {
 
 export type buyOrderType = {
   id?: string;
+  orderNo?: string;
+  productName?: string;
+  vendorName?: string;
+  totalAmount?: number;
+  status?: string;
+  orderConfirmDate?: Date | Dayjs | null;
+  orderExpectedDate?: Date | Dayjs | null;
+  orderDate?: Date | Dayjs | null;
+  deliveryDate?: Date | Dayjs | null;
+  arrivalDate?: Date | Dayjs | null;
+  inventoryCheckDate?: Date | Dayjs | null;
+  paymentCondition?: string;
+  responsible?: string;
+  salesResponsible?: string;
+  note?: string;
+  isCanceled?: boolean;
+
+  // 디테일
+  type?: string;
+  detailInfo?: {
+    id?: string;
+    prtInfo?: {
+      id?: string;
+      prt?: partnerRType;
+      mng?: partnerMngRType;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    },
+    emp?: {
+      id?: string;
+      name?: string;
+      userId?: string;
+      passwordEncrypted?: string;
+      passwordSalt?: string;
+      status?: string;
+      lastLoginAt?: Date | Dayjs | null;
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    },
+    docNo?: string;
+    orderDueDt?: Date | Dayjs | null;
+    orderDt?: Date | Dayjs | null;
+    remarks?: string
+    deliveryDueDt?: Date | Dayjs | null;
+    arrivalDt?: Date | Dayjs | null;
+    paymentCondition?: string;
+    totalAmount?: number;
+    orderConfirmDt?: Date | Dayjs | null;
+    approvalDt?: Date | Dayjs | null;
+    worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
+    worksheetIdxNoForgKey?: string;
+    inventoryCheckDt?: Date | Dayjs | null;
+    isCancel?: boolean;
+    details?: {
+      id?: Date | Dayjs | null;
+      material?: materialType;
+      order?: number;
+      mtOrderQty?: number;
+      mtOrderSizeW?: number;
+      mtOrderSizeH?: number;
+      mtOrderWeight?: number;
+      mtOrderThk?: number;
+      mtOrderPrice?: number;
+      mtOrderInputPrice?: number;
+      mtOrderAmount?: number;
+      mtOrderUnit?: string;
+      mtOrderTxtur?: string;
+      mtOrderArrivalQty?: number;
+      mtOrderArrivalDate?: Date | Dayjs | null;
+      mtOrderInputDate?: Date | Dayjs | null;
+      mtOrderInputQty?: number;
+      mtOrderInvenQty?: number;
+      mtOrderBadQty?: number;
+      requestMaterialQuality?: {
+        badNm?: string;
+        badCnt?: number;
+        materialBadIdx?: string;
+      }[];
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    }[];
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  }
+
+  // 등록 또는 수정
+  orderRoot?: {
+    orderId?: string;
+    prtIdx?: string;
+    prtMngIdx?: string;
+    empIdx?: string;
+    orderDueDt?: Date | Dayjs | null;
+    orderDt?: Date | Dayjs | null;
+    remarks?: string;
+    deliveryDueDt?: Date | Dayjs | null;
+    arrivalDt?: Date | Dayjs | null;
+    paymentCondition?: string;
+    totalAmount?: number;
+    orderConfirmDt?: Date | Dayjs | null;
+    approvalDt?: Date | Dayjs | null;
+    worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
+    worksheetIdxNoForgKey?: string;
+    wkId?: string;
+    wkPrcId?: string;
+  };
+  orderDetail?: {
+    id?: string;
+    materialIdx?: string;
+    order?: number;
+    mtOrderQty?: number;
+    mtOrderSizeW?: number;
+    mtOrderSizeH?: number;
+    mtOrderWeight?: number;
+    mtOrderThk?: number;
+    mtOrderPrice?: number;
+    mtOrderInputPrice?: number;
+    mtOrderAmount?: number;
+    mtOrderUnit?: string;
+    mtOrderTxtur?: string;
+    mtOrderArrivalQty?: number;
+    mtOrderArrivalDate?: Date | Dayjs | null;
+    mtOrderInputDate?: Date | Dayjs | null;
+    mtOrderInputQty?: number;
+    mtOrderInvenQty?: number;
+    mtOrderBadQty?: number;
+    requestMaterialQuality?: {
+      badNm?: string;
+      badCnt?: number;
+      materialBadIdx?: string;
+    }[];
+  }[];
 }
