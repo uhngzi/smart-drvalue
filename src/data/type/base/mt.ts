@@ -1,24 +1,25 @@
 export type materialType = {
-  id: string;
+  id: string | undefined;
   mtNm: string;
   mtEnm: string;
   unitType: string;
   materialGroup: {
     id: string;
-    mtGrpNm: string;
-    odNum: number;
-    useYn: boolean;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string;
+    mtGrpNm?: string;
+    odNum?: number;
+    useYn?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    deletedAt?: string;
   };
   useYn: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string;
 }
 
 export type materialCUType =  {
+  id?: string;
   materialGroup: {
     id: string;
   };
@@ -30,6 +31,7 @@ export type materialCUType =  {
 
 export const setMaterialCUType = (data: any):materialCUType => {
   return {
+    id: data.id,
     materialGroup: {
       id: data.materialGroup.id,
     },
@@ -55,7 +57,7 @@ export const newMaterialCUType  = ():materialCUType => {
 export type materialGroupType = {
   id: string;
   mtGrpNm: string;
-  odNum: number;
+  ordNo: number;
   useYn: boolean;
   material: materialType[];
   createdAt: string;

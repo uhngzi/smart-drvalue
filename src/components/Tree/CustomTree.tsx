@@ -50,7 +50,7 @@ const CustomTree:React.FC<Props> = ({
 }) => {
   const [ treeName, setTreeName ] = useState<string>('');
 
-  const customEditItems = (type: "main" | "child", id: string, parentId?: string, odNum?: string|number, useYn?:boolean) => (
+  const customEditItems = (type: "main" | "child", id: string, parentId?: string, ordNo?: string|number, useYn?:boolean) => (
     <div className={`flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[${addEdits.addEditList.length < 1 ? '200' : '350'}px]`} style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
       <div className="relative h-center ">
         <AntdInput className="w-full" value={treeName} 
