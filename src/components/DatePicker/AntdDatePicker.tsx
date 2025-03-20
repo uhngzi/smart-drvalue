@@ -22,6 +22,7 @@ interface Props {
   suffixIcon?: null | "down" | "cal";
   defaultValue?: any;
   afterDate?: Date | Dayjs | null;
+  allowClear?: boolean;
 }
 
 const AntdDatePicker: React.FC<Props> = ({
@@ -38,6 +39,7 @@ const AntdDatePicker: React.FC<Props> = ({
   styles,
   suffixIcon,
   afterDate,
+  allowClear,
 }) => {
   const minDate = afterDate ? dayjs(afterDate) : null;
   
@@ -75,6 +77,7 @@ const AntdDatePicker: React.FC<Props> = ({
       $br={styles?.br ? styles.br : "6px"}
       $pd={styles?.pd ? styles.pd : "0 11px"}
       $wd={styles?.wd ? styles.wd : "unset"}
+      $clear={allowClear === false ? "none !important" : ""}
       >
       <DatePicker
         value={dayjs(value).isValid() ? dayjs(value) : null}
@@ -96,7 +99,7 @@ const AntdDatePicker: React.FC<Props> = ({
         presets={presets === "pre" ? datePresetsPre : presets === "post" ? datePresetsPost : []}
         placeholder={placeholder}
         suffixIcon={suffixIcon === "down" ? <DownOutlined /> : suffixIcon === "cal" ? <Calendar /> : null}
-        // allowClear={false}
+        allowClear={allowClear}
       />
     </AntdDatePickerStyled>
     </ConfigProvider>
@@ -109,7 +112,8 @@ const AntdDatePickerStyled = styled.div<{
   $bc: string;
   $br: string;
   $pd: string;
-  $wd: string
+  $wd: string;
+  $clear: string;
 }>`
   width: ${({ $wd }) => $wd};
   .ant-picker {
@@ -119,6 +123,10 @@ const AntdDatePickerStyled = styled.div<{
     border-color: ${({ $bc }) => $bc};
     padding: ${({ $pd }) => $pd};
     font-family: "Spoqa Han Sans Neo", "sans-serif";
+  }
+  
+  & .ant-picker-clear {
+    display: ${({ $clear }) => $clear};
   }
 `;
 
