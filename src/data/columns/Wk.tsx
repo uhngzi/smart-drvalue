@@ -6,6 +6,7 @@ import { partnerRType } from "../type/base/partner";
 import { Checkbox, Progress } from "antd";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import { SetStateAction } from "react";
+import { processVendorRType } from "../type/base/process";
 
 
 export const WkPalnWaitClmn = (
@@ -511,7 +512,7 @@ export const WKStatusProcClmn = (
 ]
 
 export const WkStatusProcPopClmn = (
-
+  dataVendor: processVendorRType[],
 ): CustomColumn[] => [
   {
     title: '공정명',
@@ -529,7 +530,15 @@ export const WkStatusProcPopClmn = (
     key: 'vendor.prtNm',
     align: 'center',
     cellAlign: 'left',
-    editable: false,
+    editable: true,
+    editType: 'select',
+    selectOptions: (record:any) => dataVendor
+    .filter(f=>f.process.id === record.specPrdGrp?.process?.id)
+    .map(f=>({
+      value:f.vendor.id,
+      label:f.vendor.prtNm
+    })),
+    selectValue:'vendor.id',
   },
   {
     title: '공정 지정 시 메모',

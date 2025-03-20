@@ -28,6 +28,8 @@ import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import { ExportOutlined } from "@ant-design/icons";
+import { processVendorRType } from "@/data/type/base/process";
+import { apiGetResponseType } from "@/data/type/apiResponse";
 
 const WKStatusProcPage: {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -35,6 +37,31 @@ const WKStatusProcPage: {
   const router = useRouter();
   const { me } = useUser();
   const { showToast, ToastContainer } = useToast();
+
+  // ------------- 필요 데이터 세팅 ------------ 시작
+  const [ dataVendor, setDataVendor ] = useState<Array<processVendorRType>>([]);
+  const { data:queryDataVendor } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['process-vendor/jsxcrud/many'],
+    queryFn: async () => {
+      setDataVendor([]);
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-vendor/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        setDataVendor(result.data?.data ?? []);
+        console.log('vendor : ', result.data?.data);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+  // ------------- 필요 데이터 세팅 ------------ 끝
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -341,7 +368,7 @@ const WKStatusProcPage: {
 
           <AntdTableEdit
             create={true}
-            columns={WkStatusProcPopClmn()}
+            columns={WkStatusProcPopClmn(dataVendor)}
             data={procs}
             setData={setProcs}
             styles={{
