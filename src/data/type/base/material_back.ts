@@ -62,3 +62,15 @@ export type materialPriceType = {
   deletedAt?: Date | Dayjs | null;
   index?: number;
 }
+
+export type materialGroupBadType = {
+  id?: string;
+  badNm?: string;
+  badDesc?: string;
+  ordNo?: number;
+  useYn?: boolean;
+  materialGroup?: materialGroupType;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+}

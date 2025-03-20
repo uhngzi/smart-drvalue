@@ -12,7 +12,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
-import { Button, List, Spin } from "antd";
+import { Button, List, Spin, Table } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
@@ -33,7 +33,7 @@ import { MOCK } from "@/utils/Mock";
 import Bag from "@/assets/svg/icons/bag.svg";
 import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
 import { inputFax } from "@/utils/formatFax";
-import { materialPriceType, materialSupType } from "@/data/type/base/material_back";
+import { materialGroupBadType, materialPriceType, materialSupType } from "@/data/type/base/material_back";
 import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
 import { selectType } from "@/data/type/componentStyles";
 import AntdSelect from "@/components/Select/AntdSelect";
@@ -43,6 +43,9 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import dayjs from "dayjs";
+
+const SDivider = <span className="absolute right-0 top-[8px] bottom-[8px] w-[1px] bg-gray-200" />
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -72,17 +75,19 @@ const BuyOrderPage: React.FC & {
 
   const [prtId, setPrtId] = useState<string>("");
   const [prtMngId, setPrtMngId] = useState<string>("");
+  const [detailFlag, setDetailFlag] = useState<boolean>(false);
 
   useEffect(()=>{
     // 구매처 변경 시 담당자 세팅 및 초기화
     if(prtId && prtId !== "" && cs?.data?.data && cs?.data?.data?.length) {
       setCsMngList((cs?.data?.data as partnerRType[] ?? []).find(f=>f.id === prtId)?.managers ?? []);
-      setPrtMngId("");
+      if(!detailFlag) setPrtMngId(""); 
+      else            setDetailFlag(false);
     } else {
       setCsMngList([]);
       setPrtMngId("");
     }
-  }, [prtId])
+  }, [prtId, cs?.data?.data])
   // ------------ 구매처 데이터 세팅 ------------ 끝
     
   // ------------ 구매처 데이터 등록 ------------ 시작
@@ -210,12 +215,12 @@ const BuyOrderPage: React.FC & {
   // 생산 제품 디테일
   const [procs, setProcs] = useState<selectType[]>([]);
   const {data:queryWkDetailData} = useQuery({
-    queryKey: ['worksheet/production-status/process-status/detail/jsxcrud/one', order?.orderRoot?.wkId],
+    queryKey: ['worksheet/production-status/process-status/detail/jsxcrud/one', order?.orderRoot?.worksheetIdxNoForgKey],
     queryFn: async () => {
       const result = await getAPI({
         type: 'core-d2',
         utype: 'tenant/',
-        url: `worksheet/production-status/process-status/detail/jsxcrud/one/${order?.orderRoot?.wkId}`
+        url: `worksheet/production-status/process-status/detail/jsxcrud/one/${order?.orderRoot?.worksheetIdxNoForgKey}`
       });
 
       if(result.resultCode === "OK_0000") {
@@ -229,7 +234,26 @@ const BuyOrderPage: React.FC & {
 
       return result;
     },
-    enabled: !!order?.orderRoot?.wkId
+    enabled: !!order?.orderRoot?.worksheetIdxNoForgKey
+  });
+
+  // 원자재 불량 종류
+  const [mtBad, setMtBad] = useState<materialGroupBadType[]>([]);
+  const {data:queryMtBadData} = useQuery({
+    queryKey: ['material-group-bad/jsxcrud/many'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'material-group-bad/jsxcrud/many'
+      });
+
+      if(result.resultCode === "OK_0000") {
+        setMtBad(result.data.data ?? []);
+      }
+
+      return result;
+    },
   });
   // -------------- 필요 데이터 세팅 ------------ 끝
 
@@ -283,9 +307,35 @@ const BuyOrderPage: React.FC & {
 
       if(result.resultCode === "OK_0000") {
         const entity = result.data.data as buyOrderType;
+        const detailEntity = entity.detailInfo?.details?.map((item) => ({
+          id: item.id,
+          materialIdx: item.material?.id,
+          order: item.order,
+          mtOrderQty: item.mtOrderQty,
+          mtOrderSizeW: item.mtOrderSizeW,
+          mtOrderSizeH: item.mtOrderSizeH,
+          mtOrderWeight: item.mtOrderWeight,
+          mtOrderThk: item.mtOrderThk,
+          mtOrderPrice: item.mtOrderPrice,
+          mtOrderInputPrice: item.mtOrderInputPrice,
+          mtOrderAmount: item.mtOrderAmount,
+          mtOrderUnit: item.mtOrderUnit,
+          mtOrderTxtur: item.mtOrderTxtur,
+          mtOrderArrivalQty: item.mtOrderArrivalQty,
+          mtOrderArrivalDate: item.mtOrderArrivalDate,
+          mtOrderInputDate: item.mtOrderInputDate,
+          mtOrderInputQty: item.mtOrderInputQty,
+          mtOrderInvenQty: item.mtOrderInvenQty,
+          mtOrderBadQty: item.mtOrderBadQty,
+          requestMaterialQuality: item.requestMaterialQuality ?? [],
+          mtNm: item.material?.mtNm,
+          materialGrpIdx: item?.material?.materialGroup?.id,
+        })) as buyOrderDetailType[];
+        
         setOrder({
           ...order,
           ...entity,
+          status: entity?.type,
           orderRoot: {
             orderId: order?.id,
             prtIdx: entity.detailInfo?.prtInfo?.prt?.id,
@@ -302,34 +352,16 @@ const BuyOrderPage: React.FC & {
             approvalDt: entity.detailInfo?.approvalDt,
             worksheetIdxNoForgKeyType: entity.detailInfo?.worksheetIdxNoForgKeyType,
             worksheetIdxNoForgKey: entity.detailInfo?.worksheetIdxNoForgKey,
-            wkId: entity.detailInfo?.worksheetIdxNoForgKeyType === "WORKSHEET" ? entity.detailInfo?.worksheetIdxNoForgKey : "",
-            wkPrcId: entity.detailInfo?.worksheetIdxNoForgKeyType === "WORKSHEET_PROCESS" ? entity.detailInfo?.worksheetIdxNoForgKey : "",
+            worksheetProcessIdxNoForgKey: entity.detailInfo?.worksheetProcessIdxNoForgKey,
           },
-          orderDetail: entity.detailInfo?.details?.map((item) => ({
-            id: item.id,
-            materialIdx: item.material?.id,
-            order: item.order,
-            mtOrderQty: item.mtOrderQty,
-            mtOrderSizeW: item.mtOrderSizeW,
-            mtOrderSizeH: item.mtOrderSizeH,
-            mtOrderWeight: item.mtOrderWeight,
-            mtOrderThk: item.mtOrderThk,
-            mtOrderPrice: item.mtOrderPrice,
-            mtOrderInputPrice: item.mtOrderInputPrice,
-            mtOrderAmount: item.mtOrderAmount,
-            mtOrderUnit: item.mtOrderUnit,
-            mtOrderTxtur: item.mtOrderTxtur,
-            mtOrderArrivalQty: item.mtOrderArrivalQty,
-            mtOrderArrivalDate: item.mtOrderArrivalDate,
-            mtOrderInputDate: item.mtOrderInputDate,
-            mtOrderInputQty: item.mtOrderInputQty,
-            mtOrderInvenQty: item.mtOrderInvenQty,
-            mtOrderBadQty: item.mtOrderBadQty,
-            requestMaterialQuality: item.requestMaterialQuality ?? [],
-            mtNm: item.material?.mtNm,
-          })) as buyOrderDetailType[]
+          orderDetail: detailEntity,
         });
+        setSelectMtPrice(detailEntity);
+        setPrtId(entity.detailInfo?.prtInfo?.prt?.id ?? "");
+        setDetailFlag(true);
+        setPrtMngId(entity.detailInfo?.prtInfo?.mng?.id ?? "");
         setEdit(true);
+        setCollapse({master: false, mt: false, price: false});
         setOpen(true);
       }
 
@@ -358,18 +390,6 @@ const BuyOrderPage: React.FC & {
   const [ open, setOpen ] = useState<boolean>(false);
   // 발주 수정 여부
   const [ edit, setEdit ] = useState<boolean>(false);
-
-  // 모달창 초기화
-  useEffect(()=>{
-    if(!open) {
-      setOrder(null);
-      setEdit(false);
-      setPrtId("");
-      setPrtMngId("");
-      setSelectMtPrice([]);
-      setMtPrice([]);
-    }
-  }, [open])
 
   // 모달창 내 접기, 펼치기
   const [collapse, setCollapse] = useState<{
@@ -407,16 +427,46 @@ const BuyOrderPage: React.FC & {
   // 발주 등록 및 수정
   const handleSubmit = async () => {
     try {
+      setOrder({...order, id:"" });
       const jsonData = {
         orderRoot: {
           ...order?.orderRoot,
-          prtIdx: prtId === "" ? undefined : prtId,
-          prtMngIdx: prtMngId === "" ? undefined : prtMngId,
+          prtIdx: prtId,
+          prtMngIdx: prtMngId,
           empIdx: me?.id,
-          wkId: undefined,
-          wkPrcId: undefined,
+          orderDueDt: order?.orderRoot?.orderDueDt ? dayjs(order?.orderRoot?.orderDueDt).format("YYYY-MM-DD") : null,
+          orderDt: order?.orderRoot?.orderDt ? dayjs(order?.orderRoot?.orderDt).format("YYYY-MM-DD") : null,
+          deliveryDueDt: order?.orderRoot?.deliveryDueDt ? dayjs(order?.orderRoot?.deliveryDueDt).format("YYYY-MM-DD") : null,
+          arrivalDt: order?.orderRoot?.arrivalDt ? dayjs(order?.orderRoot?.arrivalDt).format("YYYY-MM-DD") : null,
+          orderConfirmDt: order?.orderRoot?.orderConfirmDt ? dayjs(order?.orderRoot?.orderConfirmDt).format("YYYY-MM-DD") : null,
+          approvalDt: order?.orderRoot?.approvalDt ? dayjs(order?.orderRoot?.approvalDt).format("YYYY-MM-DD") : null,
         },
-        orderDetail: selectMtPrice
+        orderDetail: selectMtPrice.map((item, index) => ({
+          id: item?.id,
+          materialIdx: item?.materialIdx,
+          order: index,
+          mtOrderQty: item?.mtOrderQty ?? 0,
+          mtOrderSizeW: item?.mtOrderSizeW ?? 0,
+          mtOrderSizeH: item?.mtOrderSizeH ?? 0,
+          mtOrderWeight: item?.mtOrderWeight ?? 0,
+          mtOrderThk: item?.mtOrderThk ?? 0,
+          mtOrderPrice: item?.mtOrderPrice ?? 0,
+          mtOrderInputPrice: item?.mtOrderInputPrice ?? 0,
+          mtOrderAmount: item?.mtOrderAmount ?? 0,
+          mtOrderUnit: item?.mtOrderUnit ?? "",
+          mtOrderTxtur: item?.mtOrderTxtur ?? "",
+          mtOrderArrivalQty: item?.mtOrderArrivalQty ?? 0,
+          mtOrderArrivalDate: item?.mtOrderArrivalDate ?? null,
+          mtOrderInputDate: item?.mtOrderInputDate ?? null,
+          mtOrderInputQty: item?.mtOrderInputQty ?? 0,
+          mtOrderInvenQty: item?.mtOrderInvenQty ?? 0,
+          mtOrderBadQty: item?.mtOrderBadQty ?? 0,
+          requestMaterialQuality: badCnt.length > 0 ? badCnt.filter(f=>f.mtId === item.id).map(f=>({
+            badNm: f.badNm,
+            badCnt: f.cnt,
+            materialBadIdx: f.badId,
+          })) : [],
+        }))
       }
       console.log(JSON.stringify(jsonData));
 
@@ -429,9 +479,12 @@ const BuyOrderPage: React.FC & {
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        showToast("발주 저장 완료", "success");
-        setEdit(true);
         refetch();
+        showToast("발주 저장 완료", "success");
+
+        setOrder(null);
+        const entity = result.data;
+        setOrder({...order, id: entity?.id});
       } else {
         const msg = result?.response?.data?.message;
         setErrMsg(msg);
@@ -443,6 +496,51 @@ const BuyOrderPage: React.FC & {
     }
   }
 
+  // 불량 수량 저장
+  const [badCnt, setBadCnt] = useState<{badNm:string; badId:string; mtId:string; cnt:number}[]>([]);
+  const [totalByMtId, setTotalByMtId] = useState<Record<string, number>>({});
+
+  // 원자재 아이디 별 불량 총합 계산
+  useEffect(()=>{
+    const totals = badCnt.reduce((acc, { mtId, cnt }) => {
+      if (!acc[mtId])
+        acc[mtId] = 0;
+      acc[mtId] += cnt;
+      return acc;
+    }, {} as Record<string, number>);
+    setTotalByMtId(totals);
+  }, [badCnt])
+
+  // 저장된 총합에 따라 selectMtPrice 내에 값 자동 변경 (불량 수, 입고 수량)
+  useEffect(()=>{
+    setSelectMtPrice((prev) =>
+      prev.map((item) => ({
+        ...item,
+        mtOrderBadQty: item.id ? totalByMtId[item.id] : 0,
+        mtOrderInputQty: item.id ? (item.mtOrderArrivalQty ?? 0) - (totalByMtId[item.id] ?? 0) : 0,
+      }))
+    );
+  }, [totalByMtId])
+
+  // 도착, 입고 수량 변경
+  const handleDataQtyChange = (id:string, value:number, name:string) => {
+    const updateData = selectMtPrice;
+    const index = updateData.findIndex(f=> f.id === id);
+    if(index > -1) {
+      if(name === "mtOrderArrivalQty")
+        updateData[index] = { ...updateData[index], [name]: value, mtOrderInputQty: value - (updateData[index].mtOrderBadQty ?? 0)};
+      else
+        updateData[index] = { ...updateData[index], [name]: value };
+
+      const newArray = [
+        ...updateData.slice(0, index),
+        updateData[index],
+        ...updateData.slice(index + 1)
+      ];
+      setSelectMtPrice(newArray);
+    }
+  }
+
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<"success" | "error" | "">("");
@@ -451,10 +549,21 @@ const BuyOrderPage: React.FC & {
   // 발주서 모달
   const [ orderDocumentFormOpen, setOrderDocumentFormOpen ] = useState<boolean>(false);
 
-  if(meLoading) {
-    return <Spin />
-  }
+  // 모달창 초기화
+  useEffect(()=>{
+    if(!open) {
+      setOrder(null);
+      setEdit(false);
+      setPrtId("");
+      setPrtMngId("");
+      setSelectMtPrice([]);
+      setMtPrice([]);
+      setBadCnt([]);
+      setTotalByMtId({});
+    }
+  }, [open])
 
+  if(meLoading) return <Spin />
   return (
     <>
       <div className="w-full h-50">
@@ -499,12 +608,14 @@ const BuyOrderPage: React.FC & {
         contents={
           <div className="flex flex-col gap-20">
             <Popup>
-              <div
-                className="flex v-between-h-center cursor-pointer"
-                onClick={()=>setCollapse({...collapse, master: !collapse.master})}
-              >
+              <div className="flex v-between-h-center">
                 <LabelMedium label="발주 내용"/>
-                {collapse.master ? <UpOutlined /> : <DownOutlined />}
+                <p
+                  className="cursor-pointer"
+                  onClick={()=>setCollapse({...collapse, master: !collapse.master})}
+                >
+                  {collapse.master ? <UpOutlined /> : <DownOutlined />}
+                </p>
               </div>
               { !collapse.master &&
                 <Description separatorColor="#e7e7ed">
@@ -516,14 +627,13 @@ const BuyOrderPage: React.FC & {
                     children1={
                       <AntdSelect
                         options={wkSelect}
-                        value={order?.orderRoot?.wkId}
+                        value={order?.orderRoot?.worksheetIdxNoForgKey}
                         onChange={(e)=>{
                           const value = e+"";
                           setOrder({
                             ...order,
                             orderRoot: {
                               ...order?.orderRoot,
-                              wkId: value,
                               worksheetIdxNoForgKey: value,
                               worksheetIdxNoForgKeyType: "WORKSHEET",
                             }
@@ -535,20 +645,19 @@ const BuyOrderPage: React.FC & {
                     title2="생산제품 공정"
                     c2ClassName="!w-[calc(33%-150px)]"
                     children2={
-                      !order?.orderRoot?.wkId || order?.orderRoot?.wkId === "" ?
+                      !order?.orderRoot?.worksheetIdxNoForgKey || order?.orderRoot?.worksheetIdxNoForgKey === "" ?
                       <div className="pl-10 text-[#00000040]">생산제품을 선택해주세요.</div>
                       :
                       <AntdSelect
                         options={procs}
-                        value={order?.orderRoot?.wkPrcId}
+                        value={order?.orderRoot?.worksheetProcessIdxNoForgKey}
                         onChange={(e)=>{
                           const value = e+"";
                           setOrder({
                             ...order,
                             orderRoot: {
                               ...order?.orderRoot,
-                              wkPrcId: value,
-                              worksheetIdxNoForgKey: value,
+                              worksheetProcessIdxNoForgKey: value,
                               worksheetIdxNoForgKeyType: "WORKSHEET_PROCESS",
                             }
                           })
@@ -622,8 +731,8 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        disabled={order?.status !== "REQUEST_WAITING"}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                     title2="발주예정일"
@@ -639,8 +748,8 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        disabled={order?.status !== "REQUEST_WAITING"}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                     title3="발주일"
@@ -656,8 +765,7 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                   />
@@ -677,8 +785,7 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                     title2="도착일"
@@ -694,8 +801,7 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                     title3="승인일"
@@ -711,8 +817,8 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        className="!w-full !border-0"
-                        suffixIcon={"cal"}
+                        afterDate={dayjs()}
+                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
                   />
@@ -739,18 +845,31 @@ const BuyOrderPage: React.FC & {
               }
             </Popup>
 
-            { edit && <>
-            <Popup>
-              <div
-                className="flex v-between-h-center cursor-pointer"
-                onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
-              >
-                <LabelMedium label="발주 품목 및 품질 검사"/>
-                {collapse.mt ? <UpOutlined /> : <DownOutlined />}
+            {/* 발주 루트가 등록되었을 때 발주 품목을 보여줌 */}
+            { edit && selectMtPrice.length > 0 &&
+              (!order?.status || order.status === "REQUEST_WAITING" || order.status === "INPUT") &&
+            <Popup className={
+              !order?.status || order?.status === "REQUEST_WAITING" ? 
+                collapse.master ? "!max-h-[400px] overflow-y-auto" : "!max-h-[250px] overflow-y-auto"
+                :
+                collapse.master ? "!max-h-[780px] overflow-y-auto" : "!max-h-[520px] overflow-y-auto"
+              }>
+              <div className="flex v-between-h-center">
+                <LabelMedium label="발주 품목"/>
+                <p
+                  className="cursor-pointer"
+                  onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
+                >
+                  {collapse.mt ? <UpOutlined /> : <DownOutlined />}
+                </p>
               </div>
               { !collapse.mt &&
                 <AntdTableEdit
-                  columns={BuyOrderMtClmn(handleDeleteMt)}
+                  columns={
+                    order?.status === "REQUEST_WAITING" ?
+                    BuyOrderMtClmn(handleDeleteMt) :
+                    BuyOrderMtClmn(handleDeleteMt).filter(f=>f.dataIndex!=="materialIdx")
+                  }
                   data={selectMtPrice}
                   setData={setSelectMtPrice}
                   styles={{
@@ -764,18 +883,147 @@ const BuyOrderPage: React.FC & {
                     td_pd: "0",
                     line: "n",
                   }}
-                  create={true}
+                  create={order?.status === "REQUEST_WAITING"}
                 />
               }
             </Popup>
+            }
 
-            <Popup>
-              <div
-                className="flex v-between-h-center cursor-pointer"
-                onClick={()=>setCollapse({...collapse, price: !collapse.price})}
-              >
+            {/* 도착 대기일 경우 발주 품목 및 불량 종류를 보여줌 */}
+            { edit && order?.status && order.status === "ARRIVAL_WAITING" &&
+            <Popup className={collapse.master ? "!max-h-[780px] overflow-y-auto" :"!max-h-[520px] overflow-y-auto"}>
+              <div className="flex v-between-h-center">
+                <LabelMedium label="발주 품목 및 품질 검사"/>
+                <p
+                  className="cursor-pointer"
+                  onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
+                >
+                  {collapse.mt ? <UpOutlined /> : <DownOutlined />}
+                </p>
+              </div>
+              { !collapse.mt &&
+                <>
+                  <table>
+                    <thead className="text-12 bg-[#FAFAFA] h-35 py-10 text-[#444444]">
+                      <th className="relative !w-50">순서{SDivider}</th>
+                      <th className="relative !min-w-80">원자재명{SDivider}</th>
+                      <th className="relative !w-80">단위{SDivider}</th>
+                      <th className="relative !w-80">재질{SDivider}</th>
+                      <th className="relative !w-80">W{SDivider}</th>
+                      <th className="relative !w-80">H{SDivider}</th>
+                      <th className="relative !w-80">두께{SDivider}</th>
+                      <th className="relative !w-80">무게{SDivider}</th>
+                      <th className="relative !w-80">수량{SDivider}</th>
+                      <th className="relative !w-80">단가{SDivider}</th>
+                      <th className="relative !w-80">금액</th>
+                    </thead>
+                    <tbody className="text-12">
+                      { selectMtPrice.map((item:buyOrderDetailType, index:number) => (<>
+                        <tr className="h-35 border-b-1 border-[#0000000F]">
+                          <td className="px-10 text-center">{index+1}</td>
+                          <td className="px-10 text-left">{item.mtNm}</td>
+                          <td className="px-10 text-center">{item.mtOrderUnit}</td>
+                          <td className="px-10 text-center">{item.mtOrderTxtur}</td>
+                          <td className="px-10 text-right">{item.mtOrderSizeW}</td>
+                          <td className="px-10 text-right">{(item.mtOrderSizeH ?? 0).toLocaleString()}</td>
+                          <td className="px-10 text-right">{(item.mtOrderThk ?? 0).toLocaleString()}</td>
+                          <td className="px-10 text-right">{(item.mtOrderWeight ?? 0).toLocaleString()}</td>
+                          <td className="px-10 text-right">{(item.mtOrderQty ?? 0).toLocaleString()}</td>
+                          <td className="px-10 text-right">{(item.mtOrderInputPrice ?? 0).toLocaleString()}</td>
+                          <td className="px-10 text-right">{(item.mtOrderAmount ?? 0).toLocaleString()}</td>
+                        </tr>
+                        <tr className="h-100">
+                          <td className="bg-back text-center font-[500]">
+                            불량종류
+                          </td>
+                          <td colSpan={8}>
+                            <div className="flex flex-wrap">
+                            { mtBad.map((badItem:materialGroupBadType, index:number) => (
+                              <div key={index} className="w-1/3 h-center mb-4">
+                                <div className="h-center px-10">{badItem.badNm}</div>
+                                <div className="h-center gap-5">
+                                  <AntdInput
+                                    value={badCnt.find(f=>f.badId === badItem.id && f.mtId === item.id)?.cnt}
+                                    onChange={(e) => {
+                                      setBadCnt([
+                                        ...badCnt.filter(f=>!(f.badId === badItem.id && f.mtId === item.id)),
+                                        {
+                                          badNm: badItem.badNm ?? "",
+                                          badId: badItem.id ?? "",
+                                          mtId: item.id ?? "",
+                                          cnt: Number(e.target.value)
+                                        }
+                                      ]);
+                                    }}
+                                    type="number" className="!w-100" styles={{ht:"25px"}}
+                                  />개
+                                </div>
+                              </div>
+                            ))}
+                            </div>
+                          </td>
+                          <td colSpan={2}>
+                            <div className="flex flex-col gap-5">
+                              <div className="v-between-h-center">
+                                <span className="text-12 font-[500]">도착 수량</span>
+                                <div className="h-center gap-5">
+                                  <AntdInput
+                                    value={item.mtOrderArrivalQty}
+                                    onFocus={() => {
+                                      if(!item.mtOrderArrivalQty || item.mtOrderArrivalQty < 1)
+                                        handleDataQtyChange(item.id ?? "", item.mtOrderQty ?? 0, 'mtOrderArrivalQty');
+                                    }}
+                                    onChange={(e) => {
+                                      handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderArrivalQty');
+                                    }}
+                                    type="number" className="!w-80" styles={{ht:"25px"}}
+                                  />개
+                                </div>
+                              </div>
+                              <div className="v-between-h-center">
+                                <span className="text-12 font-[500]">입고 수량</span>
+                                <div className="h-center gap-5">
+                                  <AntdInput
+                                    value={item.mtOrderInputQty}
+                                    onChange={(e) => {
+                                      handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderInputQty');
+                                    }}
+                                    type="number" className="!w-80" styles={{ht:"25px"}}
+                                  />개
+                                </div>
+                              </div>
+                              <div className="v-between-h-center">
+                                <span className="text-12 font-[500]">재고 수량</span>
+                                <div className="h-center gap-5">
+                                  <AntdInput
+                                    value={item.mtOrderInvenQty}
+                                    disabled
+                                    type="number" className="!w-80" styles={{ht:"25px"}}
+                                  />개
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </>))}
+                    </tbody>
+                  </table>
+                </>
+              }
+            </Popup>
+            }
+
+            {/* 발주 루트가 등록되었고 발주일이 지나지않았다면 단가 목록을 보여줌 */}
+            { edit && order?.status === "REQUEST_WAITING" &&
+            <Popup className={collapse.master ? "!max-h-[350px] overflow-y-auto" :"!max-h-[250px] overflow-y-auto"}>
+              <div className="flex v-between-h-center">
                 <LabelMedium label="단가 목록"/>
-                {collapse.price ? <UpOutlined /> : <DownOutlined />}
+                <p
+                  className="cursor-pointer"
+                  onClick={()=>setCollapse({...collapse, price: !collapse.price})}
+                >
+                  {collapse.price ? <UpOutlined /> : <DownOutlined />}
+                </p>
               </div>
               { !collapse.price &&
                 <AntdTableEdit
@@ -795,7 +1043,7 @@ const BuyOrderPage: React.FC & {
                 />
               }
             </Popup>
-            </>}
+            }
 
             <div className="w-full h-50 v-h-center">
               <Button 
@@ -903,9 +1151,6 @@ const BuyOrderPage: React.FC & {
 BuyOrderPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
     menuTitle="구매 및 발주"
-    // menu={[
-    //   { text: '외주처 단가 등록', link: '/buy/cost/wait' },
-    // ]}
   >{page}</MainPageLayout>
 );
 

@@ -371,6 +371,7 @@ export type buyOrderType = {
     approvalDt?: Date | Dayjs | null;
     worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
     worksheetIdxNoForgKey?: string;
+    worksheetProcessIdxNoForgKey?: string;
     inventoryCheckDt?: Date | Dayjs | null;
     isCancel?: boolean;
     details?: {
@@ -424,8 +425,7 @@ export type buyOrderType = {
     approvalDt?: Date | Dayjs | null;
     worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
     worksheetIdxNoForgKey?: string;
-    wkId?: string;
-    wkPrcId?: string;
+    worksheetProcessIdxNoForgKey?: string;
   };
 
   orderDetail?: buyOrderDetailType[];
@@ -457,4 +457,5 @@ export type buyOrderDetailType = {
     materialBadIdx?: string;
   }[]
   mtNm?: string;
+  materialGrpIdx?: string;
 }
