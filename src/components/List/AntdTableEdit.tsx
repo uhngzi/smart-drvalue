@@ -499,6 +499,15 @@ const AntdTableEdit: React.FC<Props> = ({
       // 수정 모드 아닐 때
       if (!column.editable) {
         mergedCol = {
+          onCell: (record: DataType) => ({
+            cellAlign: column.cellAlign,
+            title: typeof column.title === "string" ? column.title : undefined,
+            dataIndex: column.dataIndex,
+            value: get(record, column.dataIndex),
+            record: record,
+            req: column.req,
+            tooltip: column.tooltip,
+          }),
           ...column,
           title: column.tooltip ? (
             <Tooltip title={column.tooltip} placement="top" className="cursor-pointer">
