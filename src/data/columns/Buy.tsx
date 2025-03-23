@@ -789,15 +789,6 @@ export const BuyOrderClmn = (
     dataIndex: 'orderNo',
     key: 'orderNo',
     align: 'center',
-    tooltip: "주문번호를 클릭하시면 상세 내용 및 수정을 할 수 있어요",
-    render: (value:string, record:buyOrderType) => (
-      <div
-        className="w-full v-h-center cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
-        onClick={()=>setOrder(record)}
-      >
-        {value}
-      </div>
-    )
   },
   // {
   //   title: '발주서',
@@ -814,13 +805,29 @@ export const BuyOrderClmn = (
   //   )
   // },
   {
-    title: '생산제품명',
+    title: '발주명',
     minWidth: 130,
-    dataIndex: 'productName',
-    key: 'productName',
+    dataIndex: 'orderName',
+    key: 'orderName',
     align: 'center',
-    cellAlign: 'left',
+    tooltip: "발주명을 클릭하시면 상세 내용 및 수정을 할 수 있어요",
+    render: (value:string, record:buyOrderType) => (
+      <div
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>setOrder(record)}
+      >
+        {value}
+      </div>
+    )
   },
+  // {
+  //   title: '생산제품명',
+  //   minWidth: 130,
+  //   dataIndex: 'productName',
+  //   key: 'productName',
+  //   align: 'center',
+  //   cellAlign: 'left',
+  // },
   {
     title: '구매처명',
     width: 130,
@@ -828,6 +835,15 @@ export const BuyOrderClmn = (
     key: 'vendorName',
     align: 'center',
     cellAlign: 'left',
+    render: (value:string) => (
+      value && value.includes("이름 없음") ? 
+      <div className="v-h-center">
+        -
+      </div> :
+      <div>
+        {value}
+      </div>
+    )
   },
   {
     title: '총액',
@@ -857,20 +873,20 @@ export const BuyOrderClmn = (
       </div>
     )
   },
-  {
-    title: '발주확정일',
-    width: 100,
-    dataIndex: 'orderConfirmDate',
-    key: 'orderConfirmDate',
-    align: 'center',
-  },
-  {
-    title: '발주예정일',
-    width: 100,
-    dataIndex: 'orderExpectedDate',
-    key: 'orderExpectedDate',
-    align: 'center',
-  },
+  // {
+  //   title: '발주확정일',
+  //   width: 100,
+  //   dataIndex: 'orderConfirmDate',
+  //   key: 'orderConfirmDate',
+  //   align: 'center',
+  // },
+  // {
+  //   title: '발주예정일',
+  //   width: 100,
+  //   dataIndex: 'orderExpectedDate',
+  //   key: 'orderExpectedDate',
+  //   align: 'center',
+  // },
   {
     title: '발주일',
     width: 100,
@@ -912,6 +928,9 @@ export const BuyOrderClmn = (
     dataIndex: 'responsible',
     key: 'responsible',
     align: 'center',
+    render: (value:string) => {
+      return value && value.includes("이름 없음") ? "-" : value;
+    }
   },
   {
     title: '영업담당',
@@ -922,10 +941,13 @@ export const BuyOrderClmn = (
   },
   {
     title: '비고',
-    width: 100,
+    width: 130,
     dataIndex: 'note',
     key: 'note',
     align: 'center',
+    render: (value:string) => {
+      return (<div className="text-left w-full h-center">{value && value.length > 6 ? value.slice(0, 6) + "..." : value}</div>)
+    }
   },
 ]
 
@@ -939,7 +961,6 @@ export const BuyOrderMtPriceClmn = (
     dataIndex: 'material.mtNm',
     key: 'material.mtNm',
     align: 'center',
-    tooltip: "원자재명을 클릭하여 발주 품목을 추가할 수 있어요",
     render: (_, record:materialPriceType) => (
       <div
         style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
@@ -1084,7 +1105,7 @@ export const BuyOrderMtPriceClmn = (
         style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full h-center justify-end px-10"
       >
-        {value.toLocaleString()}
+        {(value ?? 0).toLocaleString()}
       </div>
     )
   },

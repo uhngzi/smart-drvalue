@@ -1,49 +1,59 @@
+import dayjs from "dayjs";
+import cookie from "cookiejs";
+import { useRouter } from "next/router";
+import { Button, List, Spin, Tooltip } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
+import { getPrtSupAPI } from "@/api/cache/client";
+import { CloseOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
+import TextArea from "antd/es/input/TextArea";
+
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdModal from "@/components/Modal/AntdModal";
-import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
-import { BuyOrderClmn, BuyOrderMtClmn, BuyOrderMtPriceClmn } from "@/data/columns/Buy";
-import { useUser } from "@/data/context/UserContext";
-import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
-import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import { Popup } from "@/layouts/Body/Popup";
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import { exportToExcelAndPrint } from "@/utils/exportToExcel";
-import useToast from "@/utils/useToast";
-import { useQuery } from "@tanstack/react-query";
-import { Button, List, Spin, Table } from "antd";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import SplusIcon from "@/assets/svg/icons/s_plus.svg";
-import { DividerH } from "@/components/Divider/Divider";
+import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
+import LabelItem from "@/components/Text/LabelItem";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import Description from "@/components/Description/Description";
 import DescriptionItems3 from "@/components/Description/DescriptionItems3";
 import AntdInput from "@/components/Input/AntdInput";
 import DescriptionItems from "@/components/Description/DescriptionItems";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
-import { getPrtSupAPI } from "@/api/cache/client";
-import { newDataPartnerType, partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
-import { isValidEmail } from "@/utils/formatEmail";
-import { postAPI } from "@/api/post";
-import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import { MOCK } from "@/utils/Mock";
-import Bag from "@/assets/svg/icons/bag.svg";
-import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
-import { inputFax } from "@/utils/formatFax";
-import { materialGroupBadType, materialPriceType, materialSupType } from "@/data/type/base/material_back";
-import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
-import { selectType } from "@/data/type/componentStyles";
-import AntdSelect from "@/components/Select/AntdSelect";
-import DescriptionItems2 from "@/components/Description/DescriptionItems2";
+import { DividerH, DividerV } from "@/components/Divider/Divider";
 import { LabelMedium } from "@/components/Text/Label";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import AntdSelect from "@/components/Select/AntdSelect";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 
+import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
+import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
+
+import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
+import { ListPagination } from "@/layouts/Body/Pagination";
+import { Popup } from "@/layouts/Body/Popup";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
+import { useUser } from "@/data/context/UserContext";
+import { selectType } from "@/data/type/componentStyles";
+import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
+import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
+import { BuyOrderClmn, BuyOrderMtClmn, BuyOrderMtPriceClmn } from "@/data/columns/Buy";
+import { materialGroupBadType, materialPriceType } from "@/data/type/base/material_back";
+import { newDataPartnerType, partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
+
+import { MOCK } from "@/utils/Mock";
+import useToast from "@/utils/useToast";
+import { inputFax } from "@/utils/formatFax";
+import { isValidEmail } from "@/utils/formatEmail";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import dayjs from "dayjs";
+import Back from "@/assets/svg/icons/back.svg";
+import DragHandle from "@/assets/svg/icons/dragHandlevert.svg";
 
 const SDivider = <span className="absolute right-0 top-[8px] bottom-[8px] w-[1px] bg-gray-200" />
 
@@ -341,6 +351,7 @@ const BuyOrderPage: React.FC & {
             prtIdx: entity.detailInfo?.prtInfo?.prt?.id,
             prtMngIdx: entity.detailInfo?.prtInfo?.mng?.id,
             empIdx: entity.detailInfo?.emp?.id,
+            orderName: entity?.detailInfo?.orderName,
             orderDueDt: entity.detailInfo?.orderDueDt,
             orderDt: entity.detailInfo?.orderDt,
             remarks: entity.detailInfo?.remarks,
@@ -362,6 +373,7 @@ const BuyOrderPage: React.FC & {
         setPrtMngId(entity.detailInfo?.prtInfo?.mng?.id ?? "");
         setEdit(true);
         setCollapse({master: false, mt: false, price: false});
+        setStepCurrent(1);
         setOpen(true);
       }
 
@@ -541,6 +553,38 @@ const BuyOrderPage: React.FC & {
     }
   }
 
+  // 스탭 저장 변수
+  const [ stepCurrent, setStepCurrent ] = useState<number>(0);
+
+  // 드래그 앤 드롭으로 크기 조절
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(1200);
+  const handleModelMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault(); // 기본 드래그 동작 방지
+    const startX = e.clientX;
+    const startWidth = width;
+    // 드래그 동안 텍스트 선택 비활성화
+    document.body.style.userSelect = "none";
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const diffX = startX - moveEvent.clientX; // 왼쪽으로 이동 → diffX 증가
+      const newWidth = startWidth + diffX;
+      if (newWidth >= 410 && newWidth <= 1200) { // 최소/최대 너비 제한
+        setWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      // 드래그 종료 후 텍스트 선택 다시 활성화
+      document.body.style.userSelect = "";
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<"success" | "error" | "">("");
@@ -560,6 +604,9 @@ const BuyOrderPage: React.FC & {
       setMtPrice([]);
       setBadCnt([]);
       setTotalByMtId({});
+      setWidth(1200);
+      setStepCurrent(0);
+      
     }
   }, [open])
 
@@ -600,52 +647,47 @@ const BuyOrderPage: React.FC & {
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
       />
-      
-      <AntdModal
+
+      <AntdModalStep2
         open={open}
         setOpen={setOpen}
-        title={"구매 및 발주 등록"}
-        contents={
-          <div className="flex flex-col gap-20">
-            <Popup>
-              <div className="flex v-between-h-center">
-                <LabelMedium label="발주 내용"/>
-                <p
-                  className="cursor-pointer"
-                  onClick={()=>setCollapse({...collapse, master: !collapse.master})}
-                >
-                  {collapse.master ? <UpOutlined /> : <DownOutlined />}
-                </p>
-              </div>
-              { !collapse.master &&
-                <Description separatorColor="#e7e7ed">
-                  <DescriptionItems2
-                    height="20"
-                    title1="생산제품"
-                    childClassName="!p-0"
-                    c1ClassName="!w-[calc(66%-150px)]"
-                    children1={
-                      <AntdSelect
-                        options={wkSelect}
-                        value={order?.orderRoot?.worksheetIdxNoForgKey}
-                        onChange={(e)=>{
-                          const value = e+"";
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              worksheetIdxNoForgKey: value,
-                              worksheetIdxNoForgKeyType: "WORKSHEET",
-                            }
-                          })
-                        }}
-                        styles={{bw:"0"}} placeholder="생산제품 선택"
-                      />
-                    }
-                    title2="생산제품 공정"
-                    c2ClassName="!w-[calc(33%-150px)]"
-                    children2={
-                      !order?.orderRoot?.worksheetIdxNoForgKey || order?.orderRoot?.worksheetIdxNoForgKey === "" ?
+        items={
+          !order?.status || order?.status === "REQUEST_WAITING" ?
+          [{title:'발주 등록'}, {title:'단가 및 품목 선택'}]
+          :
+          edit && order?.status === "INPUT" ?
+          [{title:'발주 등록'}, {title:'발주 품목 및 승인'}]
+          :
+          [{title:'발주 등록'}, {title:'품질 검사'}]
+        }
+        current={stepCurrent}
+        width={1500}
+        contents={<>
+          <div className="flex h-full overflow-x-hidden">
+            <div style={{width:stepCurrent > 0 ? `calc(100% - ${width}px);`:'100%'}} className="h-full overflow-x-auto">
+            <Popup className="!flex-row !h-full !gap-20 !min-w-[800px]">
+              <div className="w-1/3 flex flex-col gap-20">
+                { !cookie.get('company').toString().includes("gpn") && <>
+                  <LabelItem label="생산제품">
+                    <AntdSelect
+                      options={wkSelect}
+                      value={order?.orderRoot?.worksheetIdxNoForgKey}
+                      onChange={(e)=>{
+                        const value = e+"";
+                        setOrder({
+                          ...order,
+                          orderRoot: {
+                            ...order?.orderRoot,
+                            worksheetIdxNoForgKey: value,
+                            worksheetIdxNoForgKeyType: "WORKSHEET",
+                          }
+                        })
+                      }}
+                      placeholder="생산제품 선택"
+                    />
+                  </LabelItem>
+                  <LabelItem label="생산제품 공정">
+                    { !order?.orderRoot?.worksheetIdxNoForgKey || order?.orderRoot?.worksheetIdxNoForgKey === "" ?
                       <div className="pl-10 text-[#00000040]">생산제품을 선택해주세요.</div>
                       :
                       <AntdSelect
@@ -662,150 +704,207 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        styles={{bw:"0"}} placeholder="생산제품 내 공정 선택"
+                        placeholder="생산제품 내 공정 선택"
                       />
                     }
+                  </LabelItem>
+                  </>}
+                <LabelItem label="구매처">
+                  <CustomAutoComplete
+                    className="!w-full !h-32"
+                    inputClassName="!h-32 !rounded-2"
+                    option={csList}
+                    value={prtId}
+                    onChange={(value) => setPrtId(value)}
+                    placeholder="구매처명 검색 후 선택"
+                    addLabel="구매처 추가"
+                    handleAddData={()=>setAddPartner(true)}
                   />
-                  <DescriptionItems3
-                    height="20"
-                    title1="구매처"
-                    childClassName="!p-0"
-                    children1={
-                      <CustomAutoComplete
-                        className="!w-full"
-                        inputClassName="!border-0"
-                        option={csList}
-                        value={prtId}
-                        onChange={(value) => setPrtId(value)}
-                        placeholder="구매처명 검색 후 선택"
-                        addLabel="구매처 추가"
-                        handleAddData={()=>setAddPartner(true)}
-                      />
-                    }
-                    title2="구매처 담당자"
-                    children2={
-                      prtId === "" ? 
-                      <div className="pl-10 text-[#00000040]">구매처를 선택해주세요.</div>
-                      :
-                      <CustomAutoComplete
-                        className="!w-full"
-                        inputClassName="!border-0"
-                        option={csMngList.map((item) => ({ value: item.id, label: item.prtMngNm }))}
-                        value={prtMngId}
-                        onChange={(value) => setPrtMngId(value)}
-                        placeholder="구매처 담당자 검색 후 선택"
-                        addLabel="구매처 담당자 추가"
-                        handleAddData={()=>setNewPrtMngOpen(true)}
-                      />
-                    }
-                    title3="결제조건"
-                    children3={
-                      <AntdInput 
-                        value={order?.orderRoot?.paymentCondition}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              paymentCondition: e.target.value,
-                            }
-                          })
-                        }}
-                        styles={{bw:"0"}} placeholder="결제조건 입력"
-                      />
-                    }
+                </LabelItem>
+                <LabelItem label="발주일">
+                  <AntdDatePicker 
+                    value={order?.orderRoot?.orderDt ?? null}
+                    onChange={(e)=>{
+                      setOrder({
+                        ...order,
+                        orderRoot: {
+                          ...order?.orderRoot,
+                          orderDt: e,
+                        }
+                      })
+                    }}
+                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
                   />
-                  <DescriptionItems3
-                    height="20"
-                    title1="발주확정일"
-                    childClassName="!p-0"
-                    children1={
-                      <AntdDatePicker 
-                        value={order?.orderRoot?.orderConfirmDt ?? null}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              orderConfirmDt: e,
-                            }
-                          })
-                        }}
-                        disabled={order?.status !== "REQUEST_WAITING"}
-                        className="!w-full !border-0" suffixIcon={"cal"}
-                      />
-                    }
-                    title2="발주예정일"
-                    children2={
-                      <AntdDatePicker 
-                        value={order?.orderRoot?.orderDueDt ?? null}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              orderDueDt: e,
-                            }
-                          })
-                        }}
-                        disabled={order?.status !== "REQUEST_WAITING"}
-                        className="!w-full !border-0" suffixIcon={"cal"}
-                      />
-                    }
-                    title3="발주일"
-                    children3={
-                      <AntdDatePicker 
-                        value={order?.orderRoot?.orderDt ?? null}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              orderDt: e,
-                            }
-                          })
-                        }}
-                        className="!w-full !border-0" suffixIcon={"cal"}
-                      />
-                    }
+                </LabelItem>
+                <LabelItem label="납품요구일">
+                  <AntdDatePicker 
+                    value={order?.orderRoot?.deliveryDueDt ?? null}
+                    onChange={(e)=>{
+                      setOrder({
+                        ...order,
+                        orderRoot: {
+                          ...order?.orderRoot,
+                          deliveryDueDt: e,
+                        }
+                      })
+                    }}
+                    afterDate={dayjs()} className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
                   />
-                  <DescriptionItems3
-                    height="20"
-                    title1="납품요구일"
-                    childClassName="!p-0"
-                    children1={
-                      <AntdDatePicker 
-                        value={order?.orderRoot?.deliveryDueDt ?? null}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              deliveryDueDt: e,
-                            }
-                          })
+                </LabelItem>
+                <LabelItem label="결제조건">
+                  <AntdInput 
+                    value={order?.orderRoot?.paymentCondition}
+                    onChange={(e)=>{
+                      setOrder({
+                        ...order,
+                        orderRoot: {
+                          ...order?.orderRoot,
+                          paymentCondition: e.target.value,
+                        }
+                      })
+                    }}
+                    placeholder="결제조건 입력"
+                  />
+                </LabelItem>
+                <LabelItem label="구매처 담당자">
+                  { prtId === "" ? 
+                    <div className="text-[#00000040]">구매처를 선택해주세요.</div>
+                    :
+                    <CustomAutoComplete
+                      className="!w-full !h-32"
+                      inputClassName="!h-32 !rounded-2"
+                      option={csMngList.map((item) => ({ value: item.id, label: item.prtMngNm }))}
+                      value={prtMngId}
+                      onChange={(value) => setPrtMngId(value)}
+                      placeholder="구매처 담당자 검색 후 선택"
+                      addLabel="구매처 담당자 추가"
+                      handleAddData={()=>setNewPrtMngOpen(true)}
+                    />
+                  }
+                </LabelItem>
+              </div>
+
+              <DividerV className="!h-auto"/>
+
+              <div className="!w-2/3 flex flex-col gap-20">
+                <LabelItem label="발주명">
+                  <AntdInput 
+                    value={order?.orderRoot?.orderName}
+                    onChange={(e)=>{
+                      setOrder({
+                        ...order,
+                        orderRoot: {
+                          ...order?.orderRoot,
+                          orderName: e.target.value,
+                        }
+                      })
+                    }}
+                    placeholder="발주명 입력"
+                  />
+                </LabelItem>
+                <LabelItem label="발주 내용">
+                  <TextArea
+                    value={order?.orderRoot?.remarks}
+                    onChange={(e)=>{
+                      setOrder({
+                        ...order,
+                        orderRoot: {
+                          ...order?.orderRoot,
+                          remarks: e.target.value,
+                        }
+                      })
+                    }}
+                    className="rounded-2"
+                    style={{height:277,minHeight:277}}
+                  />
+                </LabelItem>
+              </div>
+            </Popup>
+            <div className="flex min-w-[800px] h-50 v-between-h-center">
+              <Button 
+                className="w-80 h-32 rounded-6"
+                style={{color:"#444444E0"}}
+                onClick={() => {
+                  if(edit) {
+
+                  } else {
+                    setOpen(false);
+                  }
+                }}
+              >
+                <CloseOutlined /> {edit ? "삭제" : "취소"}
+              </Button>
+              { stepCurrent < 1 &&
+              <Button 
+                className="w-109 h-32 bg-point1 text-white rounded-6"
+                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                onClick={()=>{
+                  setStepCurrent(1);
+                  handleSubmit();
+                }}
+              >
+                <Arrow /> 다음 단계
+              </Button> }
+            </div>
+            </div>
+
+            { stepCurrent > 0 &&
+            <div ref={containerRef} className="flex relative pl-10" style={{width:`${width}px`}}>
+              <div className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200 h-center" onMouseDown={handleModelMouseDown}>
+                <DragHandle />
+              </div>
+              
+              <div className="overflow-auto">
+                <div className="flex flex-col min-w-[960px] min-h-[430px] gap-20">
+                  {/* 발주 루트가 등록되었고 발주일이 지나지않았다면 단가 목록을 보여줌 */}
+                  { edit && order?.status === "REQUEST_WAITING" &&
+                  <Popup className={"!max-h-[300px] !overflow-y-auto"}>
+                    <div className="flex v-between-h-center">
+                      <Tooltip title="원자재명을 클릭하여 발주 품목을 추가할 수 있어요">
+                        <div>
+                          <LabelMedium label="단가 목록"/>
+                        </div>
+                      </Tooltip>
+                      <p
+                        className="cursor-pointer"
+                        onClick={()=>setCollapse({...collapse, price: !collapse.price})}
+                      >
+                        {collapse.price ? <UpOutlined /> : <DownOutlined />}
+                      </p>
+                    </div>
+                    { !collapse.price &&
+                      <AntdTableEdit
+                        columns={BuyOrderMtPriceClmn(selectMtPrice, setSelectMtPrice)}
+                        data={mtPrice}
+                        styles={{
+                          th_bg: "#FAFAFA",
+                          td_bg: "#FFFFFF",
+                          th_ht: "35px",
+                          td_ht: "35px",
+                          round: "0",
+                          th_fw: "bold",
+                          fs: "12px",
+                          td_pd: "0",
+                          line: "n",
                         }}
-                        className="!w-full !border-0" suffixIcon={"cal"}
                       />
                     }
-                    title2="도착일"
-                    children2={
-                      <AntdDatePicker 
-                        value={order?.orderRoot?.arrivalDt ?? null}
-                        onChange={(e)=>{
-                          setOrder({
-                            ...order,
-                            orderRoot: {
-                              ...order?.orderRoot,
-                              arrivalDt: e,
-                            }
-                          })
-                        }}
-                        className="!w-full !border-0" suffixIcon={"cal"}
-                      />
-                    }
-                    title3="승인일"
-                    children3={
+                  </Popup>}
+
+                  {/* 발주 루트가 등록되었을 때 발주 품목을 보여줌 */}
+                  { edit && selectMtPrice.length > 0 &&
+                    (!order?.status || order.status === "REQUEST_WAITING" || order.status === "INPUT") &&
+                  <Popup className={"!max-h-[300px] overflow-y-auto"}>
+                    <div className="flex v-between-h-center">
+                      <LabelMedium label="발주 품목"/>
+                      { order?.status !== "INPUT" &&
+                      <p
+                        className="cursor-pointer"
+                        onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
+                      >
+                        {collapse.mt ? <UpOutlined /> : <DownOutlined />}
+                      </p>}
+                      { order?.status === "INPUT" &&
                       <AntdDatePicker 
                         value={order?.orderRoot?.approvalDt ?? null}
                         onChange={(e)=>{
@@ -817,248 +916,182 @@ const BuyOrderPage: React.FC & {
                             }
                           })
                         }}
-                        afterDate={dayjs()}
-                        className="!w-full !border-0" suffixIcon={"cal"}
+                        afterDate={dayjs()} placeholder="승인일 선택"
+                        className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
+                      />
+                      }
+                    </div>
+                    { !collapse.mt &&
+                      <AntdTableEdit
+                        columns={
+                          order?.status === "REQUEST_WAITING" ?
+                          BuyOrderMtClmn(handleDeleteMt) :
+                          BuyOrderMtClmn(handleDeleteMt).filter(f=>f.dataIndex!=="materialIdx")
+                        }
+                        data={selectMtPrice}
+                        setData={setSelectMtPrice}
+                        styles={{
+                          th_bg: "#FAFAFA",
+                          td_bg: "#FFFFFF",
+                          th_ht: "35px",
+                          td_ht: "35px",
+                          round: "0",
+                          th_fw: "bold",
+                          fs: "12px",
+                          td_pd: "0",
+                          line: "n",
+                        }}
+                        create={order?.status === "REQUEST_WAITING"}
                       />
                     }
-                  />
-                  <DescriptionItems
-                    height="20"
-                    title="비고"
-                    childClassName="!p-0"
+                  </Popup>}
+
+                  {/* 도착 대기일 경우 발주 품목 및 불량 종류를 보여줌 */}
+                  { edit && order?.status && order.status === "ARRIVAL_WAITING" && <>
+                  <Popup className={"!max-h-[520px] overflow-y-auto"}>
+                    <div className="v-between-h-center">
+                      <LabelMedium label="발주 품목 및 품질 검사"/>
+                      <AntdDatePicker 
+                          value={order?.orderRoot?.arrivalDt ?? null}
+                          onChange={(e)=>{
+                            setOrder({
+                              ...order,
+                              orderRoot: {
+                                ...order?.orderRoot,
+                                arrivalDt: e,
+                              }
+                            })
+                          }}
+                          className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
+                          placeholder="도착일 선택"
+                        />
+                    </div>
+                    <table>
+                      <thead className="text-12 bg-[#FAFAFA] h-35 py-10 text-[#444444]">
+                        <th className="relative !w-50">순서{SDivider}</th>
+                        <th className="relative !min-w-80">원자재명{SDivider}</th>
+                        <th className="relative !w-80">단위{SDivider}</th>
+                        <th className="relative !w-80">재질{SDivider}</th>
+                        <th className="relative !w-80">W{SDivider}</th>
+                        <th className="relative !w-80">H{SDivider}</th>
+                        <th className="relative !w-80">두께{SDivider}</th>
+                        <th className="relative !w-80">무게{SDivider}</th>
+                        <th className="relative !w-80">수량{SDivider}</th>
+                        <th className="relative !w-80">단가{SDivider}</th>
+                        <th className="relative !w-80">금액</th>
+                      </thead>
+                      <tbody className="text-12">
+                        { selectMtPrice.map((item:buyOrderDetailType, index:number) => (<>
+                          <tr className="h-35 border-b-1 border-[#0000000F]">
+                            <td className="px-10 text-center">{index+1}</td>
+                            <td className="px-10 text-left">{item.mtNm}</td>
+                            <td className="px-10 text-center">{item.mtOrderUnit}</td>
+                            <td className="px-10 text-center">{item.mtOrderTxtur}</td>
+                            <td className="px-10 text-right">{item.mtOrderSizeW}</td>
+                            <td className="px-10 text-right">{(item.mtOrderSizeH ?? 0).toLocaleString()}</td>
+                            <td className="px-10 text-right">{(item.mtOrderThk ?? 0).toLocaleString()}</td>
+                            <td className="px-10 text-right">{(item.mtOrderWeight ?? 0).toLocaleString()}</td>
+                            <td className="px-10 text-right">{(item.mtOrderQty ?? 0).toLocaleString()}</td>
+                            <td className="px-10 text-right">{(item.mtOrderInputPrice ?? 0).toLocaleString()}</td>
+                            <td className="px-10 text-right">{(item.mtOrderAmount ?? 0).toLocaleString()}</td>
+                          </tr>
+                          <tr className="h-100">
+                            <td className="bg-back text-center font-[500]">
+                              불량종류
+                            </td>
+                            <td colSpan={8}>
+                              <div className="flex flex-wrap">
+                              { mtBad.map((badItem:materialGroupBadType, index:number) => (
+                                <div key={index} className="w-1/3 h-center mb-4">
+                                  <div className="h-center px-10">{badItem.badNm}</div>
+                                  <div className="h-center gap-5">
+                                    <AntdInput
+                                      value={badCnt.find(f=>f.badId === badItem.id && f.mtId === item.id)?.cnt}
+                                      onChange={(e) => {
+                                        setBadCnt([
+                                          ...badCnt.filter(f=>!(f.badId === badItem.id && f.mtId === item.id)),
+                                          {
+                                            badNm: badItem.badNm ?? "",
+                                            badId: badItem.id ?? "",
+                                            mtId: item.id ?? "",
+                                            cnt: Number(e.target.value)
+                                          }
+                                        ]);
+                                      }}
+                                      type="number" className="!w-100" styles={{ht:"25px"}}
+                                    />개
+                                  </div>
+                                </div>
+                              ))}
+                              </div>
+                            </td>
+                            <td colSpan={2}>
+                              <div className="flex flex-col gap-5">
+                                <div className="v-between-h-center">
+                                  <span className="text-12 font-[500]">도착 수량</span>
+                                  <div className="h-center gap-5">
+                                    <AntdInput
+                                      value={item.mtOrderArrivalQty}
+                                      onFocus={() => {
+                                        if(!item.mtOrderArrivalQty || item.mtOrderArrivalQty < 1)
+                                          handleDataQtyChange(item.id ?? "", item.mtOrderQty ?? 0, 'mtOrderArrivalQty');
+                                      }}
+                                      onChange={(e) => {
+                                        handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderArrivalQty');
+                                      }}
+                                      type="number" className="!w-80" styles={{ht:"25px"}}
+                                    />개
+                                  </div>
+                                </div>
+                                <div className="v-between-h-center">
+                                  <span className="text-12 font-[500]">입고 수량</span>
+                                  <div className="h-center gap-5">
+                                    <AntdInput
+                                      value={item.mtOrderInputQty}
+                                      onChange={(e) => {
+                                        handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderInputQty');
+                                      }}
+                                      type="number" className="!w-80" styles={{ht:"25px"}}
+                                    />개
+                                  </div>
+                                </div>
+                                <div className="v-between-h-center">
+                                  <span className="text-12 font-[500]">재고 수량</span>
+                                  <div className="h-center gap-5">
+                                    <AntdInput
+                                      value={item.mtOrderInvenQty}
+                                      disabled
+                                      type="number" className="!w-80" styles={{ht:"25px"}}
+                                    />개
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </>))}
+                      </tbody>
+                    </table>
+                  </Popup>
+                  </>}
+                </div>
+
+                <div className="flex min-w-[960px] h-50 h-center justify-end">
+                  <Button 
+                    className="w-109 h-32 bg-point1 text-white rounded-6"
+                    style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                    onClick={()=>{
+                      handleSubmit();
+                    }}
                   >
-                    <AntdInput 
-                      value={order?.orderRoot?.remarks}
-                      onChange={(e)=>{
-                        setOrder({
-                          ...order,
-                          orderRoot: {
-                            ...order?.orderRoot,
-                            remarks: e.target.value,
-                          }
-                        })
-                      }}
-                      styles={{bw:"0"}} placeholder="비고 입력"
-                    />
-                  </DescriptionItems>
-                </Description>
-              }
-            </Popup>
-
-            {/* 발주 루트가 등록되었을 때 발주 품목을 보여줌 */}
-            { edit && selectMtPrice.length > 0 &&
-              (!order?.status || order.status === "REQUEST_WAITING" || order.status === "INPUT") &&
-            <Popup className={
-              !order?.status || order?.status === "REQUEST_WAITING" ? 
-                collapse.master ? "!max-h-[400px] overflow-y-auto" : "!max-h-[250px] overflow-y-auto"
-                :
-                collapse.master ? "!max-h-[780px] overflow-y-auto" : "!max-h-[520px] overflow-y-auto"
-              }>
-              <div className="flex v-between-h-center">
-                <LabelMedium label="발주 품목"/>
-                <p
-                  className="cursor-pointer"
-                  onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
-                >
-                  {collapse.mt ? <UpOutlined /> : <DownOutlined />}
-                </p>
+                    <Arrow /> 저장
+                  </Button>
+                </div>
               </div>
-              { !collapse.mt &&
-                <AntdTableEdit
-                  columns={
-                    order?.status === "REQUEST_WAITING" ?
-                    BuyOrderMtClmn(handleDeleteMt) :
-                    BuyOrderMtClmn(handleDeleteMt).filter(f=>f.dataIndex!=="materialIdx")
-                  }
-                  data={selectMtPrice}
-                  setData={setSelectMtPrice}
-                  styles={{
-                    th_bg: "#FAFAFA",
-                    td_bg: "#FFFFFF",
-                    th_ht: "35px",
-                    td_ht: "35px",
-                    round: "0",
-                    th_fw: "bold",
-                    fs: "12px",
-                    td_pd: "0",
-                    line: "n",
-                  }}
-                  create={order?.status === "REQUEST_WAITING"}
-                />
-              }
-            </Popup>
-            }
-
-            {/* 도착 대기일 경우 발주 품목 및 불량 종류를 보여줌 */}
-            { edit && order?.status && order.status === "ARRIVAL_WAITING" &&
-            <Popup className={collapse.master ? "!max-h-[780px] overflow-y-auto" :"!max-h-[520px] overflow-y-auto"}>
-              <div className="flex v-between-h-center">
-                <LabelMedium label="발주 품목 및 품질 검사"/>
-                <p
-                  className="cursor-pointer"
-                  onClick={()=>setCollapse({...collapse, mt: !collapse.mt})}
-                >
-                  {collapse.mt ? <UpOutlined /> : <DownOutlined />}
-                </p>
-              </div>
-              { !collapse.mt &&
-                <>
-                  <table>
-                    <thead className="text-12 bg-[#FAFAFA] h-35 py-10 text-[#444444]">
-                      <th className="relative !w-50">순서{SDivider}</th>
-                      <th className="relative !min-w-80">원자재명{SDivider}</th>
-                      <th className="relative !w-80">단위{SDivider}</th>
-                      <th className="relative !w-80">재질{SDivider}</th>
-                      <th className="relative !w-80">W{SDivider}</th>
-                      <th className="relative !w-80">H{SDivider}</th>
-                      <th className="relative !w-80">두께{SDivider}</th>
-                      <th className="relative !w-80">무게{SDivider}</th>
-                      <th className="relative !w-80">수량{SDivider}</th>
-                      <th className="relative !w-80">단가{SDivider}</th>
-                      <th className="relative !w-80">금액</th>
-                    </thead>
-                    <tbody className="text-12">
-                      { selectMtPrice.map((item:buyOrderDetailType, index:number) => (<>
-                        <tr className="h-35 border-b-1 border-[#0000000F]">
-                          <td className="px-10 text-center">{index+1}</td>
-                          <td className="px-10 text-left">{item.mtNm}</td>
-                          <td className="px-10 text-center">{item.mtOrderUnit}</td>
-                          <td className="px-10 text-center">{item.mtOrderTxtur}</td>
-                          <td className="px-10 text-right">{item.mtOrderSizeW}</td>
-                          <td className="px-10 text-right">{(item.mtOrderSizeH ?? 0).toLocaleString()}</td>
-                          <td className="px-10 text-right">{(item.mtOrderThk ?? 0).toLocaleString()}</td>
-                          <td className="px-10 text-right">{(item.mtOrderWeight ?? 0).toLocaleString()}</td>
-                          <td className="px-10 text-right">{(item.mtOrderQty ?? 0).toLocaleString()}</td>
-                          <td className="px-10 text-right">{(item.mtOrderInputPrice ?? 0).toLocaleString()}</td>
-                          <td className="px-10 text-right">{(item.mtOrderAmount ?? 0).toLocaleString()}</td>
-                        </tr>
-                        <tr className="h-100">
-                          <td className="bg-back text-center font-[500]">
-                            불량종류
-                          </td>
-                          <td colSpan={8}>
-                            <div className="flex flex-wrap">
-                            { mtBad.map((badItem:materialGroupBadType, index:number) => (
-                              <div key={index} className="w-1/3 h-center mb-4">
-                                <div className="h-center px-10">{badItem.badNm}</div>
-                                <div className="h-center gap-5">
-                                  <AntdInput
-                                    value={badCnt.find(f=>f.badId === badItem.id && f.mtId === item.id)?.cnt}
-                                    onChange={(e) => {
-                                      setBadCnt([
-                                        ...badCnt.filter(f=>!(f.badId === badItem.id && f.mtId === item.id)),
-                                        {
-                                          badNm: badItem.badNm ?? "",
-                                          badId: badItem.id ?? "",
-                                          mtId: item.id ?? "",
-                                          cnt: Number(e.target.value)
-                                        }
-                                      ]);
-                                    }}
-                                    type="number" className="!w-100" styles={{ht:"25px"}}
-                                  />개
-                                </div>
-                              </div>
-                            ))}
-                            </div>
-                          </td>
-                          <td colSpan={2}>
-                            <div className="flex flex-col gap-5">
-                              <div className="v-between-h-center">
-                                <span className="text-12 font-[500]">도착 수량</span>
-                                <div className="h-center gap-5">
-                                  <AntdInput
-                                    value={item.mtOrderArrivalQty}
-                                    onFocus={() => {
-                                      if(!item.mtOrderArrivalQty || item.mtOrderArrivalQty < 1)
-                                        handleDataQtyChange(item.id ?? "", item.mtOrderQty ?? 0, 'mtOrderArrivalQty');
-                                    }}
-                                    onChange={(e) => {
-                                      handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderArrivalQty');
-                                    }}
-                                    type="number" className="!w-80" styles={{ht:"25px"}}
-                                  />개
-                                </div>
-                              </div>
-                              <div className="v-between-h-center">
-                                <span className="text-12 font-[500]">입고 수량</span>
-                                <div className="h-center gap-5">
-                                  <AntdInput
-                                    value={item.mtOrderInputQty}
-                                    onChange={(e) => {
-                                      handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderInputQty');
-                                    }}
-                                    type="number" className="!w-80" styles={{ht:"25px"}}
-                                  />개
-                                </div>
-                              </div>
-                              <div className="v-between-h-center">
-                                <span className="text-12 font-[500]">재고 수량</span>
-                                <div className="h-center gap-5">
-                                  <AntdInput
-                                    value={item.mtOrderInvenQty}
-                                    disabled
-                                    type="number" className="!w-80" styles={{ht:"25px"}}
-                                  />개
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </>))}
-                    </tbody>
-                  </table>
-                </>
-              }
-            </Popup>
-            }
-
-            {/* 발주 루트가 등록되었고 발주일이 지나지않았다면 단가 목록을 보여줌 */}
-            { edit && order?.status === "REQUEST_WAITING" &&
-            <Popup className={collapse.master ? "!max-h-[350px] overflow-y-auto" :"!max-h-[250px] overflow-y-auto"}>
-              <div className="flex v-between-h-center">
-                <LabelMedium label="단가 목록"/>
-                <p
-                  className="cursor-pointer"
-                  onClick={()=>setCollapse({...collapse, price: !collapse.price})}
-                >
-                  {collapse.price ? <UpOutlined /> : <DownOutlined />}
-                </p>
-              </div>
-              { !collapse.price &&
-                <AntdTableEdit
-                  columns={BuyOrderMtPriceClmn(selectMtPrice, setSelectMtPrice)}
-                  data={mtPrice}
-                  styles={{
-                    th_bg: "#FAFAFA",
-                    td_bg: "#FFFFFF",
-                    th_ht: "35px",
-                    td_ht: "35px",
-                    round: "0",
-                    th_fw: "bold",
-                    fs: "12px",
-                    td_pd: "0",
-                    line: "n",
-                  }}
-                />
-              }
-            </Popup>
-            }
-
-            <div className="w-full h-50 v-h-center">
-              <Button 
-                className="w-109 h-32 bg-point1 text-white rounded-6"
-                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={handleSubmit}
-              >
-                <Arrow />저장
-              </Button>
-            </div>
+            </div>}
           </div>
-        }
-        width={1200}
+        </>}
       />
-
+      
       <AntdModal
         open={orderDocumentFormOpen}
         setOpen={setOrderDocumentFormOpen}

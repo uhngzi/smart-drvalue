@@ -47,6 +47,7 @@ const SignInPage: React.FC & {
       
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
+        cookie.set('company', 'gpn', { expires: 7 });
         router.push('/');
       } else {
         setOpen(true);

@@ -319,6 +319,7 @@ export type buyCostOutDetailType = {
 export type buyOrderType = {
   id?: string;
   orderNo?: string;
+  orderName?: string;
   productName?: string;
   vendorName?: string;
   totalAmount?: number;
@@ -338,6 +339,7 @@ export type buyOrderType = {
   // 디테일
   type?: string;
   detailInfo?: {
+    orderName?: string;
     id?: string;
     prtInfo?: {
       id?: string;
@@ -414,6 +416,7 @@ export type buyOrderType = {
     prtIdx?: string;
     prtMngIdx?: string;
     empIdx?: string;
+    orderName?: string;
     orderDueDt?: Date | Dayjs | null;
     orderDt?: Date | Dayjs | null;
     remarks?: string;
