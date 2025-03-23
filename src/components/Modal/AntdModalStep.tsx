@@ -12,7 +12,7 @@ interface Props {
   title?: any;
   contents?: any;
   footer?: any;
-  width?: number;
+  width?: number | string;
   isInnerDrawer?: boolean;
   drawerContents?: any;
   onClose?: () => void;
