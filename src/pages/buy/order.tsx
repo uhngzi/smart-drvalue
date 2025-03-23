@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import cookie from "cookiejs";
 import { useRouter } from "next/router";
-import { Button, List, Spin, Tooltip } from "antd";
+import { Button, Empty, List, Spin, Tooltip } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
@@ -1001,7 +1001,11 @@ const BuyOrderPage: React.FC & {
                             </td>
                             <td colSpan={8}>
                               <div className="flex flex-wrap">
-                              { mtBad.map((badItem:materialGroupBadType, index:number) => (
+                              { mtBad.filter(f=>f.materialGroup?.id === item.materialGrpIdx).length < 1 &&
+                                <div className="w-full h-full v-h-center"> <Empty imageStyle={{ height: 50 }} /> </div>
+                              }
+                              { mtBad.filter(f=>f.materialGroup?.id === item.materialGrpIdx).length > 0 &&
+                                mtBad.filter(f=>f.materialGroup?.id === item.materialGrpIdx).map((badItem:materialGroupBadType, index:number) => (
                                 <div key={index} className="w-1/3 h-center mb-4">
                                   <div className="h-center px-10">{badItem.badNm}</div>
                                   <div className="h-center gap-5">
