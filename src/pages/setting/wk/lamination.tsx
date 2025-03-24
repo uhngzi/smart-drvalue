@@ -18,6 +18,7 @@ import Bag from "@/assets/svg/icons/bag.svg";
 import { MOCK } from "@/utils/Mock";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
+import { Radio } from "antd";
 
 const WkLaminationListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -51,6 +52,7 @@ const WkLaminationListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        anykeys: {lamDtlTypeEm: type}
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -187,8 +189,16 @@ const WkLaminationListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="v-between-h-center">
-          <p>총 {totalData}건</p>
+        <div className="v-between-h-center pb-20">
+          <div className="flex gap-10">
+            <p>총 {totalData}건</p>
+            <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
+              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
+              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
+              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
+              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
+            </Radio.Group>
+          </div>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
             onClick={()=>{setNewOpen(true)}}

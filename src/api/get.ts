@@ -112,7 +112,7 @@ export type SQueryType = QueryCondition[] | LogicalQuery | FieldQuery;
 
 export const getAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'utility';
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'core-d3' | 'utility';
     utype?: 'root/' | 'tenant/';
     url: string;
     header?: boolean;

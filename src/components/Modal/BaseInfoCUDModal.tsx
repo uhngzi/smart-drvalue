@@ -196,7 +196,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           className="w-full"
                           options={item.option}
                           key={data.id}
-                          defaultValue={data[item.name] || (item.option && item.option[0]?.value)}
+                          defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
                           onChange={(value) => {setData(item.name, value)}}
                         />
                       )}

@@ -40,3 +40,43 @@ export const boardReq = () => {
     { field: 'brdH', label: '세로' },
   ]
 }
+
+export type BoardGroupType = {
+  id: string;
+  brdGrpName: string
+  brdGrpDesc: string
+  brdGrpExtraInfo: string
+  ordNo: number
+  useYn: boolean
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+}
+
+export const newBoardGroupType = ():BoardGroupType => {
+  return {
+    id: '',
+    brdGrpName: '',
+    brdGrpDesc: '',
+    brdGrpExtraInfo: '',
+    ordNo: 0,
+    useYn: false,
+    createdAt: '',
+    updatedAt: '',
+    deletedAt: '',
+  }
+}
+
+export const setBoardGroupType = (data: any):BoardGroupType => {
+  return {
+    id: data.id,
+    brdGrpName: data.brdGrpName,
+    brdGrpDesc: data.brdGrpDesc,
+    brdGrpExtraInfo: data.brdGrpExtraInfo,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+    deletedAt: data.deletedAt,
+  }
+}

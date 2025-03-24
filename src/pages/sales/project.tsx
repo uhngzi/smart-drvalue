@@ -29,6 +29,9 @@ import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
 import useToast from "@/utils/useToast";
 import { projectSchedules, Task } from "@/data/type/base/project";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import { useQuery } from "@tanstack/react-query";
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { getAPI } from "@/api/get";
 
 
 
@@ -47,6 +50,25 @@ const ProjcetPage: React.FC & {
   // 인력계획 관련
   const [workerPlanOpen, setWorkerPlanOpen] = useState<boolean>(false);
   const [workerPlan, setWorkerPlan] = useState<{id: string, date: string} | null>(null);
+
+  const { data:queryData, refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'worksheet'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: 'pms/proc/default/many/1'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        // setData(result.data?.data ?? {});
+      } else {
+        console.log('error:', result.response);
+      }
+      console.log(result.data);
+      return result;
+    },
+  });
  
 const tempSchedules = [
   {
