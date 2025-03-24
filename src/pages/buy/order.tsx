@@ -439,6 +439,11 @@ const BuyOrderPage: React.FC & {
   // 발주 등록 및 수정
   const handleSubmit = async () => {
     try {
+      if(!prtId || prtId === "" || !order?.orderRoot?.orderName || order.orderRoot?.orderName === "") {
+        showToast("구매처, 발주명은 필수 입력입니다.", "error");
+        return;
+      }
+
       setOrder({...order, id:"" });
       const jsonData = {
         orderRoot: {
@@ -493,6 +498,7 @@ const BuyOrderPage: React.FC & {
       if(result.resultCode === 'OK_0000') {
         refetch();
         showToast("발주 저장 완료", "success");
+        setStepCurrent(1);
 
         setOrder(null);
         const entity = result.data;
@@ -839,7 +845,6 @@ const BuyOrderPage: React.FC & {
                 className="w-109 h-32 bg-point1 text-white rounded-6"
                 style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                 onClick={()=>{
-                  setStepCurrent(1);
                   handleSubmit();
                 }}
               >
