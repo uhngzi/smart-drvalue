@@ -10,7 +10,7 @@ interface Props {
   title?: any;
   contents?: any;
   footer?: any;
-  width?: number;
+  width?: number | string;
   onClose?: () => void;
   full?: boolean;
   bgColor?: string;
