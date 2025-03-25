@@ -1,9 +1,9 @@
-import { Dropdown, InputRef, Space } from "antd";
-import { RefObject } from "react";
+import { Checkbox, Dropdown, InputRef, Space } from "antd";
+import { RefObject, useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import { selectType } from "@/data/type/componentStyles";
-import { ModelStatus, SalesOrderStatus } from "@/data/type/enum";
+import { ModelStatus, ModelTypeEm, SalesOrderStatus } from "@/data/type/enum";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 
 import AntdInput from "../Input/AntdInput";
@@ -13,13 +13,52 @@ import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import Edit from "@/assets/svg/icons/edit.svg";
 import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
+import CustomAutoComplete from "../AutoComplete/CustomAutoComplete";
+import { useQuery } from "@tanstack/react-query";
+import { apiAuthResponseType } from "@/data/type/apiResponse";
+import { modelsType } from "@/data/type/sayang/models";
+import { getAPI } from "@/api/get";
+import CustomAutoCompleteModel from "../AutoComplete/CustomAutoCompleteLabel";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center">{label}</p>
 }
 
-const Divider:React.FC = () => {
-  return <div className="w-1 h-60" style={{borderLeft:"0.3px solid #B9B9B9"}}/>;
+const Item:React.FC<{
+  children1: React.ReactNode;
+  children2?: React.ReactNode;
+  label1?: string;
+  label2?: string;
+  size1?: number;
+  size2?: number;
+}> = ({
+  label1,
+  label2,
+  children1,
+  children2,
+  size1 = 2,
+  size2 = 2,
+}) => {
+  return (
+    <div className="flex flex-col gap-15 justify-center">
+      <div
+        className="flex flex-col justify-center !h-54"
+        style={{width: size1 < 2 ? (55*size1) : (55*size1 + 20*size1), minWidth: size1 < 2 ? (55*size1) : (55*size1 + 20*size1)}}
+      >
+        {label1 && <Label label={label1} />}
+        {children1}
+      </div>
+      { children2 &&
+        <div
+          className="flex flex-col justify-center !h-54"
+          style={{width: size2 < 2 ? (55*size2) : (55*size2 + 20*size2), minWidth: size2 < 2 ? (55*size2) : (55*size2 + 20*size2)}}
+        >
+          {label2 && <Label label={label2} />}
+          {children2}
+        </div>
+      }
+    </div>
+  )
 }
 
 interface Props {
@@ -48,146 +87,394 @@ const SalesModelHead:React.FC<Props> = ({
   handleDelete,
   handleEdit,
 }) => {
+  const [modelNm, setModelNm] = useState<string>("");
+  const [modelNo, setModelNo] = useState<string>("");
+
+  const [modelList, setModelList] = useState<modelsType[]>([]);
+  const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
+  const { refetch } = useQuery<apiAuthResponseType, Error>({
+    queryKey: ["models", modelNm],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "core-d1",
+        utype: "tenant/",
+        url: "models/jsxcrud/many"
+      },{
+        s_query: { "$or": [
+          modelNm.length > 0 ? { "prdNm": {"$startsL": modelNm}} : {},
+          modelNo.length > 0 ? { "prdMngNo": {"$startsL": modelNo}} : {},
+        ]}
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = result.data?.data as modelsType[] ?? [];
+        setModelList(arr);
+        setModelSelectList(arr.map((item) => ({
+          value: item.id,
+          label: item.prdNm,
+        })));
+        console.log(arr);
+      } else {
+        console.log("MODELS ERROR:", result.response);
+      }
+      return result;
+    },
+    enabled: modelNm.length > 1
+  });
+
+  useEffect(()=>{
+      console.log('no :', modelNo, 'nm:', modelNm);
+  }, [modelNm, modelNo])
+
   return (
-    <div className="w-full min-h-60 h-center">
-      <div className="h-full h-center gap-20 p-10">
-        { !read &&
-          <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
-        }
-        <AntdSelect
-          options={[
-            {value:ModelStatus.NEW,label:'신규'},
-            {value:ModelStatus.REPEAT,label:'반복'},
-            {value:ModelStatus.MODIFY,label:'수정'},
-          ]}
-          value={model.modelStatus}
-          onChange={(e)=>{
-            handleModelDataChange(model.id ?? '', 'modelStatus', e);
-          }}
-          className="w-[54px!important]"
-          styles={selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT ?
-            {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
-            {ht:'32px', bw:'0', pd:'0'}
+    <div className="w-full min-h-60 h-center gap-15">
+      { !read &&
+        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
+      }
+      
+      <AntdSelect
+        options={[
+          {value:ModelStatus.NEW,label:'신규'},
+          {value:ModelStatus.REPEAT,label:'반복'},
+          {value:ModelStatus.MODIFY,label:'수정'},
+        ]}
+        value={model.modelStatus}
+        onChange={(e)=>{
+          handleModelDataChange(model.id ?? '', 'modelStatus', e);
+        }}
+        styles={selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT ?
+          {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+          {ht:'32px', bw:'0', pd:'0'}
+        } className="!min-w-55"
+        disabled={model.completed}
+        readonly={read}
+      />
+      
+      <div className="!flex-1 !max-w-[calc(100%-90px)] h-center gap-20 p-10">
+        <Item
+          label1="모델명" size1={3}
+          children1={
+            <CustomAutoCompleteModel
+              ref={el => {
+                // 자동 스크롤 & 포커싱을 위해 Ref 추가
+                if(el &&inputRef && inputRef.current && model.index) {
+                  inputRef.current[model.index] = el;
+                }
+              }}
+              option={modelSelectList}
+              label={modelNm}
+              onInputChange={(value) => {
+                setModelNm(value);
+                if(value.length < 3) {
+                  setModelSelectList([]);
+                }
+              }}
+              value={model.id}
+              onChange={(value) => {
+                handleModelDataChange(model.id ?? '', 'id', value);
+                handleModelDataChange(model.id ?? '', 'orderTit', modelNm);
+              }}
+              clear={false}
+              placeholder="3글자 이상 입력"
+            />
           }
-          disabled={model.completed}
-          readonly={read}
+          label2="관리번호" size2={3}
+          children2={
+            <CustomAutoCompleteModel
+              ref={el => {
+                // 자동 스크롤 & 포커싱을 위해 Ref 추가
+                if(el &&inputRef && inputRef.current && model.index) {
+                  inputRef.current[model.index] = el;
+                }
+              }}
+              option={modelSelectList}
+              label={modelNo}
+              onInputChange={(value) => {
+                setModelNo(value);
+                if(value.length < 3) {
+                  setModelSelectList([]);
+                }
+              }}
+              value={model.prdMngNo}
+              onChange={(value) => {
+                handleModelDataChange(model.id ?? '', 'id', value);
+                handleModelDataChange(model.id ?? '', 'prdMngNo', modelNo);
+              }}
+              clear={false}
+              placeholder="3글자 이상 입력"
+            />
+            // <AntdInput
+            //   value={model.prtOrderNo}
+            //   onChange={(e)=>{
+            //     handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
+            //   }}
+            //   readonly={read} styles={{ht:'32px', bg:'#FFF'}}
+            //   disabled={model.completed}
+            // />
+          }
+        />
+        
+        <Item
+          label1="고객측 관리번호"
+          children1={
+            <AntdInput
+              value={model.prtOrderNo}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
+              }}
+              readonly={read}
+              styles={{ht:'32px', bg:'#FFF'}}
+              disabled={model.completed}
+            />
+          }
+          label2="수주번호"
+          children2={
+            <AntdInput
+              value={model.currPrdInfo?.prdMngNo}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', e.target.value);
+              }}
+              readonly={read}
+              styles={{ht:'32px', bg:'#FFF'}}
+              disabled={model.completed}
+            />
+          }
+        />
+        
+        <Item
+          label1="필름번호"
+          children1={
+            <AntdInput
+              value={model.currPrdInfo?.fpNo}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.fpNo', e.target.value);
+              }}
+              readonly={read}
+              styles={{ht:'32px', bg:'#FFF'}}
+              disabled={model.completed}
+            />
+          }
+          label2="매수"
+          children2={
+            <AntdInput
+              value={model.currPrdInfo?.m2}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.m2', e.target.value);
+              }}
+              readonly={read}
+              styles={{ht:'32px', bg:'#FFF'}}
+              disabled={model.completed}
+            />
+          }
+        />
+        
+        <Item
+          label1="원판"
+          children1={
+            <AntdSelect
+              options={boardSelectList}
+              value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
+              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              readonly={read}
+              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+            />
+          }
+          label2="제조사"
+          children2={
+            <AntdSelect
+              options={boardSelectList}
+              value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
+              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              readonly={read}
+              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+            />
+            // <AntdInput 
+            //   value={model.currPrdInfo?.mnfNm}
+            //   onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
+            //   styles={{ht:'32px'}}
+            //   readonly={read ? read : selectId === model.id ? !newFlag : undefined}
+            //   disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+            // />
+          }
+        />
+        
+        <Item
+          label1="재질"
+          children1={
+            <AntdSelect
+              options={metarialSelectList}
+              value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
+              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
+              styles={{ht:'32px', bw:'0px', pd:'0'}} dropWidth="180px"
+              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+              readonly={read}
+            />
+          }
+          label2="적용환율"
+          children2={
+            <AntdInput
+              value={model.currPrdInfo?.exchange}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.exchange', e.target.value);
+              }}
+              readonly={read} type="number"
+              styles={{ht:'32px', bg:'#FFF'}}
+              disabled={model.completed}
+            />
+          }
         />
 
-        <div className="flex flex-col">
-          <Label label="모델명" />
-          <AntdInput
-            ref={el => {
-              // 자동 스크롤 & 포커싱을 위해 Ref 추가
-              if(el &&inputRef && inputRef.current && model.index) {
-                inputRef.current[model.index] = el;
-              }
-            }}
-            value={model.orderTit}
-            onChange={(e)=>{
-              handleModelDataChange(model.id ?? '', 'orderTit', e.target.value);
-            }}
-            readonly={read ? true : selectId === model.id ? !newFlag : undefined}
-            className="w-[250px!important]" styles={{ht:'32px', bg:'#FFF'}}
-            disabled={model.completed || model.modelStatus === ModelStatus.REPEAT}
-          />
-        </div>
+        <Item
+          size1={1}
+          children1={
+            <AntdSelect
+              options={[
+                {value:ModelTypeEm.SAMPLE,label:'샘플'},
+                {value:ModelTypeEm.PRODUCTION,label:'양산'},
+              ]}
+              value={model.currPrdInfo?.modelTypeEm ?? ModelTypeEm.SAMPLE}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.modelTypeEm', e);
+              }}
+              styles={{ht:'32px', bw:'0', pd:'0'}}
+              disabled={model.completed}
+              readonly={read}
+            />
+          }
+          size2={1}
+          children2={
+            <AntdSelect
+              options={[
+                {value:'pay',label:'유상'},
+                {value:'free',label:'무상'},
+              ]}
+              value={model.currPrdInfo?.paid ?? 'pay'}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.paid', e);
+              }}
+              styles={{ht:'32px', bw:'0', pd:'0'}}
+              disabled={model.completed}
+              readonly={read}
+            />
+          }
+        />
 
-        <div className="flex flex-col">
-          <Label label="고객측 관리번호" />
-          <AntdInput
-            value={model.prtOrderNo}
-            onChange={(e)=>{
-              handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
-            }}
-            readonly={read}
-            className="w-[180px!important]" styles={{ht:'32px', bg:'#FFF'}}
-            disabled={model.completed}
-          />
-        </div>
-      </div>
+        <Item
+          size1={1}
+          children1={
+            <AntdSelect
+              options={[
+                {value:'in',label:'내수'},
+                {value:'local',label:'로컬'},
+                {value:'out',label:'수출'},
+              ]}
+              value={model.currPrdInfo?.export ?? 'in'}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.export', e);
+              }}
+              styles={{ht:'32px', bw:'0', pd:'0'}}
+              disabled={model.completed}
+              readonly={read}
+            />
+          }
+          size2={1}
+          children2={
+            <AntdSelect
+              options={[
+                {value:'won',label:'원화'},
+                {value:'dollar',label:'달러'},
+                {value:'yen',label:'엔화'},
+                {value:'euro',label:'유로'},
+              ]}
+              value={model.currPrdInfo?.currency ?? 'won'}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.currency', e);
+              }}
+              styles={{ht:'32px', bw:'0', pd:'0'}}
+              disabled={model.completed}
+              readonly={read}
+            />
+          }
+        />
 
-      <Divider />
-      
-      <div className="h-full h-center gap-20 p-10">
-        <div className="flex flex-col">
-          <Label label="원판" />
-          <AntdSelect
-            options={boardSelectList}
-            value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
-            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
-            readonly={read}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
-          />
-        </div>
-        <div className="flex flex-col">
-          <Label label="제조사" />
-          <AntdInput 
-            value={model.currPrdInfo?.mnfNm}
-            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
-            className="w-[160px!important]" styles={{ht:'32px'}}
-            readonly={read ? read : selectId === model.id ? !newFlag : undefined}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <Label label="재질" />
-          <AntdSelect
-            options={metarialSelectList}
-            value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
-            onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
-            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
-            disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
-            readonly={read}
-          />
-        </div>
-      </div>
-
-      <Divider />
-
-      <div className="h-full h-center gap-20 p-10 flex-1">
-        { read && model.orderPrdDueDt ?<div className="flex flex-col">
-          <Label label="납기" />
-          <div className="h-32 h-center">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div>
-        </div>: null}
-        { !read && <>
-          <div className="flex flex-col">
-            <Label label="납기" />
+        <Item
+          label1="납기"
+          children1={
+            read && model.orderPrdDueDt ? <div className="h-32 h-center">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div> :
+            !read ?
             <AntdDatePicker
               value={model.orderPrdDueDt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
-              suffixIcon={'cal'}
-              styles={{bw:'0',bg:'none', pd:"0"}}
-              className="!w-[110px]"
-              placeholder=""
-              afterDate={new Date()}
+              suffixIcon={'cal'} afterDate={new Date()}
+              styles={{bw:'0',bg:'none', pd:"0"}} className="!w-full"
               disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
               allowClear={false}
+            /> : null
+          }
+          label2="발주"
+          children2={
+            <AntdDatePicker
+              value={model.currPrdInfo?.orderDt}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
+              suffixIcon={'cal'} afterDate={new Date()}
+              styles={{bw:'0',bg:'none', pd:"0"}} className="!w-full"
+              disabled={model.completed}
+              allowClear={false}
             />
-          </div>
+          }
+        />
 
-          <div className="flex flex-col">
-            <Label label="수주 수량" />
+        <Item
+          label1="수주수량"
+          children1={
             <AntdInput 
               value={model.orderPrdCnt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
-              className="w-[160px!important]" styles={{ht:'32px'}} type="number"
-              disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
+              styles={{ht:'32px'}} type="number"
+              disabled={model.completed}
             />
-          </div>
-
-          <div className="flex flex-col">
-            <Label label="수주 금액" />
+          }
+          label2="수주금액"
+          children2={
             <AntdInput 
               value={model.orderPrdPrice}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
-              className="w-[160px!important]" styles={{ht:'32px'}} type="number"
-              disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
+              styles={{ht:'32px'}} type="number"
+              disabled={model.completed}
             />
-          </div>
-        </>}
+          }
+        />
+
+        <Item
+          label1="수주단위"
+          children1={
+            <AntdSelect
+              options={[
+                {value:'pcs',label:'PCS'},
+                {value:'kit',label:'KIT'},
+              ]}
+              value={model.currPrdInfo?.orderUnit ?? 'pcs'}
+              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnit', e)}}
+              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              disabled={model.completed}
+              readonly={read}
+            />
+          }
+          label2="비고" size2={3}
+          children2={
+            <AntdInput 
+              value={model.currPrdInfo?.memo}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.memo', e.target.value)}
+              styles={{ht:'32px'}}
+              disabled={model.completed}
+            />
+          }
+        />
       </div>
+      
+
       {
         !read &&
         <Dropdown trigger={['click']} menu={{ items:[{
