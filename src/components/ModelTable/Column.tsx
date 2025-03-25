@@ -1,21 +1,15 @@
 import { selectType } from "@/data/type/componentStyles";
 import { TableProps } from "antd";
 
-import Trash from "@/assets/svg/icons/trash.svg";
-
 import { 
   generateFloorOptions,
   ModelStatus,
-  ModelTypeEm,
-  SalesOrderStatus
 } from "@/data/type/enum";
-import { salesOrderProcuctCUType, salesOrderProductRType } from "@/data/type/sales/order";
+import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 
 import AntdInputFill from "../Input/AntdInputFill";
 import AntdSelectFill from "../Select/AntdSelectFill";
 import { SetStateAction } from "react";
-import AntdInput from "../Input/AntdInput";
-import AntdSelect from "../Select/AntdSelect";
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
 const divTopClass = "h-[100%] flex flex-col items-start";
@@ -196,18 +190,6 @@ export const salesOrderModelClmn = (
                 tabIndex={record.index*40+7}
               />
             </div>
-            {/* <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.pinCnt}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pinCnt', e.target.value)}
-                className="!text-12"
-                type="number"
-                placeholder={"핀수 입력"}
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+9}
-              />
-            </div> */}
           </div>
         )
       }
@@ -720,7 +702,7 @@ export const salesOrderModelClmn = (
     align: 'center',
     children:[
       {
-        title: '',
+        title: '승인원 여부',
         width:100,
         dataIndex: 'inremarks',
         key: 'inremarks',
@@ -736,6 +718,17 @@ export const salesOrderModelClmn = (
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"비고 입력"}
                 tabIndex={record.index*40+34}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdSelectFill 
+                options={[{value:"Y",label:"유"},{value:"N",label:"무"}]}
+                value={record.currPrdInfo?.seungYn ?? "Y"}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.seungYn', e)}
+                styles={{fs:'12px'}}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
+                placeholder={"승인원 여부"}
+                tabIndex={record.index*40+35}
               />
             </div>
           </div>
@@ -757,57 +750,8 @@ export const salesOrderModelReadClmn = (
   mkTypeSelectList: selectType[],
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
+  surfaceSelectList: selectType[],
 ): TableProps['columns'] => [
-  {
-    title: 'No',
-    width: 30,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value:any, record:any, index:number) => (
-      <>
-        <div className="h-[100%] w-[100%] pt-5">
-          <p className="w-24 h-24 bg-back rounded-6 flex v-h-center">{record?.index}</p>
-        </div>
-      </>
-    ),
-  },
-  {
-    title: 'Rev',
-    dataIndex: 'rev',
-    width: 80,
-    key: 'rev',
-    align: 'center',
-    children: [
-      {
-        title:'납품단위',
-        width: 80,
-        dataIndex: 'user',
-        key:'user',
-        align: 'center',
-        render: (value:any, record:any) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.prdRevNo}
-                className='!text-12'
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelect
-                options={unitSelectList}
-                value={record.currPrdInfo?.unit?.id ?? unitSelectList[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
   {
     title: '층',
     dataIndex: 'layer',
@@ -823,20 +767,16 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill
                 options={generateFloorOptions()}
                 value={record.currPrdInfo?.layerEm ?? "L1"}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill
                 value={record.currPrdInfo?.thk}
-                className='!text-12'
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -845,14 +785,14 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: '동박두께',
+    title: '동박',
     width: 75,
     dataIndex: 'dongback',
     key: 'dongback',
     align: 'center',
     children: [
       {
-        title:'',
+        title:'외/내층',
         width: 75,
         dataIndex: '',
         key:'',
@@ -860,21 +800,15 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInput
+              <AntdInputFill 
                 value={record.currPrdInfo?.copOut}
-                className="!text-12" 
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
+                className="!text-12" disabled
+                />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInput
+              <AntdInputFill 
                 value={record.currPrdInfo?.copIn}
-                className="!text-12" 
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -883,14 +817,41 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: '도금(㎛)',
+    title: '표면처리',
+    dataIndex: 'surface',
+    width: 60,
+    key: 'surface',
+    align: 'center',
+    children: [
+      {
+        title:'',
+        width: 60,
+        dataIndex: 'surface',
+        key:'surface',
+        align: 'center',
+        render: (value:any, record:any) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdSelectFill
+                options={surfaceSelectList}
+                value={record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
+                className="!text-12" disabled
+              />
+            </div>
+          </div>
+        )
+      }
+    ]
+  },
+  {
+    title: '동도금',
     width: 60,
     dataIndex: 'dogeum',
     key: 'dogeum',
     align: 'center',
     children: [
       {
-        title:'핀 수',
+        title:'',
         width: 60,
         dataIndex: 'pin',
         key:'pin',
@@ -898,30 +859,15 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill
                 value={record.currPrdInfo?.pltThk}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.pinCnt}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -930,7 +876,7 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: '특수도금(㎛)',
+    title: '특수도금',
     width:110,
     dataIndex: 'tDogeum',
     key: 'tDogeum',
@@ -945,35 +891,23 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInput
+              <AntdInputFill 
                 value={record.currPrdInfo?.spPltNi}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
-              <AntdInput
-                value={record.currPrdInfo?.spPltNiAlph}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltAu}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInput
-                value={record.currPrdInfo?.spPltAu}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltNiAlph}
+                className="!text-12" disabled
               />
-              <AntdInput
+              <AntdInputFill 
                 value={record.currPrdInfo?.spPltAuAlph}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -997,27 +931,24 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill 
                 options={smPrintSelectList} 
                 value={record.currPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill 
                 options={smColorSelectList} 
                 value={record.currPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill 
                 options={smTypeSelectList} 
                 value={record.currPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1041,27 +972,24 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill
                 options={mkPrintSelectList}
                 value={record.currPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill
                 options={mkColorSelectList}
                 value={record.currPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill
                 options={mkTypeSelectList}
                 value={record.currPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1077,7 +1005,7 @@ export const salesOrderModelReadClmn = (
     align: 'center',
     children: [
       {
-        title:'',
+        title:'외형가공',
         width: 125,
         dataIndex: '',
         key:'',
@@ -1085,74 +1013,17 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdSelect
+              <AntdSelectFill 
                 options={spPrintSelectList}
                 value={record.currPrdInfo?.spPrint?.id}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdSelect
-                options={spTypeSelectList}
-                value={record.currPrdInfo?.spType?.id}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelect
-                options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
-                value={record.currPrdInfo?.modelTypeEm ?? "sample"}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: '외형가공',
-    width:90,
-    dataIndex: 'out',
-    key: 'out',
-    align: 'center',
-    children: [
-      {
-        title:'브이컷',
-        width:90,
-        dataIndex: 'vcut',
-        key: 'vcut',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelect
-                className='w-[90px]'
+              <AntdSelectFill 
                 options={outSelectList} 
-                value={record.currPrdInfo?.aprType?.id}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelect
-                className='w-[90px]'
-                options={[{value:false,label:'무'},{value:true,label:'유'}]}
-                value={record.currPrdInfo?.vcutYn ?? false}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelect
-                className='w-[90px]'
-                options={vcutSelectList}
-                value={record.currPrdInfo?.vcutType?.id}
-                styles={{fs:'12px', bc:"#0000000F"}}
-                readonly={true}
+                value={record.currPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1161,26 +1032,30 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: '도면번호',
-    width:100,
-    dataIndex: 'doNum',
-    key: 'doNum',
+    title: 'Rev',
+    dataIndex: 'rev',
+    width: 80,
+    key: 'rev',
     align: 'center',
     children: [
       {
-        title:'',
-        width:100,
-        dataIndex: 'doNum',
-        key: 'doNum',
+        title:'도면번호',
+        width: 80,
+        dataIndex: 'user',
+        key:'user',
         align: 'center',
-        render: (_, record) => (
+        render: (value:any, record:any) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill
+                value={record.currPrdInfo?.prdRevNo}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
                 value={record.currPrdInfo?.doNum}
-                className='w-[100px] !text-12'
-                readonly={true}
-                styles={{bc:"#0000000F"}}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1189,112 +1064,30 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: 'PCS',
-    width:50,
+    title: 'PCS SIZE',
+    width:70,
     dataIndex: 'pcs',
     key: 'pcs',
     align: 'center',
     children:[
       {
         title: 'X/Y',
-        width:50,
+        width:70,
         dataIndex: 'pcsSize_xy',
         key: 'pcsSize_xy',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill
                 value={record.currPrdInfo?.pcsL}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInput
+              <AntdInputFill
                 value={record.currPrdInfo?.pcsW}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: 'KIT',
-    width:50,
-    dataIndex: 'kit',
-    key: 'kit',
-    align: 'center',
-    children:[
-      {
-        title: 'X/Y',
-        width:50,
-        dataIndex: 'kitSize_xy',
-        key: 'kitSize_xy',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.kitL}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.kitW}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: 'PNL',
-    width:50,
-    dataIndex: 'pnl',
-    key: 'pnl',
-    align: 'center',
-    children:[
-      {
-        title: 'X/Y',
-        width:50,
-        dataIndex: 'pnlSize_xy',
-        key: 'pnlSize_xy',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.pnlL}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.pnlW}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1304,49 +1097,29 @@ export const salesOrderModelReadClmn = (
   },
   {
     title: '연조KIT',
-    width:55,
+    width:70,
     dataIndex: 'arkit',
     key: 'arkit',
     align: 'center',
     children:[
       {
-        title: '연조PNL',
-        width:100,
+        title: 'X/Y',
+        width:70,
         dataIndex: 'arpnl',
         key: 'arpnl',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+" gap-3"}>
-              <AntdInput
+            <div className={divClass}>
+              <AntdInputFill
                 value={record.currPrdInfo?.ykitL}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-              <AntdInput
-                value={record.currPrdInfo?.ykitW}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+                className="!text-12" disabled
               />
             </div>
-            <div className={divClass+" gap-3"}>
-              <AntdInput
-                value={record.currPrdInfo?.ypnlL}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
-              />
-              <AntdInput
-                value={record.currPrdInfo?.ypnlW}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.ykitW}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1355,14 +1128,84 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: 'KIT/PCS',
+    title: 'KIT SIZE',
+    width:70,
+    dataIndex: 'kit',
+    key: 'kit',
+    align: 'center',
+    children:[
+      {
+        title: 'PCS/KIT',
+        width:70,
+        dataIndex: 'kitSize_xy',
+        key: 'kitSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitL}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitW}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.kitPcs}
+                className="!text-12" disabled
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'PNL SIZE',
+    width:70,
+    dataIndex: 'pnl',
+    key: 'pnl',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:70,
+        dataIndex: 'pnlSize_xy',
+        key: 'pnlSize_xy',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlL}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlW}
+                className="!text-12" disabled
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: 'PNL/KIT',
     width:50,
     dataIndex: 'kitpcs',
     key: 'kitpcs',
     align: 'center',
     children:[
       {
-        title: 'PNL/KIT',
+        title: 'STH',
         width:50,
         dataIndex: 'pnlkit',
         key: 'pnlkit',
@@ -1370,21 +1213,21 @@ export const salesOrderModelReadClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.kitPcs}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdInputFill
+                value={record.currPrdInfo?.pnlKit}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.pnlKit}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdInputFill
+                value={record.currPrdInfo?.sthPnl}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.currPrdInfo?.sthPcs}
+                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1393,36 +1236,31 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: 'STH/PNL',
-    width:50,
-    dataIndex: 'sthpnl',
-    key: 'sthpnl',
+    title: '비고',
+    width:100,
+    dataIndex: 'remarks',
+    key: 'remarks',
     align: 'center',
     children:[
       {
-        title: 'STH/PCS',
-        width:50,
-        dataIndex: 'sthpcs',
-        key: 'sthpcs',
+        title: '승인원 여부',
+        width:100,
+        dataIndex: 'inremarks',
+        key: 'inremarks',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.sthPnl}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdInputFill
+                value={record.currPrdInfo?.remarks}
+                className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInput
-                value={record.currPrdInfo?.sthPcs}
-                className="!text-12"
-                readonly={true}
-                styles={{bc:"#0000000F"}}
-                type="number"
+              <AntdSelectFill 
+                options={[{value:"Y",label:"유"},{value:"N",label:"무"}]}
+                value={record.currPrdInfo?.seungYn ?? "Y"}
+                className="!text-12" disabled
               />
             </div>
           </div>

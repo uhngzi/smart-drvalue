@@ -536,6 +536,7 @@ const SayangModelAddPage: React.FC & {
                         mkTypeSelectList,
                         spPrintSelectList,
                         spTypeSelectList,
+                        surfaceSelectList,
                       )}
                       data={[model]}
                       styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
