@@ -46,7 +46,7 @@ const MOCK = {
     mtItems: {
         tableColumns: [],
         CUDPopItems: [
-            { name:'materialGroupId',label:'원자재그룹', widthType:'full', type:'select', option:[], },
+            { name:'materialGroup.id',label:'원자재그룹', widthType:'full', type:'select', option:[], },
             { name:'mtNm',label:'원자재명', widthType:'full', type:'input'},
             { name:'mtEnm',label:'원자재영문명', widthType:'full', type:'input', inputType:'number', },
             { name:'unitType',label:'단위', widthType:'full', type:'select', option: []},

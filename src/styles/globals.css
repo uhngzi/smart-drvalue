@@ -108,3 +108,15 @@ body {
 .ant-menu-inline-collapsed-tooltip {
   display: none !important;
 }
+
+.custom-radio-group .ant-radio-button-wrapper {
+  border-radius: 0 !important;
+}
+
+.custom-radio-group .ant-radio-button-wrapper-checked {
+  border-color: #038D07 !important;
+}
+
+.custom-radio-group .ant-radio-button-wrapper-checked span {
+  color: #038D07 !important;
+}

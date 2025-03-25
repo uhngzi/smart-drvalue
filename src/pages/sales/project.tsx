@@ -29,6 +29,11 @@ import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
 import useToast from "@/utils/useToast";
 import { projectSchedules, Task } from "@/data/type/base/project";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import { useQuery } from "@tanstack/react-query";
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { getAPI } from "@/api/get";
+import { patchAPI } from "@/api/patch";
+import { projectWorkers } from "@/utils/dummy";
 
 
 
@@ -47,55 +52,112 @@ const ProjcetPage: React.FC & {
   // 인력계획 관련
   const [workerPlanOpen, setWorkerPlanOpen] = useState<boolean>(false);
   const [workerPlan, setWorkerPlan] = useState<{id: string, date: string} | null>(null);
- 
-const tempSchedules = [
-  {
-    process: "설계",
-    task: [
-      { id: "1", name:"도면 설계", color: "#FFD699", from: "2025-03-02", to: "2025-03-04", progColor: "#FFA500"},
-    ],
-  },
-  {
-    process: "성형",
-    task: [
-      { id: "3", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
-      { id: "4", name:"Roll Bending", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
-      { id: "5", name:"Head Forming", color: "#AEEEEE", from: "2025-03-12", to: "2025-03-16", progColor: "#008B8B"},
-      { id: "6", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-16", to: "2025-03-20", progColor: "#008B8B"},
-    ],
-  },
-  {
-    process: "용접",
-    task: [
-      { id: "7", name:"Shell Block Fit-up", color: "#D8BFD8", from: "2025-03-23", to: "2025-03-26", progColor: "#800080"},
-      { id: "8", name:"Internal 용접", color: "#D8BFD8", from: "2025-03-26", to: "2025-03-30", progColor: "#800080"},
-      { id: "9", name:"용접검사", color: "#D8BFD8", from: "2025-03-30", to: "2025-04-03", progColor: "#800080"},
-    ],
-  },
-  {
-    process: "열처리",
-    task: [
-      { id: "10", name:"비파괴검사", color: "#FFB6B6", from: "2025-03-23", to: "2025-03-26", progColor: "#E73E95"},
-      { id: "11", name:"수압검사", color: "#FFB6B6", from: "2025-03-26", to: "2025-03-30", progColor: "#E73E95"},
-    ],
-  },
-  {
-    process: "도장",
-    task: [
-      { id: "12", name:"Blasting", color: "#ADD8E6", from: "2025-03-23", to: "2025-03-26", progColor: "#0055A4"},
-      { id: "13", name:"Final Paint", color: "#ADD8E6", from: "2025-03-26", to: "2025-03-30", progColor: "#0055A4"},
-    ],
-  },
-  {
-    process: "포장",
-    task: [
-      { id: "14", name:"포장", color: "#D3D3D3", from: "2025-03-23", to: "2025-03-26", progColor: "#696969"},
-    ],
-  },
-];
 
-const [schedules, setSchedules] = useState<projectSchedules>(tempSchedules);
-const [workerPlanList, setWorkerPlanList] = useState<any[]>([]);
+  const [schedules, setSchedules] = useState<projectSchedules>([]);
+  const [workerPlanList, setWorkerPlanList] = useState<any[]>([]);
+  const { data:queryData, refetch:pmsRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'worksheet'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: 'pms/proc/default/many/6dc4322f-d40d-43b3-b501-a68712469207'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        let arr = await Promise.all(
+          result.data?.data?.map(async (item: any) => {
+            const tasks = await Promise.all(
+              item.process.map(async (task: any) => {
+                const workerRes = await getAPI({
+                  type: 'core-d3',
+                  utype: 'tenant/',
+                  url: `pms/proc/employee/default/many/${task.id}`,
+                });
+        
+                const workerPlan = workerRes.data?.data?.map((worker: any) => ({
+                  id: worker.id,
+                  empId: worker.emp.id,
+                  name: worker.emp.name,
+                  workPlanStart: worker.wkEmpProcScheInDt,
+                  workPlanEnd: worker.wkEmpProcScheOutDt,
+                }));
+        
+                return {
+                  id: task.id,
+                  name: task.processName,
+                  color: 'lightgray',
+                  from: task.wkProcStDtm,
+                  to: task.wkProcEdDtm,
+                  progColor: 'gray',
+                  progress: task.wkProcPer,
+                  workers: workerPlan,
+                };
+              })
+            );
+        
+            return {
+              process: item.processGroupName,
+              task: tasks, // 여기서 Promise가 풀림
+            };
+          })
+        );
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", arr)
+        setSchedules(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      console.log(result.data);
+      return result;
+    },
+  });
+ 
+// const tempSchedules = [
+//   {
+//     process: "설계",
+//     task: [
+//       { id: "1", name:"도면 설계", color: "#FFD699", from: "2025-03-02", to: "2025-03-04", progColor: "#FFA500"},
+//     ],
+//   },
+//   {
+//     process: "성형",
+//     task: [
+//       { id: "3", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
+//       { id: "4", name:"Roll Bending", color: "#AEEEEE", from: "2025-03-09", to: "2025-03-12", progColor: "#008B8B"},
+//       { id: "5", name:"Head Forming", color: "#AEEEEE", from: "2025-03-12", to: "2025-03-16", progColor: "#008B8B"},
+//       { id: "6", name:"Shell Forming", color: "#AEEEEE", from: "2025-03-16", to: "2025-03-20", progColor: "#008B8B"},
+//     ],
+//   },
+//   {
+//     process: "용접",
+//     task: [
+//       { id: "7", name:"Shell Block Fit-up", color: "#D8BFD8", from: "2025-03-23", to: "2025-03-26", progColor: "#800080"},
+//       { id: "8", name:"Internal 용접", color: "#D8BFD8", from: "2025-03-26", to: "2025-03-30", progColor: "#800080"},
+//       { id: "9", name:"용접검사", color: "#D8BFD8", from: "2025-03-30", to: "2025-04-03", progColor: "#800080"},
+//     ],
+//   },
+//   {
+//     process: "열처리",
+//     task: [
+//       { id: "10", name:"비파괴검사", color: "#FFB6B6", from: "2025-03-23", to: "2025-03-26", progColor: "#E73E95"},
+//       { id: "11", name:"수압검사", color: "#FFB6B6", from: "2025-03-26", to: "2025-03-30", progColor: "#E73E95"},
+//     ],
+//   },
+//   {
+//     process: "도장",
+//     task: [
+//       { id: "12", name:"Blasting", color: "#ADD8E6", from: "2025-03-23", to: "2025-03-26", progColor: "#0055A4"},
+//       { id: "13", name:"Final Paint", color: "#ADD8E6", from: "2025-03-26", to: "2025-03-30", progColor: "#0055A4"},
+//     ],
+//   },
+//   {
+//     process: "포장",
+//     task: [
+//       { id: "14", name:"포장", color: "#D3D3D3", from: "2025-03-23", to: "2025-03-26", progColor: "#696969"},
+//     ],
+//   },
+// ];
+
 
 function addPopWorkers(data: any) {
   if(workerPlanList.find((item) => item.id === data.id)) {
@@ -106,38 +168,91 @@ function addPopWorkers(data: any) {
 }
 
 
-function changeDate(date: any, id: string, type: string) {
-  const newDate = dayjs(date).format('YYYY-MM-DD')
-  if(type === "from") {
-    const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
-    if (to && dayjs(newDate).isAfter(dayjs(to))) {
-      showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
-      return;
+  async function changeDate(date: any, id: string, type: string, otherDate: any) {
+    const newDate = dayjs(date).format('YYYY-MM-DD')
+    otherDate = otherDate ? dayjs(otherDate).format('YYYY-MM-DD') : newDate;
+    let data = {}
+    if(type === "from") {
+      data = {startDate: newDate, endDate: otherDate}
+      const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
+      if (to && dayjs(newDate).isAfter(dayjs(to))) {
+        showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
+        return;
+      }
+    } else {
+      data = {startDate: otherDate, endDate: newDate}
+      const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
+      if (from && dayjs(newDate).isBefore(dayjs(from))) {
+        showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
+        return;
+      }
     }
-  } else {
-    const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
-    if (from && dayjs(newDate).isBefore(dayjs(from))) {
-      showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
-      return;
+
+    // const newSchedules = schedules.map(process => {
+    //   return {
+    //     ...process,
+    //     task: process.task.map(task => {
+    //       if (task.id === id) {
+    //         return { ...task, [type]: newDate }; 
+    //       }
+    //       return task;
+    //     }),
+    //   };
+    // });
+    
+    // setSchedules(newSchedules);
+    const result = await patchAPI({
+      type: 'core-d3', 
+      utype: 'tenant/',
+      jsx: 'default',
+      url: `pms/proc/default/update-date/${id}`,
+      etc: true,
+    },id, data);
+    console.log(result);
+
+    if(result.resultCode === 'OK_0000') {
+      pmsRefetch();
+    } else {
     }
+
   }
 
-  const newSchedules = schedules.map(process => {
-    return {
-      ...process,
-      task: process.task.map(task => {
-        if (task.id === id) {
-          return { ...task, [type]: newDate }; 
+  async function addWorkerPlan(workerPlanList: any[]) {
+    console.log(workerPlanList)
+    const { withId, withoutId } = workerPlanList.reduce(
+      (acc, item) => {
+        if (item.id !== undefined) {
+          acc.withId.push(item);
+        } else {
+          acc.withoutId.push(item);
         }
-        return task;
-      }),
-    };
-  });
-  
-  setSchedules(newSchedules);
-
-}
-  console.log(schedules);
+        return acc;
+      },
+      { withId: [], withoutId: [] }
+    );
+    
+    // const data = workerPlanList.map((worker) => {
+    //   return {
+    //     empIdx: worker.id,
+    //     workPlanStart: worker.workPlanStart,
+    //     workPlanEnd: worker.workPlanEnd,
+    //   }
+    // });
+    // console.log(data);
+    // const result = await patchAPI({
+    //   type: 'core-d3', 
+    //   utype: 'tenant/',
+    //   jsx: 'default',
+    //   url: `pms/proc/default/update-worker-plan`,
+    //   etc: true,
+    // },'1', data);
+    // console.log(result);
+    // if(result.resultCode === 'OK_0000') {
+    //   pmsRefetch();
+    // } else {
+    // }
+  }
+  console.log(workerPlanList);
   return(
     <section className="flex flex-col w-full h-full">
       <p className="font-medium px-20 h-40">{"다이나모터 지지구조물2  >  Guide vane actuator console 1 welded"}</p>
@@ -205,7 +320,7 @@ function changeDate(date: any, id: string, type: string) {
                                 key: 2,
                                 onClick:()=>{
                                   setWorkerPlanList(task?.workers || []);
-                                  setWorkerPlan({id: task.id, date: `${schedule.process} > ${task.name}(${task.from} ~ ${task.to})`});
+                                  setWorkerPlan({id: task.id, date: `${schedule.process} > ${task.name}(${dayjs(task.from).format("YYYY-MM-DD")} ~ ${dayjs(task.to).format("YYYY-MM-DD")})`});
                                   setWorkerPlanOpen(true);
                                   }
                               },
@@ -220,11 +335,11 @@ function changeDate(date: any, id: string, type: string) {
                           <div className="flex items-center gap-5">
                             <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                               value={dayjs(task.from).isValid() ? dayjs(task.from) : null} 
-                              onChange={(date) => changeDate(date, task.id, "from")} />
+                              onChange={(date) => changeDate(date, task.id, "from", task.to)} />
                             <p className="w-32 flex justify-center"><RightArrow/></p>
                             <CustomDatePicker size="small" suffixIcon={<Calendar/>} allowClear={false} 
                               value={dayjs(task.to).isValid() ? dayjs(task.to) : null} 
-                              onChange={(date) => changeDate(date, task.id, "to")} />
+                              onChange={(date) => changeDate(date, task.id, "to", task.from)} />
                           </div>
                         </td>
                         
@@ -318,66 +433,69 @@ function changeDate(date: any, id: string, type: string) {
                   showToast("투입일과 종료일을 선택해주세요.", "error");
                   return;
                 }
-                setSchedules(schedules.map(process => ({
-                  ...process,
-                  task: process.task.map(task => {
-                    if (task.id === workerPlan?.id) {
-                      return { ...task, workers: workerPlanList };
-                    }
-                    return task;
-                  }),
-                })));
-                showToast("인력투입 계획이 생성되었습니다.", "success");
-                setWorkerPlanOpen(false);
+                addWorkerPlan(workerPlanList);
+                // setSchedules(schedules.map(process => ({
+                //   ...process,
+                //   task: process.task.map(task => {
+                //     if (task.id === workerPlan?.id) {
+                //       return { ...task, workers: workerPlanList };
+                //     }
+                //     return task;
+                //   }),
+                // })));
+                // showToast("인력투입 계획이 생성되었습니다.", "success");
+                // setWorkerPlanOpen(false);
               }}>
               <Arrow />등록
             </Button>
             }
             >
-              {workerPlanList.length > 0 && workerPlanList.map((worker, index) => (
-
-                <div className="flex gap-10 items-center" id={worker.id} key={index}>
-                  <div className="w-33 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{worker?.special}</div>
-                  <span className="w-40 text-center">{worker.name}</span>
-                  <span className="w-54 text-center">{worker.age}세</span>
-                  <span className="w-54 text-center">{worker?.career}년</span>
-                  <span className="w-[128px] text-center">{worker?.tel}</span>
-                  <div className="flex items-center gap-3 w-[240px] py-5 px-2 border border-[#D9D9D9]">
-                    <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
-                      value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
-                      onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
-                    <p className="w-32 flex justify-center"><RightArrow/></p>
-                    <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={<Calendar/>} allowClear={false} 
-                      value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
-                      onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.id === worker.id ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
+              {workerPlanList.length > 0 && workerPlanList.map((worker, index) => {
+                const workerData = projectWorkers.find((item) => item.empId === worker.empId);
+                return (
+                  <div className="flex gap-10 items-center" id={workerData?.empId} key={index}>
+                    <div className="w-33 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{workerData?.special}</div>
+                    <span className="w-40 text-center">{workerData?.name}</span>
+                    <span className="w-54 text-center">{workerData?.age}세</span>
+                    <span className="w-54 text-center">{workerData?.career}년</span>
+                    <span className="w-[128px] text-center">{workerData?.tel}</span>
+                    <div className="flex items-center gap-3 w-[240px] py-5 px-2 border border-[#D9D9D9]">
+                      <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
+                        value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
+                        onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
+                      <p className="w-32 flex justify-center"><RightArrow/></p>
+                      <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={<Calendar/>} allowClear={false} 
+                        value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
+                        onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
+                    </div>
+                    <Dropdown trigger={["click"]} menu={{ items:[
+                      {
+                        label: <div className="h-center gap-5">
+                                  <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
+                                </div>,
+                        key: 0,
+                        onClick:()=>{}
+                      },
+                      {
+                        label: <div className="h-center gap-5">
+                                  <p className="w-16 h-16"><Trash /></p>삭제
+                                </div>,
+                        key: 1,
+                        onClick:()=> setWorkerPlanList((prev:any[]) => prev.filter((item) => item?.empId !== worker.empId))
+                      },
+                    ]}}>
+                      <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
+                        <p className="w-16 h-16"><Edit/></p>
+                      </Button>
+                    </Dropdown>
                   </div>
-                  <Dropdown trigger={["click"]} menu={{ items:[
-                    {
-                      label: <div className="h-center gap-5">
-                                <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
-                              </div>,
-                      key: 0,
-                      onClick:()=>{}
-                    },
-                    {
-                      label: <div className="h-center gap-5">
-                                <p className="w-16 h-16"><Trash /></p>삭제
-                              </div>,
-                      key: 1,
-                      onClick:()=> setWorkerPlanList((prev:any[]) => prev.filter((item) => item?.id !== worker.id))
-                    },
-                  ]}}>
-                    <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
-                      <p className="w-16 h-16"><Edit/></p>
-                    </Button>
-                  </Dropdown>
-                </div>
-              ))}
+                )
+              })}
             </CardInputList>
             <AntdTableEdit
               columns={[
-                { title: '', width:50, dataIndex: 'id', key: 'id', align: 'center', 
-                  render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => item.id === record.id) ? true : false} onChange={()=>addPopWorkers(record)} />)
+                { title: '', width:50, dataIndex: 'empId', key: 'empId', align: 'center', 
+                  render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => item.empId === record.empId) ? true : false} onChange={()=>addPopWorkers(record)} />)
                 },
                 { title: '전문분야', width:84, dataIndex: 'special', key: 'special', align: 'center' },
                 { title: '이름', width:75, dataIndex: 'name', key: 'name', align: 'center'},
@@ -385,11 +503,7 @@ function changeDate(date: any, id: string, type: string) {
                 { title: '전화번호', width:120, dataIndex: 'tel', key: 'tel', align: 'center'},
                 { title: '특이사항', width:250, dataIndex: 'remark', key: 'remark'},
               ]}
-              data={[
-                {id: "1", special: "용접", name: "홍길동" , age:"30", career: "20", tel: "010-1234-1234", remark: "특이사항"},
-                {id: "2", special: "용접", name: "김아무개", age:"30", career: "10", tel: "010-1234-1445", remark: "특이사항"}, 
-                {id: "3", special: "용접", name: "박아무개", age:"30", career: "5", tel: "010-1254-6234", remark: "특이사항"},
-              ]}
+              data={projectWorkers}
               styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px'}}
             />
         </section>

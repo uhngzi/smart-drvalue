@@ -6,7 +6,7 @@ import CardInputList from "@/components/List/CardInputList";
 import AntdModal from "@/components/Modal/AntdModal";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { boardReq, boardType, newDataBoardType, setDataBoardType } from "@/data/type/base/board";
+import { BoardGroupType, boardReq, boardType, newDataBoardType, setDataBoardType } from "@/data/type/base/board";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
@@ -18,6 +18,9 @@ import Bag from "@/assets/svg/icons/bag.svg";
 import { MOCK } from "@/utils/Mock";
 import { deleteAPI } from "@/api/delete";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
+import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
+import { CUtreeType, treeType } from "@/data/type/componentStyles";
+import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
 
 const WkBoardListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -209,19 +212,105 @@ const WkBoardListPage: React.FC & {
     setAddOpen(false);
     setAddData(newDataBoardType);
   }
+
+  // ---------- 트리 관련 시작 ----------
+  const [ bdGroupOpen, setBdGroupOpen ] = useState<boolean>(false);
+  const [ boardGroupTreeData, setBoardGroupTreeData ] = useState<any>([]);
+
+  // 트리를 사용하는 메뉴인 경우, 추가, 수정, 삭제를 하기위한 리스트, 한번에 submit을 하기때문에 각각의 리스트를 만들어서 한번에 처리
+  const [addList, setAddList] = useState<CUtreeType[]>([]);
+  const [editList, setEditList] = useState<CUtreeType[]>([]);
+  const [deleteList, setDeleteList] = useState<{type: string, id: string}[]>([])
+
+  const { refetch: groupRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['board-group/jsxcrud/many'],
+    queryFn: async () => {
+
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'board-group/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data ?? []).map((d:BoardGroupType)=>({
+          id: d.id,
+          label: d.brdGrpName,
+          odNum: d.ordNo,
+          useYn: d.useYn,
+          open: true
+        }))
+        setBoardGroupTreeData(arr);
+
+        const addList = (result.data?.data ?? []).map((d:BoardGroupType) => ({
+          value: d.id,
+          label: d.brdGrpName,
+        }))
+        console.log(addList)
+        // setAddModalInfoList((prev:any) => prev.map((d:any) => d.name === 'materialGroup.id' ? {...d, option: addList} : d));
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+
+  async function onBoardGroupPopSubmit(list: treeType[]){
+    const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
+    console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
+    let result = false
+    const url = "board-group";
+    
+    console.log(updatedAddList)
+    for(const item of updatedAddList){
+      const jsonData = {brdGrpName: item.label, ordNo: 1, useYn:true};
+
+      result = await onTreeAdd(url, jsonData);
+
+      if(!result) {
+        showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+      }
+      console.log("add", result)
+    }
+
+    for(const item of finalEditList){
+      const jsonData = {brdGrpName: item.label};
+        
+      result = await onTreeEdit(item, url, jsonData);
+      if(!result){
+        showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+      }
+    }
+    
+    for(const item of updatedDeleteList){
+      result = await onTreeDelete(item, url);
+
+      if(!result){
+        showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+      }
+    }
+    console.log(result);
+    if(result) {
+      setAddList([]);
+      setEditList([]);
+      setDeleteList([]);
+      showToast('저장이 완료되었습니다.', 'success');
+      groupRefetch();
+    }
+  }
+  // ---------- 트리 관련 끝 ----------
   
   return (
     <>
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="h-center justify-between">
+        <div className="h-center justify-between pb-10">
           <p>총 {totalData}건</p>
-          <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-            onClick={()=>setAddOpen(true)}
-          >
-            등록
+
+          <div className="flex gap-10">
+            <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setBdGroupOpen(true)}}>원판 그룹 관리</div>
+            <div className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setAddOpen(true)}}>등록</div>
           </div>
         </div>
         
@@ -290,32 +379,24 @@ const WkBoardListPage: React.FC & {
         data={addData}
         onSubmit={handleSubmit}
         onDelete={handleDataDelete}/>
-      {/* <AntdModal
-        title="원판 등록"
-        width={500}
-        open={addOpen}
-        setOpen={setAddOpen}
-        bgColor="#fff"
-        contents={
-          <div>
-            <CardInputList title="" styles={{gap:'gap-20'}} items={[
-              {value:addData?.brdType, name:'brdType',label:'원판유형', type:'input', widthType:'full'},
-              {value:addData?.brdDesc, name:'brdDesc',label:'원판명', type:'input', widthType:'full'},
-              {value:addData?.brdW, name:'brdW',label:'가로', type:'input', widthType:'full'},
-              {value:addData?.brdH, name:'brdH',label:'세로', type:'input', widthType:'full'},
-              {value:addData?.brdExtraInfo, name:'brdExtraInfo',label:'추가정보', type:'input', widthType:'full'},
-                
-            ]} handleDataChange={changeNewData}/>
-            <div className="h-[50px] mx-10">
-              <Button type="primary" size="large" onClick={regBoard} 
-                className="w-full flex h-center gap-8 !h-full" 
-                style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
-                <span>등록</span>
-              </Button>
-            </div>
-          </div>
-        }
-      /> */}
+
+      <BaseTreeCUDModal
+        title={{name: `원판 그룹 관리`}}
+        open={bdGroupOpen} 
+        setOpen={setBdGroupOpen} 
+        data={boardGroupTreeData}
+        isChild={false}
+        onClose={() => setBdGroupOpen(false)}
+        onSubmit={onBoardGroupPopSubmit}
+        onUpdateDataFunc={{
+          addList: addList,
+          editList: editList,
+          deleteList: deleteList,
+          setAddList: setAddList,
+          setEditList: setEditList,
+          setDeleteList: setDeleteList,
+        }}
+      />
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
