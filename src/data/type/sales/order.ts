@@ -240,8 +240,8 @@ export const newDataSalesOrderProductCUType = ():salesOrderProcuctCUType => {
 // 고객발주 내 모델 필수값 필드
 export const salesOrderProcuctReq = () => {
   return [
-    { field : 'orderTit', label: '수주 모델명' },
-    { field : 'prtOrderNo', label: '고객측 관리번호' },
+    { field : 'orderTit', label: '모델명' },
+    // { field : 'prtOrderNo', label: '고객측 관리번호' },
     { field : 'modelStatus', label: '모델 상태' },
     { field : 'orderPrdCnt', label: '모델 수량' },
     { field : 'orderPrdPrice', label: '모델 수주 금액' },
