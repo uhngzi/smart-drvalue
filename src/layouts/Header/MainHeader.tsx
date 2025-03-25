@@ -17,10 +17,10 @@ const MainHeader: React.FC<Props> = ({ title }) => {
       </p>
       <div className="flex">
         <div className="v-h-center rounded-50 bg-back m-5 w-50 h-50">
-          <Setting stroke="#718EBF" className="w-30 h-30"/>
+          <p className="text-[#718EBF] w-30 h-30"><Setting stroke="#718EBF" className="w-30 h-30"/></p>
         </div>
         <div className="v-h-center rounded-50 bg-back m-5 w-50 h-50">
-          <Bell fill="#FE5C73" className="w-27 h-30"/>
+          <p className="text-[#FE5C73] w-27 h-30"><Bell fill="#FE5C73" className="w-27 h-30"/></p>
         </div>
         <div className="v-h-center rounded-50 bg-back m-5 w-50 h-50 text-18">
           길동
