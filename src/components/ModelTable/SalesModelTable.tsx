@@ -60,6 +60,7 @@ const SalesModelTable:React.FC<Props> = ({
     mkTypeSelectList,
     spPrintSelectList,
     spTypeSelectList,
+    surfaceSelectList,
   } = useBase();
 
   // 테이블에서 값 변경했을 때 실행되는 함수 (모델의 값 변경 시 실행 함수)
@@ -220,7 +221,7 @@ const SalesModelTable:React.FC<Props> = ({
       return (
         <div
           key={model.id}
-          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 min-w-[1700px]"
+          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 min-w-[1820px]"
         >
           <SalesModelHead
             model={model}
@@ -250,6 +251,7 @@ const SalesModelTable:React.FC<Props> = ({
                 mkTypeSelectList,
                 spPrintSelectList,
                 spTypeSelectList,
+                surfaceSelectList,
                 handleModelDataChange,
                 newFlag,
                 selectId,
