@@ -216,6 +216,7 @@ export type salesOrderProcuctCUType = {
   disabled?: boolean;
   index?: number;
   completed?: boolean;
+  prdMngNo?: string;
 }
 
 // 고객발주 내 모델 초기값 생성
