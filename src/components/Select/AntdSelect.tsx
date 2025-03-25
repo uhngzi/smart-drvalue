@@ -17,6 +17,7 @@ interface Props {
   readonly?: boolean,
   tabIndex?: number;
   placeholder?: string;
+  dropWidth?: string;
 }
 
 const AntdSelect : React.FC<Props> = ({ 
@@ -32,6 +33,7 @@ const AntdSelect : React.FC<Props> = ({
   readonly,
   tabIndex,
   placeholder,
+  dropWidth,
 }) => {
 
   return (
@@ -53,7 +55,7 @@ const AntdSelect : React.FC<Props> = ({
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
         onKeyDown={onKeyDown}
-        dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        dropdownStyle={dropWidth ? { minWidth: "max-content", width: dropWidth } : { minWidth: "max-content" }}
         tabIndex={tabIndex}
         placeholder={placeholder}
       />
