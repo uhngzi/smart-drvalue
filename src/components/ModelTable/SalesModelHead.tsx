@@ -74,7 +74,7 @@ interface Props {
   index?: number;
   handleDelete?: (model:salesOrderProcuctCUType) => void;
   handleEdit?: (model:salesOrderProcuctCUType) => void;
-  handleModelChange: (model:modelsType, id:string) => void;
+  handleModelChange?: (model:modelsType, id:string) => void;
 }
 
 const SalesModelHead:React.FC<Props> = ({
@@ -229,7 +229,7 @@ const SalesModelHead:React.FC<Props> = ({
                 const m = modelList.find(f=>f.id === value);
                 if(m && model.id) {
                   setModelNo(m.prdMngNo);
-                  handleModelChange(m, model.id);
+                  handleModelChange?.(m, model.id);
                 }
                 if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
                   setMatchFlag(true);
@@ -263,7 +263,7 @@ const SalesModelHead:React.FC<Props> = ({
                 const m = modelList.find(f=>f.id === value);
                 if(m && model.id) {
                   setModelNm(m?.prdNm ?? "");
-                  handleModelChange(m, model.id);
+                  handleModelChange?.(m, model.id);
                 }
                 if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
                   setMatchFlag(true);

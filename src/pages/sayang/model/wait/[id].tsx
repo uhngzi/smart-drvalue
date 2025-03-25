@@ -516,7 +516,7 @@ const SayangModelAddPage: React.FC & {
                       read={true}
                       model={model}
                       handleModelDataChange={handleModelDataChange}
-                      boardSelectList={boardSelectList}
+                      // boardSelectList={boardSelectList}
                       metarialSelectList={metarialSelectList}
                       selectId={selectId ?? ""}
                       newFlag={newFlag}
