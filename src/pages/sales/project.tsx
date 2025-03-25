@@ -33,7 +33,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
 import { patchAPI } from "@/api/patch";
-import { projectWorkers } from "@/utils/dummy";
+import { postAPI } from "@/api/post";
+import { deleteAPI } from "@/api/delete";
 
 
 
@@ -52,6 +53,33 @@ const ProjcetPage: React.FC & {
   // 인력계획 관련
   const [workerPlanOpen, setWorkerPlanOpen] = useState<boolean>(false);
   const [workerPlan, setWorkerPlan] = useState<{id: string, date: string} | null>(null);
+  const [projectWorkers, setProjectWorkers] = useState<any[]>([]);
+
+  const { isLoading: usersLoading } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['auth', 'tenant', 'user'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'auth',
+        utype: 'tenant/',
+        url: `user/jsxcrud/many`,
+      },{
+        s_query: {"detail.team.teamNm": { "$eq": "생산팀" }}
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = result.data?.data?.map((item: any) => ({
+          empId: item.id,
+          name: item.name,
+          special: item.detail.empTit
+        }));
+        setProjectWorkers([{empId: "1", special: "용접", name: "test" , age:"30", career: "20", tel: "010-1234-1234", remark: "특이사항"}, ...arr])
+      } else {
+        console.log('error:', result.response);
+      }
+
+      return result;
+    },
+  });
 
   const [schedules, setSchedules] = useState<projectSchedules>([]);
   const [workerPlanList, setWorkerPlanList] = useState<any[]>([]);
@@ -90,7 +118,8 @@ const ProjcetPage: React.FC & {
                   from: task.wkProcStDtm,
                   to: task.wkProcEdDtm,
                   progColor: 'gray',
-                  progress: task.wkProcPer,
+                  progTo: task.wkProcLastWorkDt,
+                  progress: (task.wkProcPer*100).toFixed(0),
                   workers: workerPlan,
                 };
               })
@@ -217,8 +246,7 @@ function addPopWorkers(data: any) {
 
   }
 
-  async function addWorkerPlan(workerPlanList: any[]) {
-    console.log(workerPlanList)
+  async function addWorkerPlan(workerPlanList: any[], procId: string | undefined) {
     const { withId, withoutId } = workerPlanList.reduce(
       (acc, item) => {
         if (item.id !== undefined) {
@@ -230,27 +258,78 @@ function addPopWorkers(data: any) {
       },
       { withId: [], withoutId: [] }
     );
-    
-    // const data = workerPlanList.map((worker) => {
-    //   return {
-    //     empIdx: worker.id,
-    //     workPlanStart: worker.workPlanStart,
-    //     workPlanEnd: worker.workPlanEnd,
-    //   }
-    // });
-    // console.log(data);
-    // const result = await patchAPI({
-    //   type: 'core-d3', 
-    //   utype: 'tenant/',
-    //   jsx: 'default',
-    //   url: `pms/proc/default/update-worker-plan`,
-    //   etc: true,
-    // },'1', data);
-    // console.log(result);
-    // if(result.resultCode === 'OK_0000') {
-    //   pmsRefetch();
-    // } else {
-    // }
+    console.log(withId, withoutId)
+
+    let flag = false
+    for(const item of withId.filter((f:any) => !f?.delYn)) {
+      const data = {
+        wkEmpProcScheInDt: item.workPlanStart,
+        wkEmpProcScheOutDt: item.workPlanEnd,
+      };
+      const result = await patchAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `pms/proc/employee/schedule/default/update/${procId}/${item.id}`,
+        etc: true,
+      },'', data);
+      console.log(result);
+      if(result.resultCode === 'OK_0000') {
+        flag = true
+      } else {
+        showToast("인력계획 수정중 문제가 발생했습니다..", "error");
+        flag = false;
+        return;
+      }
+    }
+    if(withoutId.length > 0){
+      const data = withoutId.map((item: any) => ({
+        empIdx: item.empId,
+        wkEmpProcScheInDt: item.workPlanStart,
+        wkEmpProcScheOutDt: item.workPlanEnd,
+      }));
+      const result = await postAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `pms/proc/employee/schedule/default/create/${procId}`,
+        etc: true,
+      }, {scheduleList: data});
+      console.log(result);
+      if(result.resultCode === 'OK_0000') {
+        flag = true
+      } else {
+        showToast("인력계획 등록중 문제가 발생했습니다..", "error");
+        flag = false
+        return;
+      }
+    }
+
+    for(const item of withId.filter((f:any) => f?.delYn)) {
+      const result = await deleteAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `pms/proc/employee/schedule/default/update/${procId}/${item.id}`,
+        etc: true,
+      },'');
+      console.log(result);
+      if(result.resultCode === 'OK_0000') {
+        flag = true
+      } else {
+        showToast("인력계획 삭제중 문제가 발생했습니다..", "error");
+        flag = false;
+        return;
+      }
+    }
+
+
+    if(flag) {
+      showToast("인력계획이 저장되었습니다.", "success");
+      setWorkerPlanOpen(false)
+      pmsRefetch();
+    }
+      
   }
   console.log(workerPlanList);
   return(
@@ -416,7 +495,8 @@ function addPopWorkers(data: any) {
         selectId={selectId}
         schedules={schedules} 
         setSchedules={setSchedules} 
-        close={()=>{setSelectId(null), setProcessOpen(false)}} 
+        refetch={pmsRefetch}
+        close={()=>{setSelectId(null), setProcessOpen(false), pmsRefetch()}} 
       />
       <AntdDrawer open={workerPlanOpen} close={()=>{setWorkerPlanList([]); setWorkerPlanOpen(false)}} width={720}>
         <section className="p-20 flex flex-col gap-20">
@@ -433,7 +513,7 @@ function addPopWorkers(data: any) {
                   showToast("투입일과 종료일을 선택해주세요.", "error");
                   return;
                 }
-                addWorkerPlan(workerPlanList);
+                addWorkerPlan(workerPlanList, workerPlan?.id);
                 // setSchedules(schedules.map(process => ({
                 //   ...process,
                 //   task: process.task.map(task => {
@@ -450,7 +530,7 @@ function addPopWorkers(data: any) {
             </Button>
             }
             >
-              {workerPlanList.length > 0 && workerPlanList.map((worker, index) => {
+              {workerPlanList.length > 0 && workerPlanList.filter(filter => !filter.delYn).map((worker, index) => {
                 const workerData = projectWorkers.find((item) => item.empId === worker.empId);
                 return (
                   <div className="flex gap-10 items-center" id={workerData?.empId} key={index}>
@@ -481,7 +561,7 @@ function addPopWorkers(data: any) {
                                   <p className="w-16 h-16"><Trash /></p>삭제
                                 </div>,
                         key: 1,
-                        onClick:()=> setWorkerPlanList((prev:any[]) => prev.filter((item) => item?.empId !== worker.empId))
+                        onClick:()=> setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId !== worker.empId ? item : {...item, delYn: true}))
                       },
                     ]}}>
                       <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
