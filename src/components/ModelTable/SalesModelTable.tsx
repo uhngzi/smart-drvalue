@@ -1,4 +1,4 @@
-import { RefObject, SetStateAction, useRef, useState } from "react";
+import { RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import { Button, InputRef, Switch } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { patchAPI } from "@/api/patch";
@@ -17,6 +17,7 @@ import AntdInput from "../Input/AntdInput";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import { PlusOutlined } from "@ant-design/icons";
 import { LabelThin } from "../Text/Label";
+import { modelsType } from "@/data/type/sayang/models";
 
 interface LogEntry {
   date: Date | Dayjs | null;
@@ -98,6 +99,25 @@ const SalesModelTable:React.FC<Props> = ({
 
     setData(updatedData); // 상태 업데이트
   }; 
+
+  // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
+  const handleModelChange = (
+    model: modelsType,
+    productId: string,
+  ) => {
+    const newData = [...data];
+    const index = newData.findIndex(f => f.id === productId);
+    if(index > -1) {
+      newData[index] = {
+        ...newData[index],
+        currPrdInfo: { ...model },
+        orderTit: model.prdNm,
+        modelId: model.id,
+      };
+      setData(newData);
+      console.log(newData);
+    }
+  }
 
   const handleDelete = (model:salesOrderProcuctCUType) => {
     if(model?.id?.includes("new")) {
@@ -206,6 +226,10 @@ const SalesModelTable:React.FC<Props> = ({
     }
   };
 
+  useEffect(()=>{
+    console.log(data)
+  }, [data])
+
   return (
     <div className="gap-40 flex flex-col overflow-auto">
     { data.length > 0 && data
@@ -226,13 +250,14 @@ const SalesModelTable:React.FC<Props> = ({
           <SalesModelHead
             model={model}
             handleModelDataChange={handleModelDataChange}
-            boardSelectList={boardSelectList}
+            // boardSelectList={boardSelectList}
             metarialSelectList={metarialSelectList}
             selectId={selectId}
             newFlag={newFlag}
             inputRef={inputRef}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
+            handleModelChange={handleModelChange}
           />
           <div className="flex flex-col ">
             <AntdTable

@@ -1,4 +1,4 @@
-import { Checkbox, Dropdown, InputRef, Space } from "antd";
+import { Checkbox, Dropdown, InputRef, Space, Tooltip } from "antd";
 import { RefObject, useEffect, useState } from "react";
 import dayjs from "dayjs";
 
@@ -15,10 +15,11 @@ import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import CustomAutoComplete from "../AutoComplete/CustomAutoComplete";
 import { useQuery } from "@tanstack/react-query";
-import { apiAuthResponseType } from "@/data/type/apiResponse";
+import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
 import { modelsType } from "@/data/type/sayang/models";
 import { getAPI } from "@/api/get";
 import CustomAutoCompleteModel from "../AutoComplete/CustomAutoCompleteLabel";
+import { BoardGroupType, boardType } from "@/data/type/base/board";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center">{label}</p>
@@ -67,12 +68,13 @@ interface Props {
   handleModelDataChange: (id: string, name: string, value: any) => void;
   selectId: string | null;
   newFlag: boolean;
-  boardSelectList: selectType[];
+  // boardSelectList: selectType[];
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
   handleDelete?: (model:salesOrderProcuctCUType) => void;
   handleEdit?: (model:salesOrderProcuctCUType) => void;
+  handleModelChange: (model:modelsType, id:string) => void;
 }
 
 const SalesModelHead:React.FC<Props> = ({
@@ -81,19 +83,58 @@ const SalesModelHead:React.FC<Props> = ({
   handleModelDataChange,
   selectId,
   newFlag,
-  boardSelectList,
+  // boardSelectList,
   metarialSelectList,
   inputRef,
   handleDelete,
   handleEdit,
+  handleModelChange,
 }) => {
-  const [modelNm, setModelNm] = useState<string>("");
-  const [modelNo, setModelNo] = useState<string>("");
+  // ------------ 원판그룹(제조사) ------------ 시작
+  const [boardSelectList, setBoardSelectList] = useState<selectType[]>([]);
+  const [boardGroupSelectList, setBoardGroupSelectList] = useState<selectType[]>([]);
+  const [boardGroup, setBoardGroup] = useState<BoardGroupType[]>([]);
+  const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["board"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'board-group/jsxcrud/many'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const bg = (result.data?.data ?? []) as BoardGroupType[];
+        const arr = bg.map((d:BoardGroupType) => ({
+          value: d.id,
+          label: d.brdGrpName,
+        }))
+        setBoardGroup(bg);
+        setBoardGroupSelectList(arr);
+        if(bg.length > 0 && bg[0].boards && bg[0].boards?.length > 0) {
+          setBoardSelectList(bg[0].boards.map((item:boardType)=>({
+            value: item.id,
+            label: item.brdType
+          })))
+        }
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
+  // ------------ 원판그룹(제조사) ------------ 끝
+
+  const [matchFlag, setMatchFlag] = useState<boolean>(false);
+  const [flag, setFlag] = useState<boolean>(true);
+  const [modelNm, setModelNm] = useState<string>(model?.orderTit ?? "");
+  const [modelNo, setModelNo] = useState<string>(model?.prdMngNo ?? "");
 
   const [modelList, setModelList] = useState<modelsType[]>([]);
   const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
+  const [modelNoSelectList, setModelNoSelectList] = useState<selectType[]>([]);
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["models", modelNm],
+    queryKey: ["models", modelNm, modelNo],
     queryFn: async () => {
       const result = await getAPI({
         type: "core-d1",
@@ -101,8 +142,8 @@ const SalesModelHead:React.FC<Props> = ({
         url: "models/jsxcrud/many"
       },{
         s_query: { "$or": [
-          modelNm.length > 0 ? { "prdNm": {"$startsL": modelNm}} : {},
-          modelNo.length > 0 ? { "prdMngNo": {"$startsL": modelNo}} : {},
+          modelNm.length > 0 ? {"prdNm": {"$startsL": modelNm}} : {},
+          modelNo.length > 0 ? {"prdMngNo": {"$startsL": modelNo}} : {},
         ]}
       });
 
@@ -113,18 +154,17 @@ const SalesModelHead:React.FC<Props> = ({
           value: item.id,
           label: item.prdNm,
         })));
-        console.log(arr);
+        setModelNoSelectList(arr.map((item) => ({
+          value: item.id,
+          label: item.prdMngNo,
+        })));
       } else {
         console.log("MODELS ERROR:", result.response);
       }
       return result;
     },
-    enabled: modelNm.length > 1
+    enabled: (flag && (modelNm.length > 2 || modelNo.length > 2))
   });
-
-  useEffect(()=>{
-      console.log('no :', modelNo, 'nm:', modelNm);
-  }, [modelNm, modelNo])
 
   return (
     <div className="w-full min-h-60 h-center gap-15">
@@ -132,28 +172,40 @@ const SalesModelHead:React.FC<Props> = ({
         <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
       }
       
-      <AntdSelect
-        options={[
-          {value:ModelStatus.NEW,label:'신규'},
-          {value:ModelStatus.REPEAT,label:'반복'},
-          {value:ModelStatus.MODIFY,label:'수정'},
-        ]}
-        value={model.modelStatus}
-        onChange={(e)=>{
-          handleModelDataChange(model.id ?? '', 'modelStatus', e);
-        }}
-        styles={selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT ?
-          {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
-          {ht:'32px', bw:'0', pd:'0'}
-        } className="!min-w-55"
-        disabled={model.completed}
-        readonly={read}
-      />
+      <Tooltip title={matchFlag&&!read?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
+      <div>
+        <AntdSelect
+          options={[
+            {value:ModelStatus.NEW,label:'신규'},
+            {value:ModelStatus.REPEAT,label:'반복'},
+            {value:ModelStatus.MODIFY,label:'수정'},
+          ]}
+          value={model.modelStatus}
+          onChange={(e)=>{
+            if(matchFlag && e+"" !== ModelStatus.NEW) {
+              setMatchFlag(false);
+            }
+            handleModelDataChange(model.id ?? '', 'modelStatus', e);
+          }}
+          styles={(selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT) || matchFlag ?
+            {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+            {ht:'32px', bw:'0', pd:'0'}
+          } className="!min-w-55"
+          disabled={model.completed}
+          readonly={read}
+        />
+      </div>
+      </Tooltip>
       
       <div className="!flex-1 !max-w-[calc(100%-90px)] h-center gap-20 p-10">
         <Item
           label1="모델명" size1={3}
           children1={
+            read ? 
+            <AntdInput
+              value={model.orderTit} disabled
+            />
+            :
             <CustomAutoCompleteModel
               ref={el => {
                 // 자동 스크롤 & 포커싱을 위해 Ref 추가
@@ -167,50 +219,60 @@ const SalesModelHead:React.FC<Props> = ({
                 setModelNm(value);
                 if(value.length < 3) {
                   setModelSelectList([]);
+                  setModelNoSelectList([]);
                 }
+                handleModelDataChange(model.id ?? '', 'orderTit', value);
+                setFlag(true);
               }}
-              value={model.id}
+              value={model.modelId}
               onChange={(value) => {
-                handleModelDataChange(model.id ?? '', 'id', value);
-                handleModelDataChange(model.id ?? '', 'orderTit', modelNm);
+                const m = modelList.find(f=>f.id === value);
+                if(m && model.id) {
+                  setModelNo(m.prdMngNo);
+                  handleModelChange(m, model.id);
+                }
+                if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
+                  setMatchFlag(true);
+                }
+                setFlag(false);
               }}
-              clear={false}
-              placeholder="3글자 이상 입력"
+              clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+              placeholder="모델명 검색 또는 입력 (3글자 이상)"
             />
           }
           label2="관리번호" size2={3}
           children2={
+            read ? 
+            <AntdInput
+              value={model.prdMngNo} disabled
+            />
+            :
             <CustomAutoCompleteModel
-              ref={el => {
-                // 자동 스크롤 & 포커싱을 위해 Ref 추가
-                if(el &&inputRef && inputRef.current && model.index) {
-                  inputRef.current[model.index] = el;
-                }
-              }}
-              option={modelSelectList}
+              option={modelNoSelectList}
               label={modelNo}
               onInputChange={(value) => {
                 setModelNo(value);
                 if(value.length < 3) {
                   setModelSelectList([]);
+                  setModelNoSelectList([]);
                 }
+                setFlag(true);
               }}
               value={model.prdMngNo}
               onChange={(value) => {
-                handleModelDataChange(model.id ?? '', 'id', value);
-                handleModelDataChange(model.id ?? '', 'prdMngNo', modelNo);
+                const m = modelList.find(f=>f.id === value);
+                if(m && model.id) {
+                  setModelNm(m?.prdNm ?? "");
+                  handleModelChange(m, model.id);
+                }
+                if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
+                  setMatchFlag(true);
+                }
+                setFlag(false);
               }}
-              clear={false}
-              placeholder="3글자 이상 입력"
+              clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+              placeholder="관리번호 검색 (3글자 이상)"
             />
-            // <AntdInput
-            //   value={model.prtOrderNo}
-            //   onChange={(e)=>{
-            //     handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
-            //   }}
-            //   readonly={read} styles={{ht:'32px', bg:'#FFF'}}
-            //   disabled={model.completed}
-            // />
           }
         />
         
@@ -230,7 +292,7 @@ const SalesModelHead:React.FC<Props> = ({
           label2="수주번호"
           children2={
             <AntdInput
-              value={model.currPrdInfo?.prdMngNo}
+              value={model.currPrdInfo?.orderMngNo}
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', e.target.value);
               }}
@@ -251,7 +313,7 @@ const SalesModelHead:React.FC<Props> = ({
               }}
               readonly={read}
               styles={{ht:'32px', bg:'#FFF'}}
-              disabled={model.completed}
+              disabled={true}
             />
           }
           label2="매수"
@@ -269,34 +331,38 @@ const SalesModelHead:React.FC<Props> = ({
         />
         
         <Item
-          label1="원판"
+          label1="제조사"
           children1={
             <AntdSelect
-              options={boardSelectList}
-              value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
+              options={boardGroupSelectList}
+              value={model.currPrdInfo?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
+              onChange={(e)=>{
+                const bg = boardGroup.find(f=>f.id === e+"");
+                if(bg && bg.boards && bg.boards.length > 0) {
+                  setBoardSelectList((bg.boards ?? []).map((item)=>({
+                    value: item.id,
+                    label: item.brdType,
+                  })));
+                } else {
+                  setBoardSelectList([]);
+                }
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.boardGroup.id', e)
+              }}
               styles={{ht:'32px', bw:'0px', pd:'0'}}
-              readonly={read}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+              disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
           }
-          label2="제조사"
+          label2="원판"
           children2={
             <AntdSelect
               options={boardSelectList}
               value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)}}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)
+              }}
               styles={{ht:'32px', bw:'0px', pd:'0'}}
-              readonly={read}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
+              disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
-            // <AntdInput 
-            //   value={model.currPrdInfo?.mnfNm}
-            //   onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.mnfNm', e.target.value);}}
-            //   styles={{ht:'32px'}}
-            //   readonly={read ? read : selectId === model.id ? !newFlag : undefined}
-            //   disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
-            // />
           }
         />
         
@@ -308,8 +374,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
               onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
               styles={{ht:'32px', bw:'0px', pd:'0'}} dropWidth="180px"
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
-              readonly={read}
+              disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
           }
           label2="적용환율"
@@ -339,8 +404,7 @@ const SalesModelHead:React.FC<Props> = ({
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.modelTypeEm', e);
               }}
               styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={model.completed}
-              readonly={read}
+              disabled={read ?? model.completed}
             />
           }
           size2={1}
@@ -355,8 +419,7 @@ const SalesModelHead:React.FC<Props> = ({
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.paid', e);
               }}
               styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={model.completed}
-              readonly={read}
+              disabled={read ?? model.completed}
             />
           }
         />
@@ -375,8 +438,7 @@ const SalesModelHead:React.FC<Props> = ({
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.export', e);
               }}
               styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={model.completed}
-              readonly={read}
+              disabled={read ?? model.completed}
             />
           }
           size2={1}
@@ -393,8 +455,7 @@ const SalesModelHead:React.FC<Props> = ({
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.currency', e);
               }}
               styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={model.completed}
-              readonly={read}
+              disabled={read ?? model.completed}
             />
           }
         />
@@ -420,7 +481,7 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
               suffixIcon={'cal'} afterDate={new Date()}
               styles={{bw:'0',bg:'none', pd:"0"}} className="!w-full"
-              disabled={model.completed}
+              disabled={read ?? model.completed}
               allowClear={false}
             />
           }
