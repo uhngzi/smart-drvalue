@@ -8,6 +8,7 @@ type Task = {
   to: string | Date;
   progColor: string;
   progTo?: string | Date;
+  workers?: any[];
 };
 type schdules = {
   process: string;
