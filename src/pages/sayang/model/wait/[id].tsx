@@ -372,7 +372,7 @@ const SayangModelAddPage: React.FC & {
         .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
         .map((m)=>({
           key:m.id,
-          text:m.prtOrderNo,
+          text:m.orderTit,
         }))
       );
       if(orderModelsSelect === "")
