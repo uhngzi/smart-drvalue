@@ -11,6 +11,8 @@ interface Props {
   value?: any;
   defaultValue?: any;
   placeholder?: string;
+  onInputChange?: (value: string) => void;
+  clear?: boolean;
 }
 
 const CustomAutoComplete: React.FC<Props> = ({
@@ -23,12 +25,15 @@ const CustomAutoComplete: React.FC<Props> = ({
   addLabel,
   defaultValue,
   placeholder,
+  onInputChange,
+  clear = true,
 }) => {
   const [inputValue, setInputValue] = useState<string>(""); // 입력창에 표시할 값
   const [filteredOptions, setFilteredOptions] = useState<{ value: any; label: any }[]>([]);
 
   useEffect(() => {
     // 기본값이 있으면 초기 inputValue 설정
+    console.log(defaultValue);
     if (defaultValue) {
       const label = option?.find((f) => f.value === defaultValue)?.label;
       if (label) setInputValue(label);
@@ -85,11 +90,17 @@ const CustomAutoComplete: React.FC<Props> = ({
       onSearch={setInputValue} // 검색할 때 label 기준으로 필터링
       placeholder={placeholder}
       className={className}
+      onChange={(e)=>{
+        const value:string = e;
+        onInputChange?.(value);
+      }}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
         onClick={()=>{
-          setInputValue("");
+          if(clear) {
+            setInputValue("");
+          }
         }}
       />
     </AutoComplete>
