@@ -51,6 +51,7 @@ export type BoardGroupType = {
   createdAt: string
   updatedAt: string
   deletedAt: string
+  boards?: boardType[];
 }
 
 export const newBoardGroupType = ():BoardGroupType => {
