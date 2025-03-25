@@ -870,7 +870,7 @@ export const sayangSampleWaitAddClmn = (
             value={record.ulTxt1}
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
             className='!text-12'
-            tabIndex={(record?.index ?? 1)*40+11}
+            tabIndex={(record?.index ?? 1)*40+11} placeholder="ul1"
           />
         </div>
         <div className={divClass+"mb-3"}>
@@ -878,7 +878,7 @@ export const sayangSampleWaitAddClmn = (
             value={record.ulTxt2}
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
             className='!text-12'
-            tabIndex={(record?.index ?? 1)*40+12}
+            tabIndex={(record?.index ?? 1)*40+12} placeholder="ul2"
           />
         </div>
         <div className={divClass+"gap-5"}>
@@ -888,7 +888,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'ulCd1.id', e)}
             className="w-[60px!important]"
             styles={{pd:"0",fs:'12px'}}
-            tabIndex={(record?.index ?? 1)*40+13}
+            tabIndex={(record?.index ?? 1)*40+13} placeholder="ul1"
           />
           <AntdSelectFill
             options={ul2SelectList}
@@ -896,7 +896,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'ulCd2.id', e)}
             className="w-[60px!important]"
             styles={{pd:"0",fs:'12px'}}
-            tabIndex={(record?.index ?? 1)*40+14}
+            tabIndex={(record?.index ?? 1)*40+14} placeholder="ul2"
           />
         </div>
       </div>
@@ -991,7 +991,16 @@ export const sayangSampleWaitAddClmn = (
             options={spPrintSelectList}
             value={record?.spPrint?.id}
             onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
-            styles={{fs:'12px'}}
+            styles={{fs:'12px'}} placeholder="특수인쇄"
+            tabIndex={(record?.index ?? 1)*40+21}
+          />
+        </div>
+        <div className={divClass}>
+          <AntdSelectFill 
+            options={spTypeSelectList}
+            value={record?.spType?.id}
+            onChange={(e)=>handleModelDataChange(record.id, 'spType.id', e)}
+            styles={{fs:'12px'}} placeholder="특수인쇄 종류"
             tabIndex={(record?.index ?? 1)*40+21}
           />
         </div>
@@ -1178,8 +1187,8 @@ export const sayangSampleWaitAddClmn = (
       <div className={divTopClass}>
         <div className={divClass+"mb-3"}>
           <AntdInputFill
-            value={record?.impedanceCnt}
-            onChange={(e)=>handleModelDataChange(record.id, 'impedanceCnt', e.target.value)}
+            value={record?.impedanceLineCnt}
+            onChange={(e)=>handleModelDataChange(record.id, 'impedanceLineCnt', e.target.value)}
             className="!text-12"
             type="number"
             tabIndex={(record?.index ?? 1)*40+32}

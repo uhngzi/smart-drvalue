@@ -32,6 +32,7 @@ export type specType = {
   wkPrdCnt?: number;
   kitGapX?: number;
   kitGapY?: number;
+  couponYn?: boolean;
 }
 
 export type specModelType = {
@@ -117,7 +118,7 @@ export type specModelType = {
   matchId?: string;
   prdCnt?: number;
   pcsCnt?: number;
-  impedanceCnt?: number;
+  impedanceLineCnt?: number;
   index?: number;
 }
 

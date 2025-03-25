@@ -252,8 +252,9 @@ export const changeSayangTemp = (
         jYn: specData.jYn,
         prcNotice: specData.prcNotice,
         camNotice: specData.camNotice,
-        // kitGapX: specData.kitGapX,
-        // kitGapY: specData.kitGapY,
+        kitGapX: specData.kitGapX,
+        kitGapY: specData.kitGapY,
+        couponYn: specData.couponYn,
       },
       models: (modelsData ?? []).map((model:specModelType) => ({
         id: model.id,
@@ -314,7 +315,7 @@ export const changeSayangTemp = (
         specDr: model.specDr,
         specPad: model.specPad,
         prdCnt: model.prdCnt,
-        // impedanceCnt: model.impedanceCnt,
+        impedanceLineCnt: model.impedanceLineCnt,
         // pcsCnt: model.pcsCnt,
       })),
     }

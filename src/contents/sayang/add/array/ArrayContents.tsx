@@ -151,81 +151,62 @@ const ArrayContents: React.FC<Props> = ({
               <div className="h-36 border-1 border-line flex">
                 <p className="w-65 bg-back v-h-center p-5">쿠폰</p>
                 <div className="flex-grow-[12] h-full v-h-center">
-                  <AntdSelect options={[{value:1,label:'유'},{value:2,label:'무'}]} styles={{bw:'0',pd:'0'}} />
+                  <AntdSelect
+                    value={detailData.couponYn}
+                    onChange={(e)=>{
+                      const value = e ? true : false;
+                      setDetailData({
+                        ...detailData,
+                        couponYn: value,
+                      })
+                    }}
+                    options={[{value:true,label:'유'},{value:false,label:'무'}]} styles={{bw:'0',pd:'0'}}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="w-full !h-1/2 border-1 border-line bg-back rounded-14">
+            <div className="w-full !h-1/2">
               {!detailData.cutCnt && <Empty className="pt-5" />}
               {detailData.cutCnt && <>
-                <p className="text-16 font-medium h-40 v-h-center">{detailData.cutCnt && detailData.cutCnt+"등분"}{detailData.jYn && "/J"}</p>
-                <div className="h-100 flex flex-col text-12 font-medium gap-5 h-center">
-                  <p className="h-center h-20 w-[160px]">간격(XY) :{detailData.kitGapX && detailData.kitGapY && detailData.kitGapX+" | "+detailData.kitGapY}</p>
-                  <p className="h-center h-20 w-[160px]">규격 : {detailData.stdW && detailData.stdH && detailData.stdW+" X "+detailData.stdH}</p>
-                  <p className="h-center h-20 w-[160px]">W/S : {detailData.wksizeW && detailData.wksizeH && detailData.wksizeW+" X "+detailData.wksizeH}</p>
-                  <p className="h-center h-20 w-[160px]">Trimmimg size : {detailData.wksizeW && detailData.wksizeH && (detailData.wksizeW - 4)+" X "+(detailData.wksizeH - 4)}</p>
+                <div className="h-36 border-1 border-line flex border-b-0">
+                  <p className="w-65 h-full bg-back v-h-center p-5">등분수</p>
+                  <div className="h-center flex-1 text-left p-5">
+                    {detailData.cutCnt && detailData.cutCnt}{detailData.jYn && "/J"}
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="h-36 border-1 border-line flex border-b-0 border-r-0 w-1/2">
+                    <p className="w-65 h-full bg-back v-h-center p-5">간격(XY)</p>
+                    <div className="h-center flex-1 text-left p-5">
+                      {detailData.kitGapX && detailData.kitGapY && detailData.kitGapX+" | "+detailData.kitGapY}
+                    </div>
+                  </div>
+                  <div className="h-36 border-1 border-line flex border-b-0 w-1/2">
+                    <p className="w-65 h-full bg-back v-h-center p-5">규격</p>
+                    <div className="h-center flex-1 text-left p-5">
+                      {detailData.stdW && detailData.stdH && detailData.stdW+" X "+detailData.stdH}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="h-36 border-1 border-line flex border-r-0 w-1/2">
+                    <p className="w-65 h-full bg-back v-h-center p-5">W/S</p>
+                    <div className="h-center flex-1 text-left p-5">
+                      {detailData.wksizeW && detailData.wksizeH && detailData.wksizeW+" X "+detailData.wksizeH}
+                    </div>
+                  </div>
+                  <div className="h-36 border-1 border-line flex w-1/2">
+                    <p className="w-65 h-full bg-back v-h-center p-5">T/S</p>
+                    <div className="h-center flex-1 text-left p-5">
+                      { detailData.wksizeW && detailData.wksizeH && (detailData.wksizeW - 4)+" X "+(detailData.wksizeH - 4)}
+                    </div>
+                  </div>
                 </div>
               </>}
             </div>
           </div>
         </>}
-        {/* <div className="h-[111px] border-1 border-line border-b-0 flex w-full">
-          <div className="flex-grow-[1] h-[110px] border-r-1 border-line">
-            <div className="h-55 flex">
-              <div className="w-60 text-12 bg-back v-h-center p-5">{'① 배열'}</div>
-              <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
-            </div>
-            <div className="h-55 border-t-1 border-b-1 border-line flex">
-              <div className="w-60 text-12 bg-back v-h-center p-5">{'② 배열'}</div>
-              <div className="w-70 text-12 h-center p-5">{'2 x 3'}</div>
-            </div>
-          </div>
-        </div> */}
-        {/* <div className="w-[350px] h-[170px] mx-25 py-6 flex flex-col gap-3">
-          <div className="v-h-center gap-3">
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-          </div>
-          <div className="v-h-center gap-3">
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-          </div>
-          <div className="v-h-center gap-3">
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-back border-1 border-line">
-              {`① 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-            <div className="w-85 h-50 v-h-center text-[#979797] text-12 bg-[#E9EDF5] border-1 border-line">
-              {`② 2x3`}
-            </div>
-          </div>
-        </div> */}
       </div>
 
       <AntdModal
