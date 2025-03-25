@@ -461,4 +461,5 @@ export type buyOrderDetailType = {
   }[]
   mtNm?: string;
   materialGrpIdx?: string;
+  mtId?: string;
 }

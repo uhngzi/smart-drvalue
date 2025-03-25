@@ -15,10 +15,7 @@ import AntdModal from "@/components/Modal/AntdModal";
 import { AntdModalStep2 } from "@/components/Modal/AntdModalStep";
 import LabelItem from "@/components/Text/LabelItem";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import Description from "@/components/Description/Description";
-import DescriptionItems3 from "@/components/Description/DescriptionItems3";
 import AntdInput from "@/components/Input/AntdInput";
-import DescriptionItems from "@/components/Description/DescriptionItems";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
 import { DividerH, DividerV } from "@/components/Divider/Divider";
@@ -26,7 +23,6 @@ import { LabelMedium } from "@/components/Text/Label";
 import AntdSelect from "@/components/Select/AntdSelect";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 
-import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
 import PrtMngAddModal from "@/contents/partner/PrtMngAddModal";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
@@ -35,7 +31,9 @@ import { Popup } from "@/layouts/Body/Popup";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import { useUser } from "@/data/context/UserContext";
+import { companyType } from "@/data/type/base/company";
 import { selectType } from "@/data/type/componentStyles";
+import { apiGetResponseType } from "@/data/type/apiResponse";
 import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
 import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
 import { BuyOrderClmn, BuyOrderMtClmn, BuyOrderMtPriceClmn } from "@/data/columns/Buy";
@@ -48,11 +46,11 @@ import { inputFax } from "@/utils/formatFax";
 import { isValidEmail } from "@/utils/formatEmail";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
+import { handleDirectPrint } from "@/utils/printOrderForm";
 
 import Bag from "@/assets/svg/icons/bag.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Back from "@/assets/svg/icons/back.svg";
 import DragHandle from "@/assets/svg/icons/dragHandlevert.svg";
 
 const SDivider = <span className="absolute right-0 top-[8px] bottom-[8px] w-[1px] bg-gray-200" />
@@ -265,6 +263,25 @@ const BuyOrderPage: React.FC & {
       return result;
     },
   });
+
+  // 회사 조회
+  const [company, setCompany] = useState<companyType | null>(null);
+  const { data: queryCompanyData } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["setting", "company", "base"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "company-default/jsxcrud/one",
+      });
+      if (result.resultCode === "OK_0000") {
+        setCompany(result.data?.data ?? {});
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
   // -------------- 필요 데이터 세팅 ------------ 끝
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
@@ -341,8 +358,7 @@ const BuyOrderPage: React.FC & {
           mtNm: item.material?.mtNm,
           materialGrpIdx: item?.material?.materialGroup?.id,
         })) as buyOrderDetailType[];
-        
-        setOrder({
+        const orderEntity = {
           ...order,
           ...entity,
           status: entity?.type,
@@ -366,7 +382,9 @@ const BuyOrderPage: React.FC & {
             worksheetProcessIdxNoForgKey: entity.detailInfo?.worksheetProcessIdxNoForgKey,
           },
           orderDetail: detailEntity,
-        });
+        }
+        
+        setOrder(orderEntity);
         setSelectMtPrice(detailEntity);
         setPrtId(entity.detailInfo?.prtInfo?.prt?.id ?? "");
         setDetailFlag(true);
@@ -374,7 +392,22 @@ const BuyOrderPage: React.FC & {
         setEdit(true);
         setCollapse({master: false, mt: false, price: false});
         setStepCurrent(1);
-        setOpen(true);
+        if(orderDocumentFormOpen) {
+          const mtList = (entity?.detailInfo?.details ?? []).map((item) => ({
+            nm: item.material?.mtNm ?? "",
+            w: item.mtOrderSizeW ?? 0,
+            h: item.mtOrderSizeH ?? 0,
+            thk: item.mtOrderThk ?? 0,
+            cnt: item.mtOrderQty ?? 0,
+            unit: item.mtOrderUnit ?? "",
+            wgt: item.mtOrderWeight ?? 0,
+            price: item.mtOrderAmount ?? 0,
+            priceUnit: item.mtOrderInputPrice ?? 0,
+          }));
+          handleDirectPrint(mtList, orderEntity, company, setOrderDocumentFormOpen);
+        } else {
+          setOpen(true);
+        }
       }
 
       return result;
@@ -601,7 +634,7 @@ const BuyOrderPage: React.FC & {
 
   // 모달창 초기화
   useEffect(()=>{
-    if(!open) {
+    if(!open && !orderDocumentFormOpen) {
       setOrder(null);
       setEdit(false);
       setPrtId("");
@@ -612,11 +645,11 @@ const BuyOrderPage: React.FC & {
       setTotalByMtId({});
       setWidth(1200);
       setStepCurrent(0);
-      
     }
-  }, [open])
+  }, [open, orderDocumentFormOpen])
 
   if(meLoading) return <Spin />
+
   return (
     <>
       <div className="w-full h-50">
@@ -899,7 +932,7 @@ const BuyOrderPage: React.FC & {
                   {/* 발주 루트가 등록되었을 때 발주 품목을 보여줌 */}
                   { edit && selectMtPrice.length > 0 &&
                     (!order?.status || order.status === "REQUEST_WAITING" || order.status === "INPUT") &&
-                  <Popup className={"!max-h-[300px] overflow-y-auto"}>
+                  <Popup className={order?.status === "INPUT"? "!max-h-[430px] overflow-y-auto" : "!max-h-[300px] overflow-y-auto"}>
                     <div className="flex v-between-h-center">
                       <LabelMedium label="발주 품목"/>
                       { order?.status !== "INPUT" &&
@@ -1101,32 +1134,6 @@ const BuyOrderPage: React.FC & {
         </>}
       />
       
-      <AntdModal
-        open={orderDocumentFormOpen}
-        setOpen={setOrderDocumentFormOpen}
-        contents={
-          <Popup>
-            <OrderDocumentForm
-              mtList={[
-                {
-                  nm: "mt1",
-                  w: 100,
-                  h: 100,
-                  thk: 100,
-                  cnt: 100,
-                  unit: "FR-1",
-                  wgt: 100,
-                  price: 10000,
-                  priceUnit: 10000,
-                }
-              ]}
-              orderPrice={2345000}
-            />
-          </Popup>
-        }
-        width={1200}
-      />
-
       {/* 구매처 등록 */}
       <BaseInfoCUDModal
         title={{name: "거래처 등록", icon: <Bag/>}}

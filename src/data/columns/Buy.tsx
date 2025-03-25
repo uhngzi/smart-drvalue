@@ -6,6 +6,7 @@ import { SetStateAction } from "react";
 import { processVendorPriceRType } from "../type/base/process";
 import { materialPriceType } from "../type/base/material_back";
 import Trash from "@/assets/svg/icons/trash.svg";
+import Print from "@/assets/svg/icons/print.svg";
 
 export const BuyCostOutClmn = (
   totalData: number,
@@ -790,20 +791,6 @@ export const BuyOrderClmn = (
     key: 'orderNo',
     align: 'center',
   },
-  // {
-  //   title: '발주서',
-  //   width: 130,
-  //   dataIndex: 'orderNo',
-  //   key: 'orderNo',
-  //   align: 'center',
-  //   render: (_) => (
-  //     <div
-  //       onClick={()=>{setOrderDocumentFormOpen(true)}}
-  //     >
-  //       발주서
-  //     </div>
-  //   )
-  // },
   {
     title: '발주명',
     minWidth: 130,
@@ -949,6 +936,29 @@ export const BuyOrderClmn = (
       return (<div className="text-left w-full h-center">{value && value.length > 6 ? value.slice(0, 6) + "..." : value}</div>)
     }
   },
+  {
+    title: '발주서',
+    width: 70,
+    dataIndex: 'orderNo',
+    key: 'orderNo',
+    align: 'center',
+    rightPin: true,
+    render: (_, record) => (
+      <div
+        className="w-full v-h-center"
+        >
+        <div
+          className="bg-back rounded-6 w-40 h-40 v-h-center cursor-pointer"
+          onClick={()=>{
+            setOrder(record);
+            setOrderDocumentFormOpen(true);
+          }}
+        >
+          <p className="w-24 h-24"><Print /></p>
+        </div>
+      </div>
+    )
+  },
 ]
 
 export const BuyOrderMtPriceClmn = (
@@ -963,7 +973,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (_, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
         className="w-full h-full h-center justify-left cursor-copy px-10"
         onClick={() => {
           setSelectPrice([
@@ -981,6 +991,7 @@ export const BuyOrderMtPriceClmn = (
               mtOrderAmount: record?.cntMin,
               mtOrderUnit: record?.unitType,
               mtOrderTxtur: record?.txturType,
+              mtId: record?.id,
             }
           ])
         }}
@@ -997,7 +1008,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full h-center justify-left px-10"
       >
         {value}
@@ -1012,7 +1023,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full h-center justify-left px-10"
       >
         {value}
@@ -1027,7 +1038,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full h-center justify-left px-10"
       >
         {value}
@@ -1042,7 +1053,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full v-h-center px-10"
       >
         {value || record?.sizeH ? (value ?? "~")+" * "+(record?.sizeH ?? "~") : ""}
@@ -1057,7 +1068,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full v-h-center"
       >
         {value || record?.thicMax ? (value ?? "~")+" * "+(record?.thicMax ?? "~") : ""}
@@ -1072,7 +1083,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full v-h-center"
       >
         {value || record?.wgtMax ? (value ?? "~")+" * "+(record?.wgtMax ?? "~") : ""}
@@ -1087,7 +1098,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full v-h-center"
       >
         {value || record?.cntMax ? (value ?? "~")+" * "+(record?.cntMax ?? "~") : ""}
@@ -1102,7 +1113,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"#F0F5FF":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"#F0F5FF":""}}
         className="w-full h-full h-center justify-end px-10"
       >
         {(value ?? 0).toLocaleString()}
@@ -1117,7 +1128,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectPrice.filter(f=>f.materialIdx===record.material?.id).length > 0 ?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
+        style={{background:selectPrice.filter(f=>f.mtId===record?.id).length > 0 ?"linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)":""}}
         className="w-full h-full h-center px-10"
       >
         {value}
