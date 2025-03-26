@@ -463,7 +463,7 @@ const SayangSampleAddPage: React.FC & {
   const [modelTabOpen, setModelTabOpen] = useState<boolean>(true);
 
   return (
-    <div className="w-full pr-20 flex flex-col gap-40">
+    <div className="w-full pr-30 flex flex-col gap-40">
       { detailDataLoading && <>
         <div className="bg-white rounded-14 p-30 pt-70 flex flex-col overflow-auto gap-20 w-full h-[400px]">
           <Skeleton.Node active className="!w-full !h-full" />

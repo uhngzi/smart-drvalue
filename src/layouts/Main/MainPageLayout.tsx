@@ -102,7 +102,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
               <Close />
             </p>
           </div>
-          <div className="w-full overflow-auto pl-20 pb-20">
+          <div className="w-full overflow-auto pl-30 pb-20">
             {children}
           </div>
         </div>}
