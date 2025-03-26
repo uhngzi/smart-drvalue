@@ -843,6 +843,8 @@ const OrderAddLayout = () => {
                 styles={{
                   th_bg: "#FAFAFA",
                   td_bg: "#FFFFFF",
+                  td_ht: '40px',
+                  th_ht: '40px',
                   round: "0",
                   th_fw: "bold",
                   td_pd: "0",
@@ -897,9 +899,13 @@ const OrderAddLayout = () => {
                 styles={{
                   th_bg: "#FAFAFA",
                   td_bg: "#FFFFFF",
+                  td_ht: '40px',
+                  th_ht: '40px',
                   round: "0",
                   th_fw: "bold",
                   td_pd: "0",
+                  th_pd: "0",
+                  th_pt: "0",
                 }}
               />
               <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
@@ -1064,6 +1070,8 @@ const OrderAddLayout = () => {
                   styles={{
                     th_bg:'#F9F9FB',
                     th_fw:'bold',
+                    td_ht: '40px',
+                    th_ht: '40px',
                     td_bg:'#FFF',
                     round:'0'
                   }}
@@ -1135,6 +1143,8 @@ const OrderAddLayout = () => {
                 styles={{
                   th_bg: "#FAFAFA",
                   td_bg: "#FFFFFF",
+                  td_ht: '40px',
+                  th_ht: '40px',
                   round: "0",
                   th_fw: "bold",
                   td_pd: "0",

@@ -1488,6 +1488,7 @@ export const BuyOrderMtViewClmn = (
     dataIndex: 'mtNm',
     key: 'mtNm',
     align: 'center',
+    cellAlign: 'left',
   },
   {
     title: '단위',
