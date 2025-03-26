@@ -596,7 +596,7 @@ const OrderAddLayout = () => {
         <Close />
       </p>
     </div>
-    <div className="w-full overflow-auto pl-20 pb-20 h-[calc(100vh-95px)]">
+    <div className="w-full overflow-auto pl-30 pb-20 h-[calc(100vh-95px)]">
       <div className="w-full v-between-h-center gap-20 h-full">
         <div className="w-[calc(100%-100px)] h-full">
           {/* 스탭 */}
@@ -628,13 +628,17 @@ const OrderAddLayout = () => {
             <CsMngContent
               csMngList={csMngList}
               setCsMngList={setCsMngList}
-              formData={formData}
-              setFormData={setFormData}
+              formPrtId={formData.partnerId}
+              formPrtMngId={formData.partnerManagerId}
               showToast={showToast}
+              handleFormChange={(id:string)=>{
+                setFormData({...formData, partnerManagerId:id});
+                csRefetch();
+              }}
             />
 
             {/* 발주 하단 버튼 */}
-            <div className="w-full v-between-h-center">
+            <div className="w-full v-between-h-center px-30">
               {stepCurrent < 1 ?
               <>
                 <Button 
