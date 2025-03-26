@@ -58,7 +58,7 @@ const SayangModelAddPage: React.FC & {
   
   // 베이스 값 가져오기
   const { 
-    // boardSelectList,
+    boardSelectList,
     metarialSelectList,
     surfaceSelectList,
     unitSelectList,
@@ -75,7 +75,6 @@ const SayangModelAddPage: React.FC & {
   } = useBase();
 
   // ------------- 원판그룹(제조사) ------------- 시작
-  const [boardSelectList, setBoardSelectList] = useState<selectType[]>([]);
   const [boardGroupSelectList, setBoardGroupSelectList] = useState<selectType[]>([]);
   const [boardGroup, setBoardGroup] = useState<BoardGroupType[]>([]);
   const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
@@ -95,12 +94,6 @@ const SayangModelAddPage: React.FC & {
         }))
         setBoardGroup(bg);
         setBoardGroupSelectList(arr);
-        if(bg.length > 0 && bg[0].boards && bg[0].boards?.length > 0) {
-          setBoardSelectList(bg[0].boards.map((item:boardType)=>({
-            value: item.id,
-            label: item.brdType
-          })))
-        }
       } else {
         console.log("error:", result.response);
       }
@@ -557,7 +550,6 @@ const SayangModelAddPage: React.FC & {
                       boardGroup={boardGroup}
                       boardGroupSelectList={boardGroupSelectList}
                       boardSelectList={boardSelectList}
-                      setBoardSelectList={setBoardSelectList}
                       metarialSelectList={metarialSelectList}
                       selectId={selectId ?? ""}
                       newFlag={newFlag}

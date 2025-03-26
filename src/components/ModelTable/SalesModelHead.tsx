@@ -71,7 +71,6 @@ interface Props {
   boardGroup: BoardGroupType[];
   boardGroupSelectList: selectType[];
   boardSelectList: selectType[];
-  setBoardSelectList: React.Dispatch<SetStateAction<selectType[]>>;
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
@@ -89,7 +88,6 @@ const SalesModelHead:React.FC<Props> = ({
   boardGroup,
   boardGroupSelectList,
   boardSelectList,
-  setBoardSelectList,
   metarialSelectList,
   inputRef,
   handleDelete,
@@ -114,9 +112,11 @@ const SalesModelHead:React.FC<Props> = ({
         utype: "tenant/",
         url: "models/jsxcrud/many"
       },{
+        page: 0,
+        limit: 100,
         s_query: { "$or": [
           modelNm.length > 0 ? {"prdNm": {"$startsL": modelNm}} : {},
-          modelNo.length > 0 ? {"prdMngNo": {"$startsL": modelNo}} : {},
+          modelNo.length > 0 ? {"prxdMngNo": {"$startsL": modelNo}} : {},
         ]}
       });
 
@@ -310,15 +310,6 @@ const SalesModelHead:React.FC<Props> = ({
               options={boardGroupSelectList}
               value={model.currPrdInfo?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
               onChange={(e)=>{
-                const bg = boardGroup.find(f=>f.id === e+"");
-                if(bg && bg.boards && bg.boards.length > 0) {
-                  setBoardSelectList((bg.boards ?? []).map((item)=>({
-                    value: item.id,
-                    label: item.brdType,
-                  })));
-                } else {
-                  setBoardSelectList([]);
-                }
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.boardGroup.id', e)
               }}
               styles={{ht:'32px', bw:'0px', pd:'0'}}
