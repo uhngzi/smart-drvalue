@@ -21,6 +21,7 @@ interface Props {
     th_ht?: string;
     th_bg?: string;
     th_pd?: string;
+    th_pt?: string;
     th_fw?: string;
     th_fs?: string;
     td_ht?: string;
@@ -54,6 +55,7 @@ const AntdTable: React.FC<Props> = ({
       className={className}
       $padding={styles?.pd?styles.pd:'0 10px'}
       $thPadding={styles?.th_pd?styles.th_pd:'0 10px'}
+      $thPaddingTop={styles?.th_pt?styles.th_pt:'10px'}
       $tdPadding={styles?.td_pd?styles.td_pd:'0 10px'}
       $thHeight={styles?.th_ht ?? '55px'}
       $tdHeight={styles?.td_ht ?? '55px'}
@@ -100,6 +102,7 @@ const AntdTableStyled = styled.div<{
   $thBackground: string;
   $thHeight: string;
   $thPadding: string;
+  $thPaddingTop: string;
   $thFontWeight: string;
   $thFontSize: string;
   $tdBackground: string;
@@ -123,7 +126,7 @@ const AntdTableStyled = styled.div<{
   .ant-table-thead { 
     background-color: ${({ $thBackground }) => $thBackground};
     & > tr:first-child>th {
-      padding-top: 10px;
+      padding-top: ${({ $thPaddingTop }) => $thPaddingTop};
     }
     & > tr:last-child>th {
       /* padding-bottom: 10px; */
