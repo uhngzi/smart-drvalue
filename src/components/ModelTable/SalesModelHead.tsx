@@ -1,5 +1,5 @@
 import { Checkbox, Dropdown, InputRef, Space, Tooltip } from "antd";
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, SetStateAction, useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import { selectType } from "@/data/type/componentStyles";
@@ -68,7 +68,10 @@ interface Props {
   handleModelDataChange: (id: string, name: string, value: any) => void;
   selectId: string | null;
   newFlag: boolean;
-  // boardSelectList: selectType[];
+  boardGroup: BoardGroupType[];
+  boardGroupSelectList: selectType[];
+  boardSelectList: selectType[];
+  setBoardSelectList: React.Dispatch<SetStateAction<selectType[]>>;
   metarialSelectList: selectType[];
   inputRef?: RefObject<InputRef[]>;
   index?: number;
@@ -83,47 +86,17 @@ const SalesModelHead:React.FC<Props> = ({
   handleModelDataChange,
   selectId,
   newFlag,
-  // boardSelectList,
+  boardGroup,
+  boardGroupSelectList,
+  boardSelectList,
+  setBoardSelectList,
   metarialSelectList,
   inputRef,
   handleDelete,
   handleEdit,
   handleModelChange,
+  index,
 }) => {
-  // ------------ 원판그룹(제조사) ------------ 시작
-  const [boardSelectList, setBoardSelectList] = useState<selectType[]>([]);
-  const [boardGroupSelectList, setBoardGroupSelectList] = useState<selectType[]>([]);
-  const [boardGroup, setBoardGroup] = useState<BoardGroupType[]>([]);
-  const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["board"],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'board-group/jsxcrud/many'
-      });
-
-      if (result.resultCode === "OK_0000") {
-        const bg = (result.data?.data ?? []) as BoardGroupType[];
-        const arr = bg.map((d:BoardGroupType) => ({
-          value: d.id,
-          label: d.brdGrpName,
-        }))
-        setBoardGroup(bg);
-        setBoardGroupSelectList(arr);
-        if(bg.length > 0 && bg[0].boards && bg[0].boards?.length > 0) {
-          setBoardSelectList(bg[0].boards.map((item:boardType)=>({
-            value: item.id,
-            label: item.brdType
-          })))
-        }
-      } else {
-        console.log("error:", result.response);
-      }
-      return result;
-    },
-  });
-  // ------------ 원판그룹(제조사) ------------ 끝
 
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
