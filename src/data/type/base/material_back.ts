@@ -61,6 +61,7 @@ export type materialPriceType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   index?: number;
+  orderId?: string;
 }
 
 export type materialGroupBadType = {

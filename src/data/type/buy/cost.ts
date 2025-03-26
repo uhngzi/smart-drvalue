@@ -404,6 +404,8 @@ export type buyOrderType = {
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
+      mtNm?: string;
+      materialGrpIdx?: string;
     }[];
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
