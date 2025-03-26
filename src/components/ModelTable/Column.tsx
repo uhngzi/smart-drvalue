@@ -197,20 +197,20 @@ export const salesOrderModelClmn = (
   },
   {
     title: '특수도금',
-    width:110,
+    width:70,
     dataIndex: 'tDogeum',
     key: 'tDogeum',
     align: 'center',
     children: [
       {
-        title:'Ni Au',
-        width: 90,
+        title:'',
+        width: 70,
         dataIndex: 'tDogeum',
         key:'tDogeum',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNi}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltNi', e.target.value)}
@@ -221,6 +221,8 @@ export const salesOrderModelClmn = (
                 placeholder={"Ni 입력"}
                 tabIndex={record.index*40+8}
               />
+            </div>
+            <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltAu}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltAu', e.target.value)}
@@ -232,7 +234,19 @@ export const salesOrderModelClmn = (
                 tabIndex={record.index*40+10}
               />
             </div>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltOsp}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltOsp', e.target.value)}
+                type="number"
+                className="!text-12"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder={"OSP 입력"}
+                tabIndex={record.index*40+11}
+              />
+            </div>
+            {/* <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNiAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltNiAlph', e.target.value)}
@@ -253,7 +267,7 @@ export const salesOrderModelClmn = (
                 placeholder={"Au± 입력"}
                 tabIndex={record.index*40+11}
               />
-            </div>
+            </div> */}
           </div>
         )
       },
@@ -776,7 +790,7 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.thk}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -802,13 +816,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.copOut}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
                 />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.copIn}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -861,13 +875,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pltThk}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -883,24 +897,32 @@ export const salesOrderModelReadClmn = (
     align: 'center',
     children: [
       {
-        title:'Ni Au',
+        title:'',
         width: 90,
         dataIndex: 'tDogeum',
         key:'tDogeum',
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNi}
-                className="!text-12" disabled
-              />
-              <AntdInputFill 
-                value={record.currPrdInfo?.spPltAu}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltAu}
+                className="!text-12" disabled type="number"
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.spPltOsp}
+                className="!text-12" disabled type="number"
+              />
+            </div>
+            {/* <div className={divClass+"gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNiAlph}
                 className="!text-12" disabled
@@ -909,7 +931,7 @@ export const salesOrderModelReadClmn = (
                 value={record.currPrdInfo?.spPltAuAlph}
                 className="!text-12" disabled
               />
-            </div>
+            </div> */}
           </div>
         )
       },
@@ -1081,13 +1103,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pcsL}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pcsW}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -1113,13 +1135,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.ykitL}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.ykitW}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -1145,19 +1167,19 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.kitL}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.kitW}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.kitPcs}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -1183,13 +1205,13 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pnlL}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pnlW}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
@@ -1215,19 +1237,19 @@ export const salesOrderModelReadClmn = (
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.pnlKit}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.sthPnl}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
             <div className={divClass}>
               <AntdInputFill
                 value={record.currPrdInfo?.sthPcs}
-                className="!text-12" disabled
+                className="!text-12" disabled type="number"
               />
             </div>
           </div>
