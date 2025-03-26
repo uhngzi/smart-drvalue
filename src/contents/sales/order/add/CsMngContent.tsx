@@ -25,16 +25,18 @@ import { Popup } from "@/layouts/Body/Popup";
 interface Props {
   csMngList: partnerMngRType[];
   setCsMngList: React.Dispatch<SetStateAction<partnerMngRType[]>>;
-  formData: salesOrderCUType;
-  setFormData: React.Dispatch<SetStateAction<salesOrderCUType>>;
+  handleFormChange: (id:string) => void;
+  formPrtId?: string;
+  formPrtMngId?: string;
   showToast: (message: string, type?: "success" | "error" | "info", duration?: number) => void;
 }
 
 const CsMngContent:React.FC<Props> = ({
   csMngList,
   setCsMngList,
-  formData,
-  setFormData,
+  handleFormChange,
+  formPrtId,
+  formPrtMngId,
   showToast,
 }) => {
   // 담당자 추가 클릭 시 거래처 담당자 설정
@@ -83,7 +85,7 @@ const CsMngContent:React.FC<Props> = ({
       titleEtc={
       <Button className="w-30 !h-24 v-h-center !p-0"
         onClick={()=>{
-          if(!formData.partnerId) {
+          if(!formPrtId) {
             showToast("거래처를 선택해주세요.", "error");
             return;
           }
@@ -99,8 +101,10 @@ const CsMngContent:React.FC<Props> = ({
         <p className="w-[300px] h-center gap-8">
           <Radio
             name="csMng"
-            checked={formData.partnerManagerId === mng.id}
-            onChange={() => setFormData({...formData, partnerManagerId:mng.id})}
+            checked={formPrtMngId === mng.id}
+            onChange={() => {
+              handleFormChange(mng.id);
+            }}
           /> {mng.prtMngNm}
         </p>
         <div className="w-[200px] px-12">
@@ -133,7 +137,7 @@ const CsMngContent:React.FC<Props> = ({
     <PrtMngAddModal
       open={newPrtMngOpen}
       setOpen={setNewPrtMngOpen}
-      partnerId={formData.partnerId ?? ''}
+      partnerId={formPrtId ?? ''}
       newPartnerMngData={newPartnerMngData}
       handlePrtDataChange={handlePrtDataChange}
       submitEndFn={()=>{
@@ -143,7 +147,7 @@ const CsMngContent:React.FC<Props> = ({
       prtMngSuccessFn={(entity)=>{
         if(!edit) {
           setCsMngList([...csMngList, {...entity} ]);
-          setFormData({ ...formData, partnerManagerId: entity.id });
+          handleFormChange(entity.id);
         } else {
           const updateData = csMngList;
           const index = updateData.findIndex(f=> f.id === newPartnerMngData?.id);
