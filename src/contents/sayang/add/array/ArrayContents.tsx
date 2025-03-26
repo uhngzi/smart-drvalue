@@ -32,7 +32,7 @@ const ArrayContents: React.FC<Props> = ({
   const [yielddata, setYielddata] = useState<yieldInputType | null>(null);
   const [disk, setDisk] = useState<{id:string; diskWidth:number; diskHeight:number;}[]>([]);
 
-  const [kit, setKit] = useState<{id:string, x:number, y:number, minX: number, minY:number, cnt:number}[]>([{id:"new-0", x:0, y:0, minX:0, minY:0, cnt:1}]);
+  const [kit, setKit] = useState<{id:string, x:number, y:number, cnt:number, impedanceLineCnt: number}[]>([{id:"new-0", x:0, y:0, cnt:1, impedanceLineCnt: 0}]);
   const [resultData, setResultData] = useState<arrayCalType[]>([]);
   const [selectData, setSelectData] = useState<arrayCalType>();
 
@@ -41,7 +41,6 @@ const ArrayContents: React.FC<Props> = ({
   useEffect(()=>{
     if(selectData?.board.boardId && selectData?.yieldBoard) {
       const bd = board.find(f=>f.id === selectData?.board.boardId);
-      console.log(bd, selectData.yieldBoard);
       setDetailData({
         ...detailData,
         board: { id: selectData?.board.boardId },
@@ -80,11 +79,12 @@ const ArrayContents: React.FC<Props> = ({
         y: item.kitL ?? 0,
         minX: 0,
         minY: 0,
-        cnt: item.pcsCnt ?? 1,
+        cnt: item.pcsValue ?? 1,
+        impedanceLineCnt: item.impedanceLineCnt ?? 0,
       })));
       const layer = Number(detailData.specModels[0]?.layerEm?.replace("L", "") ?? 0);
       const side = layer <= 2 ? 20 : layer === 4 ? 30 : layer === 6 ? 35 : layer === 8 ? 40 : layer >= 10 ? 50 : 0
-      setYielddata({kitGapX:5.0, kitGapY: 5.0, marginLongSide: side, marginShortSide: side});
+      setYielddata({kitGapX:5.0, kitGapY: 5.0, minWidth: 0, minHeight: 0, marginLongSide: side, marginShortSide: side});
       setResultData([]);
     }
   }, [yieldPopOpen, detailData])

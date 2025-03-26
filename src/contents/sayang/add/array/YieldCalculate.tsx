@@ -25,6 +25,7 @@ import { boardType } from '@/data/type/base/board';
 
 import useToast from '@/utils/useToast';
 import { get } from 'lodash';
+import AntdSelect from '@/components/Select/AntdSelect';
 
 interface Props {
   board: boardType[];
@@ -40,8 +41,8 @@ interface Props {
     diskWidth:number;
     diskHeight:number;
   }[]>>;
-  kit: {id:string, x:number, y:number, minX:number, minY:number, cnt:number}[];
-  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, minX:number, minY:number, cnt:number}[]>>;
+  kit: {id:string, x:number, y:number, cnt:number, impedanceLineCnt:number}[];
+  setKit: React.Dispatch<SetStateAction<{id:string, x:number, y:number, cnt:number, impedanceLineCnt:number}[]>>;
   resultData: arrayCalType[];
   setResultData: React.Dispatch<SetStateAction<arrayCalType[]>>;
   detailData: specType;
@@ -90,9 +91,13 @@ const SayangYieldCalculate: React.FC<Props> = ({
   const items = [
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
+    {value:yielddata?.minWidth, name:'minWidth', label:'Kit긴쪽최소', type:'input', widthType:'full'},
+    {value:yielddata?.minHeight, name:'minHeight', label:'Kit짧은쪽최소', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
     {value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
   ]
+
+  const [useSharingLine, setUseSharingLine] = useState<boolean>(false);
 
   const handleCheckboxChange = (id:string, w: number, h: number) => {
     setDisk([ ...disk.filter(f=>f.id !== id), {id:id, diskWidth:w, diskHeight:h} ]);
@@ -104,10 +109,9 @@ const SayangYieldCalculate: React.FC<Props> = ({
 
       const jsonData = { 
         extraMargin: 0,
+        useSharingLine: useSharingLine,
         boards:disk.map(board=>({boardId:board.id,width:board.diskWidth,height:board.diskHeight})),
-        kits: kit.map((kit, index)=>({kitId:kit.id, width:kit.x, height:kit.y,
-          // minWidth:kit.minX, minHeight:kit.minY,
-          targetCount: kit.cnt})),
+        kits: kit.map((kit, index)=>({kitId:kit.id, width:kit.x, height:kit.y, impedanceLineCount: kit.impedanceLineCnt, targetCount: kit.cnt})),
         panelSpacing: {
           horizontalPadding: yielddata?.marginLongSide,
           verticalPadding: yielddata?.marginShortSide,
@@ -374,6 +378,21 @@ const SayangYieldCalculate: React.FC<Props> = ({
                   }
                 </div>
               ))}
+              <div>
+                <p className='pb-8'>샤링선 여부</p>
+                <div className="h-center gap-10">
+                  <AntdSelect
+                    options={[
+                      {value: true, label: "유"},
+                      {value: false, label: "무"},
+                    ]}
+                    value={useSharingLine}
+                    onChange={(e) => {
+                      setUseSharingLine(e ? true : false);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex-1 h-full overflow-y-auto flex flex-col gap-15">
               {
@@ -397,7 +416,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           </div>,
                           key: 0,
                           onClick: () => {
-                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, minX:0, minY:0, cnt: 1} ])
+                            setKit([ ...kit, {id:"new-"+(kit.length+1), x:0, y:0, cnt: 1, impedanceLineCnt:0} ])
                           }
                         },
                         {
@@ -426,7 +445,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                     <div className="h-center gap-15">
                       <div>
                         <p className='pb-8'>Kit긴쪽길이</p>
-                        <div className="h-center gap-10 w-80">
+                        <div className="h-center gap-10 w-full">
                           <AntdInput 
                             value={item.x}
                             type="number"
@@ -439,7 +458,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                       </div>
                       <div>
                         <p className='pb-8'>Kit짧은쪽길이</p>
-                        <div className="h-center gap-10 w-80">
+                        <div className="h-center gap-10 w-full">
                           <AntdInput 
                             value={item.y}
                             type="number"
@@ -450,9 +469,11 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           />
                         </div>
                       </div>
+                    </div>
+                    <div className="h-center gap-15">
                       <div>
                         <p className='pb-8'>Kit목표개수</p>
-                        <div className="h-center gap-10 w-80">
+                        <div className="h-center gap-10 w-full">
                           <AntdInput 
                             value={item.cnt}
                             type="number"
@@ -463,30 +484,15 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           />
                         </div>
                       </div>
-                    </div>
-                    <div className="h-center gap-15">
                       <div>
-                        <p className='pb-8'>Kit긴쪽최소</p>
-                        <div className="h-center gap-10 w-80">
+                        <p className='pb-8'>Kit임피던스</p>
+                        <div className="h-center gap-10 w-full">
                           <AntdInput 
-                            value={item.minX}
+                            value={item.impedanceLineCnt}
                             type="number"
                             onChange={(e)=>{
                               let { value } = e.target;
-                              handleDataChange(item.id, "minX", value);
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <p className='pb-8'>Kit짧은쪽최소</p>
-                        <div className="h-center gap-10 w-80">
-                          <AntdInput 
-                            value={item.minY}
-                            type="number"
-                            onChange={(e)=>{
-                              let { value } = e.target;
-                              handleDataChange(item.id, "minY", value);
+                              handleDataChange(item.id, "impedanceLineCnt", value);
                             }}
                           />
                         </div>
