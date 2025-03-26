@@ -117,7 +117,7 @@ export type specModelType = {
   deletedAt?: Date | Dayjs | null;
   matchId?: string;
   prdCnt?: number;
-  pcsCnt?: number;
+  pcsValue?: number;
   impedanceLineCnt?: number;
   index?: number;
 }
@@ -160,6 +160,9 @@ export type yieldInputType = {
   kitArrangeY?: number | string;
   marginLongSide?: number | string;
   marginShortSide?: number | string;
+  useSharingLine?: boolean;
+  minWidth?: number,
+  minHeight?: number,
 }
 
 export const yieldInputReq = () => {

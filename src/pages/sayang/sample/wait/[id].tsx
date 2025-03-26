@@ -165,7 +165,7 @@ const SayangSampleAddPage: React.FC & {
       const models = rdata.specModels?.map((model:specModelType, index:number) => ({
         ...model,
         index: index+1,
-        pcsCnt: model.pcsCnt ?? model.modelMatch?.orderModel.orderPrdCnt ?? 1,
+        pcsValue: model.pcsValue ?? model.modelMatch?.orderModel.orderPrdCnt ?? 1,
       }))
       setDetailData({
         ...rdata,

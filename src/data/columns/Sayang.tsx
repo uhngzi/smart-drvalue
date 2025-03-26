@@ -1283,8 +1283,8 @@ export const sayangSampleWaitAddClmn = (
         <AutoHideTooltip title="PCS 수량">
         <div className={divClass}>
           <AntdInputFill
-            value={record.pcsCnt}
-            onChange={(e)=>handleModelDataChange(record.id, 'pcsCnt', e.target.value)}
+            value={record.pcsValue}
+            onChange={(e)=>handleModelDataChange(record.id, 'pcsValue', e.target.value)}
             className='!text-12'
             type="number"
             tabIndex={(record?.index ?? 1)*40+38}

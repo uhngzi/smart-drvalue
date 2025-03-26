@@ -316,7 +316,7 @@ export const changeSayangTemp = (
         specPad: model.specPad,
         prdCnt: model.prdCnt,
         impedanceLineCnt: model.impedanceLineCnt,
-        // pcsCnt: model.pcsCnt,
+        pcsValue: model.pcsValue,
       })),
     }
     if(specData?.specPrdGroupPrcs && specData.specPrdGroupPrcs.length > 0){
