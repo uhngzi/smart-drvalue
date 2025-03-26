@@ -1211,12 +1211,9 @@ export const BuyOrderMtClmn = (
     dataIndex: 'index',
     key: 'index',
     align: 'center',
-    cellAlign: 'center',
-    editable: false,
-    tooltip: "클릭 시 해당 발주 품목의 원자재 단가 목록을 선택할 수 있어요",
     render: (_: any, record: buyOrderDetailType, index: number) => 
       <div className="w-full h-full v-h-center">
-        <Tooltip title={selectMtIdx?.orderId === record.id ? "현재 단가 목록에 보여지고 있는 원자재예요" : undefined}>
+        <Tooltip title={selectMtIdx?.orderId === record.id ? "현재 단가 목록에 보여지고 있는 원자재예요" : "클릭 시 해당 발주 품목의 원자재 단가 목록을 선택할 수 있어요"}>
         <div
           className={`w-30 h-30 v-h-center ml-[-5px] rounded-full cursor-pointer ${
             selectMtIdx?.orderId === record.id ? "bg-[#F0F5FF]" : ""
@@ -1240,8 +1237,6 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtNm',
     key: 'mtNm',
     align: 'center',
-    cellAlign: 'left',
-    editable: false,
     render: (_, record:buyOrderDetailType, index) => {
       return (
       <div className="w-full h-center gap-5 px-10">
@@ -1258,6 +1253,8 @@ export const BuyOrderMtClmn = (
             onChange={(e)=>{
               if(e+"" === "직접입력") setSelectMtIdx(null);
               handleDataChange(record.id ?? '', "materialGrpIdx", e);
+              handleDataChange(record.id ?? '', "materialIdx", null);
+              handleDataChange(record.id ?? '', "mtNm", null);
             }}
             placeholder="원자재 그룹"
           />
@@ -1298,6 +1295,17 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderUnit',
     key: 'mtOrderUnit',
     align: 'center',
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderUnit}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderUnit", e.target.value)}
+            placeholder="단위 입력"
+          />
+        </div>
+      )
+    }
   },
   {
     title: '재질',
@@ -1305,6 +1313,17 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderTxtur',
     key: 'mtOrderTxtur',
     align: 'center',
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderTxtur}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderTxtur", e.target.value)}
+            placeholder="재질 입력"
+          />
+        </div>
+      )
+    }
   },
   {
     title: 'W',
@@ -1312,10 +1331,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderSizeW',
     key: 'mtOrderSizeW',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderSizeW}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderSizeW", e.target.value)}
+            type="number" placeholder="W 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1324,10 +1349,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderSizeH',
     key: 'mtOrderSizeH',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderSizeH}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderSizeH", e.target.value)}
+            type="number" placeholder="H 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1336,10 +1367,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderThk',
     key: 'mtOrderThk',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderThk}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderThk", e.target.value)}
+            type="number" placeholder="두께 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1348,10 +1385,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderWeight',
     key: 'mtOrderWeight',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderWeight}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderWeight", e.target.value)}
+            type="number" placeholder="무게 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1360,10 +1403,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderQty',
     key: 'mtOrderQty',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderQty}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderQty", e.target.value)}
+            type="number" placeholder="수량 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1372,10 +1421,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderInputPrice',
     key: 'mtOrderInputPrice',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderInputPrice}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderInputPrice", e.target.value)}
+            type="number" placeholder="단가 입력"
+          />
+        </div>
+      )
     }
   },
   {
@@ -1384,10 +1439,16 @@ export const BuyOrderMtClmn = (
     dataIndex: 'mtOrderAmount',
     key: 'mtOrderAmount',
     align: 'center',
-    inputType: 'number',
-    cellAlign: 'right',
-    render: (value:number) => {
-      return value.toLocaleString();
+    render: (_, record:buyOrderDetailType) => {
+      return (
+        <div className="w-full h-center px-10">
+          <AntdInput
+            value={record.mtOrderAmount}
+            onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderAmount", e.target.value)}
+            type="number" placeholder="금액 입력"
+          />
+        </div>
+      )
     }
   },
   {

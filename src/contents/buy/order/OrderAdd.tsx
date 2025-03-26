@@ -503,46 +503,46 @@ const OrderAddLayout = () => {
   }
 
     // 발주 품목 내 원자재 그룹, 원자재 값 변경
-  const handleDataChange = (
-    id: string,
-    name: string,
-    value: any
-  ) => {
-    // 데이터를 복사
-    const updatedData = orderDetails.map((item) => {
-      if (item.id === id) {
-        const keys = name.split(".");
-        const updatedItem = { ...item };
+  // const handleDataChange = (
+  //   id: string,
+  //   name: string,
+  //   value: any
+  // ) => {
+  //   // 데이터를 복사
+  //   const updatedData = orderDetails.map((item) => {
+  //     if (item.id === id) {
+  //       const keys = name.split(".");
+  //       const updatedItem = { ...item };
   
-        // 마지막 키를 제외한 객체 탐색
-        const lastKey = keys.pop()!;
-        let targetObject: any = updatedItem;
+  //       // 마지막 키를 제외한 객체 탐색
+  //       const lastKey = keys.pop()!;
+  //       let targetObject: any = updatedItem;
   
-        keys.forEach((key) => {
-          // 중간 키가 없거나 null인 경우 초기화
-          if (!targetObject[key] || typeof targetObject[key] !== "object") {
-            targetObject[key] = {};
-          }
-          targetObject = targetObject[key];
-        });
+  //       keys.forEach((key) => {
+  //         // 중간 키가 없거나 null인 경우 초기화
+  //         if (!targetObject[key] || typeof targetObject[key] !== "object") {
+  //           targetObject[key] = {};
+  //         }
+  //         targetObject = targetObject[key];
+  //       });
   
-        // 최종 키에 새 값 할당
-        targetObject[lastKey] = value;
+  //       // 최종 키에 새 값 할당
+  //       targetObject[lastKey] = value;
 
-        // 원자재 그룹 값 변경 시 원자재 값 초기화
-        if(name === "materialGrpIdx") {
-           targetObject["materialIdx"] = null;
-           targetObject["mtNm"] = null;
-        }
+  //       // 원자재 그룹 값 변경 시 원자재 값 초기화
+  //       if(name === "materialGrpIdx") {
+  //          targetObject["materialIdx"] = null;
+  //          targetObject["mtNm"] = null;
+  //       }
 
-        return updatedItem;
-      }
+  //       return updatedItem;
+  //     }
 
-      return item; // 다른 데이터는 그대로 유지
-    });
+  //     return item; // 다른 데이터는 그대로 유지
+  //   });
 
-    setOrderDetails(updatedData); // 상태 업데이트
-  }; 
+  //   setOrderDetails(updatedData); // 상태 업데이트
+  // };
   // ------------- step 2단계 --------------- 끝
 
   // ------------- step 3단계 --------------- 시작
@@ -575,7 +575,7 @@ const OrderAddLayout = () => {
   }, [totalByMtId])
 
     // 도착, 입고 수량 변경
-  const handleDataQtyChange = (id:string, value:number, name:string) => {
+  const handleDataChange = (id:string, name:string, value:any) => {
     const updateData = orderDetails;
     const index = updateData.findIndex(f=> f.id === id);
     if(index > -1) {
@@ -850,8 +850,7 @@ const OrderAddLayout = () => {
               />}
             </Popup>
 
-            <Popup
-              title="발주 품목"
+            <Popup title="발주 품목"
               titleEtc={ order?.status === "INPUT" &&
                 <div className="h-center flex-1 justify-end gap-8">
                   <LabelThin label="도착일" />
@@ -886,7 +885,7 @@ const OrderAddLayout = () => {
                 </div>
               }
             >
-              <AntdTableEdit
+              <AntdTable
                 columns={BuyOrderMtClmn(
                   handleDeleteMt,
                   handleDataChange,
@@ -895,7 +894,6 @@ const OrderAddLayout = () => {
                   selectMtIdx,
                 )}
                 data={orderDetails}
-                setData={setOrderDetails}
                 styles={{
                   th_bg: "#FAFAFA",
                   td_bg: "#FFFFFF",
@@ -903,7 +901,6 @@ const OrderAddLayout = () => {
                   th_fw: "bold",
                   td_pd: "0",
                 }}
-                create
               />
               <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
                 onClick={() => {
@@ -1034,10 +1031,10 @@ const OrderAddLayout = () => {
                           value={item.mtOrderArrivalQty}
                           onFocus={() => {
                             if(!item.mtOrderArrivalQty || item.mtOrderArrivalQty < 1)
-                              handleDataQtyChange(item.id ?? "", item.mtOrderQty ?? 0, 'mtOrderArrivalQty');
+                              handleDataChange(item.id ?? "", 'mtOrderArrivalQty', item.mtOrderQty ?? 0);
                           }}
                           onChange={(e) => {
-                            handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderArrivalQty');
+                            handleDataChange(item.id ?? "", 'mtOrderArrivalQty', Number(e.target.value ?? 0));
                           }}
                           type="number" className="!w-80" styles={{ht:"32px"}}
                         />
@@ -1046,7 +1043,7 @@ const OrderAddLayout = () => {
                         <AntdInput
                           value={item.mtOrderInputQty}
                           onChange={(e) => {
-                            handleDataQtyChange(item.id ?? "", Number(e.target.value ?? 0), 'mtOrderInputQty');
+                            handleDataChange(item.id ?? "", 'mtOrderInputQty', Number(e.target.value ?? 0));
                           }}
                           type="number" className="!w-80" styles={{ht:"32px"}}
                         />
