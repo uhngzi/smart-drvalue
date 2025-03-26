@@ -3,7 +3,7 @@ import { instance, instanceRoot } from "./lib/axios"
 
 export const deleteAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1',
+    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'core-d3',
     utype?: 'root/' | 'tenant/',
     url: string,
     jsx: 'jsxcrud' | 'default',
