@@ -12,6 +12,7 @@ interface Props {
   className?: string;
   styles?: componentsStylesType;
   tabIndex?: number;
+  dropWidth?: string;
 }
 
 const AntdSelectFillRound : React.FC<Props> = ({ 
@@ -22,6 +23,7 @@ const AntdSelectFillRound : React.FC<Props> = ({
   className,
   styles,
   tabIndex,
+  dropWidth,
 }) => {
 
   return (
@@ -39,7 +41,7 @@ const AntdSelectFillRound : React.FC<Props> = ({
         disabled={disabled}
         loading={loading}
         suffixIcon={<Arrow className="w-18 h-15" stroke="#979797" stroke-width="2.6px" />}
-        dropdownStyle={{ minWidth: "max-content", maxWidth: "100px" }}
+        dropdownStyle={dropWidth ? { minWidth: "max-content", width: dropWidth } : { minWidth: "max-content" }}
         tabIndex={tabIndex}
       />
     </AndtSelectStyled>
