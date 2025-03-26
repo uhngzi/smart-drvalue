@@ -16,7 +16,7 @@ interface Props {
   clear?: boolean;
 }
 
-const CustomAutoCompleteModel = forwardRef<InputRef, Props>((
+const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
   { 
       option = [],
       onChange,
@@ -103,6 +103,6 @@ const CustomAutoCompleteModel = forwardRef<InputRef, Props>((
   );
 });
 
-CustomAutoCompleteModel.displayName = "CustomAutoComplete";
+CustomAutoCompleteLabel.displayName = "CustomAutoComplete";
 
-export default CustomAutoCompleteModel;
+export default CustomAutoCompleteLabel;

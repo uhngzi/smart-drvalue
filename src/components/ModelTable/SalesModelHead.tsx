@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
 import { modelsType } from "@/data/type/sayang/models";
 import { getAPI } from "@/api/get";
-import CustomAutoCompleteModel from "../AutoComplete/CustomAutoCompleteLabel";
+import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
 import { BoardGroupType, boardType } from "@/data/type/base/board";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
@@ -179,7 +179,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.orderTit} disabled
             />
             :
-            <CustomAutoCompleteModel
+            <CustomAutoCompleteLabel
               ref={el => {
                 // 자동 스크롤 & 포커싱을 위해 Ref 추가
                 if(el &&inputRef && inputRef.current && model.index) {
@@ -220,7 +220,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.prdMngNo} disabled
             />
             :
-            <CustomAutoCompleteModel
+            <CustomAutoCompleteLabel
               option={modelNoSelectList}
               label={modelNo}
               onInputChange={(value) => {
