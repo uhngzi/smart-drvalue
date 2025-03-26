@@ -43,6 +43,9 @@ import { DividerH } from '@/components/Divider/Divider';
 import { RightTab } from '@/layouts/Body/RightTab';
 import { IconButton } from '@/components/Button/IconButton';
 import { Popup } from '@/layouts/Body/Popup';
+import { selectType } from '@/data/type/componentStyles';
+import { BoardGroupType, boardType } from '@/data/type/base/board';
+import { apiGetResponseType } from '@/data/type/apiResponse';
 
 
 const SayangModelAddPage: React.FC & {
@@ -55,7 +58,7 @@ const SayangModelAddPage: React.FC & {
   
   // 베이스 값 가져오기
   const { 
-    boardSelectList,
+    // boardSelectList,
     metarialSelectList,
     surfaceSelectList,
     unitSelectList,
@@ -71,6 +74,41 @@ const SayangModelAddPage: React.FC & {
     spTypeSelectList,
   } = useBase();
 
+  // ------------- 원판그룹(제조사) ------------- 시작
+  const [boardSelectList, setBoardSelectList] = useState<selectType[]>([]);
+  const [boardGroupSelectList, setBoardGroupSelectList] = useState<selectType[]>([]);
+  const [boardGroup, setBoardGroup] = useState<BoardGroupType[]>([]);
+  const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["board"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'board-group/jsxcrud/many'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const bg = (result.data?.data ?? []) as BoardGroupType[];
+        const arr = bg.map((d:BoardGroupType) => ({
+          value: d.id,
+          label: d.brdGrpName,
+        }))
+        setBoardGroup(bg);
+        setBoardGroupSelectList(arr);
+        if(bg.length > 0 && bg[0].boards && bg[0].boards?.length > 0) {
+          setBoardSelectList(bg[0].boards.map((item:boardType)=>({
+            value: item.id,
+            label: item.brdType
+          })))
+        }
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
+  // ------------- 원판그룹(제조사) ------------- 끝
+  
   // ------------- 발주 데이터 세팅 ------------- 시작
   const [orderModels, setOrderModels] = useState<salesOrderProductRType[]>([]);
   const { data:queryOrderModelData, isLoading:orderModelLoading } = useQuery({
@@ -516,7 +554,10 @@ const SayangModelAddPage: React.FC & {
                       read={true}
                       model={model}
                       handleModelDataChange={handleModelDataChange}
-                      // boardSelectList={boardSelectList}
+                      boardGroup={boardGroup}
+                      boardGroupSelectList={boardGroupSelectList}
+                      boardSelectList={boardSelectList}
+                      setBoardSelectList={setBoardSelectList}
                       metarialSelectList={metarialSelectList}
                       selectId={selectId ?? ""}
                       newFlag={newFlag}
