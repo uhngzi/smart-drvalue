@@ -24,6 +24,7 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const { pathname } = useRouter();
+
   useEffect(() => {
     if(pathname.startsWith('/setting') || pathname.startsWith('/sign')){
       document.body.classList.add('no-width')

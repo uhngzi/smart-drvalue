@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAPI } from "@/api/get";
-import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
+import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
+import { loginCheck } from "@/utils/signUtil";
 
 export interface User {
   id: string;
@@ -19,11 +20,23 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [login, setLogin] = useState<boolean>(false);
+
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      setLogin(false);
+    } else {
+      setLogin(true);
+    }
+  });
+
+
   const [me, setMe] = useState<User | null>(null);
   const [meLoading, setMeLoading] = useState<boolean>(true);
 
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["me"],
+    queryKey: ["me", login],
     queryFn: async () => {
       setMeLoading(true);
       const result = await getAPI({ type: "auth", url: "me/tenant" });
@@ -35,6 +48,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
 
   return (

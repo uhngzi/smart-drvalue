@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAPI } from "@/api/get";
-import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
+import { apiGetResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
 import { boardType } from "../type/base/board";
 import { selectType } from "../type/componentStyles";
 import { commonCodeRType } from "../type/base/common";
+import { loginCheck } from "@/utils/signUtil";
 
 interface BaseContextType {
   board: boardType[];
@@ -54,11 +55,22 @@ interface BaseContextType {
 const BaseContext = createContext<BaseContextType | undefined>(undefined);
 
 export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [login, setLogin] = useState<boolean>(false);
+
+  useEffect(()=>{
+    // 로그인 안 했을 경우 로그인 페이지로 이동
+    if(typeof window !== 'undefined' && !loginCheck()) {
+      setLogin(false);
+    } else {
+      setLogin(true);
+    }
+  });
+
   // ------------ 원판 ------------ 시작
   const [boardSelectList, setBoardSelectList] = useState<selectType[]>([]);
   const [board, setBoard] = useState<boardType[]>([]);
   const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["board"],
+    queryKey: ["board", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -78,6 +90,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ 원판 ------------ 끝
 
@@ -85,7 +98,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [metarialSelectList, setMetarialSelectList] = useState<selectType[]>([]);
   const [metarial, setMetarial] = useState<commonCodeRType[]>([]);
   const { refetch:refetchMetarial } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["metarial"],
+    queryKey: ["metarial", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -105,6 +118,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ 재질 ------------ 끝
 
@@ -112,7 +126,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [surfaceSelectList, setSurfaceSelectList] = useState<selectType[]>([]);
   const [surface, setSurface] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSurface } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["surface"],
+    queryKey: ["surface", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -132,6 +146,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ 표면 ------------ 끝
 
@@ -139,7 +154,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [unitSelectList, setUnitSelectList] = useState<selectType[]>([]);
   const [unit, setUnit] = useState<commonCodeRType[]>([]);
   const { refetch:refetchUnit } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["unit"],
+    queryKey: ["unit", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -159,6 +174,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ 단위 ------------ 끝
 
@@ -166,7 +182,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [vcutSelectList, setVcutSelectList] = useState<selectType[]>([]);
   const [vcut, setVcut] = useState<commonCodeRType[]>([]);
   const { refetch:refetchVcut } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["vcut"],
+    queryKey: ["vcut", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -186,6 +202,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ VCUT ----------- 끝
 
@@ -193,7 +210,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [outSelectList, setOutSelectList] = useState<selectType[]>([]);
   const [out, setOut] = useState<commonCodeRType[]>([]);
   const { refetch:refetchOut } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["out"],
+    queryKey: ["out", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -213,6 +230,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- 외형가공 ---------- 끝
 
@@ -220,7 +238,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [smPrintSelectList, setSmPrintSelectList] = useState<selectType[]>([]);
   const [smPrint, setSmPrint] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSmPrint } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["smPrint"],
+    queryKey: ["smPrint", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -240,6 +258,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- SM인쇄 ----------- 끝
 
@@ -247,7 +266,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [smColorSelectList, setSmColorSelectList] = useState<selectType[]>([]);
   const [smColor, setSmColor] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSmColor } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["smColor"],
+    queryKey: ["smColor", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -267,6 +286,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- SM색상 ----------- 끝
 
@@ -274,7 +294,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [smTypeSelectList, setSmTypeSelectList] = useState<selectType[]>([]);
   const [smType, setSmType] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSmType } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["smType"],
+    queryKey: ["smType", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -294,6 +314,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- SM종류 ----------- 끝
 
@@ -301,7 +322,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [mkPrintSelectList, setMkPrintSelectList] = useState<selectType[]>([]);
   const [mkPrint, setMkPrint] = useState<commonCodeRType[]>([]);
   const { refetch:refetchMkPrint } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["mkPrint"],
+    queryKey: ["mkPrint", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -321,6 +342,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- MK인쇄 ----------- 끝
 
@@ -328,7 +350,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [mkColorSelectList, setMkColorSelectList] = useState<selectType[]>([]);
   const [mkColor, setMkColor] = useState<commonCodeRType[]>([]);
   const { refetch:refetchMkColor } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["mkColor"],
+    queryKey: ["mkColor", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -348,6 +370,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- MK색상 ----------- 끝
 
@@ -355,7 +378,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [mkTypeSelectList, setMkTypeSelectList] = useState<selectType[]>([]);
   const [mkType, setMkType] = useState<commonCodeRType[]>([]);
   const { refetch:refetchMkType } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["mkType"],
+    queryKey: ["mkType", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -375,6 +398,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ------------ MK종류 ----------- 끝
 
@@ -382,7 +406,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [spPrintSelectList, setSpPrintSelectList] = useState<selectType[]>([]);
   const [spPrint, setSpPrint] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSpPrint } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["spPrint"],
+    queryKey: ["spPrint", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -402,6 +426,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- 특수인쇄 ---------- 끝
 
@@ -409,7 +434,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [spTypeSelectList, setSpTypeSelectList] = useState<selectType[]>([]);
   const [spType, setSpType] = useState<commonCodeRType[]>([]);
   const { refetch:refetchSpType } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["spType"],
+    queryKey: ["spType", login],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo',
@@ -429,6 +454,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
+    enabled: login
   });
   // ----------- 특수인쇄 ---------- 끝
 
