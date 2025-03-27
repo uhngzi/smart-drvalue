@@ -22,7 +22,7 @@ export type processRType = {
   }[];
   prcNm?: string;
   useYn?: boolean;
-  ordNo: number;
+  ordNo?: number;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

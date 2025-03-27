@@ -273,12 +273,12 @@ const ProcessSelection: React.FC<Props> = ({
         setDetailData({
           ...detailData,
           specPrdGroupPrcs: jsonData?.data?.map((item, index) => ({
-              ordNo: item.order,
-              prcWkRemark: item.prcWkRemark,
-              prdGrpNm: selectPrdGrp.name,
-              process: {id: item.prcIdx },
-              productLinesGroup: { id: selectPrdGrp.id },
-              vendor: { id: item.vendorIdx, prtNm:selectedVendors.find(f=>f.vid === item.vendorIdx)?.vname },
+            ordNo: item.order,
+            prcWkRemark: item.prcWkRemark,
+            prdGrpNm: selectPrdGrp.name,
+            process: {id: item.prcIdx },
+            productLinesGroup: { id: selectPrdGrp.id },
+            vendor: { id: item.vendorIdx, prtNm:selectedVendors.find(f=>f.vid === item.vendorIdx)?.vname },
           }))
         })
       } else {
