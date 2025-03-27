@@ -99,7 +99,7 @@ const SalesModelHead:React.FC<Props> = ({
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
   const [modelNm, setModelNm] = useState<string>(model?.orderTit ?? "");
-  const [modelNo, setModelNo] = useState<string>(model?.prdMngNo ?? "");
+  const [modelNo, setModelNo] = useState<string>(model?.currPrdInfo?.prdMngNo ?? "");
 
   const [modelList, setModelList] = useState<modelsType[]>([]);
   const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
@@ -116,7 +116,7 @@ const SalesModelHead:React.FC<Props> = ({
         limit: 100,
         s_query: { "$or": [
           modelNm.length > 0 ? {"prdNm": {"$startsL": modelNm}} : {},
-          modelNo.length > 0 ? {"prxdMngNo": {"$startsL": modelNo}} : {},
+          modelNo.length > 0 ? {"prdMngNo": {"$startsL": modelNo}} : {},
         ]}
       });
 

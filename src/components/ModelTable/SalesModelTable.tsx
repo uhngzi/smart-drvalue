@@ -146,6 +146,7 @@ const SalesModelTable:React.FC<Props> = ({
         currPrdInfo: { ...model },
         orderTit: model.prdNm,
         modelId: model.id,
+        prdMngNo: model.prdMngNo,
       };
       setData(newData);
       console.log(newData);
