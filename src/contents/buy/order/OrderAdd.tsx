@@ -964,9 +964,9 @@ const OrderAddLayout = () => {
                       불량종류
                     </div>
                   { mtBad.filter(f=>f.materialGroup?.id === item.materialGrpIdx).length > 0 ?
-                    <div className="flex flex-1 flex-wrap">
+                    <div className="flex flex-1 flex-wrap gap-10">
                       {mtBad.filter(f=>f.materialGroup?.id === item.materialGrpIdx).map((badItem:materialGroupBadType, index:number) => (
-                        <div key={index} className="w-1/3 h-center mb-4">
+                        <div key={index} className="h-center mb-4">
                         <LabelItem label={badItem.badNm ?? ""} className="!gap-0">
                           <AntdInput
                             value={badCnt.find(f=>f.badId === badItem.id && f.mtId === item.id)?.cnt}
