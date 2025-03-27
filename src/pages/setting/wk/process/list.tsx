@@ -61,9 +61,11 @@ const WkProcessGroupListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
+          ordNo: group.ordNo,
           children: group.processes.map((process:processRType) => ({
             id: process.id,
             label: process.prcNm,
+            ordNo: process.ordNo,
           })),
           open: true,
         }));
@@ -124,8 +126,10 @@ const WkProcessGroupListPage: React.FC & {
           url = "process";
           jsonData.processGroup = {id: item.parentId};
           jsonData.prcNm = item.label;
+          jsonData.ordNo = Number(item.ordNo);
         }else{
           jsonData.prcGrpNm = item.label;
+          jsonData.ordNo = Number(item.ordNo);
         }
         result = await onTreeEdit(item, url, jsonData);
         if(!result){

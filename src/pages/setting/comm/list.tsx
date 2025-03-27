@@ -8,6 +8,7 @@ import { commonCodeCUType, commonCodeGroupType, commonCodeGrpReq, commonCodeReq,
 import { deptRType } from "@/data/type/base/hr";
 import { selectType, treeType } from "@/data/type/componentStyles";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
+import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
@@ -27,14 +28,20 @@ const CommonListPage: React.FC & {
   const [ editList, setEditList ] = useState<any[]>([]);
   const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
   const [teamList, setTeamList] = useState<selectType[]>([]);
-  const [ addEditsInfo, setAddEditsInfo ] = useState<any[]>([]);
+  const [ addParentEditsInfo, setAddParentEditsInfo ] = useState<any[]>([]);
+  const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
 
   const addEdits = {
-    info: addEditsInfo, 
-    setInfo: setAddEditsInfo,
-    addEditList:[
+    info: addParentEditsInfo, 
+    setInfo: setAddParentEditsInfo,
+    childInfo: addChildEditsInfo,
+    setChildInfo: setAddChildEditsInfo,
+    addParentEditList:[
       {type:"input", key:"cdGrpDesc", name:"시스템사용"},
-      {type:"select", key:"teamId", name:"부서", selectData:teamList,}
+      {type:"select", key:"teamId", name:"부서", selectData:teamList,},
+    ],
+    addChildEditList:[
+      {type:"input", key:"cdDesc", name:"설명"},
     ]
   }
 
@@ -58,20 +65,36 @@ const CommonListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((d:commonCodeGroupType) => ({
           id: d.id,
           label: d.cdGrpNm,
+          cdGrpDesc: d.cdGrpDesc,
+          ordNo: d.ordNo,
+          teamId: d.team?.id,
           children: (d.codes ?? []).map((c:commonCodeRType) => ({
             id: c.id,
             label: c.cdNm,
+            cdDesc: c.cdDesc,
+            ordNo: c.ordNo,
           })),
           open:true
         }))
         const addInfoArr = (result.data?.data ?? []).map((d:commonCodeGroupType) => ({
           id: d.id,
           cdGrpDesc: d.cdGrpDesc,
-          team: d.team?.id,
+          teamId: d.team?.id,
+          ordNo: d.ordNo
         }))
 
+        const childInfoArr = (result.data?.data ?? []).flatMap((d:commonCodeGroupType) => 
+          (d.codes ?? []).map((c:commonCodeRType) => ({
+            id: c.id,
+            label: c.cdNm,
+            cdDesc: c.cdDesc,
+            ordNo: c.ordNo
+          }))
+        )
+        console.log(addInfoArr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         setTreeData(arr);
-        setAddEditsInfo(addInfoArr);
+        setAddParentEditsInfo(addInfoArr);
+        setAddChildEditsInfo(childInfoArr);
       } else {
         console.log('error:', result.response);
       }
@@ -102,6 +125,75 @@ const CommonListPage: React.FC & {
       return result;
     },
   });
+
+  // 트리데이터 submit 함수
+  async function onTreeSubmit(){
+      console.log(addList, editList, deleteList);
+      const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
+      console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
+      let result = false
+  
+      for(const item of updatedAddList){
+        let url: string = "common-code-group";
+        let parent: string = '';
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+  
+        if(item.parentId) {
+          url = "common-code";
+          parent = "common-code-group";
+          jsonData.codeGroup = {id: item.parentId};
+          jsonData.cdNm = item.label;
+        }else{
+          jsonData.cdGrpNm = item.label;
+        }
+        result = await onTreeAdd(url, jsonData);
+        if(!result) {
+          showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+        }
+        console.log("add", result)
+      }
+  
+      for(const item of finalEditList){
+        let url: string = "common-code-group";
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+  
+        if(item.parentId) {
+          url = "common-code";
+          jsonData.codeGroup = {id: item.parentId};
+          jsonData.cdNm = item.label;
+          jsonData.cdDesc = item.cdDesc;
+          jsonData.ordNo = Number(item.ordNo);
+        }else{
+          jsonData.team = {id: item.teamId};
+          jsonData.cdGrpNm = item.label;
+          jsonData.cdGrpDesc = item.cdGrpDesc;
+          jsonData.ordNo = Number(item.ordNo);
+        }
+        result = await onTreeEdit(item, url, jsonData);
+        if(!result){
+          showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+        }
+      }
+  
+      for(const item of updatedDeleteList){
+        let url: string = "common-code-group";
+        if(item.type === 'child'){
+          url = "common-code";
+        }
+        result = await onTreeDelete(item, url);
+        if(!result){
+          showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+        }
+      }
+      console.log(result);
+      if(result) {
+        setAddList([]);
+        setEditList([]);
+        setDeleteList([]);
+        showToast('저장이 완료되었습니다.', 'success');
+        refetch();
+      }
+    }
 
     // 그룹 등록 함수
   const handleSubmit = async () => {
@@ -163,7 +255,6 @@ const CommonListPage: React.FC & {
       setEditIndex(-1);
     }
   }
-  console.log(addEditsInfo)
   // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
   useEffect(()=>{
     if(editIndex > -1) {
@@ -176,10 +267,10 @@ const CommonListPage: React.FC & {
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="h-[900px] h-full">
+        <div className="h-[calc(100vh-120px)]">
         <CustomTree
             data={treeData}
-            onSubmit={()=>{}}
+            onSubmit={onTreeSubmit}
             setAddList={setAddList}
             setEditList={setEditList}
             setDelList={setDeleteList}
@@ -192,7 +283,7 @@ const CommonListPage: React.FC & {
   )
 }
 CommonListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'70px'}}>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'30px 70px'}}>{page}</SettingPageLayout>
 )
 
 export default CommonListPage;

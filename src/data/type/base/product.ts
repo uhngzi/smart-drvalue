@@ -30,6 +30,7 @@ export const newDataProductLinesType = ():productLinesCUType => {
 export type productLinesGroupRType = {
   id: string;
   name: string;
+  ordNo?: number | string;
   productLines?: productLinesRType[];
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;

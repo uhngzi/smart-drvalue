@@ -6,6 +6,7 @@ export type commonCodeGroupType = {
   id?: string;
   cdGrpNm: string;
   cdGrpDesc: string;
+  ordNo?: number;
   useYn: boolean;
   team?: {
     id: string;
@@ -50,6 +51,7 @@ export type commonCodeRType = {
   id: string;
   cdNm?: string;
   cdDesc?: string;
+  ordNo?: number;
   useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;

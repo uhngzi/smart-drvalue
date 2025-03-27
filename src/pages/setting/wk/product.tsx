@@ -51,6 +51,7 @@ const WkProductListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((d:productLinesGroupRType)=>({
           id: d.id,
           label: d.name,
+          ordNo: d.ordNo,
           open: true
         }))
         setTreeData(arr);
@@ -132,7 +133,7 @@ const WkProductListPage: React.FC & {
     }
 
     for(const item of finalEditList){
-      const jsonData = {name: item.label};
+      const jsonData = {name: item.label, ordNo: Number(item.ordNo)};
          
       result = await onTreeEdit(item, url, jsonData);
       if(!result){

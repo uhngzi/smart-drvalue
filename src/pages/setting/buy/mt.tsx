@@ -227,11 +227,11 @@ const BuyMtListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((d:materialGroupType)=>({
           id: d.id,
           label: d.mtGrpNm,
-          odNum: d.ordNo,
+          ordNo: d.ordNo,
           useYn: d.useYn,
           open: true
         }))
-        setMtGroupTreeData(arr);
+        setMtGroupTreeData(arr); // 원자재 그룹 트리에 들어갈 데이터
 
         const addList = (result.data?.data ?? []).map((d:materialGroupType) => ({
           value: d.id,
@@ -239,7 +239,7 @@ const BuyMtListPage: React.FC & {
         }))
         console.log(addList)
         setAddModalInfoList((prev:any) => prev.map((d:any) => d.name === 'materialGroup.id' ? {...d, option: addList} : d));
-        setMtGroupSelectData(addList)
+        setMtGroupSelectData(addList) // 원자재 등록 팝업 그룹 select에 들어갈 데이터
       } else {
         console.log('error:', result.response);
       }
@@ -254,7 +254,7 @@ const BuyMtListPage: React.FC & {
     const url = "material-group";
     
     for(const item of updatedAddList){
-      const jsonData = {mtGrpNm: item.label, odNum: 1, useYn:true};
+      const jsonData = {mtGrpNm: item.label, ordNo: 1, useYn:true};
 
       result = await onTreeAdd(url, jsonData);
 
@@ -265,7 +265,7 @@ const BuyMtListPage: React.FC & {
     }
 
     for(const item of finalEditList){
-      const jsonData = {mtGrpNm: item.label};
+      const jsonData = {mtGrpNm: item.label, ordNo: Number(item.ordNo)};
         
       result = await onTreeEdit(item, url, jsonData);
       if(!result){

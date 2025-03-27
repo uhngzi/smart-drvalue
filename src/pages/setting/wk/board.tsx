@@ -236,7 +236,7 @@ const WkBoardListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((d:BoardGroupType)=>({
           id: d.id,
           label: d.brdGrpName,
-          odNum: d.ordNo,
+          ordNo: d.ordNo,
           useYn: d.useYn,
           open: true
         }))
@@ -274,7 +274,7 @@ const WkBoardListPage: React.FC & {
     }
 
     for(const item of finalEditList){
-      const jsonData = {brdGrpName: item.label};
+      const jsonData = {brdGrpName: item.label, ordNo: Number(item.ordNo)};
         
       result = await onTreeEdit(item, url, jsonData);
       if(!result){
