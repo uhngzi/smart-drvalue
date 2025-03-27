@@ -143,7 +143,7 @@ const SalesModelTable:React.FC<Props> = ({
     if(index > -1) {
       newData[index] = {
         ...newData[index],
-        currPrdInfo: { ...model },
+        currPrdInfo: { ...newData[index].currPrdInfo, ...model },
         orderTit: model.prdNm,
         modelId: model.id,
         prdMngNo: model.prdMngNo,
@@ -259,11 +259,7 @@ const SalesModelTable:React.FC<Props> = ({
       console.log("CATCH ERROR :: ", e);
     }
   };
-
-  useEffect(()=>{
-    console.log(data)
-  }, [data])
-
+  
   return (
     <div className="gap-40 flex flex-col overflow-auto">
     { data.length > 0 && data

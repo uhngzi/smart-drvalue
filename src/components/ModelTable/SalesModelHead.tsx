@@ -267,7 +267,7 @@ const SalesModelHead:React.FC<Props> = ({
             <AntdInput
               value={model.currPrdInfo?.orderMngNo}
               onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', e.target.value);
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.orderMngNo', e.target.value);
               }}
               readonly={read}
               styles={{ht:'32px', bg:'#FFF'}}
@@ -284,21 +284,19 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.fpNo', e.target.value);
               }}
-              readonly={read}
-              styles={{ht:'32px', bg:'#FFF'}}
-              disabled={true}
+              readonly styles={{ht:'32px', bg:'#FFF'}}
             />
           }
           label2="매수"
           children2={
             <AntdInput
-              value={model.currPrdInfo?.m2}
-              onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'currPrdInfo.m2', e.target.value);
-              }}
-              readonly={read}
-              styles={{ht:'32px', bg:'#FFF'}}
-              disabled={model.completed}
+              value={
+                Math.floor(
+                  ((model?.currPrdInfo?.pnlL ?? 0) * (model?.currPrdInfo?.pnlW ?? 0))
+                  / 1000000 * (model?.orderPrdCnt ?? 0) * 100)
+                / 100
+              }
+              readonly styles={{ht:'32px', bg:'#FFF'}}
             />
           }
         />
