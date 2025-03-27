@@ -217,7 +217,7 @@ const SalesModelHead:React.FC<Props> = ({
           children2={
             read ? 
             <AntdInput
-              value={model.prdMngNo} disabled
+              value={model.currPrdInfo?.prdMngNo} disabled
             />
             :
             <CustomAutoCompleteLabel
@@ -438,6 +438,7 @@ const SalesModelHead:React.FC<Props> = ({
           }
           label2="발주"
           children2={
+            read && model.orderDt ? <div className="h-32 h-center">{dayjs(model.orderDt).format('YYYY-MM-DD')}</div> :
             <AntdDatePicker
               value={model.currPrdInfo?.orderDt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
@@ -456,7 +457,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.orderPrdCnt}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
               styles={{ht:'32px'}} type="number"
-              disabled={model.completed}
+              disabled={model.completed} readonly={read}
             />
           }
           label2="수주금액"
@@ -465,7 +466,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.orderPrdPrice}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
               styles={{ht:'32px'}} type="number"
-              disabled={model.completed}
+              disabled={model.completed} readonly={read}
             />
           }
         />
@@ -481,8 +482,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.currPrdInfo?.orderUnit ?? 'pcs'}
               onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnit', e)}}
               styles={{ht:'32px', bw:'0px', pd:'0'}}
-              disabled={model.completed}
-              readonly={read}
+              disabled={model.completed} readonly={read}
             />
           }
           label2="비고" size2={3}
@@ -491,7 +491,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.currPrdInfo?.memo}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.memo', e.target.value)}
               styles={{ht:'32px'}}
-              disabled={model.completed}
+              disabled={model.completed} readonly={read}
             />
           }
         />
