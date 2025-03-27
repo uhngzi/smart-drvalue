@@ -304,13 +304,13 @@ function addPopWorkers(data: any) {
         return;
       }
     }
-
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", withId)
     for(const item of withId.filter((f:any) => f?.delYn)) {
       const result = await deleteAPI({
         type: 'core-d3', 
         utype: 'tenant/',
         jsx: 'default',
-        url: `pms/proc/employee/schedule/default/update/${procId}/${item.id}`,
+        url: `pms/proc/employee/schedule/default/delete/${procId}/${item.id}`,
         etc: true,
       },'');
       console.log(result);

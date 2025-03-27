@@ -46,9 +46,11 @@ const WkBadListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
+          ordNo: group.ordNo,
           children: group.processes.map((process:processRType) => ({
             id: process.id,
             label: process.prcNm,
+            ordNo: process.ordNo,
           })),
           open: true,
         }));

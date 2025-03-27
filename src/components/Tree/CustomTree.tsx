@@ -18,7 +18,7 @@ import BlueCheck from "@/assets/svg/icons/blue_check.svg"
 import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { CUtreeType, treeType } from "@/data/type/componentStyles"
-import { Button, Dropdown, MenuProps, Switch, Tooltip } from "antd"
+import { Button, Dropdown, Input, MenuProps, Switch, Tooltip } from "antd"
 import AntdInput from "../Input/AntdInput"
 import dayjs from "dayjs"
 import AntdDatePicker from "../DatePicker/AntdDatePicker"
@@ -32,7 +32,14 @@ interface Props {
   setAddList: Dispatch<SetStateAction<CUtreeType[]>>;
   setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
   setDelList: Dispatch<SetStateAction<{type: string, id: string}[]>>;
-  addEdits?: { info: any[], setInfo: Dispatch<SetStateAction<any[]>>, addEditList: {type: string, key: string, name: string, selectData?:any[]}[] };
+  addEdits?: { 
+    info: any[], 
+    childInfo?: any[],
+    setInfo: Dispatch<SetStateAction<any[]>>, 
+    setChildInfo?: Dispatch<SetStateAction<any[]>>,
+    addParentEditList: {type: string, key: string, name: string, selectData?:any[]}[] 
+    addChildEditList?: {type: string, key: string, name: string, selectData?:any[]}[]
+  };
 }
 
 
@@ -45,13 +52,21 @@ const CustomTree:React.FC<Props> = ({
   setAddList,
   setEditList,
   setDelList,
-  addEdits = { info: [], setInfo: ()=>{}, addEditList: [] },
+  addEdits = { 
+    info: [], 
+    setInfo: ()=>{},
+    childInfo: [],
+    setChildInfo: ()=>{},
+    addParentEditList: [],
+    addChildEditList: [],
+  },
   
 }) => {
   const [ treeName, setTreeName ] = useState<string>('');
+  const [ ordNo, setOrdNo ] = useState<string|number>('');
 
-  const customEditItems = (type: "main" | "child", id: string, parentId?: string, ordNo?: string|number, useYn?:boolean) => (
-    <div className={`flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[${addEdits.addEditList.length < 1 ? '200' : '350'}px]`} style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
+  const customEditItems = (type: "main" | "child", id: string, parentId?: string, useYn?:boolean) => (
+    <div className={`flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[${addEdits.addParentEditList.length < 1 ? '200' : '350'}px]`} style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
       <div className="relative h-center ">
         <AntdInput className="w-full" value={treeName} 
           onChange={(e) => setTreeName(e.target.value)}
@@ -59,24 +74,25 @@ const CustomTree:React.FC<Props> = ({
             if(e.key === "Enter") {
               const inputValue = (e.target as HTMLInputElement).value;
               handleDataUpdate(type, id, inputValue, parentId);
-              // e.currentTarget.blur();
+              (e.target as HTMLInputElement).blur();
             }
           }}/> 
         <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
       </div>
-      {type === "main" && addEdits.addEditList.map((edit, index) => (
-        <div  key={`addEdits-${index}`}>
+      {type === "main" && addEdits.addParentEditList.map((edit, index) => (
+        <div key={`addEdits-${index}`}>
           <label className="text-12">{edit.name}</label>
-          {edit.type === "input" && (
+          {(edit.type === "input" || edit.type === "number") && (
             <div className="relative h-center">
               <AntdInput className="w-full"  
-                value={list.find(v => v.id === id)?.[edit.key] || addEdits.info.find((v) => v.id === id)?.[edit.key] || ''}
+                type={edit.type === "number" ? "text" : "text"}
+                value={addEdits.info.find((v) => v.id === id)?.[edit.key] || ''}
                 onChange={(e) => addEdits.setInfo((prev) => prev.map((item) => item.id === id ? { ...item, [edit.key]: e.target.value } : item))}
                 onKeyDown={(e) => {
                   if(e.key === "Enter") {
                     const inputValue = (e.target as HTMLInputElement).value;
-                    handleDataUpdate(type, id, treeName, parentId, inputValue);
-                    // e.currentTarget.blur();
+                    handleDataUpdate(type, id, treeName, parentId, {[edit.key]: inputValue});
+                    (e.target as HTMLInputElement).blur();
                   }
                 }}/> 
               <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
@@ -85,13 +101,60 @@ const CustomTree:React.FC<Props> = ({
           {edit.type === "select" && (
             <div key={`addEdits-${index}`} className="relative h-center">
               <AntdSelect className="w-full" options={edit.selectData || []}
-                value={list.find(v => v.id === id)?.[edit.key] || addEdits.info.find((v) => v.id === id)?.[edit.key] || null}
-                onChange={(value) => handleDataUpdate(type, id, treeName, parentId)}
+                value={addEdits.info.find((v) => v.id === id)?.[edit.key] || null}
+                onChange={(value) => handleDataUpdate(type, id, treeName, parentId, {[edit.key]: value})}
                 /> 
             </div>
           )}
+          
         </div>
       ))}
+      {type === "child" && (addEdits.addChildEditList ?? []).map((edit, index) => (
+        <div key={`addEditsChild-${index}`}>
+          <label className="text-12">{edit.name}</label>
+          {(edit.type === "input" || edit.type === "number") && (
+            <div className="relative h-center">
+              <AntdInput className="w-full"  
+                type={edit.type === "number" ? "text" : "text"}
+                value={(addEdits.childInfo ?? []).find((v) => v.id === id)?.[edit.key] || ''}
+                onChange={(e) => addEdits.setChildInfo?.((prev) => prev.map((item) => item.id === id ? { ...item, [edit.key]: e.target.value } : item))}
+                onKeyDown={(e) => {
+                  if(e.key === "Enter") {
+                    const inputValue = (e.target as HTMLInputElement).value;
+                    handleDataUpdate(type, id, treeName, parentId, {[edit.key]: inputValue});
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}/> 
+              <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
+            </div>
+          )}
+          {edit.type === "select" && (
+            <div key={`addEdits-${index}`} className="relative h-center">
+              <AntdSelect className="w-full" options={edit.selectData || []}
+                value={(addEdits.childInfo ?? []).find((v) => v.id === id)?.[edit.key] || null}
+                onChange={(value) => handleDataUpdate(type, id, treeName, parentId, {[edit.key]: value})}
+                /> 
+            </div>
+          )}
+          
+        </div>
+      ))}
+      <div>
+        <label className="text-12">순서</label>
+        <div className="relative h-center">
+          <Input className="w-full pr-40"  
+            type="number"
+            value={ordNo}
+            onChange={(e) => setOrdNo(e.target.value)}
+            onKeyDown={(e) => {
+              if(e.key === "Enter") {
+                handleDataUpdate(type, id, treeName, parentId);
+                (e.target as HTMLInputElement).blur();
+              }
+            }}/> 
+          <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
+        </div>
+      </div>
       {useYn && (
         <div className="flex h-center justify-between mt-10">
           <span className="flex text-12  gap-5"><BlueCheck/>사용여부</span>
@@ -122,6 +185,7 @@ const CustomTree:React.FC<Props> = ({
   useEffect(() => {
     // setSelectId([]);
     setList(data);
+    console.log(data)
   }, [open])
 
   useEffect(()=>{
@@ -169,11 +233,11 @@ const CustomTree:React.FC<Props> = ({
     parentsId?: string,
     adds?: any
   ) => {
-    console.log(type, id, value, parentsId);
+    console.log(type, id, value, parentsId, adds);
+    console.log(ordNo)
     if (type === 'main') {
-      const addChk = addEdits.addEditList.length > 0
+      const addChk = addEdits.addParentEditList.length > 0
       let edits = addChk ? addEdits.info.find(v => v.id === id) : {};
-
       if(adds){
         const newEdit = addEdits.info.map((item) => item.id === id ? { ...item, ...adds } : item);
         addEdits.setInfo(newEdit);
@@ -182,19 +246,26 @@ const CustomTree:React.FC<Props> = ({
       
       setEditList((prev) =>
         prev.some((item) => item.id === id)
-          ? prev.map((item) => (item.id === id ? { ...item, label: value } : item))
-          : [...prev, { id, label: value, ...edits }]
+          ? prev.map((item) => (item.id === id ? { ...item, ...edits, label: value, ordNo: ordNo } : item))
+          : [...prev, { id, ...edits, label: value, ordNo: ordNo}]
       );
       setList((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, label: value, ...edits } : item
+          item.id === id ? { ...item, ...edits, label: value, ordNo: ordNo} : item
         )
       );
     }else{
+      const addChk = (addEdits.addChildEditList ?? []).length > 0
+      let edits = addChk ? (addEdits.childInfo ?? []).find(v => v.id === id) : {};
+      if(adds){
+        const newEdit = (addEdits.childInfo ?? []).map((item) => item.id === id ? { ...item, ...adds } : item);
+        addEdits.setChildInfo?.(newEdit);
+        edits = newEdit.find(v => v.id === id);
+      }
       setEditList((prev) =>
         prev.some((item) => item.id === id)
-          ? prev.map((item) => (item.id === id ? { ...item, label: value } : item))
-          : [...prev, { id, label: value, parentId: parentsId }]
+          ? prev.map((item) => (item.id === id ? { ...item, ...edits, label: value, ordNo: ordNo } : item))
+          : [...prev, { id, ...edits, label: value, parentId: parentsId, ordNo: ordNo }]
       );
       setList((prev) =>{
         const newList = prev.map((item) => {
@@ -202,7 +273,7 @@ const CustomTree:React.FC<Props> = ({
             const updatedChildren = item.children?.map((child: any) => 
               // 자식 항목 중에서 동일한 id가 있으면 수정
               child.id === id
-                ? { ...child, label: value } // 해당 자식 수정
+                ? { ...child, ...edits, label: value, ordNo: ordNo  } // 해당 자식 수정
                 : child // 그대로 두기
             );
   
@@ -488,7 +559,7 @@ const CustomTree:React.FC<Props> = ({
                           <Plus/>
                         </Button>
                       )}
-                        <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); setTreeName(item.label)}}>
+                        <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); setTreeName(item.label); setOrdNo(item?.ordNo)}}>
                           <Dropdown trigger={['click']} dropdownRender={() => customEditItems("main", item.id)}>
                             <a onClick={(e) => e.preventDefault()}>
                                 <div 
@@ -555,7 +626,7 @@ const CustomTree:React.FC<Props> = ({
                           {/* {!selectId.some(v => v.id.includes(child.id)) ? ( */}
                             <div className={`${child.id === hoverId ? 'visible' : 'invisible'}`}>
                               <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>
-                                <Dropdown onOpenChange={(visible) => {if(visible) setTreeName(child.label)}} trigger={['click']} dropdownRender={() => customEditItems("child", child.id, item.id)}>
+                                <Dropdown onOpenChange={(visible) => {if(visible) {setTreeName(child.label); setOrdNo(Number(child?.ordNo))}}} trigger={['click']} dropdownRender={() => customEditItems("child", child.id, item.id)}>
                                   <a onClick={(e) => e.preventDefault()}>
                                       <div 
                                         className="w-full h-full v-h-center cursor-pointer"

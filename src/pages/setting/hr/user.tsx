@@ -60,9 +60,11 @@ const HrUserListPage: React.FC & {
           arr = (result.data?.data ?? []).map((group:any) => ({
             id: group.id,
             label: group.deptNm,
+            ordNo: group.ordNo,
             children: group.teams.map((team:any) => ({
               id: team.id,
               label: team.teamNm,
+              ordNo: team.ordNo,
             })),
             open: true,
           }));
@@ -146,8 +148,10 @@ const HrUserListPage: React.FC & {
         url = groupType[newTitle].child;
         jsonData[newTitle] = {id: item.parentId};
         jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+        jsonData.ordNo = Number(item.ordNo);
       }else{
         jsonData[`${newTitle}Nm`] = item.label;
+        jsonData.ordNo = Number(item.ordNo);
       }
       result = await onTreeEdit(item, url, jsonData);
       if(!result){
