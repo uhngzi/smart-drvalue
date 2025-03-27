@@ -392,10 +392,14 @@ const OrderAddLayout = () => {
         return;
       }
 
+      let tot = 0;
+      orderDetails.map((item) => {tot += item.mtOrderAmount ?? 0});
+
       setOrder({...order, id:"" });
       const jsonData = {
         orderRoot: {
           ...order?.orderRoot,
+          totalAmount: tot,
           prtIdx: prtId,
           prtMngIdx: prtMngId,
           empIdx: me?.id,
@@ -501,48 +505,6 @@ const OrderAddLayout = () => {
       });
     }
   }
-
-    // 발주 품목 내 원자재 그룹, 원자재 값 변경
-  // const handleDataChange = (
-  //   id: string,
-  //   name: string,
-  //   value: any
-  // ) => {
-  //   // 데이터를 복사
-  //   const updatedData = orderDetails.map((item) => {
-  //     if (item.id === id) {
-  //       const keys = name.split(".");
-  //       const updatedItem = { ...item };
-  
-  //       // 마지막 키를 제외한 객체 탐색
-  //       const lastKey = keys.pop()!;
-  //       let targetObject: any = updatedItem;
-  
-  //       keys.forEach((key) => {
-  //         // 중간 키가 없거나 null인 경우 초기화
-  //         if (!targetObject[key] || typeof targetObject[key] !== "object") {
-  //           targetObject[key] = {};
-  //         }
-  //         targetObject = targetObject[key];
-  //       });
-  
-  //       // 최종 키에 새 값 할당
-  //       targetObject[lastKey] = value;
-
-  //       // 원자재 그룹 값 변경 시 원자재 값 초기화
-  //       if(name === "materialGrpIdx") {
-  //          targetObject["materialIdx"] = null;
-  //          targetObject["mtNm"] = null;
-  //       }
-
-  //       return updatedItem;
-  //     }
-
-  //     return item; // 다른 데이터는 그대로 유지
-  //   });
-
-  //   setOrderDetails(updatedData); // 상태 업데이트
-  // };
   // ------------- step 2단계 --------------- 끝
 
   // ------------- step 3단계 --------------- 시작
@@ -574,7 +536,7 @@ const OrderAddLayout = () => {
     );
   }, [totalByMtId])
 
-    // 도착, 입고 수량 변경
+    // 발주 품목 내 데이터 변경 (2, 3단계 공통 사용)
   const handleDataChange = (id:string, name:string, value:any) => {
     const updateData = orderDetails;
     const index = updateData.findIndex(f=> f.id === id);

@@ -129,11 +129,11 @@ export const handleDirectPrint = async (
                 </div>
                 <div style="width: 100%; height: 25px; border-bottom: 2.5px solid black; display: flex; align-items: center; justify-content: space-between;">
                   <span style="width: 80px; text-align: right;">발주일 : </span>
-                  <span>${order?.detailInfo?.orderDt ? dayjs(order?.detailInfo?.orderDt).format("YYYY-MM-DD") : null}</span>
+                  <span>${order?.detailInfo?.orderDt ? dayjs(order?.detailInfo?.orderDt).format("YYYY-MM-DD") : ""}</span>
                 </div>
                 <div style="width: 100%; height: 25px; border-bottom: 2.5px solid black; display: flex; align-items: center; justify-content: space-between;">
                   <span style="width: 80px; text-align: right;">납품요구일 : </span>
-                  <span>${order?.detailInfo?.deliveryDueDt ? dayjs(order?.detailInfo?.deliveryDueDt).format("YYYY-MM-DD") : null}</span>
+                  <span>${order?.detailInfo?.deliveryDueDt ? dayjs(order?.detailInfo?.deliveryDueDt).format("YYYY-MM-DD") : ""}</span>
                 </div>
               </div>
   

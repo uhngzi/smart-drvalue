@@ -848,6 +848,9 @@ export const BuyOrderClmn = (
     key: 'totalAmount',
     align: 'center',
     cellAlign: 'right',
+    render: (value:number) => {
+      return value.toLocaleString();
+    }
   },
   {
     title: '상태',
@@ -935,16 +938,16 @@ export const BuyOrderClmn = (
     key: 'salesResponsible',
     align: 'center',
   },
-  {
-    title: '비고',
-    width: 130,
-    dataIndex: 'note',
-    key: 'note',
-    align: 'center',
-    render: (value:string) => {
-      return (<div className="text-left w-full h-center">{value && value.length > 6 ? value.slice(0, 6) + "..." : value}</div>)
-    }
-  },
+  // {
+  //   title: '비고',
+  //   width: 130,
+  //   dataIndex: 'note',
+  //   key: 'note',
+  //   align: 'center',
+  //   render: (value:string) => {
+  //     return (<div className="text-left w-full h-center">{value && value.length > 6 ? value.slice(0, 6) + "..." : value}</div>)
+  //   }
+  // },
   {
     title: '발주서',
     width: 70,
