@@ -348,7 +348,9 @@ const SayangSampleAddPage: React.FC & {
         let defaultPrc = [] as processRType[];
         let defaultKey = [] as string[];
         let defaultVndr = [] as { pid: string; vid: string; vname: string }[];
-        detailData.specPrdGroupPrcs?.forEach(item => {
+        detailData.specPrdGroupPrcs?.
+        sort((a,b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).
+        forEach(item => {
           if (item.process) {
             defaultPrc.push({ ...item.process, remark: item.prcWkRemark });
             defaultKey.push(item.process.id);

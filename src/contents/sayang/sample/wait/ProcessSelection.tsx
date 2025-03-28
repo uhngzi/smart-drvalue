@@ -22,6 +22,7 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import AntdInput from "@/components/Input/AntdInput";
 import { Popup } from "@/layouts/Body/Popup";
 import { LabelMedium } from "@/components/Text/Label";
+import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 
 interface Props {
   open: boolean;
@@ -292,6 +293,38 @@ const ProcessSelection: React.FC<Props> = ({
     }
   }
 
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (index: number) => {
+    setDraggedItemIndex(index);
+  };
+  // ★ 드래그가 종료될 때(유효/무효 상관없이) 플레이스홀더 없애기
+  const handleDragEnd = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedItemIndex === null) {
+      setDragOverIndex(null);
+      return;
+    }
+    // draggedItemIndex가 dropIndex보다 작다면 배열에서 제거로 인해 인덱스가 당겨지므로 1을 빼준다.
+    let newIndex = dropIndex;
+    if (draggedItemIndex < dropIndex) {
+      newIndex = dropIndex - 1;
+    }
+    const updated = [...selectPrc];
+    const [movedItem] = updated.splice(draggedItemIndex, 1);
+    updated.splice(newIndex, 0, movedItem);
+    setSelectPrc(updated);
+  
+    // 드롭 후 상태 초기화
+    setDragOverIndex(null);
+    setDraggedItemIndex(null);
+  };
+
   return (
     <div className="w-full h-full h-center gap-10">
       <Popup
@@ -428,51 +461,76 @@ const ProcessSelection: React.FC<Props> = ({
       >
         <LabelMedium label="선택된 공정별 작업 방법" />
         <div className="w-full h-[calc(100%-80px)] flex flex-col gap-10 overflow-y-auto">
-          {
-            dataProcessGrp.map((group:processGroupRType) => (
-              group.processes?.map((process:processRType) => (
-                selectedKeys.includes(process.id) ? 
-                <div key={process.id} className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10">
+        {
+          selectPrc.map((process: processRType, index: number) => {
+            // group 정보를 dataProcessGrp에서 찾기
+            const group = dataProcessGrp.find((g) =>
+              g.processes.some((p) => p.id === process.id)
+            );
+            return (
+              <div key={process.id} style={{ position: "relative" }}>
+                {/* 드래그 시 내려놓을 위치 표시 */}
+                {dragOverIndex === index && (
+                  <div
+                    style={{
+                      height: 10,
+                      backgroundColor: "#EBF3FF",
+                      border: "1px dashed #4880FF",
+                    }}
+                  />
+                )}
+                <div
+                  className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10"
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOverIndex(index);
+                  }}
+                  onDrop={(e) => {
+                    handleDrop(e, index);
+                    setDragOverIndex(null);
+                  }}
+                  onDragEnd={handleDragEnd}
+                >
                   <Star />
                   <div className="flex-1 h-full h-center gap-50">
-                    <div className="w-[200px] h-center font-medium" style={{letterSpacing:-0.05}}>
-                      {group.prcGrpNm + ' > ' + process.prcNm + ' (' + (selectedVendors.find(f=>f.pid === process.id)?.vname ?? "")+')'}
+                    <div className="w-[200px] h-center font-medium" style={{ letterSpacing: -0.05 }}>
+                      {group
+                        ? `${group.prcGrpNm} > ${group.processes.find(f=>f.id === process.id)?.prcNm ?? ""} (${selectedVendors.find((sv) => sv.pid === process.id)?.vname ?? ""})`
+                        : process.prcNm}
                     </div>
-                    <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{letterSpacing:-0.05}}>
+                    <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{ letterSpacing: -0.05 }}>
                       <div className="flex-1 h-full h-center whitespace-pre-wrap">
                         <AntdInput
-                          value={selectPrc?.find(f=>f.id.includes(process.id))?.remark ?? process.remark}
-                          onChange={(e)=>{
-                            const updateData = selectPrc;
-                            const index = updateData.findIndex(f=>f.id === process.id)
-                            if(index > -1) {
-                              updateData[index] = { ...updateData[index], remark: e.target.value };
-                      
-                              const newArray = [
-                                ...updateData.slice(0, index),
-                                updateData[index],
-                                ...updateData.slice(index + 1)
-                              ];
-                              setSelectPrc(newArray);
-                            }
+                          value={process.remark}
+                          onChange={(e) => {
+                            const newRemark = e.target.value;
+                            const newSelectPrc = Array.from(selectPrc);
+                            newSelectPrc[index] = { ...newSelectPrc[index], remark: newRemark };
+                            setSelectPrc(newSelectPrc);
                           }}
                         />
                       </div>
                       <div
                         className="w-32 h-32 rounded-50 bg-back v-h-center cursor-pointer"
                         onClick={() => {
-                          setSelectedKeys((prev:Array<string>) => prev.filter((key:string) => key !== process.id));
-                          setSelectPrc(selectPrc.filter(f => f.id !== process.id));
+                          setSelectedKeys((prev: string[]) =>
+                            prev.filter((key: string) => key !== process.id)
+                          );
+                          setSelectedVendors(selectedVendors.filter((p) => p.pid !== process.id));
+                          setSelectPrc(selectPrc.filter((p) => p.id !== process.id));
                         }}
                       >
                         <p className="w-14 h-14"><Trash /></p>
                       </div>
                     </div>
                   </div>
-                </div> : <></>
-              ))
-            ))
-          }
+                </div>
+              </div>
+            );
+          })
+        }
         </div>
         <div className="v-h-center">
           <Button
