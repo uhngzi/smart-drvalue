@@ -1,6 +1,7 @@
 import { useRouter } from "next/router"
 
 import Logo from "@/assets/logo/gpn-logo.png"
+import LogoSY from "@/assets/logo/sy-logo.png"
 
 import Star from "@/assets/svg/icons/star.svg"
 import DashBoard from "@/assets/svg/icons/dashboard.svg"
@@ -22,6 +23,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import { useEffect, useState } from "react"
 import { loginCheck, logout } from "@/utils/signUtil"
+import cookie from "cookiejs"
 
 interface Props {
   collapsed: boolean;
@@ -170,7 +172,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" style={{display:collapsed?'none':'flex'}} onClick={()=>{router.push('/');}}>
-            <Image src={Logo} alt="logo" width={120}/>
+            <Image src={cookie.get('company') === 'gpn' ? Logo : cookie.get('company') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
           </div>
           <div className="h-center cursor-pointer" style={{marginLeft:collapsed?0:40}} onClick={()=>{setCollapsed(!collapsed)}}>
             <MenuIcon />

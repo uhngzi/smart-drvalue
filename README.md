@@ -69,7 +69,8 @@ $ yarn dev
 ```
 ssh -i smartFront.pem root@115.68.221.100
   BHM<9O2-
-cd /home/smart/smart-front
+지피엔 : cd /home/smart/smart-front
+신양 : cd /home/smart/smart-sinyang
 git pull
   개인 계정명
   개인 토큰

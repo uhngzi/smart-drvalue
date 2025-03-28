@@ -24,6 +24,7 @@ instanceRoot.interceptors.request.use(
 // 이전 테스트 개발 헤더 : test, test2 (현재 프로세스 변경으로인해 작동 안 됨)
 // GPN 테스트 개발 헤더 : gpntest-dev
 // GPN 테스트 사용자 헤더 : gpntest-sebuk-ver
+// 신양 테스트 헤더 : shinyang-test
 
 export const instance = axios.create({
   baseURL,
@@ -32,7 +33,10 @@ export const instance = axios.create({
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    'x-tenant-code': isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'gpntest-sebuk-ver',
+    'x-tenant-code': isBrowser ? `${
+      cookie.get('company') === 'sy' ? 'shinyang-test' :
+      cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+    }` : 'gpntest-sebuk-ver',
   },
 });
 instance.interceptors.request.use(
@@ -41,7 +45,10 @@ instance.interceptors.request.use(
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    config.headers["x-tenant-code"] = isBrowser ? `${cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'}` : 'gpntest-sebuk-ver';
+    config.headers["x-tenant-code"] = isBrowser ? `${
+      cookie.get('company') === 'sy' ? 'shinyang-test' :
+      cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+    }` : 'gpntest-sebuk-ver';
 
     return config;
   },
