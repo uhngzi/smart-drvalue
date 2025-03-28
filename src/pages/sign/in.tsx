@@ -38,6 +38,10 @@ const SignInPage: React.FC & {
 
   const handleSignIn = async (id: string, pw: string) => {
     try {
+      // 기존에 저장된 쿠키 삭제
+      cookie.remove('company');
+      cookie.remove(cookieName);
+
       const response = await instance.post('auth/v1/login/tenant/basic', {
         userId: id,
         password: pw,
@@ -47,8 +51,8 @@ const SignInPage: React.FC & {
       
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
-        // cookie.set('company', 'gpn', { expires: 7 });
-        cookie.set('company', 'sy', { expires: 7 });
+        // cookie.set('company', 'gpn');
+        cookie.set('company', 'sy');
         router.push('/');
       } else {
         setOpen(true);
