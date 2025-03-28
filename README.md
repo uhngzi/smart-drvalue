@@ -71,12 +71,14 @@ ssh -i smartFront.pem root@115.68.221.100
   BHM<9O2-
 지피엔 : cd /home/smart/smart-front
 신양 : cd /home/smart/smart-sinyang
+  * 현재 테넌트 코드를 하드코딩 해둔 상태
+  * 로그인 시 company에 따라 테넌트 코드를 가지고 오므로 배포 시 해당 컴퍼니 쿠키값을 바꿔줘야 함 (pages > sign > in)
 git pull
   개인 계정명
   개인 토큰
 yarn build
-pm2 restart 31
-  또는 pm2 restart smart80
+지피엔 : pm2 restart 31 또는 pm2 restart smart80 
+신양 : pm2 restart sy
 
   *** 서버 내 yarnrc.yml 파일 내 nodeLinker는 node-modules로 실행 (yarn berry ~ pnp로 진행할 경우 에러 발생되므로...)
 ```
