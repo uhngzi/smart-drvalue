@@ -2,11 +2,11 @@
 
 export type boardType = {
   id?: string;
-  brdW: number;
-  brdH: number;
-  brdType: string;
-  brdDesc: string;
-  brdExtraInfo: string;
+  brdW?: number;
+  brdH?: number;
+  brdType?: string;
+  brdDesc?: string;
+  brdExtraInfo?: string;
   createdAt?: Date | null;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
@@ -42,15 +42,15 @@ export const boardReq = () => {
 }
 
 export type BoardGroupType = {
-  id: string;
-  brdGrpName: string
-  brdGrpDesc: string
-  brdGrpExtraInfo: string
-  ordNo: number
-  useYn: boolean
-  createdAt: string
-  updatedAt: string
-  deletedAt: string
+  id?: string;
+  brdGrpName?: string
+  brdGrpDesc?: string
+  brdGrpExtraInfo?: string
+  ordNo?: number
+  useYn?: boolean
+  createdAt?: string
+  updatedAt?: string
+  deletedAt?: string
   boards?: boardType[];
 }
 
