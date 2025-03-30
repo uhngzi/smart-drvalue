@@ -148,7 +148,7 @@ const SalesArrayPage: React.FC & {
                     name="board"
                     onChange={(e) => {
                       if(e.target.checked)
-                        handleCheckboxChange(item.id ?? "", item.brdW, item.brdH);
+                        handleCheckboxChange(item.id ?? "", item.brdW ?? 0, item.brdH ?? 0);
                       else 
                         setDisk(disk.filter(f=>f.id !== item.id));
                     }}
