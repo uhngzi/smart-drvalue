@@ -17,9 +17,10 @@ interface CardListProps {
   items: Item[];
   btnClick?: () => void;
   children?: React.ReactNode;
+  btnClassName?: string;
 }
 
-const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, children}) => {
+const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, children, btnClassName}) => {
   return (
     <div className="p-10">
       {/* 제목 영역 */}
@@ -29,7 +30,7 @@ const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, c
             <Bag />
             <p className="text-16 font-medium">{title}</p>
           </div>
-          {btnLabel && <Button onClick={btnClick}>
+          {btnLabel && <Button onClick={btnClick} className={btnClassName}>
             {btnLabel}
           </Button>}
         </div>
