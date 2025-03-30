@@ -73,7 +73,12 @@ export const specStatusClmn = (
     align: 'center',
     cellAlign: 'left',
     render: (_, record:specType) => (
-      <div className="w-full h-full h-center">
+      <div
+        className="w-full h-full h-center cursor-pointer"
+        onClick={()=>{
+          router?.push({pathname:`/sayang/sample/pcb/${record.id}`, query: {view:true}})
+        }}
+      >
         {record.specModels?.[0]?.prdNm}
       </div>
     )
@@ -253,7 +258,7 @@ export const specIngClmn = (
     render: (_, record:specType) => (
       <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
-          router?.push(`/sayang/sample/wait/${record.id}`);
+          router?.push(`/sayang/sample/pcb/${record.id}`);
         }}
       >
         {record.specModels?.[0]?.prdNm}
@@ -381,7 +386,7 @@ export const specIngClmn = (
   //       <div 
   //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
   //         onClick={()=>{
-  //           router?.push(`/sayang/sample/wait/${value}`);
+  //           router?.push(`/sayang/sample/pcb/${value}`);
   //         }}
   //       >
   //         <p className="w-18 h-18"><Edit /></p>
@@ -615,6 +620,7 @@ export const sayangSampleWaitAddClmn = (
     value?: any
   ) => void,
   setDeleted: React.Dispatch<SetStateAction<specModelType | null>>,
+  view: string | string[] | undefined,
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -719,6 +725,7 @@ export const sayangSampleWaitAddClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'layerEm', e)}
                 styles={{fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+1}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass}>
@@ -728,6 +735,7 @@ export const sayangSampleWaitAddClmn = (
                 className='!text-12'
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+2}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -751,6 +759,7 @@ export const sayangSampleWaitAddClmn = (
             placeholder="외층 입력"
             type="number"
             tabIndex={(record?.index ?? 1)*40+3}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass+"gap-5 !text-12"}>
@@ -761,6 +770,7 @@ export const sayangSampleWaitAddClmn = (
             placeholder="내층 입력"
             type="number"
             tabIndex={(record?.index ?? 1)*40+4}
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -788,6 +798,7 @@ export const sayangSampleWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+5}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass}>
@@ -798,6 +809,7 @@ export const sayangSampleWaitAddClmn = (
                 // className="w-[60px!important]"
                 styles={{pd:"0",fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+6}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -827,6 +839,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 tabIndex={(record?.index ?? 1)*40+7}
+                disabled={view?true:false}
               />
               <AntdInputFill 
                 value={record?.spPltNiAlph}
@@ -834,6 +847,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 tabIndex={(record?.index ?? 1)*40+9}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass+"gap-5"}>
@@ -843,6 +857,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 tabIndex={(record?.index ?? 1)*40+8}
+                disabled={view?true:false}
               />
               <AntdInputFill 
                 value={record?.spPltAuAlph}
@@ -850,6 +865,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 tabIndex={(record?.index ?? 1)*40+10}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -871,6 +887,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
             className='!text-12'
             tabIndex={(record?.index ?? 1)*40+11} placeholder="ul1"
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass+"mb-3"}>
@@ -879,6 +896,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
             className='!text-12'
             tabIndex={(record?.index ?? 1)*40+12} placeholder="ul2"
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass+"gap-5"}>
@@ -889,6 +907,7 @@ export const sayangSampleWaitAddClmn = (
             className="w-[60px!important]"
             styles={{pd:"0",fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+13} placeholder="ul1"
+            disabled={view?true:false}
           />
           <AntdSelectFill
             options={ul2SelectList}
@@ -897,6 +916,7 @@ export const sayangSampleWaitAddClmn = (
             className="w-[60px!important]"
             styles={{pd:"0",fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+14} placeholder="ul2"
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -917,6 +937,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'smPrint.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+15}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass}>
@@ -926,6 +947,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'smColor.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+16}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass}>
@@ -935,6 +957,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'smType.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+17}
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -955,6 +978,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'mkPrint.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+18}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass+"mb-3"}>
@@ -964,6 +988,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'mkColor.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+19}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass}>
@@ -973,6 +998,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'mkType.id', e)}
             styles={{fs:'12px'}}
             tabIndex={(record?.index ?? 1)*40+20}
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -993,6 +1019,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
             styles={{fs:'12px'}} placeholder="특수인쇄"
             tabIndex={(record?.index ?? 1)*40+21}
+            disabled={view?true:false}
           />
         </div>
         <div className={divClass}>
@@ -1002,6 +1029,7 @@ export const sayangSampleWaitAddClmn = (
             onChange={(e)=>handleModelDataChange(record.id, 'spType.id', e)}
             styles={{fs:'12px'}} placeholder="특수인쇄 종류"
             tabIndex={(record?.index ?? 1)*40+21}
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -1029,6 +1057,7 @@ export const sayangSampleWaitAddClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
                 styles={{fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+22}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass}>
@@ -1038,6 +1067,7 @@ export const sayangSampleWaitAddClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
                 styles={{fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+23}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -1068,6 +1098,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 maxPoint={2}
                 tabIndex={(record?.index ?? 1)*40+24}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass}>
@@ -1078,6 +1109,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 maxPoint={2}
                 tabIndex={(record?.index ?? 1)*40+25}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -1108,6 +1140,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 maxPoint={2}
                 tabIndex={(record?.index ?? 1)*40+26}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass}>
@@ -1118,6 +1151,7 @@ export const sayangSampleWaitAddClmn = (
                 type="number"
                 maxPoint={2}
                 tabIndex={(record?.index ?? 1)*40+27}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -1147,6 +1181,7 @@ export const sayangSampleWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+28}
+                disabled={view?true:false}
               />
               <AntdInputFill
                 value={record?.ykitL}
@@ -1154,6 +1189,7 @@ export const sayangSampleWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+30}
+                disabled={view?true:false}
               />
             </div>
             <div className={divClass+" gap-3"}>
@@ -1163,6 +1199,7 @@ export const sayangSampleWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+29}
+                disabled={view?true:false}
               />
               <AntdInputFill
                 value={record?.ypnlL}
@@ -1170,6 +1207,7 @@ export const sayangSampleWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 tabIndex={(record?.index ?? 1)*40+31}
+                disabled={view?true:false}
               />
             </div>
           </div>
@@ -1192,6 +1230,7 @@ export const sayangSampleWaitAddClmn = (
             className="!text-12"
             type="number"
             tabIndex={(record?.index ?? 1)*40+32}
+            disabled={view?true:false}
           />
         </div>
       </div>
@@ -1214,6 +1253,7 @@ export const sayangSampleWaitAddClmn = (
             maxPoint={3}
             type="number"
             tabIndex={(record?.index ?? 1)*40+33}
+            disabled={view?true:false}
           />
           <p className="w-12 !text-12">㎜</p>
         </div>
@@ -1226,6 +1266,7 @@ export const sayangSampleWaitAddClmn = (
             maxPoint={3}
             type="number"
             tabIndex={(record?.index ?? 1)*40+34}
+            disabled={view?true:false}
           />
           <p className="w-12 !text-12">㎜</p>
         </div>
@@ -1238,6 +1279,7 @@ export const sayangSampleWaitAddClmn = (
             maxPoint={2}
             type="number"
             tabIndex={(record?.index ?? 1)*40+35}
+            disabled={view?true:false}
           />
           <p className="w-12 !text-12">￠</p>
         </div>
@@ -1250,6 +1292,7 @@ export const sayangSampleWaitAddClmn = (
             maxPoint={2}
             type="number"
             tabIndex={(record?.index ?? 1)*40+36}
+            disabled={view?true:false}
           />
           <p className="w-12 !text-12">￠</p>
         </div>
@@ -1277,6 +1320,7 @@ export const sayangSampleWaitAddClmn = (
             className='!text-12'
             type="number"
             tabIndex={(record?.index ?? 1)*40+37}
+            disabled={view?true:false}
           />
         </div>
         </AutoHideTooltip>
@@ -1288,6 +1332,7 @@ export const sayangSampleWaitAddClmn = (
             className='!text-12'
             type="number"
             tabIndex={(record?.index ?? 1)*40+38}
+            disabled={view?true:false}
           />
         </div>
         </AutoHideTooltip>
