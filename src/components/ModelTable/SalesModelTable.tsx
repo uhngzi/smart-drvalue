@@ -85,7 +85,7 @@ const SalesModelTable:React.FC<Props> = ({
         const bg = (result.data?.data ?? []) as BoardGroupType[];
         const arr = bg.map((d:BoardGroupType) => ({
           value: d.id,
-          label: d.brdGrpName,
+          label: d.brdGrpName ?? "",
         }))
         setBoardGroup(bg);
         setBoardGroupSelectList(arr);

@@ -77,6 +77,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         //   label: '임시 일정관리',
         // },
         {
+          key: 'sales/model',
+          title: 'sales/model',
+          label: '모델 등록 및 현황',
+        },
+        {
           key: 'sales/order',
           title: 'sales/order',
           label: '고객발주/견적',

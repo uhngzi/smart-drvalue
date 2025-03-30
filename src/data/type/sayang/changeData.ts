@@ -1,4 +1,4 @@
-import { modelsMatchRType, modelsType, orderModelType } from "./models";
+import { modelsMatchRType, modelsType, orderModelType, salesModelsType } from "./models";
 import { selectType } from "../componentStyles";
 import { specModelType, specPrdGroupPrcs, specType } from "./sample";
 
@@ -396,4 +396,74 @@ export const changeTempModel = (d:modelsMatchRType, tempModel:any) => {
     specDr: tempModel?.specDr ?? d?.model?.specDr,
     specPad: tempModel?.specPad ?? d?.model?.specPad,
   }
+}
+
+
+export const changeSalesModelAddNewModel = (
+  model: salesModelsType | undefined,
+  boardSelectList: selectType[],
+  boardGroupSelectList: selectType[],
+  metarialSelectList: selectType[],
+  surfaceSelectList: selectType[],
+  outSelectList: selectType[],
+  smPrintSelectList: selectType[],
+  smColorSelectList: selectType[],
+  smTypeSelectList: selectType[],
+  mkPrintSelectList: selectType[],
+  mkColorSelectList: selectType[],
+  mkTypeSelectList: selectType[],
+  unitSelectList: selectType[],
+) => {
+  const jsonData = {
+    inactiveYn: false,
+    partner: { id: model?.partner?.id },
+    prdNm: model?.prdNm ?? "",
+    board: { id: model?.board?.id ?? boardSelectList?.[0]?.value },
+    boardGroup: { id: model?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value },
+    mnfNm: model?.mnfNm ?? boardSelectList.find(f=>f.value === model?.boardGroup?.id)?.label ?? boardGroupSelectList?.[0]?.label,
+    drgNo: model?.drgNo ?? "",
+    thk: model?.thk,
+    prdRevNo: model?.prdRevNo ?? "",
+    layerEm: model?.layerEm ?? "L1",
+    modelTypeEm: model?.modelTypeEm ?? "sample",
+    copOut: model?.copOut,
+    copIn: model?.copIn,
+    material: { id: model?.material?.id ?? metarialSelectList?.[0]?.value },
+    surface: { id: model?.surface?.id ?? surfaceSelectList?.[0]?.value },
+    smPrint: { id: model?.smPrint?.id ?? smPrintSelectList?.[0]?.value },
+    smColor: { id: model?.smColor?.id ?? smColorSelectList?.[0]?.value },
+    smType: { id: model?.smType?.id ?? smTypeSelectList?.[0]?.value },
+    mkPrint: { id: model?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value },
+    mkColor: { id: model?.mkColor?.id ?? mkColorSelectList?.[0]?.value },
+    mkType: { id: model?.mkType?.id ?? mkTypeSelectList?.[0]?.value },
+    spPrint: { id: model?.spPrint?.id },
+    spType: { id: model?.spType?.id },
+    aprType: { id: model?.aprType?.id ?? outSelectList?.[0]?.value },
+    vcutYn: model?.vcutYn ?? false,
+    vcutType: { id: model?.vcutType?.id },
+    unit: { id: model?.unit?.id ?? unitSelectList?.[0]?.value },
+    pcsW: model?.pcsW ?? 0,
+    pcsL: model?.pcsL ?? 0,
+    kitW: model?.kitW ?? 0,
+    kitL: model?.kitL ?? 0,
+    pnlW: model?.pnlW ?? 0,
+    pnlL: model?.pnlL ?? 0,
+    ykitW: model?.ykitW ?? 0,
+    ykitL: model?.ykitL ?? 0,
+    ypnlW: model?.ypnlW ?? 0,
+    ypnlL: model?.ypnlL ?? 0,
+    kitPcs: model?.kitPcs ?? 0,
+    pnlKit: model?.pnlKit ?? 0,
+    sthPnl: model?.sthPnl ?? 0,
+    sthPcs: model?.sthPcs ?? 0,
+    pltThk: model?.pltThk ?? 0,
+    pltAlph: model?.pltAlph ?? 0,
+    spPltNi: model?.spPltNi ?? 0,
+    spPltNiAlph: model?.spPltNiAlph ?? 0,
+    spPltAu: model?.spPltAu ?? 0,
+    spPltAuAlph: model?.spPltAuAlph ?? 0,
+    pinCnt: model?.pinCnt ?? 0,
+  }
+
+  return jsonData;
 }

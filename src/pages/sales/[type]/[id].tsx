@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import OrderAddLayout from "@/contents/sales/order/add/OrderAdd";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import ModelAddLayout from "@/contents/sales/model/ModelAdd";
 
 const AddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -11,6 +12,9 @@ const AddPage: React.FC & {
   return (
     type === "order" ?
     <OrderAddLayout />
+    :
+    type === "model" ?
+    <ModelAddLayout />
     :
     <div>견적 등록 페이지</div>
   );

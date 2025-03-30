@@ -1,7 +1,7 @@
 // 메인 - 모델, 모델 매칭
 
 import { Dayjs } from "dayjs";
-import { boardType } from "../base/board";
+import { BoardGroupType, boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
 import { partnerMngRType, partnerRType } from "../base/partner";
 import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
@@ -173,6 +173,73 @@ export type modelsType = {
   specSpace?: number;
   specDr?: number;
   specPad?: number;
+}
+
+export type salesModelsType = {
+  id?: string;
+  glbStatus?: {
+    id: string;
+    salesOrderStatus: SalesOrderStatus;
+    salesOrderStatusChangeJson: {
+      date: Date | Dayjs | null,
+      content: string;
+      isApproved: boolean;
+    }
+  };
+  partner?: partnerRType;
+  usedYn?: boolean;
+  inactiveYn?: boolean;
+  prdNm?: string;
+  prdRevNo?: string;
+  prdMngNo?: string;
+  layerEm?: LayerEm;
+  modelTypeEm?: ModelTypeEm;
+  thk?: number;
+  board?: boardType;
+  mnfNm?: string;
+  material?: commonCodeRType;
+  surface?: commonCodeRType;
+  copOut?: number;
+  copIn?: number;
+  boardGroup?: BoardGroupType;
+  smPrint?: commonCodeRType;
+  smColor?: commonCodeRType;
+  smType?: commonCodeRType;
+  mkPrint?: commonCodeRType;
+  mkColor?: commonCodeRType;
+  mkType?: commonCodeRType;
+  spPrint?: commonCodeRType;
+  spType?: commonCodeRType;
+  aprType?: commonCodeRType;
+  vcutYn?: false,
+  vcutType?: commonCodeRType;
+  fpNo?: string;
+  drgNo?: string;
+  unit?: commonCodeRType;
+  pcsW?: number;
+  pcsL?: number;
+  kitW?: number;
+  kitL?: number;
+  pnlW?: number;
+  pnlL?: number;
+  ykitW?: number;
+  ykitL?: number;
+  ypnlW?: number;
+  ypnlL?: number;
+  kitPcs?: number;
+  pnlKit?: number;
+  sthPnl?: number;
+  sthPcs?: number;
+  pltThk?: number;
+  pltAlph?: number;
+  spPltNi?: number;
+  spPltNiAlph?: number;
+  spPltAu?: number;
+  spPltAuAlph?: number;
+  pinCnt?: number;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
 }
 
 // 모델 생성, 수정 타입
