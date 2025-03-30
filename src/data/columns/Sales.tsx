@@ -12,6 +12,7 @@ import { SetStateAction } from 'react';
 import { NextRouter } from 'next/router';
 import { Tooltip } from 'antd';
 import { specModelType } from '../type/sayang/sample';
+import { modelsType } from '../type/sayang/models';
 
 export const salesOrderStatusClmn = (
   totalData: number,
@@ -168,8 +169,8 @@ export const salesOrderStatusClmn = (
   {
     title: '제품 Size',
     width: 100,
-    dataIndex: 'worksheet.specModel.pcsW/worksheet.specModel.pcsL',
-    key: 'worksheet.specModel.pcsW/worksheet.specModel.pcsL',
+    dataIndex: 'worksheet.specModel.pcsW*worksheet.specModel.pcsL',
+    key: 'worksheet.specModel.pcsW*worksheet.specModel.pcsL',
     align: 'center', 
     render: (_, record:salesOrderWorkSheetType) => (
       <div className="w-full h-full v-h-center">
@@ -184,8 +185,8 @@ export const salesOrderStatusClmn = (
   {
     title: '판넬 Size',
     width: 100,
-    dataIndex: 'worksheet.specModel.pnlW/worksheet.specModel.pnlL',
-    key: 'worksheet.specModel.pnlW/worksheet.specModel.pnlL',
+    dataIndex: 'worksheet.specModel.pnlW*worksheet.specModel.pnlL',
+    key: 'worksheet.specModel.pnlW*worksheet.specModel.pnlL',
     align: 'center',
     render: (_, record:salesOrderWorkSheetType) => (
       <div className="w-full h-full v-h-center">
@@ -464,3 +465,121 @@ export const salesUserOrderModelClmn = (
     )
   },
 ];
+
+export const salesModelsClmn = (
+  totalData: number,
+  setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
+  pagination: {current: number, size: number},
+  router: NextRouter,
+): CustomColumn[] => [
+  {
+    title: 'No',
+    width: 50,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    leftPin: true,
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+  },
+  {
+    title: '필름번호',
+    width: 100,
+    dataIndex: 'fpNo',
+    key: 'fpNo',
+    align: 'center',
+  },
+  {
+    title: '업체명/코드',
+    width: 180,
+    dataIndex: 'partner.prtNm/partner.prtRegCd',
+    key: 'partner.prtNm/partner.prtRegCd',
+    align: 'center',
+    tooltip: "업체명/코드를 클릭하면 고객정보를 볼 수 있어요",
+    render: (_, record:modelsType) => (
+      <div
+        className="w-full h-center cursor-pointer text-shadow-hover text-left"
+        onClick={()=>{
+          setPartnerData(record?.partner);
+        }}
+      >
+        {record.partner?.prtNm} / {record.partner?.prtRegCd}
+      </div>
+    )
+  },
+  {
+    title: '모델명',
+    minWidth: 180,
+    dataIndex: 'prdNm',
+    key: 'prdNm',
+    align: 'center',
+    tooltip: "모델명을 클릭하면 상세 정보를 볼 수 있어요",
+    cellAlign: 'left',
+    render: (value:string, record:modelsType) => (
+      <div
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{
+          router.push(`/sales/model/${record.id}`);
+        }}
+      >
+        {value}
+      </div>
+    )
+  },
+  {
+    title: 'Rev',
+    width: 100,
+    dataIndex: 'prdRevNo',
+    key: 'prdRevNo',
+    align: 'center',
+  },
+  {
+    title: '층',
+    width: 80,
+    dataIndex: 'layerEm',
+    key: 'layerEm',
+    align: 'center',
+    render: (value:string) => {
+      return value.replace("L", "");
+    }
+  },
+  {
+    title: '두께',
+    width: 80,
+    dataIndex: 'thk',
+    key: 'thk',
+    align: 'center',
+  },
+  {
+    title: '제품 Size',
+    width: 100,
+    dataIndex: 'pcsL*pcsW',
+    key: 'pcsL*pcsW',
+    align: 'center',
+    render: (_, record:modelsType) => (
+      <div>
+        {
+          (record?.pcsW || record?.pcsL) ?
+          (record?.pcsW ?? "")+" * "+(record?.pcsL ?? "") :
+          ""
+        }
+      </div>
+    )
+  },
+  {
+    title: '판넬 Size',
+    width: 100,
+    dataIndex: 'pnlL*pnlW',
+    key: 'pnlL*pnlW',
+    align: 'center',
+    render: (_, record:modelsType) => (
+      <div>
+        {
+          (record?.pnlW || record?.pnlL) ?
+          (record?.pnlW ?? "")+" * "+(record?.pnlL ?? "") :
+          ""
+        }
+      </div>
+    )
+  },
+]
