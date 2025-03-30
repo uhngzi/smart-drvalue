@@ -10,14 +10,12 @@ import ArrowDown from "@/assets/svg/icons/s_arrow_down.svg";
 import Arrowright from "@/assets/svg/icons/s_arrow_right.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 
-import { TabSmall } from "@/components/Tab/Tabs";
 import { SetStateAction, useRef, useState } from "react";
 import CardInputList from "@/components/List/CardInputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDragger from "@/components/Upload/AntdDragger";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdInputFill from "@/components/Input/AntdInputFill";
-import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import useToast from "@/utils/useToast";
 import { projectSchedules } from "@/data/type/base/project";
 import dayjs from "dayjs";
@@ -27,6 +25,8 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
 import { patchAPI } from "@/api/patch";
 import { useUser } from "@/data/context/UserContext";
+import Image from "next/image";
+import { baseURL } from "@/api/lib/config";
 
 const tabList = [
   { key: 1, text: '진행 관리', width: 600},
@@ -55,8 +55,38 @@ const ProjectDrawer: React.FC<Props> = ({
   const { showToast, ToastContainer } = useToast();
 
   const { me } = useUser();
-  console.log(me)
   const [selectKey, setSelectKey] = useState<number>(1);
+
+  const [memoText, setMemoText] = useState<string>('');
+  const [memoList, setMemoList] = useState<any[]>([]);
+  const { isLoading: memoLoading, refetch: memoRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['memo', 'proc', selectId],
+    queryFn: async () => {
+      const data = {
+        startIdx: selectId,
+        "startEntityName": "RnTenantCbizWorksheetProcEntity",
+        "entityRelation": {}
+      }
+      const result = await postAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `global-memo/default/find-relation-memo`,
+        etc: true
+      },data);
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data.data.memos)
+        setMemoList(result.data.data.memos);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      return result.data;
+    },
+    enabled: !!selectId
+  });
+  
   const [procDailyData, setProcDailyData] = useState<any[]>([]);
   const { isLoading: procDailyLoading, refetch: procDailyRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['pms', 'proc', 'daily', selectId],
@@ -68,7 +98,9 @@ const ProjectDrawer: React.FC<Props> = ({
       });
 
       if (result.resultCode === 'OK_0000') {
-        setProcDailyData(result?.data?.data);
+        console.log(result.data.data)
+        const dailyData = result.data.data.map((data:any) =>({...data, files: JSON.parse(data.files), open: false}));
+        setProcDailyData(dailyData);
       } else {
         console.log('error:', result.response);
       }
@@ -77,19 +109,39 @@ const ProjectDrawer: React.FC<Props> = ({
     },
     enabled: !!selectId
   });
+  
 
   // -------------------진행관리 변수, 함수들--------------------
   const [fileList, setFileList] = useState<any[]>([]);
   const [fileIdList, setFileIdList] = useState<string[]>([]);
-  const [memoText, setMemoText] = useState<string>('');
-  const [memoList, setMemoList] = useState<{id: string|Number, status: string, text: string}[]>([]);
+  
   const processData = useRef<any>({});
 
   const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
-  console.log(schedules)
-  function addMemo() {
-    setMemoText('');
-    setMemoList((prev:any) => [...prev, {id: prev.length, status:true, text:memoText}]);
+  console.log(task)
+
+  async function addMemo() {
+
+    const data = {
+      memo: memoText,
+      extraKey: selectId,
+      shared: true
+    }
+
+    const result = await postAPI({
+      type: 'core-d3', 
+      utype: 'tenant/',
+      jsx: 'default',
+      url: `global-memo`,
+    }, data);
+    console.log(result);
+    if(result.resultCode === 'OK_0000') {
+      showToast("저장되었습니다.", "success");
+      memoRefetch();
+    } else {
+      showToast("메모 등록중 문제가 발생했습니다..", "error");
+      return;
+    }
   }
   function deleteMemo(id: string|Number) {
     setMemoList((prev:any) => prev.map((memo:any) => memo.id === id ? {...memo, status: 'delete'} : memo));
@@ -105,7 +157,71 @@ const ProjectDrawer: React.FC<Props> = ({
   // -----------------------------------------------------
 
   // -------------------인력투입 변수, 함수들--------------------
-  const workerData = useRef<any>({});
+  const workerData = useRef<any>([]);
+  const [workDoDate, setWorkDoDate] = useState<string | Date | null>(null);
+  const [workers, setWorkers] = useState<any[]>([]);
+  const { isLoading: workDoLoading, refetch: workDoRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'employee', selectId, workDoDate],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: `pms/proc/employee/default/one/${selectId}/${workDoDate}`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const workSchedule = result.data.data.map((v:any) => (
+          {
+            wkProcScheduleId: v.id,
+            name: v.emp.name,
+            wkProcEmployeeId: v.emp.workDetail?.id,
+            empProcAm: v.emp.workDetail?.wkEmpProcAm || null,
+            empProcPm: v.emp.workDetail?.wkEmpProcPm || null,
+            empProcNt: v.emp.workDetail?.wkEmpProcNt || null,
+            empProcAnt: v.emp.workDetail?.wkEmpProcAnt || null,
+          }
+        ))
+        console.log(workSchedule)
+        setWorkers(workSchedule);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      return result.data;
+    },
+    enabled: !!workDoDate
+  });
+
+  function workCheck(e: any, name: string, record: any) {
+    console.log(e.target.checked)
+    if(!workDoDate) {
+      showToast('인력투입일을 먼저 선택해주세요.', 'error');
+      e.preventDefault();
+      return;
+    }
+    if(record.wkProcEmployeeId) {
+      workerData.current = [...workerData.current, 
+        {
+          wkProcEmployeeId: record.wkProcEmployeeId, 
+          empProcAm: record.empProcAm, 
+          empProcPm: record.empProcPm, 
+          empProcNt: record.empProcNt, 
+          empProcAnt: record.empProcAnt
+        }
+      ];
+    }else {
+      workerData.current = [...workerData.current, 
+        {
+          wkProcScheduleId: record.wkProcScheduleId, 
+          empProcAm: record.empProcAm, 
+          empProcPm: record.empProcPm, 
+          empProcNt: record.empProcNt, 
+          empProcAnt: record.empProcAnt
+        }
+      ];
+    }
+
+  }
   // -----------------------------------------------------
 
   async function processSubmit() {
@@ -139,7 +255,7 @@ const ProjectDrawer: React.FC<Props> = ({
       // setSchedules(newSchedules);
       const data = {
         wkProcDailyPer: Number(processData.current.wkProcDailyPer/100),
-        files: [],
+        files: fileIdList,
         remarks: processData.current.remarks,
       };
       console.log(data)
@@ -164,6 +280,21 @@ const ProjectDrawer: React.FC<Props> = ({
       console.log('품질관리 저장');
     } else if(selectKey === 3) {
       console.log('인력투입 저장');
+      const result = await postAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `pms/daily/default/create/${selectId}/${dayjs(processData.current.wkProcDailyDt).format("YYYY-MM-DD")}`,
+        etc: true,
+      }, {});
+      console.log(result);
+      if(result.resultCode === 'OK_0000') {
+        showToast("저장되었습니다.", "success");
+        procDailyRefetch();
+      } else {
+        showToast("진행관리 등록중 문제가 발생했습니다..", "error");
+        return;
+      }
     }
   }
   
@@ -174,9 +305,11 @@ const ProjectDrawer: React.FC<Props> = ({
     processData.current = {};
     setMemoText('');
     setMemoList([]);
+    setWorkDoDate(null);
     procDailyRefetch();
     close();
   }
+  console.log(procDailyData)
   return (
     <AntdDrawerStyled
       closeIcon={null}
@@ -249,7 +382,9 @@ const ProjectDrawer: React.FC<Props> = ({
                   <p className="flex gap-5 font-medium text-16"><TimeFill/> 진행 정보</p>
                 </div>
                 <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
-                  <div className="flex justify-end"><span className="text-[#00000073]">접기</span></div>
+                  <div className="flex justify-end" onClick={() => setProcDailyData(prev => prev.map(d => ({...d, open: false})))}>
+                    <span className="text-[#00000073] cursor-pointer">전체 접기</span>
+                  </div>
                   <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
                     {procDailyData.map((data, idx) => {
                       const colors = {
@@ -263,7 +398,9 @@ const ProjectDrawer: React.FC<Props> = ({
                       return(
                         <>
                           <div className="flex py-12 px-16 gap-12 items-center" key={idx}>
-                            <p className="w-24 h-24 flex justify-center pt-3 cursor-pointer"><ArrowDown/></p>
+                            <p className="w-24 h-24 flex justify-center pt-3 cursor-pointer" onClick={()=>setProcDailyData((prev) => prev.map((prevData) => prevData.id === data.id ? {...prevData, open: !prevData.open} : prevData))}>
+                              {data.open ? <ArrowDown/> : <Arrowright/>}
+                            </p>
                             <p>{me?.userName}</p><p>|</p><p>{dayjs(data.wkProcDailyDt).format("YYYY-MM-DD")}</p><p>|</p>
                             <div className={`h-24 w-35 text-center rounded-4 flex justify-center items-center`} style={{backgroundColor:progColor.bg}}>
                               <p className={`text-bold text-12 text-[${progColor.text}]`}>{data.wkProcDailyPer*100}%</p>
@@ -279,6 +416,19 @@ const ProjectDrawer: React.FC<Props> = ({
                                 </Dropdown>
                               </Button>
                           </div>
+                          {data.open && (
+                            <>
+                              <Divider style={{margin:0}}/>
+                              <div className="flex flex-col py-12 px-16 gap-5">
+                                <div className="w-[480px] flex gap-10 items-center">
+                                  {data.files.map((file:any, idx:number) => (
+                                    <Image key={idx} alt="진행관리" src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75}/>
+                                  ))}
+                                </div>
+                                <p className="text-14 text-[#00000073]"><span style={{color:'black'}}>비고: </span>{data.remarks}</p>
+                              </div>
+                            </>
+                          )}
                           {procDailyData.length != idx+1 &&<Divider style={{margin:0}}/>}
                         </>
                       )
@@ -364,7 +514,7 @@ const ProjectDrawer: React.FC<Props> = ({
                   <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                     <div className="col-span-3">
                       <p className="pb-8">인력 투입일</p>
-                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>}/>
+                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={workDoDate} onChange={(date) => setWorkDoDate(date)}/>
                     </div>
                   </div>
                   <AntdTableEdit
@@ -372,53 +522,56 @@ const ProjectDrawer: React.FC<Props> = ({
                       {
                         title: '근로자',
                         width:84,
-                        dataIndex: 'worker',
-                        key: 'worker',
+                        dataIndex: 'name',
+                        key: 'name',
                         align: 'center',
                         
                       },
                       {
                         title: '오전',
                         width:58,
-                        dataIndex: 'am',
-                        key: 'am',
+                        dataIndex: 'empProcAm',
+                        key: 'empProcAm',
                         align: 'center',
-                        render:() => (
-                          <Checkbox/>
+                        render:(value, record) => (
+                          <>
+                          {console.log(record)}
+                            <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcAm", record)} disabled={workDoDate ? false : true}/>
+                          </>
                         )
                       },
                       {
                         title: '오후',
                         width:58,
-                        dataIndex: 'pm',
-                        key: 'pm',
+                        dataIndex: 'empProcPm',
+                        key: 'empProcPm',
                         align: 'center',
-                        render:() => (
-                          <Checkbox/>
+                        render:(value, record) => (
+                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcPm", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                       {
                         title: '야간',
                         width:58,
-                        dataIndex: 'night',
-                        key: 'night',
+                        dataIndex: 'empProcNt',
+                        key: 'empProcNt',
                         align: 'center',
-                        render:() => (
-                          <Checkbox/>
+                        render:(value, record) => (
+                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcNt", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                       {
                         title: '철야',
                         width:58,
-                        dataIndex: 'allnight',
-                        key: 'allnight',
+                        dataIndex: 'empProcAnt',
+                        key: 'empProcAnt',
                         align: 'center',
-                        render:() => (
-                          <Checkbox/>
+                        render:(value, record) => (
+                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcAnt", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                     ]}
-                    data={[{worker: "홍길동"}, {worker: "김아무개"}]}
+                    data={workers.length ? workers : task?.workers}
                     styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
                   />
                 </section>
@@ -434,11 +587,16 @@ const ProjectDrawer: React.FC<Props> = ({
                     <AntdInput value={memoText} placeholder="메모를 작성해주세요" onChange={(e) => setMemoText(e.target.value)}/>
                     <Button type="text" className="!w-24 !h-24 !p-0" onClick={addMemo}><Plus/></Button>
                   </div>
-                  {memoList.map((memo, idx) => (
-                    <p key={idx} className="flex h-36 p-3 v-between-h-center">
-                      <span className={`text-14 font-normal ${memo.status === "delete" ? "line-through text-[#00000073]" : ""}`}>{memo.text}</span>
-                      <span className="cursor-pointer" onClick={() => deleteMemo(memo.id)}><Close/></span>
-                    </p>
+                  
+                  {memoList.map((m, idx) => (
+                    <>
+                      <Divider style={{margin:"10px 0"}}/>
+                      <p className="text-12 text-[#00000073]">{dayjs(m.createdAt).format("YYYY-MM-DD HH:mm")}</p>
+                      <p key={idx} className="flex h-36 p-3 v-between-h-center">
+                        <span className={`text-14 font-normal ${m.status === "delete" ? "line-through text-[#00000073]" : ""}`}>{m.memo}</span>
+                        <span className="cursor-pointer" onClick={() => {}}><Close/></span>
+                      </p>
+                    </>
                   ))}
                 </div>
               </CardInputList>
