@@ -9,17 +9,19 @@ import useToast from "@/utils/useToast";
 
 import AntdInputRound from "@/components/Input/AntdInputRound";
 import AntdSelectRound from "@/components/Select/AntdSelectRound";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import { LabelMedium } from "@/components/Text/Label";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Check from "@/assets/svg/icons/s_check.svg";
+import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import Bag from "@/assets/svg/icons/bag.svg";
 
 import { generateFloorOptions, LamDtlTypeEm, LayerEm } from "@/data/type/enum";
 import { specLaminationType } from "@/data/type/sayang/lamination";
-import { laminationRType } from "@/data/type/base/lamination";
+import { laminationCUType, laminationRType, newLaminationCUType } from "@/data/type/base/lamination";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 
 import SpecSourceRow from "./SpecSourceRow";
@@ -27,6 +29,9 @@ import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
 import { patchAPI } from "@/api/patch";
 import { Popup } from "@/layouts/Body/Popup";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import { MOCK } from "@/utils/Mock";
+import { deleteAPI } from "@/api/delete";
 
 interface Props {
   defaultLayerEm?: LayerEm;
@@ -35,6 +40,7 @@ interface Props {
   handleSumbitTemp: () => void;
   baseLamination: laminationRType[],
   baseLaminationLoading: boolean;
+  baseLaminationRefetch: () => void;
   color: string[];
   mainLamination: laminationRType[];
   setMainLamination: React.Dispatch<SetStateAction<laminationRType[]>>;
@@ -50,6 +56,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   handleSumbitTemp,
   baseLamination,
   baseLaminationLoading,
+  baseLaminationRefetch,
   color,
   mainLamination,
   setMainLamination,
@@ -74,8 +81,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
     layer?: LayerEm | "",
     oz?: 'cf' | 'pp' | 'ccl',
     thk?: number,
-    cf?: number,
-  }>({cf:1});
+    cf?: number | boolean,
+  }>({cf:true});
 
   // 첫 모델의 Layer로 초기값 설정
   useEffect(()=>{
@@ -234,7 +241,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
     e.preventDefault();
 
-    console.log('dropIndex : ',dropIndex);
     // 맨 위/아래 고정 로직
     if (lamination.length > 1 && (dropIndex === 0 || dropIndex === lamination.length)) {
       showToast("맨 위/맨 아래 위치는 고정되어있습니다.", "error");
@@ -460,6 +466,121 @@ const AddLaminationModalContents: React.FC<Props> = ({
   }
   // -------------- 선택 시 함수 ------------- 끝
 
+  // ---------- 신규 데이터 시작 ----------
+  const [ lambaseType, setLambaseType ] = useState<AlertType>('info');
+  const [ resultTitle, setResultTitle ] = useState<string>('');
+  const [ resultText, setResultText ] = useState<string>('');
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    (type);
+    setResultTitle(title);
+    setResultText(text);
+  }
+    //등록 모달창을 위한 변수
+  const [ newOpen, setNewOpen ] = useState<boolean>(false);
+    //등록 모달창 데이터
+  const [ newData, setNewData ] = useState<laminationCUType>(newLaminationCUType);
+    //값 변경 함수
+  const handleDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    if(type === "input" && typeof e !== "string") {
+      const { value } = e.target;
+      setNewData({...newData, [name]: value});
+    } else if(type === "select") {
+      if(key) {
+        setNewData({...newData, [name]: { 
+          ...((newData as any)[name] || {}), // 기존 객체 값 유지
+          [key]: e?.toString(), // 새로운 key 값 업데이트
+        }});
+      } else {
+        setNewData({...newData, [name]: e});
+      }
+    }
+  }
+    //등록 버튼 함수
+  const handleSubmitNewData = async (data: any) => {
+    try {
+      console.log(data);
+      if(data?.id){
+        const id = data.id;
+        delete data.id;
+
+        const result = await patchAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: 'lamination-source',
+          jsx: 'jsxcrud'
+        },id, data);
+        console.log(result);
+
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          showToast("등록 완료", "success");
+          baseLaminationRefetch();
+        } else {
+          setNewOpen(false);
+          showToast("등록 실패", "error");
+        }
+
+      }else{
+        const result = await postAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: 'lamination-source',
+          jsx: 'jsxcrud'
+        }, newData);
+        console.log(result);
+  
+        if(result.resultCode === 'OK_0000') {
+          setNewOpen(false);
+          showToast("등록 완료", "success");
+          baseLaminationRefetch();
+        } else {
+          setNewOpen(false);
+          showToast("등록 실패", "error");
+        }
+      }
+    } catch(e) {
+      setNewOpen(false);
+      showToast("등록 실패", "error");
+    }
+  }
+  // ----------- 신규 데이터 끝 -----------
+  
+  const handleDataDelete = async (id: string) => {
+    try {
+      const result = await deleteAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'lamination-source',
+        jsx: 'jsxcrud'},
+        id,
+      );
+      console.log(result);
+
+      if(result.resultCode === 'OK_0000') {
+        setNewOpen(false);
+        setResultFunc('success', '삭제 성공', '적층 구조 삭제가 완료되었습니다.');
+      } else {
+        setNewOpen(false);
+        setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
+      }
+    }
+    catch(e) {
+      setNewOpen(false);
+      setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
+    }
+  }
+
+  function modalClose(){
+    setNewOpen(false);
+    setNewData(newLaminationCUType);
+  }
+
   return (
     <div className="v-h-center gap-20 px-10">
       <Popup
@@ -550,7 +671,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
               else                          return source.lamThk === selectSpecLamiFilter.thk
             })
             .filter((source:specLaminationType) => 
-              source.confirmYn === selectSpecLamiFilter.cf
+              source.confirmYn === (selectSpecLamiFilter.cf ? true : false)
             )
             .map((source:specLaminationType, index:number) => (
               <SpecSourceRow
@@ -711,10 +832,20 @@ const AddLaminationModalContents: React.FC<Props> = ({
         </div>
       </Popup>
       <Popup
-        className="!min-w-[333px] !h-[612px]"
+        className="!min-w-[350px] !h-[612px]"
       >
         <div className="v-between-h-center h-40 w-full">
           <p className="text-16 font-medium">적층구조 구성요소</p>
+          <Tooltip title="적층구조의 구성요소를 추가할 수 있어요">
+          <Button
+            className="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
+            onClick={()=>{
+              setNewOpen(true);
+            }}
+          >
+            <p className="w-16 h-16"><SplusIcon/></p>
+          </Button>
+          </Tooltip>
           <div className="w-[128px] h-24 flex v-h-center">
             <div
               className="w-43 v-h-center cursor-pointer"
@@ -784,6 +915,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
         </div>
       </Popup>
       
+
+      <BaseInfoCUDModal
+        title={{name: `적층구조 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        open={newOpen} 
+        setOpen={setNewOpen} 
+        onClose={() => modalClose()}
+        items={MOCK.laminationItems.CUDPopItems} 
+        data={newData}
+        onSubmit={handleSubmitNewData}
+        onDelete={handleDataDelete}
+      />
+
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}

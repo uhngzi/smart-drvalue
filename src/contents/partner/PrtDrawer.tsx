@@ -235,10 +235,12 @@ const PrtDrawer: React.FC<Props> = ({
         <div className="flex flex-col gap-15 p-20 !pr-5">
           <div className="flex w-full justify-end cursor-pointer" onClick={() => setOpen(false)}><Close/></div>
           <CardList title="고객정보" 
-            btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Edit/></span> 고객 정보 수정</div>} 
+            btnLabel={<span className="w-14 h-14"><Edit/></span>} 
+            btnClassName="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             items={drawerPrtItems} btnClick={() => setNewPrtOpen(true)}/>
           {partnerMngData && <CardList title="담당자정보" 
-            btnLabel={<div className="flex h-center gap-8"><span className="w-16 h-16"><Plus/></span> 담당자 추가</div>} 
+            btnLabel={<span className="w-16 h-16"><Plus/></span>} 
+            btnClassName="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             items={drawerMngItems} btnClick={() => setNewPrtMngOpen(true)}/>}
         </div>
       </AntdDrawer>

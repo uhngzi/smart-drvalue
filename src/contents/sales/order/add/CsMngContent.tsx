@@ -83,7 +83,7 @@ const CsMngContent:React.FC<Props> = ({
     <Popup
       title="담당자 정보"
       titleEtc={
-      <Button className="w-30 !h-24 v-h-center !p-0"
+      <Button className="v-h-center !p-4 !rounded-50 !border-1 !border-[#008A1E] !w-23 !h-23"
         onClick={()=>{
           if(!formPrtId) {
             showToast("거래처를 선택해주세요.", "error");
@@ -91,7 +91,8 @@ const CsMngContent:React.FC<Props> = ({
           }
           setNewPrtMngOpen(true);
         }}
-      ><SplusIcon/>
+      >
+        <p className="w-16 h-16"><SplusIcon/></p>
       </Button>}
       className="min-h-[200px]"
     >
@@ -119,9 +120,9 @@ const CsMngContent:React.FC<Props> = ({
         <div className="flex-1 px-12">
           <LabelIcon label={mng.prtMngEmail} icon={<Mail />}/>
         </div>
-        <div className="w-24 h-24 v-h-center">
+        <Button className="v-h-center !p-[3.5px] !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23">
           <p
-            className="w-16 h-16 cursor-pointer"
+            className="!w-16 !h-16 cursor-pointer"
             onClick={()=>{
               setEdit(true);
               setNewPartnerMngData({...mng});
@@ -130,7 +131,7 @@ const CsMngContent:React.FC<Props> = ({
           >
             <Edit />
           </p>
-        </div>
+        </Button>
       </div>
     ))}
 
