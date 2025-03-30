@@ -13,6 +13,7 @@ interface Props {
   placeholder?: string;
   onInputChange?: (value: string) => void;
   clear?: boolean;
+  readonly?: boolean;
 }
 
 const CustomAutoComplete: React.FC<Props> = ({
@@ -27,6 +28,7 @@ const CustomAutoComplete: React.FC<Props> = ({
   placeholder,
   onInputChange,
   clear = true,
+  readonly,
 }) => {
   const [inputValue, setInputValue] = useState<string>(""); // 입력창에 표시할 값
   const [filteredOptions, setFilteredOptions] = useState<{ value: any; label: any }[]>([]);
@@ -84,24 +86,28 @@ const CustomAutoComplete: React.FC<Props> = ({
 
   return (
     <AutoComplete
-      options={filteredOptions}
-      value={inputValue} // 입력창에는 label 값만 보이도록 설정
-      onSelect={handleSelect} // 선택하면 ID 저장, label 표시
-      onSearch={setInputValue} // 검색할 때 label 기준으로 필터링
+      // readonly일 경우 옵션은 표시하지 않음
+      options={readonly ? [] : filteredOptions}
+      value={inputValue}
+      // readonly이면 검색 및 선택 이벤트를 비활성화
+      onSelect={!readonly ? handleSelect : undefined}
+      onSearch={!readonly ? setInputValue : undefined}
       placeholder={placeholder}
       className={className}
-      onChange={(e)=>{
-        const value:string = e;
+      onChange={(e) => {
+        const value: string = e;
         onInputChange?.(value);
       }}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
         onClick={()=>{
-          if(clear) {
+          if(clear && !readonly) {
             setInputValue("");
           }
         }}
+        readOnly={readonly}
+        style={readonly?{cursor:'no-drop'}:{}}
       />
     </AutoComplete>
   );
