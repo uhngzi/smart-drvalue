@@ -47,7 +47,7 @@ const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, view } = router.query;
   const { showToast, ToastContainer } = useToast();
   const { me } = useUser();
 
@@ -165,7 +165,7 @@ const SayangSampleAddPage: React.FC & {
       const models = rdata.specModels?.map((model:specModelType, index:number) => ({
         ...model,
         index: index+1,
-        pcsValue: model.pcsValue ?? model.modelMatch?.orderModel.orderPrdCnt ?? 1,
+        pcsValue: model.pcsValue && model.pcsValue > 0 ? model.pcsValue : model.modelMatch?.orderModel.orderPrdCnt,
       }))
       setDetailData({
         ...rdata,
@@ -522,13 +522,14 @@ const SayangSampleAddPage: React.FC & {
             </div>
           </div>
           <div className="h-center gap-20">
+            { !view &&
             <Button
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{
                 setTemp(false);
                 handleSumbitTemp(true);
               }}
-            >모델추가</Button>
+            >모델추가</Button>}
             {
               (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
               <Button
@@ -570,6 +571,7 @@ const SayangSampleAddPage: React.FC & {
               ul2SelectList,
               handleModelDataChange,
               setDeleted,
+              view,
             )}
             data={detailData.specModels}
             styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
@@ -588,6 +590,7 @@ const SayangSampleAddPage: React.FC & {
             handleSumbitTemp={()=>{
               handleSumbitTemp();
             }}
+            view={view}
           />
         </Popup>
         <Popup className="!w-[400px] flex-grow-[40]">
@@ -597,6 +600,7 @@ const SayangSampleAddPage: React.FC & {
             handleSumbitTemp={handleSumbitTemp}
             detailData={detailData}
             setDetailData={setDetailData}
+            view={view}
           />
         </Popup>
         {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
@@ -613,10 +617,12 @@ const SayangSampleAddPage: React.FC & {
             setPrcNotice={setPrcNotice}
             camNotice={camNotice}
             setCamNotice={setCamNotice}
+            view={view}
           />
         </Popup>
       </div>
 
+      { !view &&
       <div className="v-h-center py-50 gap-15">
         <FullOkButton label="확정저장" click={()=>{
           if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
@@ -641,7 +647,7 @@ const SayangSampleAddPage: React.FC & {
         <FullSubButton label="임시저장" click={()=>{
           handleSumbitTemp();
         }}/>
-      </div>
+      </div>}
       </>}
 
       <AntdModal
@@ -664,6 +670,7 @@ const SayangSampleAddPage: React.FC & {
           setSelectedKeys={setSelectedKeys}
           selectedVendors={selectedVendors}
           setSelectedVendors={setSelectedVendors}
+          view={view}
         />}
         width={1050}
         onClose={()=>{

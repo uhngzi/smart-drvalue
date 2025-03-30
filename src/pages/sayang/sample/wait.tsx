@@ -175,7 +175,7 @@ const SayangSampleListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/wait/${specId?.specId}`);
+          router.push(`/sayang/sample/pcb/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
@@ -219,7 +219,7 @@ const SayangSampleListPage: React.FC & {
 
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/wait/${specId?.specId}`);
+          router.push(`/sayang/sample/pcb/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
@@ -249,7 +249,7 @@ const SayangSampleListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/wait/${specId?.specId}`);
+          router.push(`/sayang/sample/pcb/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
