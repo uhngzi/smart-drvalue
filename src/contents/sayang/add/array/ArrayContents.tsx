@@ -18,6 +18,7 @@ interface Props {
   handleSumbitTemp: () => void;
   detailData: specType;
   setDetailData: React.Dispatch<SetStateAction<specType>>;
+  view: string | string[] | undefined;
 }
 
 const ArrayContents: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const ArrayContents: React.FC<Props> = ({
   handleSumbitTemp,
   detailData,
   setDetailData,
+  view,
 }) => {
   // 원판 수율 팝업
   const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
@@ -98,6 +100,7 @@ const ArrayContents: React.FC<Props> = ({
           title="배열 도면"
           icon={<ArrayIcon />}
         />
+        { !view &&
         <Button
           className="h-32 rounded-6"
           onClick={() => {
@@ -108,7 +111,7 @@ const ArrayContents: React.FC<Props> = ({
             <Memo/>
           </p>
           선택
-        </Button>
+        </Button>}
       </div>
 
       <div className="w-full h-[310px] flex gap-20">

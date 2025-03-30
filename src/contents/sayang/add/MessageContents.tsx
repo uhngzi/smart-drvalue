@@ -8,6 +8,7 @@ interface Props {
   setPrcNotice: React.Dispatch<SetStateAction<string>>;
   camNotice: string;
   setCamNotice: React.Dispatch<SetStateAction<string>>;
+  view: string | string[] | undefined;
 }
 
 const MessageContents: React.FC<Props> = ({
@@ -15,6 +16,7 @@ const MessageContents: React.FC<Props> = ({
   setPrcNotice,
   camNotice,
   setCamNotice,
+  view,
 }) => {
   return (
     <div className="flex flex-col gap-30">
@@ -27,18 +29,20 @@ const MessageContents: React.FC<Props> = ({
           className="w-full min-h-[120px] rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
           value={prcNotice}
           onChange={(e)=>{setPrcNotice(e.target.value)}}
-        />
+          disabled={view?true:false}
+          />
       </div>
       
       <div className="w-full flex flex-col gap-20">
         <TitleIcon
           title="CAM 전달사항"
           icon={<MessageOn />}
-        />
+          />
         <textarea
           className="w-full min-h-[120px] rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
           value={camNotice}
           onChange={(e)=>{setCamNotice(e.target.value)}}
+          disabled={view?true:false}
         />
       </div>
     </div>

@@ -47,6 +47,7 @@ interface Props {
     vid: string;
     vname: string;
   }[]>>;
+  view: string | string[] | undefined;
 }
 
 const ProcessSelection: React.FC<Props> = ({
@@ -64,6 +65,7 @@ const ProcessSelection: React.FC<Props> = ({
   setSelectPrc,
   setSelectedKeys,
   setSelectedVendors,
+  view,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -116,7 +118,10 @@ const ProcessSelection: React.FC<Props> = ({
       checkable: false,
       children: item.processes.map((process: processRType) => ({
         title: (
-          <div className="child-node">
+          <div
+            className="child-node"
+            style={{cursor:view?"no-drop":"pointer"}}
+          >
             <div className="process-name">
               <span>{process.prcNm}</span>
             </div>
@@ -134,7 +139,12 @@ const ProcessSelection: React.FC<Props> = ({
                     className="vendor-node"
                     key={pvendor.vendor.id}
                     value={pvendor.vendor.id}
+                    style={{cursor:view?"no-drop":"pointer"}}
                     onClick={(e)=>{
+                      if (view) {
+                        e.preventDefault();
+                        return;
+                      }
                       e.stopPropagation();
                       handleVendorSelect(process.id, (pvendor?.vendor?.id ?? ""), (pvendor?.vendor?.prtNm ?? ""));
                     }}
@@ -364,7 +374,9 @@ const ProcessSelection: React.FC<Props> = ({
               />
             </div>
           </div>
-          <TreeStyled>
+          <TreeStyled
+            $cursor={view? true : false}
+          >
             {!dataLoading &&
             <Tree
               showIcon
@@ -373,7 +385,10 @@ const ProcessSelection: React.FC<Props> = ({
               treeData={treeData}
               switcherIcon={null}
               checkedKeys={selectedKeys}
+              style={view?{cursor:"no-drop"}:{}}
               onCheck={(_, info) => {
+                if(view)  return;
+
                 if (!selectPrdGrp?.id) {
                   showToast("제품군을 선택해주세요.", "error");
                   return;
@@ -409,6 +424,8 @@ const ProcessSelection: React.FC<Props> = ({
                 }
               }}
               onClick={(_, info) => {
+                if(view)  return;
+
                 if(!selectPrdGrp?.id) {
                   showToast("제품군을 선택해주세요.", "error");
                   return;
@@ -481,7 +498,7 @@ const ProcessSelection: React.FC<Props> = ({
                 )}
                 <div
                   className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10"
-                  draggable
+                  draggable={!view?true:false}
                   onDragStart={() => handleDragStart(index)}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -510,8 +527,10 @@ const ProcessSelection: React.FC<Props> = ({
                             newSelectPrc[index] = { ...newSelectPrc[index], remark: newRemark };
                             setSelectPrc(newSelectPrc);
                           }}
+                          disabled={view?true:false}
                         />
                       </div>
+                      { !view &&
                       <div
                         className="w-32 h-32 rounded-50 bg-back v-h-center cursor-pointer"
                         onClick={() => {
@@ -523,7 +542,7 @@ const ProcessSelection: React.FC<Props> = ({
                         }}
                       >
                         <p className="w-14 h-14"><Trash /></p>
-                      </div>
+                      </div>}
                     </div>
                   </div>
                 </div>
@@ -532,6 +551,7 @@ const ProcessSelection: React.FC<Props> = ({
           })
         }
         </div>
+        { !view &&
         <div className="v-h-center">
           <Button
             className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
@@ -541,7 +561,7 @@ const ProcessSelection: React.FC<Props> = ({
           >
             <Arrow /> 공정 저장
           </Button>
-        </div>
+        </div>}
       </Popup>
       
       <AntdAlertModal
@@ -585,7 +605,9 @@ const ProcessSelection: React.FC<Props> = ({
   );
 };
 
-const TreeStyled = styled.div`
+const TreeStyled = styled.div<{
+  $cursor: boolean
+}>`
   width: 100%;
   height: 480px;
   font-weight: 500;
@@ -616,12 +638,14 @@ const TreeStyled = styled.div`
     display: flex;
     align-items: center;
     padding: 9px 20px;
+    ${props => props.$cursor ? "cursor: no-drop;" : ""}
   }
 
   & .child-node {
     width: 100%;
     display: flex;
     flex-direction: column;
+    ${props => props.$cursor ? "cursor: no-drop;" : ""}
   }
 
   & .process-name {
@@ -646,6 +670,7 @@ const TreeStyled = styled.div`
     & .ant-tree-checkbox-inner {
       border-radius: 2px;
     }
+    ${props => props.$cursor ? "cursor: no-drop;" : ""}
   }
 
   & .ant-tree-checkbox-checked .ant-tree-checkbox-inner {
@@ -661,6 +686,10 @@ const TreeStyled = styled.div`
     & .parent-count {
       color: #4880FF !important;
     }
+  }
+
+  & .ant-radio-input {
+    ${props => props.$cursor ? "cursor: no-drop;" : ""}
   }
 `;
 

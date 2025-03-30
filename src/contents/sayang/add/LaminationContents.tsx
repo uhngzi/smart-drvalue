@@ -23,6 +23,7 @@ interface Props {
   detailData: specType;
   setDetailData: React.Dispatch<SetStateAction<specType>>;
   handleSumbitTemp: () => void;
+  view: string | string[] | undefined;
 }
 
 const LaminationContents: React.FC<Props> = ({
@@ -30,6 +31,7 @@ const LaminationContents: React.FC<Props> = ({
   detailData,
   setDetailData,
   handleSumbitTemp,
+  view,
 }) => {
   // 모달 창 띄우기
   const [open, setOpen] = useState<boolean>(false);
@@ -40,7 +42,7 @@ const LaminationContents: React.FC<Props> = ({
 
   // ------------ 적층구조 구성요소 세팅 ----------- 시작
   const [ baseLamination, setBaseLamination ] = useState<Array<laminationRType>>([]);
-  const { data:baseLaminationData, isLoading:baseLaminationLoading } = useQuery<
+  const { data:baseLaminationData, isLoading:baseLaminationLoading, refetch:baseLaminationRefetch } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['lamination-source/jsxcrud/many'],
@@ -104,6 +106,7 @@ const LaminationContents: React.FC<Props> = ({
     <div className="flex flex-col h-full gap-20">
       <div className="v-between-h-center">
         <TitleIcon title="적층구조" icon={<MessageOn />}/>
+        { !view &&
         <Button
           className="h-32 rounded-6"
           onClick={() => {
@@ -115,6 +118,7 @@ const LaminationContents: React.FC<Props> = ({
           </p>
           선택
         </Button>
+        }
       </div>
       { (detailData.specLamNo ?? detailData.specLamination?.lamNo ?? lamNo) &&
       <div className="w-full flex v-between-h-center h-24 text-14">
@@ -149,6 +153,7 @@ const LaminationContents: React.FC<Props> = ({
           handleSumbitTemp={handleSumbitTemp}
           baseLamination={baseLamination}
           baseLaminationLoading={baseLaminationLoading}
+          baseLaminationRefetch={baseLaminationRefetch}
           color={color}
           mainLamination={lamination}
           setMainLamination={setLamination}
