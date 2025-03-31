@@ -118,7 +118,6 @@ const ProjectDrawer: React.FC<Props> = ({
   const processData = useRef<any>({});
 
   const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
-  console.log(task)
 
   async function addMemo() {
 
@@ -143,21 +142,35 @@ const ProjectDrawer: React.FC<Props> = ({
       return;
     }
   }
-  function deleteMemo(id: string|Number) {
-    setMemoList((prev:any) => prev.map((memo:any) => memo.id === id ? {...memo, status: 'delete'} : memo));
+  async function deleteMemo(id: string|Number) {
+    const result = await patchAPI({
+      type: 'core-d3', 
+      utype: 'tenant/',
+      jsx: 'default',
+      url: `global-memo/default/update-ancel/${id}/true`,
+      etc: true,
+    },"", {});
+    console.log(result);
+    if(result.resultCode === 'OK_0000') {
+      showToast("취소되었습니다.", "success");
+      memoRefetch();
+    } else {
+      showToast("메모 취소중 문제가 발생했습니다..", "error");
+      return;
+    }
   }
 
   function onProcessDataChange(name:string, data: any) {
     processData.current = {...processData.current, [name]: data};
   }
   // -----------------------------------------------------
-
   // -------------------품질관리 변수, 함수들--------------------
   const qualityData = useRef<any>({});
   // -----------------------------------------------------
 
   // -------------------인력투입 변수, 함수들--------------------
-  const workerData = useRef<any>([]);
+  const workControlData = useRef<any>([]);
+  const [workerData, setWorkerData] = useState<any>({});
   const [workDoDate, setWorkDoDate] = useState<string | Date | null>(null);
   const [workers, setWorkers] = useState<any[]>([]);
   const { isLoading: workDoLoading, refetch: workDoRefetch } = useQuery<apiGetResponseType, Error>({
@@ -166,22 +179,41 @@ const ProjectDrawer: React.FC<Props> = ({
       const result = await getAPI({
         type: 'core-d3',
         utype: 'tenant/',
-        url: `pms/proc/employee/default/one/${selectId}/${workDoDate}`
+        url: `pms/proc/employee/default/one/${selectId}/${dayjs(workDoDate).format("YYYY-MM-DD")}`
       });
 
       if (result.resultCode === 'OK_0000') {
-        const workSchedule = result.data.data.map((v:any) => (
-          {
+        let workData = {}
+        const workSchedule = result.data.data.map((v:any) => {
+          workData = {
+            ...workData,
+             [v.emp?.id]: v.emp.workDetail?.id ? {
+              empProcAm: v.emp.workDetail?.wkEmpProcAm || false,
+              empProcPm: v.emp.workDetail?.wkEmpProcPm || false,
+              empProcNt: v.emp.workDetail?.wkEmpProcNt || false,
+              empProcAnt: v.emp.workDetail?.wkEmpProcAnt || false,
+              wkProcEmployeeId: v.emp.workDetail?.id
+             } : {
+              empProcAm: v.emp.workDetail?.wkEmpProcAm || false,
+              empProcPm: v.emp.workDetail?.wkEmpProcPm || false,
+              empProcNt: v.emp.workDetail?.wkEmpProcNt || false,
+              empProcAnt: v.emp.workDetail?.wkEmpProcAnt || false,
+              wkProcScheduleId: v.id
+             }
+            }
+          return {
+            empId: v.emp.id,
             wkProcScheduleId: v.id,
             name: v.emp.name,
             wkProcEmployeeId: v.emp.workDetail?.id,
-            empProcAm: v.emp.workDetail?.wkEmpProcAm || null,
-            empProcPm: v.emp.workDetail?.wkEmpProcPm || null,
-            empProcNt: v.emp.workDetail?.wkEmpProcNt || null,
-            empProcAnt: v.emp.workDetail?.wkEmpProcAnt || null,
+            empProcAm: v.emp.workDetail?.wkEmpProcAm || false,
+            empProcPm: v.emp.workDetail?.wkEmpProcPm || false,
+            empProcNt: v.emp.workDetail?.wkEmpProcNt || false,
+            empProcAnt: v.emp.workDetail?.wkEmpProcAnt || false,
           }
-        ))
+        })
         console.log(workSchedule)
+        setWorkerData(workData);
         setWorkers(workSchedule);
       } else {
         console.log('error:', result.response);
@@ -192,36 +224,46 @@ const ProjectDrawer: React.FC<Props> = ({
     enabled: !!workDoDate
   });
 
-  function workCheck(e: any, name: string, record: any) {
-    console.log(e.target.checked)
+  function workCheck(e: any, key: string, record: any) {
+    
     if(!workDoDate) {
       showToast('인력투입일을 먼저 선택해주세요.', 'error');
       e.preventDefault();
       return;
     }
-    if(record.wkProcEmployeeId) {
-      workerData.current = [...workerData.current, 
-        {
-          wkProcEmployeeId: record.wkProcEmployeeId, 
-          empProcAm: record.empProcAm, 
-          empProcPm: record.empProcPm, 
-          empProcNt: record.empProcNt, 
-          empProcAnt: record.empProcAnt
-        }
-      ];
-    }else {
-      workerData.current = [...workerData.current, 
-        {
-          wkProcScheduleId: record.wkProcScheduleId, 
-          empProcAm: record.empProcAm, 
-          empProcPm: record.empProcPm, 
-          empProcNt: record.empProcNt, 
-          empProcAnt: record.empProcAnt
-        }
-      ];
-    }
 
+    const prevWorkData = {
+      empProcAm: record.empProcAm,
+      empProcPm: record.empProcPm,
+      empProcNt: record.empProcNt,
+      empProcAnt: record.empProcAnt
+    }
+    if(record.wkProcEmployeeId) {
+      workControlData.current = workControlData.current.some((item:any) => item.wkProcEmployeeId === record.wkProcEmployeeId)
+      ? workControlData.current.map((item:any) => 
+          item.wkProcEmployeeId === record.wkProcEmployeeId 
+            ? {...prevWorkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
+            : item
+        )
+      : [...workControlData.current, { wkProcEmployeeId: record.wkProcEmployeeId, ...prevWorkData, [key]: e.target.checked }];
+    }else {
+      workControlData.current = workControlData.current.some((item:any) => item.wkProcScheduleId === record.wkProcScheduleId)
+      ? workControlData.current.map((item:any) => 
+          item.wkProcScheduleId === record.wkProcScheduleId 
+            ? {...prevWorkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
+            : item
+        )
+      : [...workControlData.current, { wkProcScheduleId: record.wkProcScheduleId, ...prevWorkData, [key]: e.target.checked }];
+    }
+    setWorkerData((prev:any) => ({
+      ...prev,
+      [record.empId]: {
+        ...prev[record.empId],
+        [key]: e.target.checked,
+      }
+    }))
   }
+
   // -----------------------------------------------------
 
   async function processSubmit() {
@@ -280,20 +322,48 @@ const ProjectDrawer: React.FC<Props> = ({
       console.log('품질관리 저장');
     } else if(selectKey === 3) {
       console.log('인력투입 저장');
-      const result = await postAPI({
-        type: 'core-d3', 
-        utype: 'tenant/',
-        jsx: 'default',
-        url: `pms/daily/default/create/${selectId}/${dayjs(processData.current.wkProcDailyDt).format("YYYY-MM-DD")}`,
-        etc: true,
-      }, {});
-      console.log(result);
-      if(result.resultCode === 'OK_0000') {
-        showToast("저장되었습니다.", "success");
-        procDailyRefetch();
-      } else {
-        showToast("진행관리 등록중 문제가 발생했습니다..", "error");
-        return;
+      
+      let createData = [];
+      let updateData = [];
+      for(const worker of workControlData.current) {
+        if(worker?.wkProcEmployeeId) {
+          updateData.push(worker);
+        } else {
+          createData.push(worker);
+        }
+      }
+      console.log(updateData, createData)
+      if(createData.length>0){
+        const result = await postAPI({
+          type: 'core-d3', 
+          utype: 'tenant/',
+          jsx: 'default',
+          url: `pms/proc/employee/default/create/${selectId}/${dayjs(workDoDate).format("YYYY-MM-DD")}`,
+          etc: true,
+        }, {empDatas: createData});
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장되었습니다.", "success");
+          workDoRefetch();
+        } else {
+          showToast("인력투입 등록중 문제가 발생했습니다..", "error");
+          return;
+        }
+      }
+      if(updateData.length>0){
+        const result = await patchAPI({
+          type: 'core-d3',
+          utype: 'tenant/',
+          jsx: 'default',
+          url: `pms/proc/employee/default/update/${selectId}`,
+          etc: true,
+        },"", {empDatas: updateData});
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장되었습니다.", "success");
+          workDoRefetch();
+        } else {
+          showToast("인력투입 수정중 문제가 발생했습니다..", "error");
+          return;
+        }
       }
     }
   }
@@ -306,10 +376,11 @@ const ProjectDrawer: React.FC<Props> = ({
     setMemoText('');
     setMemoList([]);
     setWorkDoDate(null);
+    setWorkerData({});
+    workControlData.current = [];
     procDailyRefetch();
     close();
   }
-  console.log(procDailyData)
   return (
     <AntdDrawerStyled
       closeIcon={null}
@@ -514,7 +585,7 @@ const ProjectDrawer: React.FC<Props> = ({
                   <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                     <div className="col-span-3">
                       <p className="pb-8">인력 투입일</p>
-                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={workDoDate} onChange={(date) => setWorkDoDate(date)}/>
+                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={workDoDate} onChange={(date) => {setWorkDoDate(date); workControlData.current=[];}}/>
                     </div>
                   </div>
                   <AntdTableEdit
@@ -534,10 +605,8 @@ const ProjectDrawer: React.FC<Props> = ({
                         key: 'empProcAm',
                         align: 'center',
                         render:(value, record) => (
-                          <>
-                          {console.log(record)}
-                            <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcAm", record)} disabled={workDoDate ? false : true}/>
-                          </>
+                          
+                          <Checkbox checked={!!workerData[record.empId]?.empProcAm} onChange={(e) => workCheck(e, "empProcAm", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                       {
@@ -547,7 +616,7 @@ const ProjectDrawer: React.FC<Props> = ({
                         key: 'empProcPm',
                         align: 'center',
                         render:(value, record) => (
-                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcPm", record)} disabled={workDoDate ? false : true}/>
+                          <Checkbox checked={!!workerData[record.empId]?.empProcPm} onChange={(e) => workCheck(e, "empProcPm", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                       {
@@ -557,7 +626,7 @@ const ProjectDrawer: React.FC<Props> = ({
                         key: 'empProcNt',
                         align: 'center',
                         render:(value, record) => (
-                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcNt", record)} disabled={workDoDate ? false : true}/>
+                          <Checkbox checked={!!workerData[record.empId]?.empProcNt} onChange={(e) => workCheck(e, "empProcNt", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                       {
@@ -567,7 +636,8 @@ const ProjectDrawer: React.FC<Props> = ({
                         key: 'empProcAnt',
                         align: 'center',
                         render:(value, record) => (
-                          <Checkbox value={!!value} onChange={(e) => workCheck(e, "empProcAnt", record)} disabled={workDoDate ? false : true}/>
+                          
+                          <Checkbox checked={!!workerData[record.empId]?.empProcAnt} onChange={(e) => workCheck(e, "empProcAnt", record)} disabled={workDoDate ? false : true}/>
                         )
                       },
                     ]}
@@ -588,16 +658,21 @@ const ProjectDrawer: React.FC<Props> = ({
                     <Button type="text" className="!w-24 !h-24 !p-0" onClick={addMemo}><Plus/></Button>
                   </div>
                   
-                  {memoList.map((m, idx) => (
-                    <>
-                      <Divider style={{margin:"10px 0"}}/>
-                      <p className="text-12 text-[#00000073]">{dayjs(m.createdAt).format("YYYY-MM-DD HH:mm")}</p>
-                      <p key={idx} className="flex h-36 p-3 v-between-h-center">
-                        <span className={`text-14 font-normal ${m.status === "delete" ? "line-through text-[#00000073]" : ""}`}>{m.memo}</span>
-                        <span className="cursor-pointer" onClick={() => {}}><Close/></span>
-                      </p>
-                    </>
-                  ))}
+                  {memoList.map((m, idx) => 
+                    {
+                      const isCancle = m.metaData?.cancle;
+                      return (
+                        <>
+                          <Divider style={{margin:"10px 0"}}/>
+                          <p className="text-12 text-[#00000073]" style={{textDecoration: isCancle ? "line-through" : "unset"}}>{m.metaData?.empName} | {dayjs(m.createdAt).format("YYYY-MM-DD HH:mm")}</p>
+                          {isCancle && <p className="text-12 text-[#00000073]">{m.metaData?.cancledEmpName} | {dayjs(m.metaData.cancledAt).format("YYYY-MM-DD HH:mm")}</p>}
+                          <p key={idx} className="flex h-36 p-3 v-between-h-center" style={{textDecoration: isCancle ? "line-through" : "unset"}}>
+                            <span className={`text-14 font-normal ${m.status === "delete" ? "line-through text-[#00000073]" : ""}`}>{m.memo}</span>
+                            <span className="cursor-pointer" onClick={() => deleteMemo(m.id)}><Close/></span>
+                          </p>
+                        </>
+                      )
+                    })}
                 </div>
               </CardInputList>
             </div>
