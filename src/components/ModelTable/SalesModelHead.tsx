@@ -20,6 +20,7 @@ import { modelsType } from "@/data/type/sayang/models";
 import { getAPI } from "@/api/get";
 import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
 import { BoardGroupType, boardType } from "@/data/type/base/board";
+import AntdSelectFill from "../Select/AntdSelectFill";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center">{label}</p>
@@ -95,17 +96,14 @@ const SalesModelHead:React.FC<Props> = ({
   handleModelChange,
   index,
 }) => {
-
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
-  const [modelNm, setModelNm] = useState<string>(model?.orderTit ?? "");
-  const [modelNo, setModelNo] = useState<string>(model?.currPrdInfo?.prdMngNo ?? "");
 
   const [modelList, setModelList] = useState<modelsType[]>([]);
   const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
   const [modelNoSelectList, setModelNoSelectList] = useState<selectType[]>([]);
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["models", modelNm, modelNo],
+    queryKey: ["models", model.orderTit, model.currPrdInfo?.prdMngNo],
     queryFn: async () => {
       const result = await getAPI({
         type: "core-d1",
@@ -115,8 +113,8 @@ const SalesModelHead:React.FC<Props> = ({
         page: 0,
         limit: 100,
         s_query: { "$or": [
-          modelNm.length > 0 ? {"prdNm": {"$startsL": modelNm}} : {},
-          modelNo.length > 0 ? {"prdMngNo": {"$startsL": modelNo}} : {},
+          (model.orderTit ?? "").length > 0 ? {"prdNm": {"$startsL": model.orderTit}} : {},
+          (model.currPrdInfo?.prdMngNo ?? "").length > 0 ? {"prdMngNo": {"$startsL": model.currPrdInfo?.prdMngNo}} : {},
         ]}
       });
 
@@ -136,7 +134,7 @@ const SalesModelHead:React.FC<Props> = ({
       }
       return result;
     },
-    enabled: (flag && (modelNm.length > 2 || modelNo.length > 2))
+    enabled: (flag && ((model.orderTit ?? "").length > 2 || (model.currPrdInfo?.prdMngNo ?? "").length > 2))
   });
 
   return (
@@ -145,32 +143,52 @@ const SalesModelHead:React.FC<Props> = ({
         <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
       }
       
-      <Tooltip title={matchFlag&&!read?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
-      <div>
-        <AntdSelect
-          options={[
-            {value:ModelStatus.NEW,label:'신규'},
-            {value:ModelStatus.REPEAT,label:'반복'},
-            {value:ModelStatus.MODIFY,label:'수정'},
-          ]}
-          value={model.modelStatus}
-          onChange={(e)=>{
-            if(matchFlag && e+"" !== ModelStatus.NEW) {
-              setMatchFlag(false);
-            }
-            handleModelDataChange(model.id ?? '', 'modelStatus', e);
-          }}
-          styles={(selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT) || matchFlag ?
-            {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
-            {ht:'32px', bw:'0', pd:'0'}
-          } className="!min-w-55"
-          disabled={model.completed}
-          readonly={read}
+      <div className="!flex-1 !max-w-[calc(100%-90px)] h-center gap-15 p-10">
+        <Item
+          size1={1}
+          children1={
+            <Tooltip title={matchFlag&&!read?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
+            <div>
+              <AntdSelect
+                options={[
+                  {value:ModelStatus.NEW,label:'신규'},
+                  {value:ModelStatus.REPEAT,label:'반복'},
+                  {value:ModelStatus.MODIFY,label:'수정'},
+                ]}
+                value={model.modelStatus}
+                onChange={(e)=>{
+                  if(matchFlag && e+"" !== ModelStatus.NEW) {
+                    setMatchFlag(false);
+                  }
+                  handleModelDataChange(model.id ?? '', 'modelStatus', e);
+                }}
+                styles={(selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT) || matchFlag ?
+                  {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+                  {ht:'32px', bw:'0', pd:'0'}
+                } className="!min-w-55"
+                disabled={model.completed}
+                readonly={read}
+              />
+            </div>
+            </Tooltip>
+          }
+          size2={1}
+          children2={
+            <AntdSelect
+              options={[
+                {value:ModelTypeEm.SAMPLE,label:'샘플'},
+                {value:ModelTypeEm.PRODUCTION,label:'양산'},
+              ]}
+              value={model.currPrdInfo?.modelTypeEm ?? ModelTypeEm.SAMPLE}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.modelTypeEm', e);
+              }}
+              styles={{ht:'32px', bw:'0', pd:'0'}}
+              disabled={read ?? model.completed}
+            />
+          }
         />
-      </div>
-      </Tooltip>
-      
-      <div className="!flex-1 !max-w-[calc(100%-90px)] h-center gap-20 p-10">
+
         <Item
           label1="모델명" size1={3}
           children1={
@@ -187,9 +205,8 @@ const SalesModelHead:React.FC<Props> = ({
                 }
               }}
               option={modelSelectList}
-              label={modelNm}
+              label={model.orderTit}
               onInputChange={(value) => {
-                setModelNm(value);
                 if(value.length < 3) {
                   setModelSelectList([]);
                   setModelNoSelectList([]);
@@ -201,7 +218,6 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(value) => {
                 const m = modelList.find(f=>f.id === value);
                 if(m && model.id) {
-                  setModelNo(m.prdMngNo);
                   handleModelChange?.(m, model.id);
                 }
                 if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
@@ -222,20 +238,19 @@ const SalesModelHead:React.FC<Props> = ({
             :
             <CustomAutoCompleteLabel
               option={modelNoSelectList}
-              label={modelNo}
+              label={model.currPrdInfo?.prdMngNo}
               onInputChange={(value) => {
-                setModelNo(value);
                 if(value.length < 3) {
                   setModelSelectList([]);
                   setModelNoSelectList([]);
                 }
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', value);
                 setFlag(true);
               }}
               value={model.prdMngNo}
               onChange={(value) => {
                 const m = modelList.find(f=>f.id === value);
                 if(m && model.id) {
-                  setModelNm(m?.prdNm ?? "");
                   handleModelChange?.(m, model.id);
                 }
                 if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
@@ -257,9 +272,8 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'prtOrderNo', e.target.value);
               }}
-              readonly={read}
               styles={{ht:'32px', bg:'#FFF'}}
-              disabled={model.completed}
+              disabled={model.completed ?? read}
             />
           }
           label2="수주번호"
@@ -269,9 +283,8 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.orderMngNo', e.target.value);
               }}
-              readonly={read}
               styles={{ht:'32px', bg:'#FFF'}}
-              disabled={model.completed}
+              disabled={model.completed ?? read}
             />
           }
         />
@@ -304,25 +317,25 @@ const SalesModelHead:React.FC<Props> = ({
         <Item
           label1="제조사"
           children1={
-            <AntdSelect
+            <AntdSelectFill
               options={boardGroupSelectList}
               value={model.currPrdInfo?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.boardGroup.id', e)
               }}
-              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              styles={{ht:'32px', bg: '#FFF', br: '2px'}}
               disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
           }
           label2="원판"
           children2={
-            <AntdSelect
+            <AntdSelectFill
               options={boardSelectList}
               value={model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.board.id', e)
               }}
-              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              styles={{ht:'32px', bg: '#FFF', br: '2px'}}
               disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
           }
@@ -331,11 +344,11 @@ const SalesModelHead:React.FC<Props> = ({
         <Item
           label1="재질"
           children1={
-            <AntdSelect
+            <AntdSelectFill
               options={metarialSelectList}
               value={model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value}
               onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.material.id', e)}}
-              styles={{ht:'32px', bw:'0px', pd:'0'}} dropWidth="180px"
+              styles={{ht:'32px', bg: '#FFF', br: '2px'}} dropWidth="180px"
               disabled={read ?? model.completed ? true : selectId === model.id ? !newFlag : model.modelStatus === ModelStatus.REPEAT}
             />
           }
@@ -346,9 +359,9 @@ const SalesModelHead:React.FC<Props> = ({
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'currPrdInfo.exchange', e.target.value);
               }}
-              readonly={read} type="number"
+              type="number"
               styles={{ht:'32px', bg:'#FFF'}}
-              disabled={model.completed}
+              disabled={model.completed ?? read}
             />
           }
         />
@@ -358,15 +371,13 @@ const SalesModelHead:React.FC<Props> = ({
           children1={
             <AntdSelect
               options={[
-                {value:ModelTypeEm.SAMPLE,label:'샘플'},
-                {value:ModelTypeEm.PRODUCTION,label:'양산'},
+                {value:'pcs',label:'PCS'},
+                {value:'kit',label:'KIT'},
               ]}
-              value={model.currPrdInfo?.modelTypeEm ?? ModelTypeEm.SAMPLE}
-              onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'currPrdInfo.modelTypeEm', e);
-              }}
-              styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={read ?? model.completed}
+              value={model.currPrdInfo?.orderUnit ?? 'pcs'}
+              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnit', e)}}
+              styles={{ht:'32px', bw:'0px', pd:'0'}}
+              disabled={model.completed ?? read}
             />
           }
           size2={1}
@@ -423,8 +434,20 @@ const SalesModelHead:React.FC<Props> = ({
         />
 
         <Item
-          label1="납기"
+          label1="발주"
           children1={
+            read && model.orderDt ? <div className="h-32 h-center">{dayjs(model.orderDt).format('YYYY-MM-DD')}</div> :
+            <AntdDatePicker
+            value={model.currPrdInfo?.orderDt}
+            onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
+            suffixIcon={'cal'} afterDate={new Date()}
+            styles={{bw:'0',bg:'none', pd:"0"}} className="!w-full"
+            disabled={read ?? model.completed}
+            allowClear={false}
+            />
+          }
+          label2="납기"
+          children2={
             read && model.orderPrdDueDt ? <div className="h-32 h-center">{dayjs(model.orderPrdDueDt).format('YYYY-MM-DD')}</div> :
             !read ?
             <AntdDatePicker
@@ -436,18 +459,6 @@ const SalesModelHead:React.FC<Props> = ({
               allowClear={false}
             /> : null
           }
-          label2="발주"
-          children2={
-            read && model.orderDt ? <div className="h-32 h-center">{dayjs(model.orderDt).format('YYYY-MM-DD')}</div> :
-            <AntdDatePicker
-              value={model.currPrdInfo?.orderDt}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
-              suffixIcon={'cal'} afterDate={new Date()}
-              styles={{bw:'0',bg:'none', pd:"0"}} className="!w-full"
-              disabled={read ?? model.completed}
-              allowClear={false}
-            />
-          }
         />
 
         <Item
@@ -455,34 +466,37 @@ const SalesModelHead:React.FC<Props> = ({
           children1={
             <AntdInput 
               value={model.orderPrdCnt}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value)}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'orderPrdCnt', e.target.value);
+              }}
               styles={{ht:'32px'}} type="number"
-              disabled={model.completed} readonly={read}
+              disabled={model.completed ?? read}
             />
           }
-          label2="수주금액"
+          label2="수주단가"
           children2={
             <AntdInput 
-              value={model.orderPrdPrice}
-              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
+              value={model.currPrdInfo?.orderUnitPrice ?? 0}
+              onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnitPrice', e.target.value);
+
+                const tot = (model.orderPrdCnt ?? 0) * Number(e.target.value ?? 0);
+                handleModelDataChange(model.id ?? '', 'orderPrdPrice', tot);
+              }}
               styles={{ht:'32px'}} type="number"
-              disabled={model.completed} readonly={read}
+              disabled={model.completed ?? read}
             />
           }
         />
 
         <Item
-          label1="수주단위"
+          label1="수주금액" size1={3}
           children1={
-            <AntdSelect
-              options={[
-                {value:'pcs',label:'PCS'},
-                {value:'kit',label:'KIT'},
-              ]}
-              value={model.currPrdInfo?.orderUnit ?? 'pcs'}
-              onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnit', e)}}
-              styles={{ht:'32px', bw:'0px', pd:'0'}}
-              disabled={model.completed} readonly={read}
+            <AntdInput 
+              value={model.orderPrdPrice}
+              onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdPrice', e.target.value)}
+              styles={{ht:'32px'}} type="number"
+              disabled={model.completed ?? read}
             />
           }
           label2="비고" size2={3}
@@ -491,7 +505,7 @@ const SalesModelHead:React.FC<Props> = ({
               value={model.currPrdInfo?.memo}
               onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.memo', e.target.value)}
               styles={{ht:'32px'}}
-              disabled={model.completed} readonly={read}
+              disabled={model.completed ?? read}
             />
           }
         />

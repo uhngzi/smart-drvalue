@@ -1,6 +1,6 @@
 import AntdInput from "@/components/Input/AntdInput";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { modelsType, orderModelType } from "@/data/type/sayang/models";
+import { modelsType, orderModelType, salesModelsType } from "@/data/type/sayang/models";
 import { Dropdown, MenuProps, Pagination, Radio, Space } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
 
@@ -18,15 +18,17 @@ import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
 
 interface Props {
-  type: 'order' | 'match';
-  selectId: string | null;
-  setSelectId: React.Dispatch<SetStateAction<string | null>>;
-  products: orderModelType[] | salesOrderProcuctCUType[];
+  type: 'order' | 'match' | 'model';
+  selectId?: string | null;
+  setSelectId?: React.Dispatch<SetStateAction<string | null>>;
+  products?: orderModelType[] | salesOrderProcuctCUType[];
   setProductsOrder?: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
   setProductsMatch?: React.Dispatch<SetStateAction<orderModelType[]>>;
-  setNewFlag: React.Dispatch<SetStateAction<boolean>>;
-  setDrawerOpen: React.Dispatch<SetStateAction<boolean>>;
+  setNewFlag?: React.Dispatch<SetStateAction<boolean>>;
+  setDrawerOpen?: React.Dispatch<SetStateAction<boolean>>;
   partnerId?: string;
+  model?: salesModelsType | null;
+  setModel?: React.Dispatch<SetStateAction<salesModelsType | null>>;
 }
 
 const ModelList:React.FC<Props> = ({
@@ -39,6 +41,8 @@ const ModelList:React.FC<Props> = ({
   setNewFlag,
   setDrawerOpen,
   partnerId,
+  model,
+  setModel,
 }) => {
   // ----------- 거래처 데이터 세팅 ----------- 시작
     // 거래처를 가져와 SELECT에 세팅 (type이 다름)
@@ -118,7 +122,22 @@ const ModelList:React.FC<Props> = ({
   // ------------ 모델 데이터 세팅 ------------ 끝
 
   
-  const items = (record: any): MenuProps['items'] => [
+  const items = (record: any): MenuProps['items'] => type === "model" ? 
+  [
+    {
+      label: <>복사하여 새로 등록</>,
+      key: 0,
+      onClick:()=>{
+        setModel?.({
+          ...record,
+          id: model?.id,
+          usedYn: false,
+        });
+        setDrawerOpen?.(false);
+      },
+    },
+  ]:
+  [
     {
       label: <>복사하여 새로 등록</>,
       key: 0,
@@ -144,10 +163,10 @@ const ModelList:React.FC<Props> = ({
   const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
 
   const handleSelectMenu = () => {
-    if(selectMenuKey===0)   setNewFlag(true);   // 복사하여 등록
-    if(selectMenuKey===1)   setNewFlag(false);  // 그대로 등록
+    if(selectMenuKey===0)   setNewFlag?.(true);   // 복사하여 등록
+    if(selectMenuKey===1)   setNewFlag?.(false);  // 그대로 등록
 
-    if(selectRecord !== null) {
+    if(selectRecord !== null && products) {
       if(type === 'order') {
         const newData = [...products] as salesOrderProcuctCUType[];
         const index = newData.findIndex((item) => selectId === item.id);
@@ -184,7 +203,7 @@ const ModelList:React.FC<Props> = ({
       setSelectMenuKey(null);
 
       if(!productChk)
-        setDrawerOpen(false);
+        setDrawerOpen?.(false);
     }
   }
   
@@ -326,10 +345,10 @@ const ModelList:React.FC<Props> = ({
       <AntdAlertModal
         open={alertOpen}
         setOpen={setAlertOpen}
-        title={"등록할 모델의 관리번호 선택"}
+        title={"등록할 모델 선택"}
         contents={<div>
           <CustomRadioGroup size="large" className="flex gap-20" value={selectId}>
-          {
+          { products &&
             products
             .filter(f=>!f.completed)
             .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
@@ -338,14 +357,14 @@ const ModelList:React.FC<Props> = ({
                 key={p.id}
                 value={p.id}
                 onClick={(e)=>{
-                  setSelectId(p.id ?? "");
+                  setSelectId?.(p.id ?? "");
                   // 모델 매칭에서 해당 모델에 입력된 값이 있을 경우
                   if(type === 'match' && (p as orderModelType).editModel) setProductChk(true);
                   // 고객 발주에서 해당 모델에 입력된 값이 있을 경우
                   else if(type === 'order' && p.currPrdInfo)              setProductChk(true);
                 }}
                 className="!rounded-20 [border-inline-start-width:1px]"
-              >{p.prtOrderNo}</Radio.Button>
+              >{p.index}</Radio.Button>
             ))
           }
           </CustomRadioGroup>
@@ -355,7 +374,7 @@ const ModelList:React.FC<Props> = ({
           setAlertOpen(false);
         }}
         onOk={()=>{
-          const selectP = products.find(f=>f.id === selectId);
+          const selectP = products?.find(f=>f.id === selectId);
           if(selectP) {
             if(selectP.modelStatus === ModelStatus.REPEAT && selectMenuKey === 0) {
             // 반복인데 복사하여 새로 등록을 선택한 경우 실패
@@ -410,7 +429,7 @@ const ModelList:React.FC<Props> = ({
           setAlertProductOpen(false);
           if(alertType !== "miss") {
             handleSelectMenu();
-            setDrawerOpen(false);
+            setDrawerOpen?.(false);
           }
         }}
         onCancle={()=>{

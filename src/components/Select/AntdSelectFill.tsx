@@ -42,6 +42,7 @@ const AntdSelectFill : React.FC<Props> = ({
       $bc={styles?.bc?styles.bc:'#D5D5D5'}
       $fs={styles?.fs?styles.fs:'14px'}
       $pd={styles?.pd?styles.pd:'0 11px'}
+      $br={styles?.br?styles.br:'0'}
       $readOnly={readonly ?? false}
     >
       <Select
@@ -69,6 +70,7 @@ const AndtSelectStyled = styled.div<{
   $bc: string;
   $fs: string;
   $pd: string;
+  $br: string;
   $readOnly: boolean;
 }>`
   width: fit-content;
@@ -77,12 +79,12 @@ const AndtSelectStyled = styled.div<{
   font-size: 12px;
 
   .ant-select {
-    border-radius: 0;
+    border-radius: ${({ $br }) => $br} !important;
     height: ${({ $ht }) => $ht} !important;
   }
 
   .ant-select-selector {
-    border-radius: 0;
+    border-radius: ${({ $br }) => $br} !important;
     height: ${({ $ht }) => $ht} !important;
     background: ${({ $bg }) => $bg} !important;
     border-width: ${({ $bw }) => $bw} !important;

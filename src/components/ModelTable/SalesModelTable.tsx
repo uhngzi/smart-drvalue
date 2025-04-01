@@ -105,7 +105,6 @@ const SalesModelTable:React.FC<Props> = ({
   ) => {
     // 데이터를 복사
     const updatedData = data.map((item) => {
-      console.log(value);
       if (item.id === id) {
         const keys = name.split(".");
         const updatedItem = { ...item };
@@ -124,12 +123,16 @@ const SalesModelTable:React.FC<Props> = ({
   
         // 최종 키에 새 값 할당
         targetObject[lastKey] = value;
+
+        if(name.includes("orderPrdCnt")){
+          const tot = (item.currPrdInfo?.orderUnitPrice ?? 0) * Number(value ?? 0);
+          targetObject["orderPrdPrice"] = tot;
+        }
   
         return updatedItem;
       }
       return item; // 다른 데이터는 그대로 유지
     });
-
     setData(updatedData); // 상태 업데이트
   }; 
 

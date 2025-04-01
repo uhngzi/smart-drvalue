@@ -453,6 +453,7 @@ const OrderAddLayout = () => {
       })
       setOrderId(entity?.id);
       setUpdate(false);
+      setStepCurrent(1);
     } else {
       const msg = result.response?.data?.message;
       setErrMsg(msg);
@@ -544,8 +545,7 @@ const OrderAddLayout = () => {
   useEffect(()=>{
     const totalPrice = newProducts.reduce((acc, product) => {
       const productPrice = Number(product.orderPrdPrice);
-      const productCount = Number(product.orderPrdCnt);
-      return acc + productPrice * productCount;
+      return acc + productPrice;
     }, 0);
   
     setFormData((prevFormData) => ({
@@ -667,27 +667,26 @@ const OrderAddLayout = () => {
                     if(!orderVal.isValid) {
                       showToast(orderVal.missingLabels+'은(는) 필수 입력입니다.', "error");
                     } else {
-                      setStepCurrent(1);
+                      handleAddOrderMain();
                     }
                   }}
                 >
                   <Arrow />다음 단계
                 </Button>
-              </> : <>
-                  <div className="flex" />
-                  <Button
-                    className="w-109 h-32 rounded-6 border-point1 text-point1"
-                    onClick={()=>{
-                      if(!edit)
-                        handleAddOrderMain();
-                      else
-                        handleEditOrderMain();
-                    }}
-                  >
-                    <p className="w-16 h-16"><Edit /></p> {edit ? "수정" : "발주 등록"}
-                  </Button>
-                </>
-                }
+              </> : edit ?
+              <>
+                <div className="flex" />
+                <Button
+                  className="w-109 h-32 rounded-6 border-point1 text-point1"
+                  onClick={()=>{
+                    if(edit)
+                      handleEditOrderMain();
+                  }}
+                >
+                  <p className="w-16 h-16"><Edit /></p> 수정
+                </Button>
+              </>
+              : <></>}
             </div>
 
             {/* 모델 컨텐츠 */}
