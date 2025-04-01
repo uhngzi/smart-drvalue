@@ -57,7 +57,7 @@ export const ListPagination: React.FC<Props> = ({
         {titleBtn}
       </div>
       <div className="h-50 gap-20 h-center">
-        <span>총 {totalData}건</span>
+        <span>총 {(totalData ?? 0).toLocaleString()}건</span>
         <Pagination 
           size="small"
           defaultCurrent={1}
