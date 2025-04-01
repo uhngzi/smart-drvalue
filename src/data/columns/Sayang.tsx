@@ -45,12 +45,12 @@ export const specStatusClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -59,9 +59,7 @@ export const specStatusClmn = (
           setPartnerMngData(null);
         }}
       >
-        {record?.specModels?.[0]?.partner?.prtNm}
-        /
-        {record?.specModels?.[0]?.partner?.prtRegCd}
+        {record?.specModels?.[0]?.partner?.prtRegCd} / {record?.specModels?.[0]?.partner?.prtNm}
       </div>
     )
   },
@@ -229,11 +227,12 @@ export const specIngClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
     dataIndex: 'prtNm',
     key: 'prtNm',
     align: 'center',
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div className="text-left cursor-pointer"
         onClick={()=>{
@@ -241,9 +240,7 @@ export const specIngClmn = (
           setPartnerMngData(null);
         }}
       >
-        {record?.specModels?.[0]?.partner?.prtNm}
-        /
-        {record?.specModels?.[0]?.partner?.prtRegCd}
+        {record?.specModels?.[0]?.partner?.prtRegCd} / {record?.specModels?.[0]?.partner?.prtNm}
       </div>
     )
   },
@@ -473,12 +470,12 @@ export const sayangSampleWaitClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
-    key: 'orderModel.prtInfo.prt.prtNm/orderModel.prtInfo.prt.prtRegCd',
+    dataIndex: 'orderModel.prtInfo.prt.prtRegCd/orderModel.prtInfo.prt.prtNm',
+    key: 'orderModel.prtInfo.prt.prtRegCd/orderModel.prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -487,9 +484,7 @@ export const sayangSampleWaitClmn = (
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
         }}
       >
-        {record.orderModel?.prtInfo.prt?.prtNm}
-        /
-        {record.orderModel?.prtInfo.prt?.prtRegCd}
+        {record.orderModel?.prtInfo.prt?.prtRegCd} / {record.orderModel?.prtInfo.prt?.prtNm}
       </div>
     )
   },
@@ -661,7 +656,7 @@ export const sayangSampleWaitAddClmn = (
     align: 'center',
     children: [
       {
-        title:'업체명/코드',
+        title:'코드/업체명',
         width: 180,
         dataIndex: 'user',
         key:'user',
@@ -672,7 +667,7 @@ export const sayangSampleWaitAddClmn = (
               {record?.prdMngNo}
             </div>
             <div className="h-[50%] w-[100%] v-h-center !text-12">
-              {record?.partner?.prtNm+'-'+record?.partner?.prtRegCd}
+              {record?.partner?.prtRegCd+'-'+record?.partner?.prtNm}
             </div>
           </>
         )
@@ -1357,12 +1352,12 @@ export const sayangModelWaitClmn = (
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
-    key: 'prtInfo.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'prtInfo.prtRegCd/prtInfo.prt.prtNm',
+    key: 'prtInfo.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -1371,9 +1366,7 @@ export const sayangModelWaitClmn = (
           setPartnerMngData(record.prtInfo.mng);
         }}
       >
-        {record.prtInfo?.prt?.prtNm}
-        /
-        {record.prtInfo?.prt?.prtRegCd}
+        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },

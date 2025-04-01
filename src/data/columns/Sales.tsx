@@ -52,12 +52,12 @@ export const salesOrderStatusClmn = (
     )
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
-    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderWorkSheetType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -66,7 +66,7 @@ export const salesOrderStatusClmn = (
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        {record.prtInfo?.prt?.prtNm} / {record.prtInfo?.prt?.prtRegCd}
+        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },
@@ -219,21 +219,21 @@ export const salesUserOrderClmn = (
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
-    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer text-shadow-hover text-left"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
-          setPartnerData(record?.prtInfo?.prt);
-          setPartnerMngData(record?.prtInfo?.mng);
+          setPartnerData(record?.prtInfo?.prt ?? null);
+          setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        {record.prtInfo?.prt?.prtNm} / {record.prtInfo?.prt?.prtRegCd}
+        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },
@@ -490,20 +490,20 @@ export const salesModelsClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'partner.prtNm/partner.prtRegCd',
-    key: 'partner.prtNm/partner.prtRegCd',
+    dataIndex: 'partner.prtRegCd/partner.prtNm',
+    key: 'partner.prtRegCd/partner.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsType) => (
       <div
-        className="w-full h-center cursor-pointer text-shadow-hover text-left"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover"
         onClick={()=>{
           setPartnerData(record?.partner);
         }}
       >
-        {record.partner?.prtNm} / {record.partner?.prtRegCd}
+        {record.partner?.prtRegCd} / {record.partner?.prtNm}
       </div>
     )
   },
@@ -528,7 +528,7 @@ export const salesModelsClmn = (
   },
   {
     title: 'Rev',
-    width: 100,
+    width: 130,
     dataIndex: 'prdRevNo',
     key: 'prdRevNo',
     align: 'center',
@@ -579,6 +579,18 @@ export const salesModelsClmn = (
           (record?.pnlW ?? "")+" * "+(record?.pnlL ?? "") :
           ""
         }
+      </div>
+    )
+  },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record) => (
+      <div>
+
       </div>
     )
   },

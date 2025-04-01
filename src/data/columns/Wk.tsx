@@ -362,12 +362,12 @@ export const WKStatusProcClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
-    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'specModel.partner.prtRegCd/specModel.partner.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -375,7 +375,7 @@ export const WKStatusProcClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtNm} / {record.specModel?.partner?.prtRegCd}
+        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
       </div>
     )
   },
@@ -633,12 +633,12 @@ export const WKStatusInClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
-    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'specModel.partner.prtRegCd/specModel.partner.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -646,7 +646,7 @@ export const WKStatusInClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtNm} / {record.specModel?.partner?.prtRegCd}
+        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
       </div>
     )
   },
@@ -802,12 +802,12 @@ export const WkStatusOutClmn = (
     align: 'center',
   },
   {
-    title: '업체명/코드',
+    title: '코드/업체명',
     width: 180,
-    dataIndex: 'specModel.partner.prtNm/specModel.partner.prtRegCd',
-    key: 'prtInfo.prt.prtNm/prtInfo.prt.prtRegCd',
+    dataIndex: 'specModel.partner.prtRegCd/specModel.partner.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
-    tooltip: "업체명/코드를 클릭하면 고객 정보를 볼 수 있어요",
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
         className="w-full h-center cursor-pointer text-left text-shadow-hover"
@@ -815,7 +815,7 @@ export const WkStatusOutClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtNm} / {record.specModel?.partner?.prtRegCd}
+        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
       </div>
     )
   },

@@ -349,8 +349,8 @@ const WKStatusProcPage: {
                 height="20"
                 title1="모델명"
                 children1={select?.specModel?.prdNm}
-                title2="업체명/코드"
-                children2={(select?.specModel?.partner?.prtNm??"")+" / "+(select?.specModel?.partner?.prtRegCd??"")}
+                title2="코드/업체명"
+                children2={(select?.specModel?.partner?.prtRegCd??"")+" / "+(select?.specModel?.partner?.prtNm??"")}
                 title3="관리번호"
                 children3={select?.specModel?.prdMngNo}
                 />
