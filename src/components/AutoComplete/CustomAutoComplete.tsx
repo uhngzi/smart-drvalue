@@ -95,8 +95,10 @@ const CustomAutoComplete: React.FC<Props> = ({
       placeholder={placeholder}
       className={className}
       onChange={(e) => {
-        const value: string = e;
-        onInputChange?.(value);
+        if(!readonly) {
+          const value: string = e;
+          onInputChange?.(value);
+        }
       }}
     >
       <Input
@@ -107,7 +109,9 @@ const CustomAutoComplete: React.FC<Props> = ({
           }
         }}
         readOnly={readonly}
-        style={readonly?{cursor:'no-drop'}:{}}
+        // readonly일 때 포커스되면 바로 blur해서 커서가 보이지 않게 함
+        onFocus={readonly ? (e) => e.target.blur() : undefined}
+        style={readonly?{cursor:'no-drop', border: '1px solid #d9d9d9'}:{}}
       />
     </AutoComplete>
   );

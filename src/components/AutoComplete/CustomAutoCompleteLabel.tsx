@@ -14,6 +14,7 @@ interface Props {
   placeholder?: string;
   onInputChange?: (value: string) => void;
   clear?: boolean;
+  readonly?: boolean;
 }
 
 const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
@@ -30,6 +31,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       placeholder,
       onInputChange,
       clear = true,
+      readonly,
   },
   ref
 ) => {
@@ -79,25 +81,31 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
 
   return (
     <AutoComplete
-      options={filteredOptions}
+      options={readonly? [] :filteredOptions}
       value={inputValue} // 입력창에는 label 값만 보이도록 설정
-      onSelect={handleSelect} // 선택하면 ID 저장, label 표시
-      onSearch={setInputValue} // 검색할 때 label 기준으로 필터링
+      onSelect={!readonly ? handleSelect : undefined} // 선택하면 ID 저장, label 표시
+      onSearch={!readonly ? setInputValue : undefined} // 검색할 때 label 기준으로 필터링
       placeholder={placeholder}
       className={className}
       onChange={(e)=>{
-        const value:string = e;
-        onInputChange?.(value);
+        if(!readonly) {
+          const value:string = e;
+          onInputChange?.(value);
+        }
       }}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
         ref={ref}
         onClick={()=>{
-          if(clear) {
+          if(clear && !readonly) {
             setInputValue("");
           }
         }}
+        readOnly={readonly}
+        // readonly일 때 포커스되면 바로 blur해서 커서가 보이지 않게 함
+        onFocus={readonly ? (e) => e.target.blur() : undefined}
+        style={readonly?{cursor:'no-drop', border: '1px solid #d9d9d9'}:{}}
       />
     </AutoComplete>
   );
