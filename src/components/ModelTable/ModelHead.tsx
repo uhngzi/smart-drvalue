@@ -11,6 +11,7 @@ import FullChip from "../Chip/FullChip";
 import AntdInput from "../Input/AntdInput";
 import AntdSelect from "../Select/AntdSelect";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
+import AntdSelectFill from "../Select/AntdSelectFill";
 
 const Label:React.FC<{label:string}> = ({ label }) => {
   return <p className="h-center">{label}</p>
@@ -42,7 +43,7 @@ const ModelHead:React.FC<Props> = ({
   index,
 }) => {
   return (
-    <div className="w-full min-h-32 h-center border-1 border-line rounded-14">
+    <div className="w-full min-h-32 h-center border-1 border-line rounded-14 bg-[#E9EDF5]">
       <div className="h-full h-center gap-20 p-10">
         {/* <div className="flex flex-col">
           <Label label={"발주명"}/>
@@ -92,8 +93,8 @@ const ModelHead:React.FC<Props> = ({
           <Label label={"관리번호"}/>
           <AntdInput
             value={model.prtOrderNo}
-            readonly={true}
-            className="w-[180px!important]" styles={{ht:'32px', bg:'#F5F5F5'}}
+            readonly
+            className="w-[180px!important]" styles={{ht:'32px'}}
             disabled={model.completed}
           />
         </div>
@@ -104,14 +105,14 @@ const ModelHead:React.FC<Props> = ({
       <div className="h-full h-center gap-20 p-10">
         <div className="flex flex-col">
           <Label label="원판" />
-          <AntdSelect
+          <AntdSelectFill
             options={boardSelectList}
             value={model?.tempPrdInfo?.board?.id ?? model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
             onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'model.board.id', e)
                 handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
             }}
-            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bg: '#FFF', br: '2px'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
         </div>
@@ -132,7 +133,7 @@ const ModelHead:React.FC<Props> = ({
 
         <div className="flex flex-col">
           <Label label="재질" />
-          <AntdSelect
+          <AntdSelectFill
             options={metarialSelectList}
             value={(model as orderModelType)?.tempPrdInfo?.material?.id ?? model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value
             }
@@ -140,7 +141,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'model.material.id', e)
               handleModelDataChange(model.id ?? '', 'tempPrdInfo.material.id', e)
             }}
-            className="w-[160px!important]" styles={{ht:'32px', bw:'0px', pd:'0'}}
+            className="w-[160px!important]" styles={{ht:'32px', bg: '#FFF', br: '2px'}}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />
         </div>
@@ -168,19 +169,27 @@ const ModelHead:React.FC<Props> = ({
       </div>
 
       <div className="flex-1 flex justify-end">
-      { !model.completed && (model as orderModelType).temp && <>
-        <p className="h-center text-11 pr-20">{dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")} 임시저장 완료</p>
-      </>}
+      {/* { !model.completed && (model as orderModelType).temp && <>
+        <p className="h-center text-11 pr-20">
+          마지막 임시저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD HH:mm")}
+        </p>
+      </>} */}
       { (model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_WAITING) &&
         !model.completed && !(model as orderModelType).temp &&
         <FullChip label="대기중" state="yellow" className="!mr-20 !w-80 !h-30"/>
       }
       { (model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_REGISTERING) ||
         (!model.completed && (model as orderModelType).temp) ?
-        <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/> : <></>
+        <>
+          <p className="h-center text-11 pr-20">
+            마지막 임시저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}
+          </p>
+          <FullChip label="등록중" state="mint" className="!mr-20 !w-80 !h-30"/>
+        </>
+        : <></>
       }
       { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&<>
-        <p className="h-center">저장일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}</p>
+        <p className="h-center text-11">확정일 : {dayjs(model.updatedAt).format("YYYY-MM-DD")}</p>
         <FullChip label="확정" state="purple" className="!mx-20 !w-80 !h-30"/>
       </>}
       { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_DISCARDED &&

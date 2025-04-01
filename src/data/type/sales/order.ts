@@ -177,6 +177,7 @@ export type salesOrderProductRType = {
   deletedAt?: Date | null;
   model?: any;
   disabled?: boolean;
+  index?: number;
 }
 
 // 고객발주 내 모델 생성, 수정 타입

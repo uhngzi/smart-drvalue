@@ -5,6 +5,7 @@ interface Props {
   items: Array<{
     key: any;
     text: string;
+    index?: number;
   }>;
   selectKey: any;
   setSelectKey: React.Dispatch<SetStateAction<any>>;
@@ -15,7 +16,7 @@ export const TabSmall: React.FC<Props> = ({
   items,
   selectKey,
   setSelectKey,
-  bd_b
+  bd_b,
 }) => {
   return (
     <div className={bd_b === false ? "w-full flex" : "border-b-1 border-line w-full flex"}>
@@ -23,11 +24,16 @@ export const TabSmall: React.FC<Props> = ({
         items.map((i, idx) => (
           <div 
             key={idx}
-            className="min-w-67 min-h-46 px-10 py-12 mr-10 text-14 text-center cursor-pointer"
+            className="min-w-67 min-h-46 px-10 py-12 mr-10 text-14 text-center cursor-pointer flex h-center gap-5"
             style={i.key===selectKey?{color:'#4880FF',borderBottom:'3px solid #4880FF'}:{}}
             onClick={()=>setSelectKey(i.key)}
           >
-            {i.text}
+            {i.index &&
+            <div
+              className="w-20 rounded-50 border-1"
+              style={i.key===selectKey?{border:'1px solid #4880FF'}:{border:'1px solid #00000060'}}
+            >{i.index}</div>}
+            <span>{i.text}</span>
           </div>
         ))
       }

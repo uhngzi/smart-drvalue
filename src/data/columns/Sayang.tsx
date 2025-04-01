@@ -1511,30 +1511,6 @@ export const sayangModelWaitAddClmn = (
   selectId: string | null,
 ): TableProps['columns'] => [
   {
-    title: 'No',
-    width: 30,
-    dataIndex: 'id',
-    key: 'id',
-    align: 'center',
-    render: (value: any, record: any) => (
-      <>
-        <div className="h-[100%] w-[100%] pt-5">
-        <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{record?.index}</p>
-        </div>
-        {/* <div className="h-[50%] w-[100%] v-h-center">
-        {
-          !record.completed &&
-            <div className="w-24 h-24 rounded-6 v-h-center border-1 border-line cursor-pointer"
-              onClick={()=>deleteModel(value)}
-            >
-              <p className="w-16 h-16"><Trash /></p>
-            </div>
-        }
-        </div> */}
-      </>
-    ),
-  },
-  {
     title: 'Rev',
     dataIndex: 'rev',
     width: 80,

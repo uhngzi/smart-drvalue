@@ -46,6 +46,7 @@ import { Popup } from '@/layouts/Body/Popup';
 import { selectType } from '@/data/type/componentStyles';
 import { BoardGroupType, boardType } from '@/data/type/base/board';
 import { apiGetResponseType } from '@/data/type/apiResponse';
+import dayjs from 'dayjs';
 
 
 const SayangModelAddPage: React.FC & {
@@ -122,7 +123,7 @@ const SayangModelAddPage: React.FC & {
   useEffect(()=>{
     if(!orderModelLoading && queryOrderModelData?.resultCode === "OK_0000") {
       const products = (queryOrderModelData?.data?.data as salesOrderDetailRType)?.products;
-      const omodels = products.map((item:salesOrderProductRType, index:number) => ({
+      const omodels = products.sort((a,b) => a.orderNo.localeCompare(b.orderNo)).map((item:salesOrderProductRType, index:number) => ({
         ...item,
         index: index + 1,
         currPrdInfo: item.currPrdInfo ? JSON.parse(item.currPrdInfo ?? "") : {}
@@ -156,7 +157,7 @@ const SayangModelAddPage: React.FC & {
     if(!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata:orderModelType[] = queryData?.data?.data ?? [];
 
-      const arr = rdata.map((d:orderModelType, index:number) => ({
+      const arr = rdata.sort((a, b) => (a.orderNo ?? "").localeCompare(b.orderNo ?? "")).map((d:orderModelType, index:number) => ({
         ...d,
         index: index + 1,
         completed: d.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED ? true : false,
@@ -240,7 +241,7 @@ const SayangModelAddPage: React.FC & {
           const index = data.findIndex(f=>f.id === id);
           if(index > -1) {
             const updateData = data;
-            updateData[index] = { ...data[index], temp: true };
+            updateData[index] = { ...data[index], temp: true, updatedAt: dayjs() };
 
             const newArray = [
               ...updateData.slice(0, index),
@@ -395,7 +396,7 @@ const SayangModelAddPage: React.FC & {
   }, [inputRef]);
 
   const [orderModelsSelect, setOrderModelsSelect] = useState<string>("");
-  const [orderTab, setOrderTab] = useState<{key:string, text:string}[]>([]);
+  const [orderTab, setOrderTab] = useState<{key:string, text:string, index?:number}[]>([]);
   useEffect(()=>{
     if(orderModels.length > 0) {
       setOrderTab(
@@ -404,6 +405,7 @@ const SayangModelAddPage: React.FC & {
         .map((m)=>({
           key:m.id,
           text:m.orderTit,
+          index:m.index,
         }))
       );
       if(orderModelsSelect === "")
@@ -542,7 +544,7 @@ const SayangModelAddPage: React.FC & {
                   key={index}
                   className="flex flex-col gap-15 mt-20"
                 >
-                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15">
+                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15 min-w-[1820px]">
                     <SalesModelHead
                       read={true}
                       model={model}
