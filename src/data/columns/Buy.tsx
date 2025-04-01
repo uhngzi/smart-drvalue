@@ -1216,7 +1216,9 @@ export const BuyOrderMtClmn = (
     align: 'center',
     render: (_: any, record: buyOrderDetailType, index: number) => 
       <div className="w-full h-full v-h-center">
-        <Tooltip title={selectMtIdx?.orderId === record.id ? "현재 단가 목록에 보여지고 있는 원자재예요" : "클릭 시 해당 발주 품목의 원자재 단가 목록을 선택할 수 있어요"}>
+        <Tooltip
+          title={selectMtIdx?.orderId === record.id ? "현재 단가 목록에 보여지고 있는 원자재예요" : "클릭 시 해당 발주 품목의 원자재 단가 목록을 선택할 수 있어요"}
+        >
         <div
           className={`w-30 h-30 v-h-center ml-[-5px] rounded-full cursor-pointer ${
             selectMtIdx?.orderId === record.id ? "bg-[#F0F5FF]" : ""

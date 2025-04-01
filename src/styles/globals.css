@@ -120,3 +120,9 @@ body {
 .custom-radio-group .ant-radio-button-wrapper-checked span {
   color: #038D07 !important;
 }
+
+.ant-tooltip-inner {
+  max-width: none;
+  white-space: nowrap;
+  width: fit-content;
+}
