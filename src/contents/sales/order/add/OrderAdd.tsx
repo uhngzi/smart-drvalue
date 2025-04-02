@@ -45,6 +45,7 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Edit from '@/assets/svg/icons/memo.svg';
 import Bag from "@/assets/svg/icons/bag.svg";
+import Trash from "@/assets/svg/icons/Trash.svg";
 
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
@@ -675,6 +676,16 @@ const OrderAddLayout = () => {
                 </Button>
               </> : edit ?
               <>
+                <Button 
+                  className="w-109 h-32 rounded-6"
+                  style={{color:"#444444E0"}}
+                  onClick={() => {
+                    setAlertType('cancle');
+                    setAlertOpen(true);
+                  }}
+                >
+                  <p className="w-16 h-16 text-[red]"><Trash /></p> 발주폐기
+                </Button>
                 <div className="flex" />
                 <Button
                   className="w-109 h-32 rounded-6 border-point1 text-point1"
@@ -819,18 +830,17 @@ const OrderAddLayout = () => {
             "warning"}
           title={
             alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
-            // alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
-            alertType === "cancle" ? "해당 발주를 취소하시겠습니까?" :
+            alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
             alertType === "close" ? "저장되지 않은 모델 정보 또는 미등록된 고객 발주 정보가 있습니다." :
             alertType === "error" ? "오류 발생" :
             alertType === "discard" ? "고객 발주 폐기 성공" : ""
           }
           contents={
             alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
-            alertType === "cancle" ? <>해당 발주를 취소할 경우 하위에 등록된 모델도 폐기됩니다.<br/>정말 폐기하시겠습니까?</> :
+            alertType === "cancle" ? <>해당 발주를 폐기할 경우 하위에 등록된 모델도 사라집니다.<br/>정말 폐기하시겠습니까?</> :
             alertType === "close" ? <>저장하지 않고 나가시면 해당 정보는 삭제됩니다.<br/>정말 나가시겠습니까?</> :
             alertType === "error" ? <>{errMsg}</> :
-            alertType === "discard" ? <>고객 발주 폐기가 완료되었습니다.</> : <></>
+            alertType === "discard" ? <>고객 발주 삭제가 완료되었습니다.</> : <></>
           }
           onOk={()=>{
             if(alertType === "del") {
