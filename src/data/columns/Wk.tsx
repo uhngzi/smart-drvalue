@@ -7,6 +7,7 @@ import { Checkbox, Progress } from "antd";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import { SetStateAction } from "react";
 import { processVendorRType } from "../type/base/process";
+import dayjs, { Dayjs } from "dayjs";
 
 
 export const WkPalnWaitClmn = (
@@ -45,11 +46,16 @@ export const WkPalnWaitClmn = (
   },
   {
     title: '생산량',
-    width: 100,
+    width: 80,
     dataIndex: 'wkPrdCnt',
     key: 'wkPrdCnt',
     align: 'center',
     editable: false,
+    render: (value) => (
+      <div className="h-center justify-end">
+        {(value ?? 0).toLocaleString()}
+      </div>
+    )
   },
   {
     title: '외주처공정수',
@@ -65,6 +71,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.material.cdNm',
     key: 'specModel.material.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
@@ -73,11 +80,12 @@ export const WkPalnWaitClmn = (
     dataIndex: 'specModel.board.brdType',
     key: 'specModel.board.brdType',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: '층',
-    width: 100,
+    width: 60,
     dataIndex: 'specModel.layerEm',
     key: 'specModel.layerEm',
     align: 'center',
@@ -88,130 +96,145 @@ export const WkPalnWaitClmn = (
   },
   {
     title: '두께',
-    width: 100,
+    width: 60,
     dataIndex: 'specModel.thk',
     key: 'specModel.thk',
     align: 'center',
-    cellAlign: 'right',
     editable: false,
   },
   {
-    title: '제품 PCS H',
+    title: 'PCS SIZE',
     width: 100,
-    dataIndex: 'specModel.pcsW',
-    key: 'specModel.pcsW',
+    dataIndex: 'specModel.pcsW*specModel.pcsL',
+    key: 'specModel.pcsW*specModel.pcsL',
     align: 'center',
     cellAlign: 'right',
     editable: false,
+    render: (_, record) => (
+      <div className="w-full h-full v-h-center">
+        {
+          (record?.specModel?.pcsW || record?.specModel?.pcsL) ?
+          (record?.specModel?.pcsW ?? "")+" * "+(record?.specModel?.pcsL ?? "") :
+          ""
+        }
+      </div>
+    )
   },
   {
-    title: '제품 PCS V',
+    title: 'KIT SIZE',
     width: 100,
-    dataIndex: 'specModel.pcsL',
-    key: 'specModel.pcsL',
+    dataIndex: 'specModel.kitW*specModel.kitL',
+    key: 'specModel.kitW*specModel.kitL',
     align: 'center',
     cellAlign: 'right',
     editable: false,
+    render: (_, record) => (
+      <div className="w-full h-full v-h-center">
+        {
+          (record?.specModel?.kitW || record?.specModel?.kitL) ?
+          (record?.specModel?.kitW ?? "")+" * "+(record?.specModel?.kitL ?? "") :
+          ""
+        }
+      </div>
+    )
   },
   {
-    title: '제품 KIT H',
+    title: '재단 SIZE',
     width: 100,
-    dataIndex: 'specModel.kitW',
-    key: 'specModel.kitW',
+    dataIndex: 'specModel.pnlW*specModel.pnlL',
+    key: 'specModel.pnlW*specModel.pnlL',
     align: 'center',
     cellAlign: 'right',
     editable: false,
-  },
-  {
-    title: '제품 KIT V',
-    width: 100,
-    dataIndex: 'specModel.kitL',
-    key: 'specModel.kitL',
-    align: 'center',
-    cellAlign: 'right',
-    editable: false,
-  },
-  {
-    title: '재단 H',
-    width: 100,
-    dataIndex: 'specModel.pnlW',
-    key: 'specModel.pnlW',
-    align: 'center',
-    cellAlign: 'right',
-    editable: false,
-  },
-  {
-    title: '재단 V',
-    width: 100,
-    dataIndex: 'specModel.pnlL',
-    key: 'specModel.pnlL',
-    align: 'center',
-    cellAlign: 'right',
-    editable: false,
+    render: (_, record) => (
+      <div className="w-full h-full v-h-center">
+        {
+          (record?.specModel?.pnlW || record?.specModel?.pnlL) ?
+          (record?.specModel?.pnlW ?? "")+" * "+(record?.specModel?.pnlL ?? "") :
+          ""
+        }
+      </div>
+    )
   },
   {
     title: 'M/K색상',
-    width: 100,
+    width: 130,
     dataIndex: 'specModel.mkColor.cdNm',
     key: 'specModel.mkColor.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: 'M/K잉크',
-    width: 100,
+    width: 180,
     dataIndex: 'specModel.mkType.cdNm',
     key: 'specModel.mkType.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: 'M/K인쇄',
-    width: 100,
+    width: 130,
     dataIndex: 'specModel.mkPrint.cdNm',
     key: 'specModel.mkPrint.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: 'S/M색상',
-    width: 100,
+    width: 130,
     dataIndex: 'specModel.smColor.cdNm',
     key: 'specModel.smColor.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: 'S/M잉크',
-    width: 100,
+    width: 180,
     dataIndex: 'specModel.smType.cdNm',
     key: 'specModel.smType.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: 'S/M인쇄',
-    width: 100,
+    width: 130,
     dataIndex: 'specModel.smPrint.cdNm',
     key: 'specModel.smPrint.cdNm',
     align: 'center',
+    cellAlign: 'left',
     editable: false,
   },
   {
     title: '판넬수',
     width: 100,
-    dataIndex: 'specModel.prdMngNo',
-    key: 'specModel.prdMngNo',
+    dataIndex: 'specModel.prdCnt',
+    key: 'specModel.prdCnt',
     align: 'center',
     editable: false,
+    render: (_, record) => (
+      <div className="h-center justify-end">
+        {(record?.specModel?.prdCnt ?? 0).toLocaleString()}
+      </div>
+    )
   },
   {
     title: '소요',
-    width: 100,
+    width: 150,
     dataIndex: 'wkLatestDtm',
     key: 'wkLatestDtm',
     align: 'center',
     editable: false,
+    render: (value:Dayjs) => (
+      <div>
+        {value ? dayjs(value).format("YYYY-MM-DD HH:mm") : ""}
+      </div>
+    )
   },
   {
     title: 'M2',
