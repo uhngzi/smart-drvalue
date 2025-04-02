@@ -91,8 +91,8 @@ const SayangYieldCalculate: React.FC<Props> = ({
   const items = [
     {value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
     {value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
-    {value:yielddata?.minWidth, name:'minWidth', label:'Kit긴쪽최소', type:'input', widthType:'full'},
-    {value:yielddata?.minHeight, name:'minHeight', label:'Kit짧은쪽최소', type:'input', widthType:'full'},
+    // {value:yielddata?.minWidth, name:'minWidth', label:'Kit긴쪽최소', type:'input', widthType:'full'},
+    // {value:yielddata?.minHeight, name:'minHeight', label:'Kit짧은쪽최소', type:'input', widthType:'full'},
     {value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
     {value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
   ]
@@ -399,7 +399,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                 kit.map((item, index) => (
                   <div
                     key={item.id}
-                    className="w-full h-[200px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14"
+                    className="w-full h-[120px] px-10 pt-10 flex flex-col gap-10 bg-[#FAFAFA] bg-opacity-65 rounded-14"
                   >
                     <div className="w-full v-between-h-center">
                       <div className="h-center gap-3">
@@ -470,7 +470,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="h-center gap-15">
+                    {/* <div className="h-center gap-15">
                       <div>
                         <p className='pb-8'>Kit목표개수</p>
                         <div className="h-center gap-10 w-full">
@@ -497,7 +497,7 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           />
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 ))
               }

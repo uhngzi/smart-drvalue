@@ -86,7 +86,7 @@ const ArrayContents: React.FC<Props> = ({
       })));
       const layer = Number(detailData.specModels[0]?.layerEm?.replace("L", "") ?? 0);
       const side = layer <= 2 ? 20 : layer === 4 ? 30 : layer === 6 ? 35 : layer === 8 ? 40 : layer >= 10 ? 50 : 0
-      setYielddata({kitGapX:5.0, kitGapY: 5.0, minWidth: 0, minHeight: 0, marginLongSide: side, marginShortSide: side});
+      setYielddata({kitGapX:5.0, kitGapY: 5.0, minWidth: 200, minHeight: 200, marginLongSide: side, marginShortSide: side});
       setResultData([]);
     }
   }, [yieldPopOpen, detailData])
