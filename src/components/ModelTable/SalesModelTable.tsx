@@ -279,7 +279,7 @@ const SalesModelTable:React.FC<Props> = ({
       return (
         <div
           key={model.id}
-          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 min-w-[1820px]"
+          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1820px]"
         >
           <SalesModelHead
             model={model}

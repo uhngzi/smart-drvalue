@@ -1525,99 +1525,99 @@ export const sayangModelWaitAddClmn = (
   newFlag: boolean,
   selectId: string | null,
 ): TableProps['columns'] => [
+  // {
+  //   title: 'Rev',
+  //   dataIndex: 'rev',
+  //   width: 80,
+  //   key: 'rev',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'납품단위',
+  //       width: 80,
+  //       dataIndex: 'user',
+  //       key:'user',
+  //       align: 'center',
+  //       render: (_, record:any) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.editModel?.prdRevNo ?? record.tempPrdInfo?.prdRevNo ?? record.currPrdInfo?.prdRevNo}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.prdRevNo', e.target.value)}
+  //               className='!text-12'
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="REV 입력"
+  //               tabIndex={record.index*40+1}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdSelectFill
+  //               options={unitSelectList}
+  //               value={record.editModel?.unit?.id ?? record.tempPrdInfo?.unit?.id ?? record.currPrdInfo?.unit?.id ?? unitSelectList?.[0]?.value}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.unit.id', e)}
+  //               styles={{fs:'12px'}}
+  //               disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+  //               placeholder="단위 입력"
+  //               tabIndex={record.index*40+2}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
+  // {
+  //   title: '층',
+  //   dataIndex: 'layer',
+  //   key: 'layer',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'두께(T)',
+  //       width: 65,
+  //       dataIndex: 'thic_layer',
+  //       key:'thic_layer',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdSelectFill
+  //               options={generateFloorOptions()}
+  //               value={record.editModel?.layerEm ?? record.tempPrdInfo?.layerEm ?? record.currPrdInfo?.layerEm ?? "L1"}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.layerEm', e)}
+  //               styles={{fs:'12px'}}
+  //               disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+  //               placeholder="층 입력"
+  //               tabIndex={record.index*40+3}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.editModel?.thk ?? record.tempPrdInfo?.thk ?? record.currPrdInfo?.thk}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.thk', e.target.value)}
+  //               className='!text-12'
+  //               type="number"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="두께 입력"
+  //               tabIndex={record.index*40+4}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     },
+  //   ]
+  // },
   {
-    title: 'Rev',
-    dataIndex: 'rev',
-    width: 80,
-    key: 'rev',
-    align: 'center',
-    children: [
-      {
-        title:'납품단위',
-        width: 80,
-        dataIndex: 'user',
-        key:'user',
-        align: 'center',
-        render: (_, record:any) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.editModel?.prdRevNo ?? record.tempPrdInfo?.prdRevNo ?? record.currPrdInfo?.prdRevNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.prdRevNo', e.target.value)}
-                className='!text-12'
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="REV 입력"
-                tabIndex={record.index*40+1}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={unitSelectList}
-                value={record.editModel?.unit?.id ?? record.tempPrdInfo?.unit?.id ?? record.currPrdInfo?.unit?.id ?? unitSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.unit.id', e)}
-                styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
-                placeholder="단위 입력"
-                tabIndex={record.index*40+2}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: '층',
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
-    children: [
-      {
-        title:'두께(T)',
-        width: 65,
-        dataIndex: 'thic_layer',
-        key:'thic_layer',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={generateFloorOptions()}
-                value={record.editModel?.layerEm ?? record.tempPrdInfo?.layerEm ?? record.currPrdInfo?.layerEm ?? "L1"}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.layerEm', e)}
-                styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
-                placeholder="층 입력"
-                tabIndex={record.index*40+3}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.editModel?.thk ?? record.tempPrdInfo?.thk ?? record.currPrdInfo?.thk}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.thk', e.target.value)}
-                className='!text-12'
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="두께 입력"
-                tabIndex={record.index*40+4}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: '동박두께',
+    title: '동박',
     width: 75,
     dataIndex: 'dongback',
     key: 'dongback',
     align: 'center',
     children: [
       {
-        title:'',
+        title:'외/내층',
         width: 75,
         dataIndex: '',
         key:'',
@@ -1686,14 +1686,14 @@ export const sayangModelWaitAddClmn = (
     ]
   },
   {
-    title: '도금(㎛)',
+    title: '동도금',
     width: 60,
     dataIndex: 'dogeum',
     key: 'dogeum',
     align: 'center',
     children: [
       {
-        title:'핀 수',
+        title:'',
         width: 60,
         dataIndex: '',
         key:'',
@@ -1707,7 +1707,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="도금 입력"
                 tabIndex={record.index*40+7}
               />
@@ -1719,12 +1719,12 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="도금+ 입력"
                 tabIndex={record.index*40+8}
               />
             </div>
-            <div className={divClass}>
+            {/* <div className={divClass}>
               <AntdInputFill
                 value={record.editModel?.pinCnt ?? record.tempPrdInfo?.pinCnt ?? record.currPrdInfo?.pinCnt}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.pinCnt', e.target.value)}
@@ -1735,21 +1735,21 @@ export const sayangModelWaitAddClmn = (
                 placeholder="핀 수 입력"
                 tabIndex={record.index*40+9}
               />
-            </div>
+            </div> */}
           </div>
         )
       }
     ]
   },
   {
-    title: '특수도금(㎛)',
+    title: '특수도금',
     width:110,
     dataIndex: 'tDogeum',
     key: 'tDogeum',
     align: 'center',
     children: [
       {
-        title:'Ni Au',
+        title:'',
         width: 90,
         dataIndex: 'tDogeum',
         key:'tDogeum',
@@ -1763,11 +1763,11 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Ni 입력"
                 tabIndex={record.index*40+10}
               />
-              <AntdInputFill 
+              {/* <AntdInputFill 
                 value={record.editModel?.spPltAu ?? record.tempPrdInfo?.spPltAu ?? record.currPrdInfo?.spPltAu}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAu', e.target.value)}
                 type="number"
@@ -1776,7 +1776,7 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="Au 입력"
                 tabIndex={record.index*40+12}
-              />
+              /> */}
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
@@ -1785,11 +1785,11 @@ export const sayangModelWaitAddClmn = (
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Ni+ 입력"
                 tabIndex={record.index*40+11}
               />
-              <AntdInputFill 
+              {/* <AntdInputFill 
                 value={record.editModel?.spPltAuAlph ?? record.tempPrdInfo?.spPltAuAlph ?? record.currPrdInfo?.spPltAuAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAuAlph', e.target.value)}
                 type="number"
@@ -1798,6 +1798,18 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="Au+ 입력"
                 tabIndex={record.index*40+13}
+              /> */}
+            </div>
+            <div className={divClass+"gap-5"}>
+              <AntdInputFill 
+                value={record.editModel?.spPltOsp ?? record.tempPrdInfo?.spPltOsp ?? record.currPrdInfo?.spPltOsp}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltOsp', e.target.value)}
+                type="number"
+                className="!text-12"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="OSP 입력"
+                tabIndex={record.index*40+12}
               />
             </div>
           </div>
@@ -1826,7 +1838,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smPrint?.id ?? record.tempPrdInfo?.smPrint?.id ?? record.currPrdInfo?.smPrint?.id ?? smPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="S/M인쇄 입력"
                 tabIndex={record.index*40+14}
               />
@@ -1837,7 +1849,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smColor?.id ?? record.tempPrdInfo?.smColor?.id ?? record.currPrdInfo?.smColor?.id ?? smColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="S/M색상 입력"
                 tabIndex={record.index*40+15}
               />
@@ -1848,7 +1860,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.smType?.id ?? record.tempPrdInfo?.smType?.id ?? record.currPrdInfo?.smType?.id ?? smTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.smType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="S/M종류 입력"
                 tabIndex={record.index*40+16}
               />
@@ -1879,7 +1891,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkPrint?.id ?? record.tempPrdInfo?.mkPrint?.id ?? record.currPrdInfo?.mkPrint?.id ?? mkPrintSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="M/K인쇄 입력"
                 tabIndex={record.index*40+17}
               />
@@ -1890,7 +1902,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkColor?.id ?? record.tempPrdInfo?.mkColor?.id ?? record.currPrdInfo?.mkColor?.id ?? mkColorSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkColor.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="M/K색상 입력"
                 tabIndex={record.index*40+18}
               />
@@ -1901,7 +1913,7 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.mkType?.id ?? record.tempPrdInfo?.mkType?.id ?? record.currPrdInfo?.mkType?.id ?? mkTypeSelectList?.[0]?.value}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.mkType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="M/K종류 입력"
                 tabIndex={record.index*40+19}
               />
@@ -1919,7 +1931,7 @@ export const sayangModelWaitAddClmn = (
     align: 'center',
     children: [
       {
-        title:'구분',
+        title:'외형가공',
         width: 125,
         dataIndex: '',
         key:'',
@@ -1932,12 +1944,24 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.spPrint?.id ?? record.tempPrdInfo?.spPrint?.id ?? record.currPrdInfo?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPrint.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="특수인쇄 입력"
                 tabIndex={record.index*40+20}
               />
             </div>
             <div className={divClass}>
+              <AntdSelectFill 
+                className='w-[90px]'
+                options={outSelectList} 
+                value={record.editModel?.aprType?.id ?? record.tempPrdInfo?.aprType?.id ?? record.currPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.aprType.id', e)}
+                styles={{fs:'12px'}}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="외형가공형태 입력"
+                tabIndex={record.index*40+21}
+              />
+            </div>
+            {/* <div className={divClass}>
               <AntdSelectFill 
                 options={spTypeSelectList}
                 value={record.editModel?.spType?.id ?? record.tempPrdInfo?.spType?.id ?? record.currPrdInfo?.spType?.id}
@@ -1947,8 +1971,8 @@ export const sayangModelWaitAddClmn = (
                 placeholder="특수인쇄종류 입력"
                 tabIndex={record.index*40+21}
               />
-            </div>
-            <div className={divClass}>
+            </div> */}
+            {/* <div className={divClass}>
               <AntdSelectFill 
                 options={[{value:ModelTypeEm.SAMPLE,label:'샘플'},{value:ModelTypeEm.PRODUCTION,label:'양산'}]}
                 value={record.editModel?.modelTypeEm ?? record.tempPrdInfo?.modelTypeEm ?? record.currPrdInfo?.modelTypeEm ?? "sample"}
@@ -1958,14 +1982,14 @@ export const sayangModelWaitAddClmn = (
                 placeholder="구분 입력"
                 tabIndex={record.index*40+22}
               />
-            </div>
+            </div> */}
           </div>
         )
       }
     ]
   },
   {
-    title: '외형가공',
+    title: '표면처리',
     width:90,
     dataIndex: 'out',
     key: 'out',
@@ -1982,25 +2006,13 @@ export const sayangModelWaitAddClmn = (
             <div className={divClass}>
               <AntdSelectFill 
                 className='w-[90px]'
-                options={outSelectList} 
-                value={record.editModel?.aprType?.id ?? record.tempPrdInfo?.aprType?.id ?? record.currPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.aprType.id', e)}
+                options={surfaceSelectList}
+                value={record.editModel?.surface?.id ?? record.tempPrdInfo?.surface?.id ?? record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.surface.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
-                placeholder="외형가공형태 입력"
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="표면처리 입력"
                 tabIndex={record.index*40+23}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelectFill 
-                className='w-[90px]'
-                options={[{value:false,label:'무'},{value:true,label:'유'}]}
-                value={record.editModel?.vcutYn ?? record.tempPrdInfo?.vcutYn ?? record.currPrdInfo?.vcutYn ?? false}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutYn', e)}
-                styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
-                placeholder="브이컷유무 입력"
-                tabIndex={record.index*40+24}
               />
             </div>
             <div className={divClass}>
@@ -2010,9 +2022,9 @@ export const sayangModelWaitAddClmn = (
                 value={record.editModel?.vcutType?.id ?? record.tempPrdInfo?.vcutType?.id ?? record.currPrdInfo?.vcutType?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.vcutType.id', e)}
                 styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="브이컷형태 입력"
-                tabIndex={record.index*40+25}
+                tabIndex={record.index*40+24}
               />
             </div>
           </div>
@@ -2020,47 +2032,47 @@ export const sayangModelWaitAddClmn = (
       }
     ]
   },
+  // {
+  //   title: '도면번호',
+  //   width:100,
+  //   dataIndex: 'drgNo',
+  //   key: 'drgNo',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'',
+  //       width:100,
+  //       dataIndex: 'drgNo',
+  //       key: 'drgNo',
+  //       align: 'center',
+  //       render: (_, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.editModel?.drgNo ?? record.tempPrdInfo?.drgNo ?? record.currPrdInfo?.drgNo}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.drgNo', e.target.value)}
+  //               className='w-[100px] !text-12'
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="도면번호 입력"
+  //               tabIndex={record.index*40+26}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
   {
-    title: '도면번호',
-    width:100,
-    dataIndex: 'drgNo',
-    key: 'drgNo',
-    align: 'center',
-    children: [
-      {
-        title:'',
-        width:100,
-        dataIndex: 'drgNo',
-        key: 'drgNo',
-        align: 'center',
-        render: (_, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.editModel?.drgNo ?? record.tempPrdInfo?.drgNo ?? record.currPrdInfo?.drgNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.drgNo', e.target.value)}
-                className='w-[100px] !text-12'
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="도면번호 입력"
-                tabIndex={record.index*40+26}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: 'PCS',
-    width:50,
+    title: 'PCS SIZE',
+    width:70,
     dataIndex: 'pcs',
     key: 'pcs',
     align: 'center',
     children:[
       {
         title: 'X/Y',
-        width:50,
+        width:70,
         dataIndex: 'pcsSize_xy',
         key: 'pcsSize_xy',
         align: 'center',
@@ -2073,9 +2085,9 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="X 입력"
-                tabIndex={record.index*40+27}
+                tabIndex={record.index*40+25}
               />
             </div>
             <div className={divClass}>
@@ -2085,8 +2097,52 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Y 입력"
+                tabIndex={record.index*40+26}
+              />
+            </div>
+          </div>
+        )
+      },
+    ]
+  },
+  {
+    title: '연조KIT',
+    width:70,
+    dataIndex: 'arkit',
+    key: 'arkit',
+    align: 'center',
+    children:[
+      {
+        title: 'X/Y',
+        width:70,
+        dataIndex: 'arpnl',
+        key: 'arpnl',
+        align: 'center',
+        render: (value, record) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.editModel?.ykitW ?? record.tempPrdInfo?.ykitW ?? record.currPrdInfo?.ykitW}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
+                className="!text-12"
+                type="number"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="X 입력"
+                tabIndex={record.index*40+27}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.editModel?.ykitL ?? record.tempPrdInfo?.ykitL ?? record.currPrdInfo?.ykitL}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
+                className="!text-12"
+                type="number"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="X 입력"
                 tabIndex={record.index*40+28}
               />
             </div>
@@ -2096,15 +2152,15 @@ export const sayangModelWaitAddClmn = (
     ]
   },
   {
-    title: 'KIT',
-    width:50,
+    title: 'KIT SIZE',
+    width:70,
     dataIndex: 'kit',
     key: 'kit',
     align: 'center',
     children:[
       {
-        title: 'X/Y',
-        width:50,
+        title: 'PCS/KIT',
+        width:70,
         dataIndex: 'kitSize_xy',
         key: 'kitSize_xy',
         align: 'center',
@@ -2117,7 +2173,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="X 입력"
                 tabIndex={record.index*40+29}
               />
@@ -2129,9 +2185,21 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Y 입력"
                 tabIndex={record.index*40+30}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.editModel?.kitPcs ?? record.tempPrdInfo?.kitPcs ?? record.currPrdInfo?.kitPcs}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitPcs', e.target.value)}
+                className="!text-12"
+                type="number"
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                placeholder="PCS/KIT 입력"
+                tabIndex={record.index*40+31}
               />
             </div>
           </div>
@@ -2140,15 +2208,15 @@ export const sayangModelWaitAddClmn = (
     ]
   },
   {
-    title: 'PNL',
-    width:50,
+    title: 'PNL SIZE',
+    width:70,
     dataIndex: 'pnl',
     key: 'pnl',
     align: 'center',
     children:[
       {
         title: 'X/Y',
-        width:50,
+        width:70,
         dataIndex: 'pnlSize_xy',
         key: 'pnlSize_xy',
         align: 'center',
@@ -2161,9 +2229,9 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="X 입력"
-                tabIndex={record.index*40+31}
+                tabIndex={record.index*40+32}
               />
             </div>
             <div className={divClass}>
@@ -2173,89 +2241,89 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Y 입력"
-                tabIndex={record.index*40+32}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: '연조KIT',
-    width:55,
-    dataIndex: 'arkit',
-    key: 'arkit',
-    align: 'center',
-    children:[
-      {
-        title: '연조PNL',
-        width:100,
-        dataIndex: 'arpnl',
-        key: 'arpnl',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass+" gap-3"}>
-              <AntdInputFill
-                value={record.editModel?.ykitW ?? record.tempPrdInfo?.ykitW ?? record.currPrdInfo?.ykitW}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="X 입력"
                 tabIndex={record.index*40+33}
               />
-              <AntdInputFill
-                value={record.editModel?.ypnlW ?? record.tempPrdInfo?.ypnlW ?? record.currPrdInfo?.ypnlW}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlW', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="X 입력"
-                tabIndex={record.index*40+35}
-              />
-            </div>
-            <div className={divClass+" gap-3"}>
-              <AntdInputFill
-                value={record.editModel?.ykitL ?? record.tempPrdInfo?.ykitL ?? record.currPrdInfo?.ykitL}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="Y 입력"
-                tabIndex={record.index*40+34}
-              />
-              <AntdInputFill
-                value={record.editModel?.ypnlL ?? record.tempPrdInfo?.ypnlL ?? record.currPrdInfo?.ypnlL}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlL', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="Y 입력"
-                tabIndex={record.index*40+36}
-              />
             </div>
           </div>
         )
       },
     ]
   },
+  // {
+  //   title: '연조KIT',
+  //   width:55,
+  //   dataIndex: 'arkit',
+  //   key: 'arkit',
+  //   align: 'center',
+  //   children:[
+  //     {
+  //       title: '연조PNL',
+  //       width:100,
+  //       dataIndex: 'arpnl',
+  //       key: 'arpnl',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass+" gap-3"}>
+  //             <AntdInputFill
+  //               value={record.editModel?.ykitW ?? record.tempPrdInfo?.ykitW ?? record.currPrdInfo?.ykitW}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitW', e.target.value)}
+  //               className="!text-12"
+  //               type="number"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="X 입력"
+  //               tabIndex={record.index*40+33}
+  //             />
+  //             <AntdInputFill
+  //               value={record.editModel?.ypnlW ?? record.tempPrdInfo?.ypnlW ?? record.currPrdInfo?.ypnlW}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlW', e.target.value)}
+  //               className="!text-12"
+  //               type="number"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="X 입력"
+  //               tabIndex={record.index*40+35}
+  //             />
+  //           </div>
+  //           <div className={divClass+" gap-3"}>
+  //             <AntdInputFill
+  //               value={record.editModel?.ykitL ?? record.tempPrdInfo?.ykitL ?? record.currPrdInfo?.ykitL}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.ykitL', e.target.value)}
+  //               className="!text-12"
+  //               type="number"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="Y 입력"
+  //               tabIndex={record.index*40+34}
+  //             />
+  //             <AntdInputFill
+  //               value={record.editModel?.ypnlL ?? record.tempPrdInfo?.ypnlL ?? record.currPrdInfo?.ypnlL}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'editModel.ypnlL', e.target.value)}
+  //               className="!text-12"
+  //               type="number"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed}
+  //               placeholder="Y 입력"
+  //               tabIndex={record.index*40+36}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     },
+  //   ]
+  // },
   {
-    title: 'KIT/PCS',
+    title: 'PNL/KIT',
     width:50,
     dataIndex: 'kitpcs',
     key: 'kitpcs',
     align: 'center',
     children:[
       {
-        title: 'PNL/KIT',
+        title: 'STH',
         width:50,
         dataIndex: 'pnlkit',
         key: 'pnlkit',
@@ -2264,48 +2332,16 @@ export const sayangModelWaitAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.editModel?.kitPcs ?? record.tempPrdInfo?.kitPcs ?? record.currPrdInfo?.kitPcs}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.kitPcs', e.target.value)}
-                className="!text-12"
-                type="number"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
-                placeholder="KIT/PCS 입력"
-                tabIndex={record.index*40+37}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
                 value={record.editModel?.pnlKit ?? record.tempPrdInfo?.pnlKit ?? record.currPrdInfo?.pnlKit}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.pnlKit', e.target.value)}
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="PNL/KIT 입력"
                 tabIndex={record.index*40+38}
               />
             </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: 'STH/PNL',
-    width:50,
-    dataIndex: 'sthpnl',
-    key: 'sthpnl',
-    align: 'center',
-    children:[
-      {
-        title: 'STH/PCS',
-        width:50,
-        dataIndex: 'sthpcs',
-        key: 'sthpcs',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
                 value={record.editModel?.sthPnl ?? record.tempPrdInfo?.sthPnl ?? record.currPrdInfo?.sthPnl}
@@ -2313,7 +2349,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="STH/PNL 입력"
                 tabIndex={record.index*40+39}
               />
@@ -2325,7 +2361,7 @@ export const sayangModelWaitAddClmn = (
                 className="!text-12"
                 type="number"
                 readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="STH/PCS 입력"
                 tabIndex={record.index*40+40}
               />

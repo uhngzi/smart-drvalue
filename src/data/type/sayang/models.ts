@@ -100,6 +100,7 @@ export type orderModelType = {
   completed?: boolean;
   temp?: boolean;
   index?: number;
+  prdMngNo?: string;
 }
 
 export type modelsType = {
@@ -174,6 +175,7 @@ export type modelsType = {
   specSpace?: number;
   specDr?: number;
   specPad?: number;
+  approvalYn?: boolean;
 }
 
 export type salesModelsType = {
@@ -241,6 +243,9 @@ export type salesModelsType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
+  approvalYn?: boolean;
+  orderPrtNo?: string;
+  remarks?: string;
 }
 
 // 모델 생성, 수정 타입
@@ -293,6 +298,7 @@ export type modelsCUType = {
   spPltAu?: number;
   spPltAuAlph?: number;
   pinCnt: number;
+  approvalYn?: boolean;
 }
 
 // 사양 내 모델 초기값 생성

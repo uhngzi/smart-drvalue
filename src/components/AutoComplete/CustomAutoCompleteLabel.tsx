@@ -17,6 +17,7 @@ interface Props {
   readonly?: boolean;
   disabled?: boolean;
   tabIndex?: number;
+  dropdownStyle?: React.CSSProperties;
 }
 
 const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
@@ -36,6 +37,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       readonly,
       disabled,
       tabIndex,
+      dropdownStyle,
   },
   ref
 ) => {
@@ -99,6 +101,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       }}
       tabIndex={tabIndex}
       disabled={disabled}
+      dropdownStyle={dropdownStyle}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}

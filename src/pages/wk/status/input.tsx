@@ -211,6 +211,7 @@ WKStatusProcPage.layout = (page: React.ReactNode) => (
     menuTitle="투입현황"
     menu={[
       { text: '공정현황', link: '/wk/status/proc' },
+      { text: 'WIP', link: '/wk/status/wip' },
       { text: '투입현황', link: '/wk/status/input' },
       { text: '출고현황', link: '/wk/status/out' },
     ]}

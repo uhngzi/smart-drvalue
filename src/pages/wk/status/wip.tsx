@@ -28,17 +28,45 @@ import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import { ExportOutlined } from "@ant-design/icons";
-import { processVendorRType } from "@/data/type/base/process";
+import { processRType, processVendorRType } from "@/data/type/base/process";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 
-const WKStatusProcPage: {
+const WKStatusWIPPage: {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { me } = useUser();
   const { showToast, ToastContainer } = useToast();
 
+  const [procTypeIdx, setProcTypeIdx] = useState<string>("");
+
   // ------------- 필요 데이터 세팅 ------------ 시작
+  const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
+  const { data:queryDataProcess } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['process/jsxcrud/many'],
+    queryFn: async () => {
+      setDataProcess([]);
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data ?? []) as processRType[];
+        setDataProcess(arr);
+        setProcTypeIdx(arr?.[0]?.id ?? "");
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+  
   const [ dataVendor, setDataVendor ] = useState<Array<processVendorRType>>([]);
   const { data:queryDataVendor } = useQuery<
     apiGetResponseType, Error
@@ -63,7 +91,7 @@ const WKStatusProcPage: {
   });
   // ------------- 필요 데이터 세팅 ------------ 끝
 
-  // ------------ 리스트 데이터 세팅 ------------ 시작
+  // ------------ 리스트 데이터 세팅 ------------ 시작  
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
@@ -75,12 +103,12 @@ const WKStatusProcPage: {
   };
   const [ data, setData ] = useState<Array<wkPlanWaitType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['worksheet/production-status/process-status/jsxcrud/many', pagination],
+    queryKey: ['worksheet/production-status/process-status/by-type/jsxcrud/many', pagination, procTypeIdx],
     queryFn: async () => {
       return getAPI({
         type: 'core-d2',
         utype: 'tenant/',
-        url: 'worksheet/production-status/process-status/jsxcrud/many',
+        url: `worksheet/production-status/process-status/by-type/jsxcrud/many/${procTypeIdx}`,
       },{
         limit: pagination.size,
         page: pagination.current,
@@ -295,44 +323,66 @@ const WKStatusProcPage: {
     });
   }, [procs.map((row) => row.wkProcEdCnt).join(",")]);
 
-  return (<>
-    <ListPagination
-      titleBtn={
-        <Button
-          onClick={()=>{
-            if(checkeds.length < 1) {
-              showToast("선택된 값이 없습니다.", "error");
-              return;
-            }
-            setResultType("cf");
-            setResultOpen(true);
-          }}
-          className="!text-point1 !border-point1"
-        >
-          <p className="text-point1"><ExportOutlined /></p> 출고
-        </Button>
-      }
-      pagination={pagination}
-      totalData={totalData}
-      onChange={handlePageChange}
-      handleMenuClick={handlePageMenuClick}
-    />
-
-    <List>
-      <AntdTableEdit
-        columns={WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)}
-        data={data}
-        styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-        loading={dataLoading}
+  return (
+  <div className="flex gap-20">
+    <div className="w-[7%] pt-15">
+      <LabelMedium label="공정"/>
+      <div className="w-full max-h-[700px] overflow-y-auto mt-10 flex flex-col gap-10">
+        {
+          dataProcess.map((item, index) => (
+            <div
+              key={index}
+              className="h-50 v-between-h-center border-1 border-line rounded-14 p-10 cursor-pointer"
+              style={procTypeIdx === item.id ? {border:0,background:"#F5F6FA"} : {}}
+              onClick={()=>{
+                setProcTypeIdx(item.id);
+              }}
+            >
+              {item.prcNm}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div className="flex flex-col w-[93%]">
+      <ListPagination
+        titleBtn={
+          <Button
+            onClick={()=>{
+              if(checkeds.length < 1) {
+                showToast("선택된 값이 없습니다.", "error");
+                return;
+              }
+              setResultType("cf");
+              setResultOpen(true);
+            }}
+            className="!text-point1 !border-point1"
+          >
+            <p className="text-point1"><ExportOutlined /></p> 출고
+          </Button>
+        }
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
       />
-    </List>
 
-    <ListPagination
-      pagination={pagination}
-      totalData={totalData}
-      onChange={handlePageChange}
-      handleMenuClick={handlePageMenuClick}
-    />
+      <List>
+        <AntdTableEdit
+          columns={WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)}
+          data={data}
+          styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          loading={dataLoading}
+        />
+      </List>
+
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+      />
+    </div>
 
     <AntdModal
       open={open}
@@ -467,12 +517,12 @@ const WKStatusProcPage: {
     />
     
     <ToastContainer />
-  </>)
+  </div>)
 };
 
-WKStatusProcPage.layout = (page: React.ReactNode) => (
+WKStatusWIPPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="공정현황"
+    menuTitle="WIP"
     menu={[
       { text: '공정현황', link: '/wk/status/proc' },
       { text: 'WIP', link: '/wk/status/wip' },
@@ -482,4 +532,4 @@ WKStatusProcPage.layout = (page: React.ReactNode) => (
   >{page}</MainPageLayout>
 );
 
-export default WKStatusProcPage;
+export default WKStatusWIPPage;

@@ -36,48 +36,48 @@ export const salesOrderModelClmn = (
   newFlag: boolean,
   selectId: string | null,
 ): TableProps['columns'] => [
-  {
-    title: '층',
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
-    children: [
-      {
-        title:'두께(T)',
-        width: 65,
-        dataIndex: 'thic_layer',
-        key:'thic_layer',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={generateFloorOptions()}
-                value={record.currPrdInfo?.layerEm ?? "L1"}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.layerEm', e)}
-                styles={{fs:'12px'}}
-                placeholder={"층 입력"}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+1}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.thk}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.thk', e.target.value)}
-                className='!text-12'
-                type="number"
-                placeholder={"두께 입력"}
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+2}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
+  // {
+  //   title: '층',
+  //   dataIndex: 'layer',
+  //   key: 'layer',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'두께(T)',
+  //       width: 65,
+  //       dataIndex: 'thic_layer',
+  //       key:'thic_layer',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdSelectFill
+  //               options={generateFloorOptions()}
+  //               value={record.currPrdInfo?.layerEm ?? "L1"}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.layerEm', e)}
+  //               styles={{fs:'12px'}}
+  //               placeholder={"층 입력"}
+  //               disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
+  //               tabIndex={record.index*40+1}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.currPrdInfo?.thk}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.thk', e.target.value)}
+  //               className='!text-12'
+  //               type="number"
+  //               placeholder={"두께 입력"}
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+  //               tabIndex={record.index*40+2}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     },
+  //   ]
+  // },
   {
     title: '동박',
     width: 75,
@@ -133,37 +133,6 @@ export const salesOrderModelClmn = (
     ]
   },
   {
-    title: '표면처리',
-    dataIndex: 'surface',
-    width: 60,
-    key: 'surface',
-    align: 'center',
-    children: [
-      {
-        title:'',
-        width: 60,
-        dataIndex: 'surface',
-        key:'surface',
-        align: 'center',
-        render: (value:any, record:any) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={surfaceSelectList}
-                value={record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.surface.id', e)}
-                styles={{fs:'12px'}}
-                placeholder={"단위 입력"}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+5}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
     title: '동도금',
     width: 60,
     dataIndex: 'dogeum',
@@ -187,7 +156,7 @@ export const salesOrderModelClmn = (
                 placeholder={"도금 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+6}
+                tabIndex={record.index*40+5}
               />
             </div>
             <div className={divClass}>
@@ -199,7 +168,7 @@ export const salesOrderModelClmn = (
                 placeholder={"도금± 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+7}
+                tabIndex={record.index*40+6}
               />
             </div>
           </div>
@@ -231,7 +200,7 @@ export const salesOrderModelClmn = (
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Ni 입력"}
-                tabIndex={record.index*40+8}
+                tabIndex={record.index*40+7}
               />
             </div>
             <div className={divClass}>
@@ -243,7 +212,7 @@ export const salesOrderModelClmn = (
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Au 입력"}
-                tabIndex={record.index*40+10}
+                tabIndex={record.index*40+8}
               />
             </div>
             <div className={divClass}>
@@ -255,7 +224,7 @@ export const salesOrderModelClmn = (
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"OSP 입력"}
-                tabIndex={record.index*40+11}
+                tabIndex={record.index*40+9}
               />
             </div>
             {/* <div className={divClass+"gap-5"}>
@@ -308,7 +277,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M인쇄 입력"}
-                tabIndex={record.index*40+12}
+                tabIndex={record.index*40+10}
               />
             </div>
             <div className={divClass}>
@@ -319,7 +288,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M색상 입력"}
-                tabIndex={record.index*40+13}
+                tabIndex={record.index*40+11}
               />
             </div>
             <div className={divClass}>
@@ -330,7 +299,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M종류 입력"}
-                tabIndex={record.index*40+14}
+                tabIndex={record.index*40+12}
               />
             </div>
           </div>
@@ -361,7 +330,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K인쇄 입력"}
-                tabIndex={record.index*40+15}
+                tabIndex={record.index*40+13}
               />
             </div>
             <div className={divClass}>
@@ -372,7 +341,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K색상 입력"}
-                tabIndex={record.index*40+16}
+                tabIndex={record.index*40+14}
               />
             </div>
             <div className={divClass}>
@@ -383,7 +352,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K종류 입력"}
-                tabIndex={record.index*40+17}
+                tabIndex={record.index*40+15}
               />
             </div>
           </div>
@@ -414,7 +383,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"특수인쇄 입력"}
-                tabIndex={record.index*40+18}
+                tabIndex={record.index*40+16}
               />
             </div>
             <div className={divClass}>
@@ -426,7 +395,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"외형가공형태 입력"}
-                tabIndex={record.index*40+19}
+                tabIndex={record.index*40+17}
               />
             </div>
           </div>
@@ -435,40 +404,40 @@ export const salesOrderModelClmn = (
     ]
   },
   {
-    title: 'Rev',
-    dataIndex: 'rev',
-    width: 80,
-    key: 'rev',
+    title: '표면처리',
+    dataIndex: 'surface',
+    width: 60,
+    key: 'surface',
     align: 'center',
     children: [
       {
-        title:'도면번호',
-        width: 80,
-        dataIndex: 'user',
-        key:'user',
+        title:'승인원 여부',
+        width: 60,
+        dataIndex: 'surface',
+        key:'surface',
         align: 'center',
         render: (value:any, record:any) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.prdRevNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.prdRevNo', e.target.value)}
-                className='!text-12'
-                readonly={selectId === record.id ? !newFlag : undefined}
-                placeholder={"Rev 입력"}
-                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+20}
+              <AntdSelectFill
+                options={surfaceSelectList}
+                value={record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.surface.id', e)}
+                styles={{fs:'12px'}}
+                placeholder={"단위 입력"}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
+                tabIndex={record.index*40+18}
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.drgNo}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.drgNo', e.target.value)}
-                className='!text-12'
-                placeholder="도면번호 입력"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+21}
+              <AntdSelectFill 
+                options={[{value:true,label:"유"},{value:false,label:"무"}]}
+                value={record.approvalYn ?? true}
+                onChange={(e)=>handleModelDataChange(record.id, 'approvalYn', e)}
+                styles={{fs:'12px'}}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
+                placeholder={"승인원 여부"}
+                tabIndex={record.index*40+19}
               />
             </div>
           </div>
@@ -476,6 +445,48 @@ export const salesOrderModelClmn = (
       }
     ]
   },
+  // {
+  //   title: 'Rev',
+  //   dataIndex: 'rev',
+  //   width: 80,
+  //   key: 'rev',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'도면번호',
+  //       width: 80,
+  //       dataIndex: 'user',
+  //       key:'user',
+  //       align: 'center',
+  //       render: (value:any, record:any) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.currPrdInfo?.prdRevNo}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.prdRevNo', e.target.value)}
+  //               className='!text-12'
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               placeholder={"Rev 입력"}
+  //               disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+  //               tabIndex={record.index*40+20}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.currPrdInfo?.drgNo}
+  //               onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.drgNo', e.target.value)}
+  //               className='!text-12'
+  //               placeholder="도면번호 입력"
+  //               readonly={selectId === record.id ? !newFlag : undefined}
+  //               disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+  //               tabIndex={record.index*40+21}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
   {
     title: 'PCS SIZE',
     width:70,
@@ -720,48 +731,6 @@ export const salesOrderModelClmn = (
       },
     ]
   },
-  {
-    title: '비고',
-    width:100,
-    dataIndex: 'remarks',
-    key: 'remarks',
-    align: 'center',
-    children:[
-      {
-        title: '승인원 여부',
-        width:100,
-        dataIndex: 'inremarks',
-        key: 'inremarks',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.remarks}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.remarks', e.target.value)}
-                className="!text-12"
-                readonly={selectId === record.id ? !newFlag : undefined}
-                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                placeholder={"비고 입력"}
-                tabIndex={record.index*40+34}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelectFill 
-                options={[{value:"Y",label:"유"},{value:"N",label:"무"}]}
-                value={record.currPrdInfo?.seungYn ?? "Y"}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.seungYn', e)}
-                styles={{fs:'12px'}}
-                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                placeholder={"승인원 여부"}
-                tabIndex={record.index*40+35}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
 ]
 
 export const salesOrderModelReadClmn = (
@@ -778,38 +747,38 @@ export const salesOrderModelReadClmn = (
   spTypeSelectList: selectType[],
   surfaceSelectList: selectType[],
 ): TableProps['columns'] => [
-  {
-    title: '층',
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
-    children: [
-      {
-        title:'두께(T)',
-        width: 65,
-        dataIndex: 'thic_layer',
-        key:'thic_layer',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={generateFloorOptions()}
-                value={record.currPrdInfo?.layerEm ?? "L1"}
-                className="!text-12" disabled
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.thk}
-                className="!text-12" disabled type="number"
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
+  // {
+  //   title: '층',
+  //   dataIndex: 'layer',
+  //   key: 'layer',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'두께(T)',
+  //       width: 65,
+  //       dataIndex: 'thic_layer',
+  //       key:'thic_layer',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdSelectFill
+  //               options={generateFloorOptions()}
+  //               value={record.currPrdInfo?.layerEm ?? "L1"}
+  //               className="!text-12" disabled
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record.currPrdInfo?.thk}
+  //               className="!text-12" disabled type="number"
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     },
+  //   ]
+  // },
   {
     title: '동박',
     width: 75,
@@ -827,41 +796,14 @@ export const salesOrderModelReadClmn = (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.currPrdInfo?.copOut}
+                value={record.currPrdInfo?.copOutForCd ?? record.currPrdInfo?.copOut}
                 className="!text-12" disabled type="number"
                 />
             </div>
             <div className={divClass+"gap-5"}>
               <AntdInputFill 
-                value={record.currPrdInfo?.copIn}
+                value={record.currPrdInfo?.copInForCd ?? record.currPrdInfo?.copIn}
                 className="!text-12" disabled type="number"
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: '표면처리',
-    dataIndex: 'surface',
-    width: 60,
-    key: 'surface',
-    align: 'center',
-    children: [
-      {
-        title:'',
-        width: 60,
-        dataIndex: 'surface',
-        key:'surface',
-        align: 'center',
-        render: (value:any, record:any) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={surfaceSelectList}
-                value={record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
-                className="!text-12" disabled
               />
             </div>
           </div>
@@ -1066,29 +1008,31 @@ export const salesOrderModelReadClmn = (
     ]
   },
   {
-    title: 'Rev',
-    dataIndex: 'rev',
-    width: 80,
-    key: 'rev',
+    title: '표면처리',
+    dataIndex: 'surface',
+    width: 60,
+    key: 'surface',
     align: 'center',
     children: [
       {
-        title:'도면번호',
-        width: 80,
-        dataIndex: 'user',
-        key:'user',
+        title:'승인원 여부',
+        width: 60,
+        dataIndex: 'surface',
+        key:'surface',
         align: 'center',
         render: (value:any, record:any) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.prdRevNo}
+              <AntdSelectFill
+                options={surfaceSelectList}
+                value={record.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value}
                 className="!text-12" disabled
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.drgNo}
+              <AntdSelectFill
+                options={[{value:true,label:"유"},{value:false,label:"무"}]}
+                value={record.approvalYn ?? true}
                 className="!text-12" disabled
               />
             </div>
@@ -1269,39 +1213,6 @@ export const salesOrderModelReadClmn = (
       },
     ]
   },
-  {
-    title: '비고',
-    width:100,
-    dataIndex: 'remarks',
-    key: 'remarks',
-    align: 'center',
-    children:[
-      {
-        title: '승인원 여부',
-        width:100,
-        dataIndex: 'inremarks',
-        key: 'inremarks',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record.currPrdInfo?.remarks}
-                className="!text-12" disabled
-              />
-            </div>
-            <div className={divClass}>
-              <AntdSelectFill 
-                options={[{value:"Y",label:"유"},{value:"N",label:"무"}]}
-                value={record.currPrdInfo?.seungYn ?? "Y"}
-                className="!text-12" disabled
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
 ]
 
 export const salesOrderModelAddClmn = (
@@ -1321,47 +1232,47 @@ export const salesOrderModelAddClmn = (
   handleModelDataChange: (name:string, value:any) => void,
   readonly: boolean,
 ): TableProps['columns'] => [
-  {
-    title: '층',
-    dataIndex: 'layer',
-    key: 'layer',
-    align: 'center',
-    children: [
-      {
-        title:'두께(T)',
-        width: 65,
-        dataIndex: 'thic_layer',
-        key:'thic_layer',
-        align: 'center',
-        render: (value, record) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={generateFloorOptions()}
-                value={record?.layerEm ?? "L1"}
-                onChange={(e)=>handleModelDataChange('layerEm', e)}
-                styles={{fs:'12px'}}
-                placeholder={"층 입력"}
-                readonly={readonly}
-                tabIndex={40+1}
-              />
-            </div>
-            <div className={divClass}>
-              <AntdInputFill
-                value={record?.thk}
-                onChange={(e)=>handleModelDataChange('thk', e.target.value)}
-                className='!text-12'
-                type="number"
-                placeholder={"두께 입력"}
-                readonly={readonly}
-                tabIndex={40+2}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
+  // {
+  //   title: '층',
+  //   dataIndex: 'layer',
+  //   key: 'layer',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'두께(T)',
+  //       width: 65,
+  //       dataIndex: 'thic_layer',
+  //       key:'thic_layer',
+  //       align: 'center',
+  //       render: (value, record) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdSelectFill
+  //               options={generateFloorOptions()}
+  //               value={record?.layerEm ?? "L1"}
+  //               onChange={(e)=>handleModelDataChange('layerEm', e)}
+  //               styles={{fs:'12px'}}
+  //               placeholder={"층 입력"}
+  //               readonly={readonly}
+  //               tabIndex={40+1}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record?.thk}
+  //               onChange={(e)=>handleModelDataChange('thk', e.target.value)}
+  //               className='!text-12'
+  //               type="number"
+  //               placeholder={"두께 입력"}
+  //               readonly={readonly}
+  //               tabIndex={40+2}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     },
+  //   ]
+  // },
   {
     title: '동박',
     width: 75,
@@ -1407,37 +1318,6 @@ export const salesOrderModelAddClmn = (
                 inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
                 placeholder="내층 검색 또는 입력"
                 readonly={readonly} clear={false} tabIndex={40+4}
-              />
-            </div>
-          </div>
-        )
-      }
-    ]
-  },
-  {
-    title: '표면처리',
-    dataIndex: 'surface',
-    width: 60,
-    key: 'surface',
-    align: 'center',
-    children: [
-      {
-        title:'',
-        width: 60,
-        dataIndex: 'surface',
-        key:'surface',
-        align: 'center',
-        render: (value:any, record:any) => (
-          <div className={divTopClass}>
-            <div className={divClass}>
-              <AntdSelectFill
-                options={surfaceSelectList}
-                value={record?.surface?.id ?? surfaceSelectList?.[0]?.value}
-                onChange={(e)=>handleModelDataChange('surface.id', e)}
-                styles={{fs:'12px'}}
-                placeholder={"단위 입력"}
-                readonly={readonly}
-                tabIndex={40+5}
               />
             </div>
           </div>
@@ -1521,7 +1401,7 @@ export const salesOrderModelAddClmn = (
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"Au 입력"}
-                tabIndex={40+10}
+                tabIndex={40+9}
               />
             </div>
             <div className={divClass}>
@@ -1532,7 +1412,7 @@ export const salesOrderModelAddClmn = (
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"OSP 입력"}
-                tabIndex={40+11}
+                tabIndex={40+10}
               />
             </div>
           </div>
@@ -1563,7 +1443,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M인쇄 입력"}
-                tabIndex={40+12}
+                tabIndex={40+11}
               />
             </div>
             <div className={divClass}>
@@ -1574,7 +1454,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M색상 입력"}
-                tabIndex={40+13}
+                tabIndex={40+12}
               />
             </div>
             <div className={divClass}>
@@ -1585,7 +1465,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M종류 입력"}
-                tabIndex={40+14}
+                tabIndex={40+13}
               />
             </div>
           </div>
@@ -1616,7 +1496,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K인쇄 입력"}
-                tabIndex={40+15}
+                tabIndex={40+14}
               />
             </div>
             <div className={divClass}>
@@ -1627,7 +1507,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K색상 입력"}
-                tabIndex={40+16}
+                tabIndex={40+15}
               />
             </div>
             <div className={divClass}>
@@ -1638,7 +1518,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K종류 입력"}
-                tabIndex={40+17}
+                tabIndex={40+16}
               />
             </div>
           </div>
@@ -1669,7 +1549,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"특수인쇄 입력"}
-                tabIndex={40+18}
+                tabIndex={40+17}
               />
             </div>
             <div className={divClass}>
@@ -1681,7 +1561,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"외형가공형태 입력"}
-                tabIndex={40+19}
+                tabIndex={40+18}
               />
             </div>
           </div>
@@ -1690,38 +1570,40 @@ export const salesOrderModelAddClmn = (
     ]
   },
   {
-    title: 'Rev',
-    dataIndex: 'rev',
-    width: 80,
-    key: 'rev',
+    title: '표면처리',
+    dataIndex: 'surface',
+    width: 60,
+    key: 'surface',
     align: 'center',
     children: [
       {
-        title:'도면번호',
-        width: 80,
-        dataIndex: 'user',
-        key:'user',
+        title:'승인원 여부',
+        width: 60,
+        dataIndex: 'surface',
+        key:'surface',
         align: 'center',
         render: (value:any, record:any) => (
           <div className={divTopClass}>
             <div className={divClass}>
-              <AntdInputFill
-                value={record?.prdRevNo}
-                onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
-                className='!text-12'
+              <AntdSelectFill
+                options={surfaceSelectList}
+                value={record?.surface?.id ?? surfaceSelectList?.[0]?.value}
+                onChange={(e)=>handleModelDataChange('surface.id', e)}
+                styles={{fs:'12px'}}
+                placeholder={"표면처리 입력"}
                 readonly={readonly}
-                placeholder={"Rev 입력"}
-                tabIndex={40+20}
+                tabIndex={40+19}
               />
             </div>
             <div className={divClass}>
-              <AntdInputFill
-                value={record?.drgNo}
-                onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
-                className='!text-12'
-                placeholder="도면번호 입력"
+              <AntdSelectFill
+                options={[{value:true,label:'유'},{value:false,label:'무'}]}
+                value={record?.approvalYn ?? true}
+                onChange={(e)=>handleModelDataChange('approvalYn', e)}
+                styles={{fs:'12px'}}
+                placeholder={"승인원 여부"}
                 readonly={readonly}
-                tabIndex={40+21}
+                tabIndex={40+20}
               />
             </div>
           </div>
@@ -1729,6 +1611,46 @@ export const salesOrderModelAddClmn = (
       }
     ]
   },
+  // {
+  //   title: 'Rev',
+  //   dataIndex: 'rev',
+  //   width: 80,
+  //   key: 'rev',
+  //   align: 'center',
+  //   children: [
+  //     {
+  //       title:'도면번호',
+  //       width: 80,
+  //       dataIndex: 'user',
+  //       key:'user',
+  //       align: 'center',
+  //       render: (value:any, record:any) => (
+  //         <div className={divTopClass}>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record?.prdRevNo}
+  //               onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
+  //               className='!text-12'
+  //               readonly={readonly}
+  //               placeholder={"Rev 입력"}
+  //               tabIndex={40+20}
+  //             />
+  //           </div>
+  //           <div className={divClass}>
+  //             <AntdInputFill
+  //               value={record?.drgNo}
+  //               onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
+  //               className='!text-12'
+  //               placeholder="도면번호 입력"
+  //               readonly={readonly}
+  //               tabIndex={40+21}
+  //             />
+  //           </div>
+  //         </div>
+  //       )
+  //     }
+  //   ]
+  // },
   {
     title: 'PCS SIZE',
     width:70,

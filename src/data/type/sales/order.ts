@@ -218,6 +218,8 @@ export type salesOrderProcuctCUType = {
   index?: number;
   completed?: boolean;
   prdMngNo?: string;
+  orderPrtNo?: string;
+  remarks?:string;
 }
 
 // 고객발주 내 모델 초기값 생성

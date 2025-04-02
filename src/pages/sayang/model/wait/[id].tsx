@@ -20,6 +20,7 @@ import { sayangModelWaitAddClmn } from "@/data/columns/Sayang";
 import { useBase } from '@/data/context/BaseContext';
 import {
   modelReq,
+  modelsType,
   orderModelType
 } from "@/data/type/sayang/models";
 import { 
@@ -418,6 +419,24 @@ const SayangModelAddPage: React.FC & {
     }
   }, [orderModels])
 
+  // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
+  const handleModelChange = (
+    model: modelsType,
+    productId: string,
+  ) => {
+    const newData = [...data];
+    const index = newData.findIndex(f => f.id === productId);
+    if(index > -1) {
+      newData[index] = {
+        ...newData[index],
+        currPrdInfo: { ...newData[index].currPrdInfo, ...model },
+        prdMngNo: model.prdMngNo,
+      };
+      setData(newData);
+      console.log(newData);
+    }
+  }
+
   if (dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
@@ -460,6 +479,7 @@ const SayangModelAddPage: React.FC & {
                   newFlag={newFlag}
                   inputRef={inputRef}
                   index={index}
+                  handleModelChange={handleModelChange}
                 />
                 
                 <div className="flex flex-col ">
@@ -546,7 +566,7 @@ const SayangModelAddPage: React.FC & {
                   key={index}
                   className="flex flex-col gap-15 mt-20"
                 >
-                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 px-15 pb-15 min-w-[1820px]">
+                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1820px]">
                     <SalesModelHead
                       read={true}
                       model={model}

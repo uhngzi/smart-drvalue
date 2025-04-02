@@ -11,7 +11,7 @@ import {
   partnerCUType, 
   partnerRType
 } from "@/data/type/base/partner";
-import { ModelTypeEm } from "@/data/type/enum";
+import { generateFloorOptions, ModelTypeEm } from "@/data/type/enum";
 import { useBase } from "@/data/context/BaseContext";
 import { useUser } from "@/data/context/UserContext";
 import { BoardGroupType } from "@/data/type/base/board";
@@ -51,9 +51,10 @@ import { IconButton } from "@/components/Button/IconButton";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import { LabelMedium } from "@/components/Text/Label";
 import ModelList from "@/contents/base/model/ModelList";
+import AntdInputFill from "@/components/Input/AntdInputFill";
 
-const Label:React.FC<{label:string}> = ({ label }) => {
-  return <p className="h-center">{label}</p>
+const Label:React.FC<{label:string, className?:string}> = ({ label, className }) => {
+  return <p className={`h-center ${className}`}>{label}</p>
 }
 
 const Item:React.FC<{
@@ -72,10 +73,10 @@ const Item:React.FC<{
   size2 = 2,
 }) => {
   return (
-    <div className="flex flex-col gap-15 justify-center">
+    <div className="flex flex-col gap-10 justify-center">
       <div
         className="flex flex-col justify-center !h-54"
-        style={{width: size1 < 2 ? (55*size1) : (55*size1 + 20*size1), minWidth: size1 < 2 ? (55*size1) : (55*size1 + 20*size1)}}
+        style={{width: 70*size1, minWidth: 70*size1}}
       >
         {label1 && <Label label={label1} />}
         {children1}
@@ -83,7 +84,7 @@ const Item:React.FC<{
       { children2 &&
         <div
           className="flex flex-col justify-center !h-54"
-          style={{width: size2 < 2 ? (55*size2) : (55*size2 + 20*size2), minWidth: size2 < 2 ? (55*size2) : (55*size2 + 20*size2)}}
+          style={{width: 70*size2, minWidth: 70*size2}}
         >
           {label2 && <Label label={label2} />}
           {children2}
@@ -387,180 +388,230 @@ const ModelAddLayout = () => {
     </div>
     <div className="w-full overflow-auto pl-30 pb-20 h-[calc(100vh-95px)]">
       <div className="w-full v-between-h-center gap-20 h-full">
-        <div className="w-[calc(100%-100px)] h-full !min-w-[1900px]">
-          <Popup className="!min-w-[1820px]">
+        <div className="w-[calc(100%-100px)] h-full !min-w-[1200px]">
+          <Popup className="w-full">
             <div
               className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10"
             >
               <div className="w-full min-h-60 h-center gap-15">
-                <div className="!flex-1 !max-w-[calc(100%-90px)] h-center gap-20">
-                  <Item
-                    size1={1}
-                    children1={
-                      <AntdSelect
-                        options={[
-                          {value:ModelTypeEm.SAMPLE,label:'샘플'},
-                          {value:ModelTypeEm.PRODUCTION,label:'양산'},
-                        ]}
-                        value={model?.modelTypeEm ?? ModelTypeEm.SAMPLE}
-                        onChange={(e)=>{
-                          setModel({
-                            ...model,
-                            modelTypeEm: ModelTypeEm.SAMPLE === e+"" ? ModelTypeEm.SAMPLE : ModelTypeEm.PRODUCTION
-                          });
-                        }}
-                        styles={{ht:'32px', bw:'0', pd:'0'}}
-                        readonly={model?.usedYn}
-                      />
-                    }
-                  />
-                  
-                  <Item
-                    label1="고객"
-                    children1={
-                      <CustomAutoComplete
-                        option={csList}
-                        value={model?.partner?.id}
-                        onChange={(value) => {
-                          setModel({
-                            ...model,
-                            partner: {id: value ?? ""}
-                          });
-                        }}
-                        handleAddData={()=>setAddPartner(true)}
-                        addLabel="고객 추가하기"
-                        className="!h-32 !rounded-2" inputClassName="!h-32 !rounded-2"
-                        readonly={model?.usedYn} clear={false}
-                      />
-                    }
-                  />
-
-                  <Item
-                    label1="모델명" size1={3}
-                    children1={
-                      <CustomAutoCompleteLabel
-                        option={modelSelectList}
-                        label={model?.prdNm}
-                        onInputChange={(value) => {
-                          if(value.length < 3) {
-                            setModelSelectList([]);
-                            setModelNoSelectList([]);
-                          }
-                          setModel({...model, prdNm: value});
-                        }}
-                        value={model?.id}
-                        onChange={(value) => {
-                          const m = modelList.find(f=>f.id === value);
-                          if(m && model?.id) {
-                            console.log(m);
-                            setModel({
-                              ...m,
-                              id: model.id,
-                              usedYn: false,
-                            });
-                          }
-                        }}
-                        inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
-                        placeholder="모델명 검색 또는 입력 (3글자 이상)"
-                        readonly={model?.usedYn} clear={false}
-                      />
-                    }
-                  />
-
-                  <Item
-                    label1="관리번호" size1={3}
-                    children1={
-                      <CustomAutoCompleteLabel
-                        option={modelNoSelectList}
-                        label={model?.prdMngNo}
-                        onInputChange={(value) => {
-                          if(value.length < 3) {
-                            setModelSelectList([]);
-                            setModelNoSelectList([]);
-                          }
-                          setModel({...model, prdNm: "", prdMngNo: value});
-                        }}
-                        value={model?.id}
-                        onChange={(value) => {
-                          const m = modelList.find(f=>f.id === value);
-                          if(m && model?.id) {
-                            console.log(m);
-                            setModel({
-                              ...m,
-                              id: model.id,
-                              usedYn: false,
-                            });
-                          }
-                        }}
-                        inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
-                        placeholder="관리번호 검색 (3글자 이상)"
-                        readonly={model?.usedYn} clear={false}
-                      />
-                    }
-                  />
-                  
-                  <Item
-                    label1="필름번호"
-                    children1={
+                <div className="!flex-1 !max-w-[calc(100%-90px)] flex flex-col gap-15">
+                  <div className="h-center gap-15">
+                    <div className="h-center gap-5">
+                      <Label label="고객측 관리번호" className="!w-[140px]"/>
                       <AntdInput
-                        value={model?.fpNo} disabled styles={{ht:'32px', bg:'#FFF'}}
-                      />
-                    }
-                  />
-                  
-                  <Item
-                    label1="제조사"
-                    children1={
-                      <AntdSelectFill
-                        options={boardGroupSelectList}
-                        value={model?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
-                        onChange={(e)=>{
-                          setModel({
-                            ...model,
-                            boardGroup: {id: e+""}
-                          });
-                        }}
-                        styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                        value={model?.orderPrtNo}
+                        onChange={(e)=>handleModelDataChange('orderPrtNo', e.target.value)}
+                        styles={{ht:'32px', bg:'#FFF'}}
                         readonly={model?.usedYn}
                       />
-                    }
-                  />
-                  
-                  <Item
-                    label1="원판"
-                    children1={
-                      <AntdSelectFill
-                        options={boardSelectList}
-                        value={model?.board?.id ?? boardSelectList?.[0]?.value}
-                        onChange={(e)=>{
-                          setModel({
-                            ...model,
-                            board: {id: e+""}
-                          });
-                        }}
-                        styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                    </div>
+                    <div className="h-center gap-5 flex-1">
+                      <Label label="비고" className="!w-35"/>
+                      <AntdInput
+                        value={model?.remarks}
+                        onChange={(e)=>handleModelDataChange('orderPrtNo', e.target.value)}
+                        styles={{ht:'32px', bg:'#FFF'}}
                         readonly={model?.usedYn}
                       />
-                    }
-                  />
-                  
-                  <Item
-                    label1="재질"
-                    children1={
-                      <AntdSelectFill
-                        options={metarialSelectList}
-                        value={model?.material?.id ?? metarialSelectList?.[0]?.value}
-                        onChange={(e)=>{
-                          setModel({
-                            ...model,
-                            material: {id: e+""}
-                          });
-                        }}
-                        styles={{ht:'32px', bg:'#FFF', br: '2px'}} dropWidth="180px"
-                        readonly={model?.usedYn}
-                      />
-                    }
-                  />
+                    </div>
+                  </div>
+                  <div className="h-center gap-15">
+                    <Item
+                      size1={1}
+                      children1={
+                        <AntdSelect
+                          options={[
+                            {value:ModelTypeEm.SAMPLE,label:'샘플'},
+                            {value:ModelTypeEm.PRODUCTION,label:'양산'},
+                          ]}
+                          value={model?.modelTypeEm ?? ModelTypeEm.SAMPLE}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              modelTypeEm: ModelTypeEm.SAMPLE === e+"" ? ModelTypeEm.SAMPLE : ModelTypeEm.PRODUCTION
+                            });
+                          }}
+                          styles={{ht:'32px', bw:'0', pd:'0'}} 
+                          readonly={model?.usedYn}
+                        />
+                      }
+                      label2="고객"
+                      children2={
+                        <CustomAutoComplete
+                          option={csList}
+                          value={model?.partner?.id}
+                          onChange={(value) => {
+                            setModel({
+                              ...model,
+                              partner: {id: value ?? ""}
+                            });
+                          }}
+                          handleAddData={()=>setAddPartner(true)}
+                          addLabel="고객 추가하기"
+                          className="!h-32 !rounded-2" inputClassName="!h-32 !rounded-2"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                    />
+                    
+                    <Item
+                      label1="모델명" size1={3}
+                      children1={
+                        <CustomAutoCompleteLabel
+                          option={modelSelectList}
+                          label={model?.prdNm}
+                          onInputChange={(value) => {
+                            if(value.length < 3) {
+                              setModelSelectList([]);
+                              setModelNoSelectList([]);
+                            }
+                            setModel({...model, prdNm: value});
+                          }}
+                          value={model?.id}
+                          onChange={(value) => {
+                            const m = modelList.find(f=>f.id === value);
+                            if(m && model?.id) {
+                              console.log(m);
+                              setModel({
+                                ...m,
+                                id: model.id,
+                                usedYn: false,
+                              });
+                            }
+                          }}
+                          inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+                          placeholder="모델명 검색 또는 입력 (3글자 이상)"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                      label2="Rev" size2={3}
+                      children2={
+                        <AntdInput
+                          value={model?.prdRevNo}
+                          onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                    />
+
+                    <Item
+                      label1="관리번호"
+                      children1={
+                        <CustomAutoCompleteLabel
+                          option={modelNoSelectList}
+                          label={model?.prdMngNo}
+                          onInputChange={(value) => {
+                            if(value.length < 3) {
+                              setModelSelectList([]);
+                              setModelNoSelectList([]);
+                            }
+                            setModel({...model, prdNm: "", prdMngNo: value});
+                          }}
+                          value={model?.id}
+                          onChange={(value) => {
+                            const m = modelList.find(f=>f.id === value);
+                            if(m && model?.id) {
+                              console.log(m);
+                              setModel({
+                                ...m,
+                                id: model.id,
+                                usedYn: false,
+                              });
+                            }
+                          }}
+                          inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+                          placeholder="관리번호 검색"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                      label2="필름번호"
+                      children2={
+                        <AntdInput
+                          value={model?.fpNo} disabled styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                    />
+                    
+                    <Item
+                      label1="도면번호"
+                      children1={
+                        <AntdInput
+                          value={model?.drgNo}
+                          onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                      label2="재질"
+                      children2={
+                        <AntdSelectFill
+                          options={metarialSelectList}
+                          value={model?.material?.id ?? metarialSelectList?.[0]?.value}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              material: {id: e+""}
+                            });
+                          }}
+                          styles={{ht:'32px', bg:'#FFF', br: '2px'}} dropWidth="180px"
+                          readonly={model?.usedYn}
+                        />
+                      }
+                    />
+                    
+                    <Item
+                      label1="원판"
+                      children1={
+                        <AntdSelectFill
+                          options={boardSelectList}
+                          value={model?.board?.id ?? boardSelectList?.[0]?.value}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              board: {id: e+""}
+                            });
+                          }}
+                          styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                          readonly={model?.usedYn}
+                        />
+                      }
+                      label2="제조사"
+                      children2={
+                        <AntdSelectFill
+                          options={boardGroupSelectList}
+                          value={model?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              boardGroup: {id: e+""}
+                            });
+                          }}
+                          styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                          readonly={model?.usedYn}
+                        />
+                      }
+                    />
+                    
+                    <Item
+                      label1="층" size1={1}
+                      children1={
+                        <AntdSelectFill
+                          options={generateFloorOptions()}
+                          value={model?.layerEm ?? "L1"}
+                          onChange={(e)=>handleModelDataChange('layerEm', e)}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                      label2="두께" size2={1}
+                      children2={
+                        <AntdInput
+                          value={model?.thk}
+                          onChange={(e)=>handleModelDataChange('thk', e.target.value)}
+                          type="number"
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                        />
+                      }
+                    />
+                  </div>
                 </div>
                 <div className="w-85">
                   <Item
