@@ -488,6 +488,11 @@ const SayangModelAddPage: React.FC & {
                 </div>
                 { !model.completed ?
                 <div className="w-full h-32 flex justify-end gap-5">
+                  <Button variant="outlined" color="primary"
+                    onClick={()=>{
+                      handleSumbitTemp(model.id, true);
+                    }}
+                  >임시저장</Button>
                   <FullOkButtonSmall
                     click={()=>{
                       if(!model.modelStatus) {
@@ -510,11 +515,6 @@ const SayangModelAddPage: React.FC & {
                     }}
                     label="확정저장"
                   />
-                  <Button variant="outlined" color="primary"
-                    onClick={()=>{
-                      handleSumbitTemp(model.id, true);
-                    }}
-                  >임시저장</Button>
                 </div> : 
                 <div className="w-full h-32 flex justify-end gap-5">
                   {/* <FullChip label="확정 완료" state="mint" /> */}

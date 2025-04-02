@@ -25,6 +25,7 @@ import Models from "@/assets/svg/icons/sales.svg";
 import Prc from "@/assets/svg/icons/data.svg";
 import Down from "@/assets/svg/icons/s_drop_down.svg";
 import Right from "@/assets/svg/icons/s_drop_right.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import useToast from "@/utils/useToast";
 
@@ -42,6 +43,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { Popup } from "@/layouts/Body/Popup";
 import { productLinesGroupRType } from "@/data/type/base/product";
 import { processRType } from "@/data/type/base/process";
+import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -530,26 +532,6 @@ const SayangSampleAddPage: React.FC & {
                 handleSumbitTemp(true);
               }}
             >모델추가</Button>}
-            {
-              (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
-              <Button
-                className="!border-[#444444] !w-[107px]"
-                icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
-                onClick={()=>{
-                  setOpen(true);
-                }}
-              >공정지정</Button>
-              :
-              <Tooltip title="공정을 지정하세요">
-              <Button
-                className="!border-[#444444] !w-[107px]"
-                icon={<Prc className="w-16 h-16"/>}
-                onClick={()=>{
-                  setOpen(true);
-                }}
-                >공정지정</Button>
-              </Tooltip>
-            }
           </div>
         </div>
         <div>
@@ -622,32 +604,58 @@ const SayangSampleAddPage: React.FC & {
         </Popup>
       </div>
 
-      { !view &&
-      <div className="v-h-center py-50 gap-15">
-        <FullOkButton label="확정저장" click={()=>{
-          if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
-            showToast("공정을 선택해주세요.", "error");
-            return;
-          }
+      <div className="v-between-h-center px-30">
+        {
+          (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
+          <Button
+            className="!border-[#444444] !w-[107px]"
+            icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
+            onClick={()=>{
+              setOpen(true);
+            }}
+          >공정지정</Button>
+          :
+          <Tooltip title="공정을 지정하세요">
+          <Button
+            className="!border-[#444444] !w-[107px]"
+            icon={<Prc className="w-16 h-16"/>}
+            onClick={()=>{
+              setOpen(true);
+            }}
+            >공정지정</Button>
+          </Tooltip>
+        }
 
-          let flag = false;
-          detailData.specModels?.map(f=>{
-            if((f.prdCnt ?? 0) < 1) {
-              flag = true;
+        { !view &&
+        <div className="v-h-center gap-5">
+          <Button
+            className="h-32 rounded-6" variant="outlined" color="primary"
+            onClick={()=>{
+              handleSumbitTemp();
+            }}
+          >임시저장</Button>
+          <FullOkButtonSmall label="확정저장" click={()=>{
+            if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
+              showToast("공정을 선택해주세요.", "error");
               return;
             }
-          })
-          if(flag) {
-            showToast("모델 내 생산 수량을 입력해주세요.", "error");
-            return;
-          }
-          
-          handleSumbitTemp(false, true);
-        }}/>
-        <FullSubButton label="임시저장" click={()=>{
-          handleSumbitTemp();
-        }}/>
-      </div>}
+
+            let flag = false;
+            detailData.specModels?.map(f=>{
+              if((f.prdCnt ?? 0) < 1) {
+                flag = true;
+                return;
+              }
+            })
+            if(flag) {
+              showToast("모델 내 생산 수량을 입력해주세요.", "error");
+              return;
+            }
+            
+            handleSumbitTemp(false, true);
+          }}/>
+        </div>}
+      </div>
       </>}
 
       <AntdModal
