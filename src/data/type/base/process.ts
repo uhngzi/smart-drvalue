@@ -6,6 +6,7 @@ import { partnerRType } from "./partner";
 
 export type processRType = {
   id: string;
+  isInternal?: boolean;
   processGroup?: {
     id: string;
     prcGrpNm: string;
