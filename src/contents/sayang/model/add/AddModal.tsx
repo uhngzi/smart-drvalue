@@ -63,7 +63,7 @@ export type modelSampleDataType = {
   tprinttype: string;
   outtype: string;
   vcut: number | null;
-  doNum: string;
+  drgNo: string;
   pmNum: string;
   pcsX: string;
   pcsY: string;
@@ -115,7 +115,7 @@ export const newModelSampleData = (id:number) => {
     tprinttype: '',
     outtype: '',
     vcut: 0,
-    doNum: '',
+    drgNo: '',
     pmNum: '',
     pcsX: '',
     pcsY: '',

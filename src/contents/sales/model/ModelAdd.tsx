@@ -115,6 +115,7 @@ const ModelAddLayout = () => {
     mkTypeSelectList,
     spPrintSelectList,
     spTypeSelectList,
+    ozUnitSelectList,
   } = useBase();
 
   const [model, setModel] = useState<salesModelsType | null>(null);
@@ -586,6 +587,7 @@ const ModelAddLayout = () => {
                   spPrintSelectList,
                   spTypeSelectList,
                   surfaceSelectList,
+                  ozUnitSelectList,
                   handleModelDataChange,
                   model?.usedYn ?? false,
                 )}

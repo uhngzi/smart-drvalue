@@ -20,6 +20,7 @@ import { specModelType, specType } from '../type/sayang/sample';
 import { FinalGlbStatus, generateFloorOptions, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from '../type/enum';
 import { CloseOutlined } from '@ant-design/icons';
 import AutoHideTooltip from '@/components/Tooltip/AntdHideTooltip';
+import CustomAutoCompleteLabel from '@/components/AutoComplete/CustomAutoCompleteLabel';
 
 export const specStatusClmn = (
   totalData: number,
@@ -609,6 +610,7 @@ export const sayangSampleWaitAddClmn = (
   spTypeSelectList: selectType[],
   ul1SelectList: selectType[],
   ul2SelectList: selectType[],
+  ozUnitSelectList: selectType[],
   handleModelDataChange: (
     id?: string,
     name?: string,
@@ -747,25 +749,37 @@ export const sayangSampleWaitAddClmn = (
     render: (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass+"mb-3 gap-5 !text-12"}>
-          <AntdInputFill 
-            value={record?.copOut}
-            onChange={(e)=>handleModelDataChange(record.id, 'copOut', e.target.value)}
-            className="!text-12" 
-            placeholder="외층 입력"
-            type="number"
+          <CustomAutoCompleteLabel
+            option={ozUnitSelectList}
+            label={record?.copOut}
+            onInputChange={(value) => {
+              handleModelDataChange(record.id, 'copOut', value)
+            }}
+            value={record?.copOutForCd}
+            onChange={(value) => {
+              handleModelDataChange(record.id, 'copOutForCd', value)
+            }}
+            inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+            placeholder="외층 검색 또는 입력"
             tabIndex={(record?.index ?? 1)*40+3}
-            disabled={view?true:false}
+            disabled={view?true:false} clear={false}
           />
         </div>
-        <div className={divClass+"gap-5 !text-12"}>
-          <AntdInputFill 
-            value={record?.copIn}
-            onChange={(e)=>handleModelDataChange(record.id, 'copIn', e.target.value)}
-            className="!text-12" 
-            placeholder="내층 입력"
-            type="number"
+        <div className={divClass+"gap-5"}>
+          <CustomAutoCompleteLabel
+            option={ozUnitSelectList}
+            label={record?.copIn}
+            onInputChange={(value) => {
+              handleModelDataChange(record.id, 'copIn', value)
+            }}
+            value={record?.copInForCd}
+            onChange={(value) => {
+              handleModelDataChange(record.id, 'copInForCd', value)
+            }}
+            inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+            placeholder="내층 검색 또는 입력"
             tabIndex={(record?.index ?? 1)*40+4}
-            disabled={view?true:false}
+            disabled={view?true:false} clear={false}
           />
         </div>
       </div>
@@ -1506,6 +1520,7 @@ export const sayangModelWaitAddClmn = (
   mkTypeSelectList: selectType[],
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
+  ozUnitSelectList: selectType[],
   handleModelDataChange: (id:string, name:string, value:any) => void,
   newFlag: boolean,
   selectId: string | null,
@@ -1610,7 +1625,39 @@ export const sayangModelWaitAddClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record.editModel?.copOut ?? record.tempPrdInfo?.copOut ?? record.currPrdInfo?.copOut}
+                onInputChange={(value) => {
+                  handleModelDataChange(record.id, 'editModel.copOut', value)
+                }}
+                value={record.editModel?.copOutForCd ?? record.tempPrdInfo?.copOutForCd ?? record.currPrdInfo?.copOutForCd}
+                onChange={(value) => {
+                  handleModelDataChange(record.id, 'editModel.copOutForCd', value)
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="외층 검색 또는 입력"
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+5}
+              />
+            </div>
+            <div className={divClass+"gap-5"}>
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record?.currPrdInfo?.copIn}
+                onInputChange={(value) => {
+                  handleModelDataChange(record.id, 'editModel.copIn', value)
+                }}
+                value={record?.currPrdInfo?.copInForCd}
+                onChange={(value) => {
+                  handleModelDataChange(record.id, 'editModel.copInForCd', value)
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="내층 검색 또는 입력"
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+6}
+              />
+              {/* <AntdInputFill 
                 value={record.editModel?.copOut ?? record.tempPrdInfo?.copOut ?? record.currPrdInfo?.copOut}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.copOut', e.target.value)}
                 className="!text-12" 
@@ -1631,7 +1678,7 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="동박내층 입력"
                 tabIndex={record.index*40+6}
-              />
+              /> */}
             </div>
           </div>
         )
@@ -1976,22 +2023,22 @@ export const sayangModelWaitAddClmn = (
   {
     title: '도면번호',
     width:100,
-    dataIndex: 'doNum',
-    key: 'doNum',
+    dataIndex: 'drgNo',
+    key: 'drgNo',
     align: 'center',
     children: [
       {
         title:'',
         width:100,
-        dataIndex: 'doNum',
-        key: 'doNum',
+        dataIndex: 'drgNo',
+        key: 'drgNo',
         align: 'center',
         render: (_, record) => (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.editModel?.doNum ?? record.tempPrdInfo?.doNum ?? record.currPrdInfo?.doNum}
-                onChange={(e)=>handleModelDataChange(record.id, 'editModel.doNum', e.target.value)}
+                value={record.editModel?.drgNo ?? record.tempPrdInfo?.drgNo ?? record.currPrdInfo?.drgNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'editModel.drgNo', e.target.value)}
                 className='w-[100px] !text-12'
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed}

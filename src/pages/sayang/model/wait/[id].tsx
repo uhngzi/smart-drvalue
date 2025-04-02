@@ -73,6 +73,7 @@ const SayangModelAddPage: React.FC & {
     mkTypeSelectList,
     spPrintSelectList,
     spTypeSelectList,
+    ozUnitSelectList,
   } = useBase();
 
   // ------------- 원판그룹(제조사) ------------- 시작
@@ -477,6 +478,7 @@ const SayangModelAddPage: React.FC & {
                       mkTypeSelectList,
                       spPrintSelectList,
                       spTypeSelectList,
+                      ozUnitSelectList,
                       handleModelDataChange,
                       newFlag,
                       selectId,

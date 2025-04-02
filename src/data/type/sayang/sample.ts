@@ -120,6 +120,8 @@ export type specModelType = {
   pcsValue?: number;
   impedanceLineCnt?: number;
   index?: number;
+  copOutForCd?: commonCodeRType;
+  copInForCd?: commonCodeRType;
 }
 
 export type specPrdGroupPrcs = {

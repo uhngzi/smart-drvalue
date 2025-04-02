@@ -10,6 +10,7 @@ import { salesOrderProcuctCUType } from "@/data/type/sales/order";
 import AntdInputFill from "../Input/AntdInputFill";
 import AntdSelectFill from "../Select/AntdSelectFill";
 import { SetStateAction } from "react";
+import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
 const divTopClass = "h-[100%] flex flex-col items-start";
@@ -30,6 +31,7 @@ export const salesOrderModelClmn = (
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
   surfaceSelectList: selectType[],
+  ozUnitSelectList: selectType[],
   handleModelDataChange: (id:string, name:string, value:any) => void,
   newFlag: boolean,
   selectId: string | null,
@@ -92,27 +94,37 @@ export const salesOrderModelClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record.currPrdInfo?.copOut}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.copOut', e.target.value)}
-                className="!text-12" 
-                type="number"
-                placeholder={"외층 입력"}
-                readonly={selectId === record.id ? !newFlag : undefined}
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record?.currPrdInfo?.copOut}
+                onInputChange={(value) => {
+                  handleModelDataChange(record.id, 'currPrdInfo.copOut', value)
+                }}
+                value={record?.currPrdInfo?.copOutForCd}
+                onChange={(value) => {
+                  handleModelDataChange(record.id, 'currPrdInfo.copOutForCd', value)
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="외층 검색 또는 입력"
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+3}
-                />
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+3}
+              />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record.currPrdInfo?.copIn}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.copIn', e.target.value)}
-                className="!text-12" 
-                type="number"
-                placeholder={"내층 입력"}
-                readonly={selectId === record.id ? !newFlag : undefined}
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record?.currPrdInfo?.copIn}
+                onInputChange={(value) => {
+                  handleModelDataChange(record.id, 'currPrdInfo.copIn', value)
+                }}
+                value={record?.currPrdInfo?.copInForCd}
+                onChange={(value) => {
+                  handleModelDataChange(record.id, 'currPrdInfo.copInForCd', value)
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="내층 검색 또는 입력"
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+4}
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+4}
               />
             </div>
           </div>
@@ -450,8 +462,8 @@ export const salesOrderModelClmn = (
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.currPrdInfo?.doNum}
-                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.doNum', e.target.value)}
+                value={record.currPrdInfo?.drgNo}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.drgNo', e.target.value)}
                 className='!text-12'
                 placeholder="도면번호 입력"
                 readonly={selectId === record.id ? !newFlag : undefined}
@@ -1076,7 +1088,7 @@ export const salesOrderModelReadClmn = (
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record.currPrdInfo?.doNum}
+                value={record.currPrdInfo?.drgNo}
                 className="!text-12" disabled
               />
             </div>
@@ -1305,6 +1317,7 @@ export const salesOrderModelAddClmn = (
   spPrintSelectList: selectType[],
   spTypeSelectList: selectType[],
   surfaceSelectList: selectType[],
+  ozUnitSelectList: selectType[],
   handleModelDataChange: (name:string, value:any) => void,
   readonly: boolean,
 ): TableProps['columns'] => [
@@ -1365,25 +1378,35 @@ export const salesOrderModelAddClmn = (
         render: (value, record) => (
           <div className={divTopClass}>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record?.copOut}
-                onChange={(e)=>handleModelDataChange('copOut', e.target.value)}
-                className="!text-12" 
-                type="number"
-                placeholder={"외층 입력"}
-                readonly={readonly}
-                tabIndex={40+3}
-                />
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record?.copOut}
+                onInputChange={(value) => {
+                  handleModelDataChange('copOut', value);
+                }}
+                value={record?.copOutForCd}
+                onChange={(value) => {
+                  handleModelDataChange('copOutForCd', value);
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="외층 검색 또는 입력"
+                readonly={readonly} clear={false} tabIndex={40+3}
+              />
             </div>
             <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record?.copIn}
-                onChange={(e)=>handleModelDataChange('copIn', e.target.value)}
-                className="!text-12" 
-                type="number"
-                placeholder={"내층 입력"}
-                readonly={readonly}
-                tabIndex={40+4}
+              <CustomAutoCompleteLabel
+                option={ozUnitSelectList}
+                label={record?.copIn}
+                onInputChange={(value) => {
+                  handleModelDataChange('copIn', value);
+                }}
+                value={record?.copInForCd}
+                onChange={(value) => {
+                  handleModelDataChange('copInForCd', value);
+                }}
+                inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
+                placeholder="내층 검색 또는 입력"
+                readonly={readonly} clear={false} tabIndex={40+4}
               />
             </div>
           </div>
@@ -1693,8 +1716,8 @@ export const salesOrderModelAddClmn = (
             </div>
             <div className={divClass}>
               <AntdInputFill
-                value={record?.doNum}
-                onChange={(e)=>handleModelDataChange('doNum', e.target.value)}
+                value={record?.drgNo}
+                onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
                 className='!text-12'
                 placeholder="도면번호 입력"
                 readonly={readonly}

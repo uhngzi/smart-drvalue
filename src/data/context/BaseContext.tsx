@@ -50,6 +50,9 @@ interface BaseContextType {
   spType: commonCodeRType[];
   spTypeSelectList: selectType[];
   refetchSpType: () => void;
+  ozUnit: commonCodeRType[];
+  ozUnitSelectList: selectType[];
+  refetchOzUnit: () => void;
 }
 
 const BaseContext = createContext<BaseContextType | undefined>(undefined);
@@ -458,6 +461,34 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   // ----------- 특수인쇄 ---------- 끝
 
+  // ---------- 동박외내층 --------- 시작
+  const [ozUnitSelectList, setOzUnitSelectList] = useState<selectType[]>([]);
+  const [ozUnit, setOzUnit] = useState<commonCodeRType[]>([]);
+  const { refetch:refetchOzUnit } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["ozUnit", login],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/OZ단위'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
+          value: d.id,
+          label: d.cdNm,
+        }))
+        setOzUnit(result.data?.data ?? []);
+        setOzUnitSelectList(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+    enabled: login
+  });
+  // ----------- 특수인쇄 ---------- 끝
+
   return (
     <BaseContext.Provider
       value={{ 
@@ -475,6 +506,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         mkType, mkTypeSelectList, refetchMkType,
         spPrint, spPrintSelectList, refetchSpPrint,
         spType, spTypeSelectList, refetchSpType,
+        ozUnit, ozUnitSelectList, refetchOzUnit,
       }}
     >
       {children}

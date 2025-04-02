@@ -28,7 +28,7 @@ interface Props {
     tprinttype: string;
     outtype: string;
     vcut: number | null;
-    doNum: string;
+    drgNo: string;
     pmNum: string;
     pcsX: string;
     pcsY: string;
@@ -160,7 +160,7 @@ const ModelContents: React.FC<Props> = ({
 
             <div className="h-36 h-center gap-5">
               <p className="ml-10 min-w-95 h-center justify-end">도면번호 : </p>
-              <AntdInput className="w-[105px!important]" styles={{ht:'36px'}} value={item?.doNum||''} onChange={(e)=>handleInputChange(e, 'doNum', type)}/>
+              <AntdInput className="w-[105px!important]" styles={{ht:'36px'}} value={item?.drgNo||''} onChange={(e)=>handleInputChange(e, 'drgNo', type)}/>
               <p className="ml-10 min-w-95 h-center justify-end">필름번호 :</p>
               <AntdInput className="w-[105px!important]" styles={{ht:'36px'}} value={item?.pmNum||''} onChange={(e)=>handleInputChange(e, 'pmNum', type)}/>
             </div>

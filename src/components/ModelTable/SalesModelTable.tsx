@@ -67,6 +67,7 @@ const SalesModelTable:React.FC<Props> = ({
     spPrintSelectList,
     spTypeSelectList,
     surfaceSelectList,
+    ozUnitSelectList,
   } = useBase();
 
   // ------------ 원판그룹(제조사) ------------ 시작
@@ -312,6 +313,7 @@ const SalesModelTable:React.FC<Props> = ({
                 spPrintSelectList,
                 spTypeSelectList,
                 surfaceSelectList,
+                ozUnitSelectList,
                 handleModelDataChange,
                 newFlag,
                 selectId,
