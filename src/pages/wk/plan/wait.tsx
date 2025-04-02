@@ -46,7 +46,7 @@ const WkPlanWaitPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykeys: {applyAutoFilter : true},
+        anykeys: {applyAutoFilter : false},
       });
     }
   });
@@ -206,7 +206,7 @@ const WkPlanWaitPage: React.FC & {
 
 WkPlanWaitPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
-    menuTitle="생산 계획 대기"
+    menuTitle="생산 대기"
   >{page}</MainPageLayout>
 );
 

@@ -125,7 +125,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         {
           key: 'wk/plan/wait',
           title: 'wk/plan/wait',
-          label: '생산 계획',
+          label: '생산 대기',
         },
         {
           key: 'wk/status/proc',
