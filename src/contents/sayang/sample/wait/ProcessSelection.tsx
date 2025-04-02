@@ -23,6 +23,7 @@ import AntdInput from "@/components/Input/AntdInput";
 import { Popup } from "@/layouts/Body/Popup";
 import { LabelMedium } from "@/components/Text/Label";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
+import FullChip from "@/components/Chip/FullChip";
 
 interface Props {
   open: boolean;
@@ -90,6 +91,8 @@ const ProcessSelection: React.FC<Props> = ({
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -104,7 +107,7 @@ const ProcessSelection: React.FC<Props> = ({
   });
 
   const treeData = useMemo(() => {
-    return dataProcessGrp.map((item: processGroupRType) => ({
+    return dataProcessGrp.sort((a, b) => a.ordNo - b.ordNo).map((item: processGroupRType) => ({
       title: (
         <div className="parent-node flex items-center gap-10">
           <Star />
@@ -116,13 +119,14 @@ const ProcessSelection: React.FC<Props> = ({
       ),
       key: item.id,
       checkable: false,
-      children: item.processes.map((process: processRType) => ({
+      children: item.processes.sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((process: processRType) => ({
         title: (
           <div
             className="child-node"
             style={{cursor:view?"no-drop":"pointer"}}
           >
-            <div className="process-name">
+            <div className="process-name h-center gap-5">
+              {!process.isInternal && <FullChip label="외주" state="mint"/>}
               <span>{process.prcNm}</span>
             </div>
             { process.processVendors && process.processVendors.length > 0 && 
@@ -139,7 +143,7 @@ const ProcessSelection: React.FC<Props> = ({
                     className="vendor-node"
                     key={pvendor.vendor.id}
                     value={pvendor.vendor.id}
-                    style={{cursor:view?"no-drop":"pointer"}}
+                    style={{cursor:view?"no-drop":"pointer",color:"#4880FF"}}
                     onClick={(e)=>{
                       if (view) {
                         e.preventDefault();
@@ -204,6 +208,8 @@ const ProcessSelection: React.FC<Props> = ({
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -261,7 +267,7 @@ const ProcessSelection: React.FC<Props> = ({
         prdGrpNm: selectPrdGrp.name,
         data: selectPrc.map((item:processRType, index:number) => ({
           prcIdx: item.id,
-          vendorIdx: selectedVendors.find(f=>f.pid === item.id)?.vid ?? "",
+          vendorIdx: selectedVendors.find(f=>f.pid === item.id)?.vid,
           order: index,
           prcWkRemark: item.remark
         }))
@@ -476,7 +482,7 @@ const ProcessSelection: React.FC<Props> = ({
       <Popup
         className="!w-2/3 !h-[650px]"
       >
-        <LabelMedium label="선택된 공정별 작업 방법" />
+        <LabelMedium label="선택된 공정별 작업 방법 및 외주처" />
         <div className="w-full h-[calc(100%-80px)] flex flex-col gap-10 overflow-y-auto">
         {
           selectPrc.map((process: processRType, index: number) => {
@@ -512,9 +518,12 @@ const ProcessSelection: React.FC<Props> = ({
                 >
                   <Star />
                   <div className="flex-1 h-full h-center gap-50">
-                    <div className="w-[200px] h-center font-medium" style={{ letterSpacing: -0.05 }}>
+                    <div className="w-[200px] flex flex-col font-medium" style={{ letterSpacing: -0.05 }}>
                       {group
-                        ? `${group.prcGrpNm} > ${group.processes.find(f=>f.id === process.id)?.prcNm ?? ""} (${selectedVendors.find((sv) => sv.pid === process.id)?.vname ?? ""})`
+                        ? <>
+                          <span>{`${group.prcGrpNm} > ${group.processes.find(f=>f.id === process.id)?.prcNm ?? ""}`}</span>
+                          <span className="text-12 text-[#4880FF]">{selectedVendors.find((sv) => sv.pid === process.id)?.vname ?? ""}</span>
+                        </>
                         : process.prcNm}
                     </div>
                     <div className="flex-1 h-full h-center gap-10 text-[#444444]" style={{ letterSpacing: -0.05 }}>
