@@ -207,7 +207,7 @@ const SalesModelHead:React.FC<Props> = ({
               option={modelSelectList}
               label={model.orderTit}
               onInputChange={(value) => {
-                if(value.length < 3) {
+                if((value.toString()).length < 3) {
                   setModelSelectList([]);
                   setModelNoSelectList([]);
                 }

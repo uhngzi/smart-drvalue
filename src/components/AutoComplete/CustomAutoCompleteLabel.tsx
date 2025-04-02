@@ -9,10 +9,10 @@ interface Props {
   addLabel?: string;
   handleAddData?: () => void;
   value?: any;
-  label?: string | number;
+  label?: string;
   defaultValue?: any;
   placeholder?: string;
-  onInputChange?: (value: string | number) => void;
+  onInputChange?: (value: string) => void;
   clear?: boolean;
   readonly?: boolean;
   disabled?: boolean;
@@ -39,7 +39,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
   },
   ref
 ) => {
-  const [inputValue, setInputValue] = useState<string | number>(""); // 입력창에 표시할 값
+  const [inputValue, setInputValue] = useState<string>(""); // 입력창에 표시할 값
   const [filteredOptions, setFilteredOptions] = useState<{ value: any; label: any }[]>([]);
 
   useEffect(() => {

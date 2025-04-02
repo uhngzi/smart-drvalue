@@ -751,7 +751,7 @@ export const sayangSampleWaitAddClmn = (
         <div className={divClass+"mb-3 gap-5 !text-12"}>
           <CustomAutoCompleteLabel
             option={ozUnitSelectList}
-            label={record?.copOut}
+            label={record?.copOut?.toString()}
             onInputChange={(value) => {
               handleModelDataChange(record.id, 'copOut', value)
             }}
@@ -768,7 +768,7 @@ export const sayangSampleWaitAddClmn = (
         <div className={divClass+"gap-5"}>
           <CustomAutoCompleteLabel
             option={ozUnitSelectList}
-            label={record?.copIn}
+            label={record?.copIn?.toString()}
             onInputChange={(value) => {
               handleModelDataChange(record.id, 'copIn', value)
             }}
