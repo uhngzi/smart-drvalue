@@ -45,7 +45,7 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Category from "@/assets/svg/icons/category.svg";
 import Edit from '@/assets/svg/icons/memo.svg';
 import Bag from "@/assets/svg/icons/bag.svg";
-import Trash from "@/assets/svg/icons/Trash.svg";
+import Trash from "@/assets/svg/icons/trash.svg";
 
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
