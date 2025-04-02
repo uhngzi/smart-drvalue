@@ -9,12 +9,13 @@ interface Props {
   addLabel?: string;
   handleAddData?: () => void;
   value?: any;
-  label?: string;
+  label?: string | number;
   defaultValue?: any;
   placeholder?: string;
-  onInputChange?: (value: string) => void;
+  onInputChange?: (value: string | number) => void;
   clear?: boolean;
   readonly?: boolean;
+  disabled?: boolean;
   tabIndex?: number;
 }
 
@@ -33,11 +34,12 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       onInputChange,
       clear = true,
       readonly,
+      disabled,
       tabIndex,
   },
   ref
 ) => {
-  const [inputValue, setInputValue] = useState<string>(""); // 입력창에 표시할 값
+  const [inputValue, setInputValue] = useState<string | number>(""); // 입력창에 표시할 값
   const [filteredOptions, setFilteredOptions] = useState<{ value: any; label: any }[]>([]);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
   useEffect(() => {
     // 검색어에 따라 label을 필터링하는 함수
     const foption = option
-        ?.filter((item) => typeof item.label === "string" && item.label.includes(inputValue))
+        ?.filter((item) => typeof item.label === "string" && item.label.includes(inputValue.toString()))
         .map((item) => ({
           value: item.label, // 옵션 리스트에는 label이 표시되도록 설정
           label: item.label,
@@ -69,7 +71,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
   }, [option, inputValue, handleAddData]);
 
   // 선택했을 때 처리 (입력창에는 label이 표시되고, id(value)는 저장)
-  const handleSelect = (label: string) => {
+  const handleSelect = (label: string | number) => {
     if (label === "add_new_item") {
       handleAddData?.(); // "추가하기" 클릭 시 실행
     } else {
@@ -91,11 +93,12 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       className={className}
       onChange={(e)=>{
         if(!readonly) {
-          const value:string = e;
+          const value:string | number = e;
           onInputChange?.(value);
         }
       }}
       tabIndex={tabIndex}
+      disabled={disabled}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
@@ -105,7 +108,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
             setInputValue("");
           }
         }}
-        readOnly={readonly}
+        readOnly={readonly} disabled={disabled}
         // readonly일 때 포커스되면 바로 blur해서 커서가 보이지 않게 함
         onFocus={readonly ? (e) => e.target.blur() : undefined}
         style={readonly?{cursor:'no-drop', border: '1px solid #d9d9d9'}:{}}
