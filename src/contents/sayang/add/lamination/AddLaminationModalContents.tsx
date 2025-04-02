@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { SetStateAction, useEffect, useState } from "react";
-import { Button, Tooltip } from "antd";
+import { Button } from "antd";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
 import { specType } from "@/data/type/sayang/sample";
 
 import useToast from "@/utils/useToast";
@@ -11,6 +13,8 @@ import AntdInputRound from "@/components/Input/AntdInputRound";
 import AntdSelectRound from "@/components/Select/AntdSelectRound";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import { LabelMedium } from "@/components/Text/Label";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import AutoHideTooltip from "@/components/Tooltip/AntdHideTooltip";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Back from "@/assets/svg/icons/back.svg";
@@ -27,11 +31,10 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import SpecSourceRow from "./SpecSourceRow";
 import LaminationRow from "./LaminationRow";
 import BaseLaminationRow from "./BaseLaminationRow";
-import { patchAPI } from "@/api/patch";
+
 import { Popup } from "@/layouts/Body/Popup";
-import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+
 import { MOCK } from "@/utils/Mock";
-import { deleteAPI } from "@/api/delete";
 
 interface Props {
   defaultLayerEm?: LayerEm;
@@ -68,7 +71,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   // 알림창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"sel" | "oz" | "cf" | "">("");
+  const [resultType, setResultType] = useState<"sel" | "oz" | "cf" | "error" | "">("");
+  const [errMsg, setErrMsg] = useState<string>("");
   const [result, setResult] = useState<laminationRType | null>(null);
 
   // 라이브러리 ID 선택 값 저장
@@ -127,7 +131,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
   // 라이브러리 선택 시 구성 요소 보여주는 함수
   const handleSelectSource = (selectedSource?:specLaminationType) => {
     let arr = [] as laminationRType[];
-    console.log(selectedSource);
     if(selectedSource) {
       const specDetail = selectedSource.specDetail as {
         data?: {
@@ -140,7 +143,6 @@ const AddLaminationModalContents: React.FC<Props> = ({
         const item = baseLamination.find((f) => f.id === detail.specLamIdx) as laminationRType;
         if(item)  arr.push(item);
       });
-      console.log(arr, baseLamination);
       setLamination(arr);
       setSelect(selectedSource.id);
     } else if(selectSource && typeof selectSource.specDetail !== "string") {
@@ -155,7 +157,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
 
   useEffect(()=>{
     // 확정된 라이브러리를 선택한 상태에서 값을 변경하면 새로 라이브러리를 추가해줘야 하므로 기존 선택된 라이브러리는 취소됨
-    if(selectSpecLamiFilter.cf === 1 && select && selectSource && typeof selectSource.specDetail !== "string") {
+    if(selectSpecLamiFilter.cf && select && selectSource && typeof selectSource.specDetail !== "string") {
       // 기존 라이브러리가 있는데 편집을 할 경우 select가 취소되어야 함
       // 1. 구성요소 추가로 인한 길이의 값이 달라짐
       // 2. CF의 값이 달라짐
@@ -239,6 +241,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    setSelectSpecLamiFilter({...selectSpecLamiFilter, cf: false});
+
     e.preventDefault();
 
     // 맨 위/아래 고정 로직
@@ -288,7 +292,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
           ...prev.slice(dropIndex),
         ]);
 
-        if (selectSpecLamiFilter.cf === 1) {
+        if (selectSpecLamiFilter.cf) {
           setSelect(undefined);
           setSelectSource(null);
         }
@@ -309,7 +313,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
     }
 
     // 확정 라이브러리 편집 시 select 해제
-    if (selectSpecLamiFilter.cf === 1) {
+    if (selectSpecLamiFilter.cf) {
       setSelect(undefined);
       setSelectSource(null);
     }
@@ -352,7 +356,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
           showToast("라이브러리 수정 완료", "success");
         } else {
           const msg = result?.response?.data?.message;
-          showToast(msg, "error");
+          setErrMsg(msg);
+          setResultType("error");
+          setResultOpen(true);
         }
       }
     } catch (e) {
@@ -394,7 +400,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
         } else      handleSubmitSaveSourceCf(true, entity);
       } else {
         const msg = result?.response?.data?.message;
-        showToast(msg, "error");
+        setErrMsg(msg);
+        setResultType("error");
+        setResultOpen(true);
       }
     } catch(e) {
       console.log("CATCH ERROR :: ", e);
@@ -435,7 +443,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
           }
         } else {
           const msg = result?.response?.data?.message;
-          showToast(msg, "error");
+          setErrMsg(msg);
+          setResultType("error");
+          setResultOpen(true);
         }
       }
     } catch(e) {
@@ -683,9 +693,10 @@ const AddLaminationModalContents: React.FC<Props> = ({
                   if (select && select === selectedSource.id) {
                     setSelect(undefined);
                     setLamination([]);
+                    setSelectSource({ ...selectSource, confirmYn: 0 });
                   } else {
                     setSelectSource(selectedSource);
-                    if(selectSpecLamiFilter.cf === 0 && lamination.length > 0) {
+                    if(!selectSpecLamiFilter.cf && lamination.length > 0) {
                       setResultOpen(true);
                       setResultType("sel");
                     } else {
@@ -708,14 +719,14 @@ const AddLaminationModalContents: React.FC<Props> = ({
       >
         <div className="v-between-h-center h-40 w-full mb-20">
           <div style={{ position: "relative", zIndex: 9999 }}>
-            <Tooltip
-              title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 순서 변경"}
-              getPopupContainer={() => document.body}
+            <AutoHideTooltip
+              title={selectSource?.confirmYn ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 순서 변경"}
+              getPopupContainer={() => document.body} time={1000}
             >
               <span>
                 <LabelMedium label="적층구조 라이브러리 구성/편집" />
               </span>
-            </Tooltip>
+            </AutoHideTooltip>
           </div>
           <div
             className="w-24 h-24 flex v-h-center border-1 border-line rounded-4 cursor-pointer"
@@ -726,17 +737,17 @@ const AddLaminationModalContents: React.FC<Props> = ({
               }, 100)
             }}
           >
-            <Tooltip
+            <AutoHideTooltip
               title="편집 이전 상태로 초기화"
-              getPopupContainer={() => document.body}
+              getPopupContainer={() => document.body} time={1000}
             >
               <p className="w-16 h-16 text-[#FE5C73]"><Back /></p>
-            </Tooltip>
+            </AutoHideTooltip>
           </div>
         </div>
         <div 
           className="w-full h-[440px] overflow-y-auto"
-          style={selectSource?.confirmYn === 1?{cursor:"no-drop"}:{}}
+          style={selectSource?.confirmYn?{cursor:"no-drop"}:{}}
         >
           <div className="w-full text-12 text-[#292828] flex flex-col gap-3">
             { Array.isArray(lamination) && lamination.length > 0 &&
@@ -754,7 +765,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 )}
                 {/* 실제 아이템 영역 (드래그 이벤트들) */}
                 <div
-                  draggable={selectSource?.confirmYn === 1 ? false : true}
+                  draggable={selectSource?.confirmYn ? false : true}
                   onDragStart={() => handleDragStart(i)}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -766,7 +777,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
                   }}
                   onDragEnd={handleDragEnd}
                   style={{
-                    cursor: item.lamDtlTypeEm !== "cf" && selectSource?.confirmYn === 1 ? "no-drop" : "grab",
+                    cursor: item.lamDtlTypeEm !== "cf" && selectSource?.confirmYn ? "no-drop" : "grab",
                   }}
                 >
                   <LaminationRow
@@ -776,7 +787,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
                     color={color}
                     lamination={lamination}
                     setLamination={setLamination}
-                    disable={selectSource?.confirmYn === 1 ? true : false}
+                    disable={selectSource?.confirmYn ? true : false}
                   />
                 </div>
               </div>
@@ -792,12 +803,20 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 handleDrop(e, lamination.length);
                 setDragOverIndex(null);
               }}
-            />
+            >
+              {lamination.length < 1 && 
+              <div className="v-h-center text-center w-full text-[#00000060]">
+                확정된 라이브러리 선택<br/>
+                또는<br/>
+                구성요소 Drag & Drop으로 라이브러리 생성
+              </div>
+              }
+            </div>
           </div>
         </div>
         <div className="w-full v-h-center gap-10">
           {
-            selectSpecLamiFilter.cf === 1 ?
+            selectSpecLamiFilter.cf ?
             <Button
               className="h-32 rounded-6"
               onClick={()=>{
@@ -836,7 +855,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
       >
         <div className="v-between-h-center h-40 w-full">
           <p className="text-16 font-medium">적층구조 구성요소</p>
-          <Tooltip title="적층구조의 구성요소를 추가할 수 있어요">
+          <AutoHideTooltip title="적층구조의 구성요소를 추가할 수 있어요" time={1000}>
           <Button
             className="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             onClick={()=>{
@@ -845,7 +864,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
           >
             <p className="w-16 h-16"><SplusIcon/></p>
           </Button>
-          </Tooltip>
+          </AutoHideTooltip>
           <div className="w-[128px] h-24 flex v-h-center">
             <div
               className="w-43 v-h-center cursor-pointer"
@@ -883,9 +902,9 @@ const AddLaminationModalContents: React.FC<Props> = ({
           </div>
         </div>
         <div className="h-[440px] overflow-y-auto text-12">
-          <Tooltip
-            title={selectSource?.confirmYn === 1 ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
-            getPopupContainer={() => document.body}
+          <AutoHideTooltip
+            title={selectSource?.confirmYn ? "확정 라이브러리 변경 불가" : "마우스 Drag & Drop으로 구성요소 추가"}
+            getPopupContainer={() => document.body} time={1000}
           >
           <div className="h-40 bg-back v-between-h-center">
             <p className="w-70 v-h-center">재질</p>
@@ -894,7 +913,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
             <p className="w-56 v-h-center">실두께</p>
             <div className="w-34 v-h-center"></div>
           </div>
-          </Tooltip>
+          </AutoHideTooltip>
           <div>
           {
             !baseLaminationLoading && baseLamination
@@ -907,7 +926,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
                 onMenuClick={handleMenuClick}
                 index={index}
                 onDragEnd={handleDragEnd}
-                disabled={selectSource?.confirmYn === 1 ? true : false}
+                disabled={selectSource?.confirmYn ? true : false}
               />
             ))
           }
@@ -933,17 +952,22 @@ const AddLaminationModalContents: React.FC<Props> = ({
         title={
           resultType === "sel" ? "편집중인 라이브러리가 저장되지 않은 상태입니다." :
           resultType === "cf" ? "라이브러리 확정 완료" :
+          resultType === "error" ? "오류 발생" :
           "OZ는 하나만 추가할 수 있습니다."
         }
         contents={
           resultType === "sel" ? <div>변경된 내용을 저장하지 않고 선택한 라이브러리로 변경하시겠습니까?</div> :
           resultType === "cf" ? <div>라이브러리를 확정하였습니다.<br/>해당 라이브러리로 변경하시겠습니까?</div> :
+          resultType === "error" ? <div>{errMsg}</div> :
           <div>선택하신 OZ로 변경하시겠습니까?</div>
         }
         type="warning"
         onOk={()=>{
           if(resultType === "sel") {
             handleSelectSource(selectSource ?? {});
+          } else if(resultType === "error") {
+            setResultOpen(false);
+            return;
           } else if(resultType === "cf") {
             handleSubmitSelectSource();
           } else {
@@ -961,7 +985,11 @@ const AddLaminationModalContents: React.FC<Props> = ({
         onCancle={()=>{
           setResultOpen(false);
         }}
-        okText="변경 할래요"
+        hideCancel={resultType === "error"}
+        okText={
+          resultType === "error" ? "확인":
+          "변경 할래요"
+        }
         cancelText="변경 안할래요"
       />
 

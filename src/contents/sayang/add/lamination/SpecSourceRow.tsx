@@ -43,7 +43,7 @@ const SpecSourceRow: React.FC<SpecSourceRowProps> = ({
       <div className="w-45 v-h-center">{source.lamThk}T</div>
       <div className="w-45 v-h-center">{source.lamRealThk}T</div>
       {
-        source.confirmYn === 1 && 
+        source.confirmYn && 
         <Dropdown
           className="cursor-pointer"
           trigger={["click"]}
