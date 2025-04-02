@@ -23,13 +23,14 @@ import { materialCUType, materialGroupType, materialType, newMaterialCUType, set
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
 import useToast from "@/utils/useToast";
 import { useBase } from "@/data/context/BaseContext";
+import CustomTree from "@/components/Tree/CustomTree";
 const BuyMtListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { type } = router.query;
   const { unitSelectList } = useBase();
-  const [dataLoading, setDataLoading] = useState<boolean>(true);
+  const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -40,13 +41,14 @@ const BuyMtListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
+  const [ groupCheck, setGroupCheck ] = useState<string | null>(null);
   const [ data, setData ] = useState<Array<materialType>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'buy', 'material', type, pagination.current],
+    queryKey: ['setting', 'buy', 'material', type, pagination.current, groupCheck],
     queryFn: async () => {
-      setDataLoading(true);
+      // setDataLoading(true);
       setData([]);
       const result = await getAPI({
         type: 'baseinfo',
@@ -55,6 +57,7 @@ const BuyMtListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        s_query: groupCheck ? { "materialGroup.id": { "$eq": groupCheck } } : undefined
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -64,7 +67,7 @@ const BuyMtListPage: React.FC & {
         console.log('error:', result.response);
       }
 
-      setDataLoading(false);
+      // setDataLoading(false);
       console.log(result.data);
       return result;
     },
@@ -77,7 +80,6 @@ const BuyMtListPage: React.FC & {
   useEffect(() => {
     setAddModalInfoList((prev) => prev.map(v => v.name === 'unitType' ? {...v, option: unitSelectList.map(unit => ({value: unit.label, label: unit.label}))} : v))
   },[unitSelectList])
-  console.log(addModalInfoList)
   // ---------- 신규 데이터 시작 ----------
     // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
@@ -117,7 +119,7 @@ const BuyMtListPage: React.FC & {
   }
     //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
-    console.log(data);
+
     if(Object.keys(data).map(key => {
       console.log(key)
       if(key.includes(".")){
@@ -127,11 +129,28 @@ const BuyMtListPage: React.FC & {
         delete data[key];
       }
     }))
-    console.log(data)
+    // data의 value가 비어있는지 확인하는 유효성검사
+    for(const key in data) {
+      console.log(data[key], typeof(data[key]))
+      const inputType = typeof(data[key])
+      if(inputType === 'object') {
+        if(data[key].id === '' || data[key].id === null) {
+          showToast('원자재 그룹을 입력해주세요.', 'error');
+          return;
+        }
+      }else{
+        if(data[key] === '') {
+          const label = addModalInfoList.find(v => v.name === key).label
+          showToast(`${label}을 입력해 주세요`, 'error');
+          return;
+        }
+      }
+    }
     try {
       if(data?.id){
         const id = data.id;
         delete data.id;
+        
 
         const result = await patchAPI({
           type: 'baseinfo', 
@@ -171,6 +190,19 @@ const BuyMtListPage: React.FC & {
       setResultFunc('error', '원자재 등록 실패', '원자재 등록을 실패하였습니다.');
     }
   }
+
+  function addModalOpen() {
+    if(groupCheck != null){
+      setNewData({
+        materialGroup: {id: groupCheck},
+        mtNm: '',
+        mtEnm: "",
+        unitType: "",
+        useYn: true,
+      });
+    }
+    setNewOpen(true);
+  }
   // ----------- 신규 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
@@ -206,6 +238,7 @@ const BuyMtListPage: React.FC & {
   // ---------- 트리 관련 시작 ----------
   const [ mtGroupOpen, setMtGroupOpen ] = useState<boolean>(false);
   const [ mtGroupTreeData, setMtGroupTreeData ] = useState<any>([]);
+  
   const { showToast, ToastContainer } = useToast();
 
   // 트리를 사용하는 메뉴인 경우, 추가, 수정, 삭제를 하기위한 리스트, 한번에 submit을 하기때문에 각각의 리스트를 만들어서 한번에 처리
@@ -289,101 +322,125 @@ const BuyMtListPage: React.FC & {
       groupRefetch();
     }
   }
+  function treeCheck(id: string | null) {
+    setNewData({
+      materialGroup: {id: id},
+      mtNm: '',
+      mtEnm: "",
+      unitType: "",
+      useYn: true,
+    })
+    setGroupCheck(id);
+  }
   // ---------- 트리 관련 끝 ----------
-
+   console.log(newData)
   return (
     <>
       {dataLoading && <>Loading...</>}
       {!dataLoading &&
       <>
-        <div className="v-between-h-center pb-10">
-          <p>총 {totalData}건</p>
-          <div className="flex gap-10">
-            <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setMtGroupOpen(true)}}>원자재 그룹 관리</div>
-            <div className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setNewOpen(true)}}>등록</div>
+        <section className="flex gap-20">
+          <div className="w-[346px] rounded-14 p-20" style={{border:'1px solid #D9D9D9'}}>
+            <CustomTree 
+              data={mtGroupTreeData}
+              onSubmit={onMtGroupPopSubmit}
+              setAddList={setAddList}
+              setEditList={setEditList}
+              setDelList={setDeleteList}
+              isChild={false}
+              isCheckUse={{checkId: groupCheck, setCheckId: treeCheck}}
+            />
           </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '원자재 그룹',
-              dataIndex: 'materialGroup.mtGrpNm',
-              key: 'materialGroup.mtGrpNm',
-              align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full justify-center h-center cursor-pointer"
-                  onClick={()=>{
-                    setNewData({...setMaterialCUType(record)});
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.materialGroup.mtGrpNm}
-                </div>
-              )
-            },
-            {
-              title: '원자재명',
-              width: 130,
-              dataIndex: 'mtNm',
-              key: 'mtNm',
-              align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer"
-                  onClick={()=>{
-                    setNewData({...setMaterialCUType(record)});
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.mtNm}
-                </div>
-              )
-            },
-            {
-              title: '원자재영문명',
-              width: 130,
-              dataIndex: 'mtEnm',
-              key: 'mtEnm',
-              align: 'center',
-            },
-            {
-              title: '단위',
-              width: 130,
-              dataIndex: 'unitType',
-              key: 'unitType',
-              align: 'center',
-            },
-            {
-              title: '사용여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-              render: (_, record) => (
-                <div>{record.useYn ? '사용' : '미사용'}</div>
-              )
-            },
-          ]}
-          data={data}
-        />
+          <div>
+            <div className="v-between-h-center pb-10">
+              <p>총 {totalData}건</p>
+              <div className="flex gap-10">
+                {/* <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setMtGroupOpen(true)}}>원자재 그룹 관리</div> */}
+                <div className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer" onClick={()=>{addModalOpen()}}>등록</div>
+              </div>
+            </div>
+              <AntdTable
+                columns={[
+                  {
+                    title: 'No',
+                    width: 50,
+                    dataIndex: 'no',
+                    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                    align: 'center',
+                  },
+                  {
+                    title: '원자재 그룹',
+                    dataIndex: 'materialGroup.mtGrpNm',
+                    key: 'materialGroup.mtGrpNm',
+                    align: 'center',
+                    render: (_, record) => (
+                      <div
+                        className="w-full h-full justify-center h-center cursor-pointer"
+                        onClick={()=>{
+                          setNewData({...setMaterialCUType(record)});
+                          setNewOpen(true);
+                        }}
+                      >
+                        {record.materialGroup.mtGrpNm}
+                      </div>
+                    )
+                  },
+                  {
+                    title: '원자재명',
+                    width: 130,
+                    dataIndex: 'mtNm',
+                    key: 'mtNm',
+                    align: 'center',
+                    render: (_, record) => (
+                      <div
+                        className="w-full h-full h-center justify-center cursor-pointer"
+                        onClick={()=>{
+                          setNewData({...setMaterialCUType(record)});
+                          setNewOpen(true);
+                        }}
+                      >
+                        {record.mtNm}
+                      </div>
+                    )
+                  },
+                  {
+                    title: '원자재영문명',
+                    width: 130,
+                    dataIndex: 'mtEnm',
+                    key: 'mtEnm',
+                    align: 'center',
+                  },
+                  {
+                    title: '단위',
+                    width: 130,
+                    dataIndex: 'unitType',
+                    key: 'unitType',
+                    align: 'center',
+                  },
+                  {
+                    title: '사용여부',
+                    width: 130,
+                    dataIndex: 'useYn',
+                    key: 'useYn',
+                    align: 'center',
+                    render: (_, record) => (
+                      <div>{record.useYn ? '사용' : '미사용'}</div>
+                    )
+                  },
+                ]}
+                data={data}
+              />
+            <div className="w-full h-100 h-center justify-end">
+              <AntdPagination
+                current={pagination.current}
+                total={totalData}
+                size={pagination.size}
+                onChange={handlePageChange}
+              />
+            </div>
+          </div>
 
-        <div className="w-full h-100 v-h-center">
-          <AntdPagination
-            current={pagination.current}
-            total={totalData}
-            size={pagination.size}
-            onChange={handlePageChange}
-          />
-        </div>
+        </section>
       </>}
 
       <BaseInfoCUDModal
@@ -396,7 +453,7 @@ const BuyMtListPage: React.FC & {
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}/>
 
-      <BaseTreeCUDModal
+      {/* <BaseTreeCUDModal
         title={{name: `원자재 그룹 관리`}}
         open={mtGroupOpen} 
         setOpen={setMtGroupOpen} 
@@ -412,7 +469,7 @@ const BuyMtListPage: React.FC & {
           setEditList: setEditList,
           setDeleteList: setDeleteList,
         }}
-      />
+      /> */}
         
       <AntdAlertModal
         open={resultOpen}
@@ -434,7 +491,7 @@ const BuyMtListPage: React.FC & {
 }
 
 BuyMtListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'80px'}}>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'50px'}}>{page}</SettingPageLayout>
 )
 
 export default BuyMtListPage;

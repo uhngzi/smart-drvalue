@@ -200,7 +200,7 @@ const WkLaminationListPage: React.FC & {
             </Radio.Group>
           </div>
           <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+            className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
             onClick={()=>{setNewOpen(true)}}
           >
             등록
@@ -290,7 +290,7 @@ const WkLaminationListPage: React.FC & {
           data={data}
         />
 
-        <div className="w-full h-100 v-h-center">
+        <div className="w-full h-100 h-center justify-end">
           <AntdPagination
             current={pagination.current}
             total={totalData}

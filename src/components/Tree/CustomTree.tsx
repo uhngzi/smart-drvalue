@@ -28,6 +28,7 @@ interface Props {
   open?: boolean;
   data: treeType[];
   isChild?: boolean;
+  isCheckUse?: false | {checkId:string|null, setCheckId: (id: string|null) => void};
   onSubmit: (newData : any) => void;
   setAddList: Dispatch<SetStateAction<CUtreeType[]>>;
   setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
@@ -48,6 +49,7 @@ const CustomTree:React.FC<Props> = ({
   open, // 모달에서 트리를 사용하는 경우에만 사용됨, 모달이 열려있는지 여부
   data,
   isChild = true,
+  isCheckUse = false,
   onSubmit,
   setAddList,
   setEditList,
@@ -183,7 +185,10 @@ const CustomTree:React.FC<Props> = ({
   const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
-    // setSelectId([]);
+    if(isCheckUse){
+
+      isCheckUse.setCheckId(null);
+    }
     setList(data);
     console.log(data)
   }, [open])
@@ -356,16 +361,19 @@ const CustomTree:React.FC<Props> = ({
     });
     
   }
- /*
   const handleSelect = (item: any) => {
-    const selectId = [{id: item.id, type:'main'}, ...item.children?.map((child: any) => ({id: child.id, type:'child'})) || []];
-    setSelectId(prev =>
-      prev.some(selectedId => selectId.some(v => v.id.includes(selectedId.id)))
-        ? prev.filter(selectedId => !selectId.some(v => v.id.includes(selectedId.id)))
-        : [...prev, ...selectId]
-    );
+    if(!isCheckUse){
+      return;
+    }
+    const selectId = item.id;
+    isCheckUse.setCheckId(isCheckUse.checkId === selectId ? null : selectId);
+    // const selectId = [{id: item.id, type:'main'}, ...item.children?.map((child: any) => ({id: child.id, type:'child'})) || []];
+    // setSelectId(prev =>
+    //   prev.some(selectedId => selectId.some(v => v.id.includes(selectedId.id)))
+    //     ? prev.filter(selectedId => !selectId.some(v => v.id.includes(selectedId.id)))
+    //     : [...prev, ...selectId]
+    // );
   };
-  */
   const handleFocus = (id: string) => {
     if(id === focusId){
       setFocusId(null);
@@ -533,8 +541,10 @@ const CustomTree:React.FC<Props> = ({
           }else{
             return(
               <div key={item.id}>
-                <div className={`w-full h-40 h-center pl-5 gap-10 `} key={item.id}  //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
-                  // onClick={() => handleSelect(item)}
+                <div 
+                  className={`w-full h-40 h-center pl-5 gap-10 ${isCheckUse ? isCheckUse.checkId === item.id ? '!bg-[#f3faff]' : '' : ''} ${isCheckUse ? 'cursor-pointer' : ''}`} 
+                  key={item.id}  //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
+                  onClick={() => handleSelect(item)}
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
                   {(isChild && searchText === '') ? (
                     <>
@@ -552,7 +562,9 @@ const CustomTree:React.FC<Props> = ({
                     <div className="w-5 h-5 bg-[#000000] rounded-50" />
                   )}
                   <span className="flex-1 text-left">{item.label}</span>
-                  {/* {!selectId.some(v => v.id.includes(item.id)) ? ( */}
+                  {isCheckUse && isCheckUse.checkId == item.id ? (
+                    <BlueCheck/>
+                  ) : (
                     <div className={`${item.id === hoverId ? 'visible' : 'invisible'}`}>
                       {isChild && (
                         <Button size="small" type="text" onClick={(e)=>{e.stopPropagation(); handleAddChild(item.id)}}>
@@ -572,9 +584,7 @@ const CustomTree:React.FC<Props> = ({
                           </Dropdown>
                         </Button>
                     </div>
-                  {/* ) : (
-                    <BlueCheck/>
-                  )} */}
+                  )}
                 </div>
                 <div
                   className={`transition-all duration-300 ease-in-out overflow-hidden ${
@@ -611,7 +621,8 @@ const CustomTree:React.FC<Props> = ({
                       )
                     }else{
                       return(
-                        <Button type="text" className={`w-full h-40 h-center !pl-30 !gap-10 `} key={child.id} //${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}
+                        <Button type="text" 
+                          className={`w-full h-40 h-center !pl-30 !gap-10 ${isCheckUse && isCheckUse.checkId === child.id ? '!bg-[#f3faff]' : ''}`} key={child.id} //${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}
                           style={{
                             transition: 'none',
                             animation: 'none',
@@ -619,7 +630,7 @@ const CustomTree:React.FC<Props> = ({
                             MozTransition: 'none',
                             OTransition: 'none',
                           }}
-                          // onClick={() => handleSelect(child)}
+                          onClick={() => handleSelect(child)}
                           onMouseEnter={() => setHoverId(child.id)} onMouseLeave={() => setHoverId(null)}>
                           <div className="w-5 h-5 bg-[#ddd] rounded-50" />
                           <span className="flex-1 text-left">{child.label}</span>

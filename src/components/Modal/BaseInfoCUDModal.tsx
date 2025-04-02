@@ -48,6 +48,7 @@ interface CardInputListProps {
     bg?: string;
     pd?: string;
   }
+  addCustom?: JSX.Element;
 }
 
 /**
@@ -64,12 +65,13 @@ interface CardInputListProps {
  * @param {function} props.onSubmit - 모달의 폼 또는 데이터를 제출하는 함수.
  * @param {function} props.onDelete - 모달 안에 데이터를 삭제할때 사용하는 함수
  * @param {Object} props.styles - 모달의 커스텀 스타일.
+ * @param {JSX.Element} props.addCustom - 모달에 추가적인 커스텀 컴포넌트.
  * 
  * @returns {JSX.Element} 렌더링된 BaseInfoCUDModal 컴포넌트.
  */
 
 const BaseInfoCUDModal: React.FC<CardInputListProps> = (
-  {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles}: CardInputListProps
+  {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles, addCustom}: CardInputListProps
 ): JSX.Element => {
   const {showToast, ToastContainer} = useToast();
 
@@ -80,11 +82,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   function setData (field:string, value:any) {
     dataRef.current[field] = value
   }
-
   useEffect(() => {
     dataRef.current = data
   },[data])
-
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
 
   useEffect(() => {
@@ -121,7 +121,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
     queryFn: () => getPrtCsAPI(),
   });
   const [cdChk, setCdChk] = useState<boolean>(false);
-
+  
   return (
     <>
     <AntdEditModal
@@ -165,6 +165,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                             <p className="w-16 h-16"><Search /></p>
                             <span>우편번호</span>
                           </Button>
+                          
                           <Input 
                             name={item.name}
                             key={data.id}
@@ -195,7 +196,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <Select 
                           className="w-full"
                           options={item.option}
-                          key={data.id}
+                          key={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
                           defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
                           onChange={(value) => {setData(item.name, value)}}
                         />
@@ -237,6 +238,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                 ))}
               </div>
           </section>
+          {addCustom ? addCustom : <></>}
           {data?.id ? (
             <div className="flex gap-10">
               <Button type="primary" size="large"
