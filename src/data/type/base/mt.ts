@@ -21,7 +21,7 @@ export type materialType = {
 export type materialCUType =  {
   id?: string;
   materialGroup: {
-    id: string;
+    id: string | null;
   };
   mtNm: string;
   mtEnm: string;

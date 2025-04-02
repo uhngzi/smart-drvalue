@@ -21,6 +21,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import { CUtreeType, treeType } from "@/data/type/componentStyles";
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import AntdPagination from "@/components/Pagination/AntdPagination";
 
 const WkBoardListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -369,6 +370,14 @@ const WkBoardListPage: React.FC & {
           setData={setData}
           setEditIndex={setEditIndex}
         />
+        <div className="w-full h-100 h-center justify-end">
+          <AntdPagination
+            current={pagination.current}
+            total={totalData}
+            size={pagination.size}
+            onChange={handlePageChange}
+          />
+        </div>
       </>}
       <BaseInfoCUDModal
         title={{name: `원판 ${addData?.id ? '수정' : '등록'}`, icon: <Bag/>}}

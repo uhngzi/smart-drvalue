@@ -37,7 +37,7 @@ const AntdPagination: React.FC<Props> = ({
           window.scrollTo({ top: 0, behavior: 'smooth' });
           onChange(page);
         }}
-        align="center"
+        align="end"
         showSizeChanger={false}
         jumpPrevIcon={<Points />}
         jumpNextIcon={<Points />}
@@ -73,8 +73,9 @@ const AntdPaginationStyled = styled.div`
   }
 
   .ant-pagination-item {
-    width: 40px;
-    height: 40px;
+    min-width: 25px !important;
+    width: 25px !important;
+    height: 25px !important;
 
     background-color: transparent;
 
@@ -86,10 +87,10 @@ const AntdPaginationStyled = styled.div`
   }
 
   .ant-pagination-item-active {
-    background-color: #4880FF;
+    background-color: #038D07;
     a {
       color: white;
-      font-size: 17px;
+      font-size: 14px;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
     }
   }

@@ -21,9 +21,18 @@ import AddContents from "@/contents/base/client/AddContents";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { MOCK } from "@/utils/Mock";
 
-import Bag from "@/assets/svg/icons/bag.svg";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
+import { Button, Radio } from "antd";
+import { LabelIcon } from "@/components/Text/Label";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+import Edit from "@/assets/svg/icons/memo.svg"
+import MessageOn from "@/assets/svg/icons/s_inquiry.svg";
+import Call from "@/assets/svg/icons/s_call.svg";
+import Mobile from "@/assets/svg/icons/mobile.svg";
+import Mail from "@/assets/svg/icons/mail.svg";
+import { MoreOutlined } from "@ant-design/icons";
 
 const ClientCuListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -191,7 +200,7 @@ const ClientCuListPage: React.FC & {
         <div className="h-center justify-between">
           <p>총 {totalData}건</p>
           <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer mb-10"
             onClick={()=>{setNewOpen(true)}}
           >
             등록
@@ -336,7 +345,7 @@ const ClientCuListPage: React.FC & {
           data={data}
         />
         
-        <div className="w-full h-100 v-h-center">
+        <div className="w-full h-100 h-center justify-end">
           <AntdPagination
             current={pagination.current}
             total={totalData}
@@ -346,6 +355,7 @@ const ClientCuListPage: React.FC & {
         </div>
       </>}
       <BaseInfoCUDModal 
+        popWidth={800}
         title={{name: `거래처 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={newOpen} 
         setOpen={setNewOpen} 
@@ -353,7 +363,44 @@ const ClientCuListPage: React.FC & {
         items={MOCK.clientItems.CUDPopItems} 
         data={newData}
         onSubmit={handleSubmitNewData}
-        onDelete={handleDataDelete}/>
+        onDelete={handleDataDelete}
+        addCustom = {
+          <>
+            <div className="w-full flex justify-between items-center h-[50px]">
+              <div className="flex items-center gap-10">
+                <Bag/>
+                <p className="text-16 font-medium">담당자 정보</p>
+              </div>
+            </div>
+            <section className="rounded-lg border border-[#D9D9D9] !p-10">
+              <div className="w-full h-40 h-center gap-5">
+                <p className="w-40 h-center gap-8">홍길
+                  {/* <Radio
+                    name="csMng"
+                    checked={formData.partnerManagerId === mng.id}
+                    onChange={() => setFormData({...formData, partnerManagerId:mng.id})}
+                  /> {mng.prtMngNm} */}
+                </p>
+                <div className="w-[110px] px-8">
+                  <LabelIcon label="사업관리부" icon={<MessageOn />}/>
+                </div>
+                <div className="w-[140px] px-8">
+                  <LabelIcon label="010-1111-2222" icon={<Call />}/>
+                </div>
+                <div className="w-[140px] px-8">
+                  <LabelIcon label="010-1111-2222" icon={<Mobile />}/>
+                </div>
+                <div className="flex-1 px-12">
+                  <LabelIcon label="mon1234234@naver.com" icon={<Mail />}/>
+                </div>
+                <div className="w-24 h-40 v-h-center">
+                  <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
+                </div>
+              </div>
+            </section>
+          </>
+        }
+        />
         
       {/* <AntdModal
         title={"거래처 등록"}
