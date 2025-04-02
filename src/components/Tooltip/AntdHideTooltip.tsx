@@ -6,6 +6,7 @@ interface Props {
   time?: number;
   children?: React.ReactNode;
   className?: string;
+  getPopupContainer?: ((triggerNode: HTMLElement) => HTMLElement)
 }
 
 const AutoHideTooltip:React.FC<Props> = ({
@@ -13,6 +14,7 @@ const AutoHideTooltip:React.FC<Props> = ({
   time = 500,
   children,
   className,
+  getPopupContainer,
 }) => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
@@ -25,7 +27,10 @@ const AutoHideTooltip:React.FC<Props> = ({
   };
 
   return (
-    <Tooltip title={title} visible={tooltipVisible}>
+    <Tooltip
+      title={title} visible={tooltipVisible}
+      getPopupContainer={getPopupContainer}
+    >
       <div onMouseEnter={handleMouseEnter} className={className}>
         {children}
       </div>
