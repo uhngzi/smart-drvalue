@@ -15,6 +15,7 @@ interface Props {
   onInputChange?: (value: string) => void;
   clear?: boolean;
   readonly?: boolean;
+  tabIndex?: number;
 }
 
 const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
@@ -32,6 +33,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
       onInputChange,
       clear = true,
       readonly,
+      tabIndex,
   },
   ref
 ) => {
@@ -93,6 +95,7 @@ const CustomAutoCompleteLabel = forwardRef<InputRef, Props>((
           onInputChange?.(value);
         }
       }}
+      tabIndex={tabIndex}
     >
       <Input
         className={inputClassName ?? "w-full rounded-2 h-36"}
