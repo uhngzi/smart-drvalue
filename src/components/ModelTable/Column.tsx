@@ -191,7 +191,8 @@ export const salesOrderModelClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNi}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltNi', e.target.value)}
@@ -203,7 +204,8 @@ export const salesOrderModelClmn = (
                 tabIndex={record.index*40+7}
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltAu}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltAu', e.target.value)}
@@ -215,7 +217,8 @@ export const salesOrderModelClmn = (
                 tabIndex={record.index*40+8}
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltOsp}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltOsp', e.target.value)}
@@ -858,19 +861,22 @@ export const salesOrderModelReadClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltNi}
                 className="!text-12" disabled type="number"
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltAu}
                 className="!text-12" disabled type="number"
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
                 value={record.currPrdInfo?.spPltOsp}
                 className="!text-12" disabled type="number"
@@ -1382,7 +1388,8 @@ export const salesOrderModelAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
                 value={record?.spPltNi}
                 onChange={(e)=>handleModelDataChange('spPltNi', e.target.value)}
@@ -1393,7 +1400,8 @@ export const salesOrderModelAddClmn = (
                 tabIndex={40+8}
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
                 value={record?.spPltAu}
                 onChange={(e)=>handleModelDataChange('spPltAu', e.target.value)}
@@ -1404,7 +1412,8 @@ export const salesOrderModelAddClmn = (
                 tabIndex={40+9}
               />
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
                 value={record?.spPltOsp}
                 onChange={(e)=>handleModelDataChange('spPltOsp', e.target.value)}

@@ -69,6 +69,7 @@ const SayangSampleAddPage: React.FC & {
     spPrintSelectList,
     spTypeSelectList,
     ozUnitSelectList,
+    metarialSelectList,
   } = useBase();
 
   // 결재
@@ -553,6 +554,7 @@ const SayangSampleAddPage: React.FC & {
               ul1SelectList,
               ul2SelectList,
               ozUnitSelectList,
+              metarialSelectList,
               handleModelDataChange,
               setDeleted,
               view,

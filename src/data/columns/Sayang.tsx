@@ -611,6 +611,7 @@ export const sayangSampleWaitAddClmn = (
   ul1SelectList: selectType[],
   ul2SelectList: selectType[],
   ozUnitSelectList: selectType[],
+  metarialSelectList: selectType[],
   handleModelDataChange: (
     id?: string,
     name?: string,
@@ -786,21 +787,32 @@ export const sayangSampleWaitAddClmn = (
     )
   },
   {
-    title: '도금(㎛)',
-    width: 50,
+    title: '재질',
+    width: 80,
     dataIndex: 'dogeum',
     key: 'dogeum',
     align: 'center',
     children: [
       {
-        title:'단위',
-        width: 90,
+        title:'동도금',
+        width: 80,
         dataIndex: 'unit',
         key:'unit',
         align: 'center',
         render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
+              <AntdSelectFill
+                options={metarialSelectList}
+                value={record.material?.id}
+                onChange={(e)=>handleModelDataChange(record.id, 'material.id', e)}
+                // className="w-[60px!important]"
+                styles={{pd:"0",fs:'12px'}} dropWidth="180px"
+                tabIndex={(record?.index ?? 1)*40+6}
+                disabled={view?true:false}
+              />
+            </div>
+            <div className={divClass}>
               <AntdInputFill
                 value={record?.pltThk}
                 onChange={(e)=>handleModelDataChange(record.id, 'pltThk', e.target.value)}
@@ -809,9 +821,7 @@ export const sayangSampleWaitAddClmn = (
                 tabIndex={(record?.index ?? 1)*40+5}
                 disabled={view?true:false}
               />
-            </div>
-            <div className={divClass}>
-              <AntdSelectFill
+              {/* <AntdSelectFill
                 options={unitSelectList}
                 value={record.unit?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'unit.id', e)}
@@ -819,7 +829,7 @@ export const sayangSampleWaitAddClmn = (
                 styles={{pd:"0",fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+6}
                 disabled={view?true:false}
-              />
+              /> */}
             </div>
           </div>
         )
@@ -827,106 +837,50 @@ export const sayangSampleWaitAddClmn = (
     ],
   },
   {
-    title: '특수도금(㎛)',
-    width:110,
+    title: '특수도금',
+    width:70,
     dataIndex: 'tDogeum',
     key: 'tDogeum',
     align: 'center',
-    children: [
-      {
-        title:'Ni Au',
-        width: 90,
-        dataIndex: 'tDogeum',
-        key:'tDogeum',
-        align: 'center',
-        render: (_, record:specModelType) => (
-          <div className={divTopClass}>
-            <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record?.spPltNi}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPltNi', e.target.value)}
-                type="number"
-                className="!text-12"
-                tabIndex={(record?.index ?? 1)*40+7}
-                disabled={view?true:false}
-              />
-              <AntdInputFill 
-                value={record?.spPltNiAlph}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPltNiAlph', e.target.value)}
-                type="number"
-                className="!text-12"
-                tabIndex={(record?.index ?? 1)*40+9}
-                disabled={view?true:false}
-              />
-            </div>
-            <div className={divClass+"gap-5"}>
-              <AntdInputFill 
-                value={record?.spPltAu}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPltAu', e.target.value)}
-                type="number"
-                className="!text-12"
-                tabIndex={(record?.index ?? 1)*40+8}
-                disabled={view?true:false}
-              />
-              <AntdInputFill 
-                value={record?.spPltAuAlph}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPltAuAlph', e.target.value)}
-                type="number"
-                className="!text-12"
-                tabIndex={(record?.index ?? 1)*40+10}
-                disabled={view?true:false}
-              />
-            </div>
-          </div>
-        )
-      },
-    ]
-  },
-  {
-    title: 'UL/위치',
-    width:15,
-    dataIndex: 'ul',
-    key: 'ul',
-    align: 'center',
     render: (_, record:specModelType) => (
       <div className={divTopClass}>
-        <div className={divClass+"mb-3"}>
-          <AntdInputFill
-            value={record.ulTxt1}
-            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
-            className='!text-12'
-            tabIndex={(record?.index ?? 1)*40+11} placeholder="ul1"
+        <div className={divClass+" gap-5"}>
+          <div className='!min-w-18 text-left text-12'>Ni</div>
+          <AntdInputFill 
+            value={record?.spPltNi}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPltNi', e.target.value)}
+            type="number"
+            className="!text-12"
+            tabIndex={(record?.index ?? 1)*40+7}
             disabled={view?true:false}
           />
+          {/* <AntdInputFill 
+            value={record?.spPltNiAlph}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPltNiAlph', e.target.value)}
+            type="number"
+            className="!text-12"
+            tabIndex={(record?.index ?? 1)*40+9}
+            disabled={view?true:false}
+          /> */}
         </div>
-        <div className={divClass+"mb-3"}>
-          <AntdInputFill
-            value={record.ulTxt2}
-            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
-            className='!text-12'
-            tabIndex={(record?.index ?? 1)*40+12} placeholder="ul2"
+        <div className={divClass+" gap-5"}>
+          <div className='!min-w-18 text-left text-12'>Au</div>
+          <AntdInputFill 
+            value={record?.spPltAu}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPltAu', e.target.value)}
+            type="number"
+            className="!text-12"
+            tabIndex={(record?.index ?? 1)*40+8}
             disabled={view?true:false}
           />
-        </div>
-        <div className={divClass+"gap-5"}>
-          <AntdSelectFill
-            options={ul1SelectList}
-            value={record.ulCd1?.id}
-            onChange={(e)=>handleModelDataChange(record.id, 'ulCd1.id', e)}
-            className="w-[60px!important]"
-            styles={{pd:"0",fs:'12px'}}
-            tabIndex={(record?.index ?? 1)*40+13} placeholder="ul1"
+          {/* <AntdInputFill 
+            value={record?.spPltAuAlph}
+            onChange={(e)=>handleModelDataChange(record.id, 'spPltAuAlph', e.target.value)}
+            type="number"
+            className="!text-12"
+            tabIndex={(record?.index ?? 1)*40+10}
             disabled={view?true:false}
-          />
-          <AntdSelectFill
-            options={ul2SelectList}
-            value={record.ulCd2?.id}
-            onChange={(e)=>handleModelDataChange(record.id, 'ulCd2.id', e)}
-            className="w-[60px!important]"
-            styles={{pd:"0",fs:'12px'}}
-            tabIndex={(record?.index ?? 1)*40+14} placeholder="ul2"
-            disabled={view?true:false}
-          />
+          /> */}
         </div>
       </div>
     )
@@ -1085,6 +1039,78 @@ export const sayangSampleWaitAddClmn = (
     ]
   },
   {
+    title: 'UL/위치',
+    width:15,
+    dataIndex: 'ul',
+    key: 'ul',
+    align: 'center',
+    render: (_, record:specModelType) => (
+      <div className={divTopClass}>
+        <div className={divClass+"mb-3"}>
+          <AntdInputFill
+            value={record.ulTxt1}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
+            className='!text-12'
+            tabIndex={(record?.index ?? 1)*40+11} placeholder="UL"
+            disabled={view?true:false}
+          />
+        </div>
+        <div className={divClass+"mb-3"}>
+          <AntdInputFill
+            value={record.ulTxt2}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
+            className='!text-12'
+            tabIndex={(record?.index ?? 1)*40+12} placeholder="주기"
+            disabled={view?true:false}
+          />
+        </div>
+        <div className={divClass+"mb-3"}>
+          <AntdSelectFill
+            options={ul1SelectList}
+            value={record.ulCd1?.id}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulCd1.id', e)}
+            className="w-[60px!important]"
+            styles={{pd:"0",fs:'12px'}}
+            tabIndex={(record?.index ?? 1)*40+13} placeholder="위치1"
+            disabled={view?true:false}
+          />
+        </div>
+        <div className={divClass+"mb-3"}>
+          <AntdSelectFill
+            options={ul2SelectList}
+            value={record.ulCd2?.id}
+            onChange={(e)=>handleModelDataChange(record.id, 'ulCd2.id', e)}
+            className="w-[60px!important]"
+            styles={{pd:"0",fs:'12px'}}
+            tabIndex={(record?.index ?? 1)*40+14} placeholder="위치2"
+            disabled={view?true:false}
+          />
+        </div>
+      </div>
+    )
+  },
+  {
+    title: '임피던스',
+    width:70,
+    dataIndex: 'im',
+    key: 'im',
+    align: 'center',
+    render: (_, record:specModelType) => (
+      <div className={divTopClass}>
+        <div className={divClass+"mb-3"}>
+          <AntdInputFill
+            value={record?.impedanceLineCnt}
+            onChange={(e)=>handleModelDataChange(record.id, 'impedanceLineCnt', e.target.value)}
+            className="!text-12"
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+32}
+            disabled={view?true:false}
+          />
+        </div>
+      </div>
+    )
+  },
+  {
     title: 'PCS SIZE',
     width:80,
     dataIndex: 'pcs',
@@ -1225,27 +1251,6 @@ export const sayangSampleWaitAddClmn = (
     ]
   },
   {
-    title: '임피던스',
-    width:70,
-    dataIndex: 'im',
-    key: 'im',
-    align: 'center',
-    render: (_, record:specModelType) => (
-      <div className={divTopClass}>
-        <div className={divClass+"mb-3"}>
-          <AntdInputFill
-            value={record?.impedanceLineCnt}
-            onChange={(e)=>handleModelDataChange(record.id, 'impedanceLineCnt', e.target.value)}
-            className="!text-12"
-            type="number"
-            tabIndex={(record?.index ?? 1)*40+32}
-            disabled={view?true:false}
-          />
-        </div>
-      </div>
-    )
-  },
-  {
     title: 'SPEC',
     width:110,
     dataIndex: 'spec',
@@ -1290,7 +1295,6 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+35}
             disabled={view?true:false}
           />
-          <p className="w-12 !text-12">￠</p>
         </div>
         <div className={divClass}>
           <p className="text-left w-37 !text-12">PAD</p>
@@ -1303,26 +1307,26 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+36}
             disabled={view?true:false}
           />
-          <p className="w-12 !text-12">￠</p>
         </div>
       </>
     )
   },
   {
     title: '수량',
-    width:70,
+    width:90,
     dataIndex: 'cnt',
     key: 'cnt',
     align: 'center',
     render: (_, record:specModelType) => (
       <div className={divTopClass}>
-        <AutoHideTooltip title="수주 수량" className="w-full">
-        <div className={divClass+" !w-full !justify-end !pr-5 !text-12"}>
-          {(record.modelMatch?.orderModel.orderPrdCnt ?? 0).toLocaleString()}
+        <AutoHideTooltip title="수주량" className="w-full">
+        <div className={divClass+" !w-full !justify-end !text-12 gap-5"}>
+          <div className="!mr-10">{(record.modelMatch?.orderModel.orderPrdCnt ?? 0).toLocaleString()}</div>
+          <div className="!min-w-25 !w-25">PCS</div>
         </div>
         </AutoHideTooltip>
-        <AutoHideTooltip title="생산 수량">
-        <div className={divClass}>
+        <AutoHideTooltip title="작업량">
+        <div className={divClass+" gap-5"}>
           <AntdInputFill
             value={record.prdCnt}
             onChange={(e)=>handleModelDataChange(record.id, 'prdCnt', e.target.value)}
@@ -1331,10 +1335,11 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+37}
             disabled={view?true:false}
           />
+          <div className="!min-w-25 !w-25 !text-12">PNL</div>
         </div>
         </AutoHideTooltip>
-        <AutoHideTooltip title="PCS 수량">
-        <div className={divClass}>
+        <AutoHideTooltip title="생산량">
+        <div className={divClass+" gap-5"}>
           <AntdInputFill
             value={record.pcsValue}
             onChange={(e)=>handleModelDataChange(record.id, 'pcsValue', e.target.value)}
@@ -1343,6 +1348,7 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+38}
             disabled={view?true:false}
           />
+          <div className="!min-w-25 !w-25 !text-12">PCS</div>
         </div>
         </AutoHideTooltip>
       </div>
@@ -1756,7 +1762,8 @@ export const sayangModelWaitAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
                 value={record.editModel?.spPltNi ?? record.tempPrdInfo?.spPltNi ?? record.currPrdInfo?.spPltNi}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNi', e.target.value)}
@@ -1767,7 +1774,10 @@ export const sayangModelWaitAddClmn = (
                 placeholder="Ni 입력"
                 tabIndex={record.index*40+10}
               />
-              {/* <AntdInputFill 
+            </div>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>Au</div>
+              <AntdInputFill 
                 value={record.editModel?.spPltAu ?? record.tempPrdInfo?.spPltAu ?? record.currPrdInfo?.spPltAu}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAu', e.target.value)}
                 type="number"
@@ -1776,10 +1786,8 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed}
                 placeholder="Au 입력"
                 tabIndex={record.index*40+12}
-              /> */}
-            </div>
-            <div className={divClass+"gap-5"}>
-              <AntdInputFill 
+              />
+              {/* <AntdInputFill 
                 value={record.editModel?.spPltNiAlph ?? record.tempPrdInfo?.spPltNiAlph ?? record.currPrdInfo?.spPltNiAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltNiAlph', e.target.value)}
                 type="number"
@@ -1788,7 +1796,7 @@ export const sayangModelWaitAddClmn = (
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder="Ni+ 입력"
                 tabIndex={record.index*40+11}
-              />
+              /> */}
               {/* <AntdInputFill 
                 value={record.editModel?.spPltAuAlph ?? record.tempPrdInfo?.spPltAuAlph ?? record.currPrdInfo?.spPltAuAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltAuAlph', e.target.value)}
@@ -1800,7 +1808,8 @@ export const sayangModelWaitAddClmn = (
                 tabIndex={record.index*40+13}
               /> */}
             </div>
-            <div className={divClass+"gap-5"}>
+            <div className={divClass+" gap-5"}>
+              <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
                 value={record.editModel?.spPltOsp ?? record.tempPrdInfo?.spPltOsp ?? record.currPrdInfo?.spPltOsp}
                 onChange={(e)=>handleModelDataChange(record.id, 'editModel.spPltOsp', e.target.value)}
