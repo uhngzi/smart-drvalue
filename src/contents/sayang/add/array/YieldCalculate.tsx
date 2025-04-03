@@ -218,9 +218,20 @@ const SayangYieldCalculate: React.FC<Props> = ({
         key: `size-${i}`,
         width: 50,
         align: 'center' as const,
-        render: (val: any) => {
+        render: (val: any, record: any) => {
           if (!val) return null;
-          return `${val.kitArrayXSize} x ${val.kitArrayYSize}`;
+          return `${record.finalWidth} x ${record.finalHeight}`;
+        }
+      },
+      {
+        title: '수율',
+        dataIndex: ['kitsInfo', i],
+        key: `count-${i}`,
+        width: 30,
+        align: 'center' as const,
+        render: (val: any, record: any) => {
+          if (!val) return null;
+          return Math.floor(Number(record.yieldBoard ?? 0) * 100) / 100;
         }
       },
       {
@@ -348,7 +359,6 @@ const SayangYieldCalculate: React.FC<Props> = ({
                           const layer = Number(detailData.specModels[0]?.layerEm?.replace("L", "") ?? 0);
                           const min = Number(layer <= 2 ? 16 : layer === 4 ? 26 : (layer === 6 || layer === 8 || layer >= 10) ? 30 : 0);
                           const other = item.name === "marginLongSide" ? yielddata?.marginShortSide : yielddata?.marginLongSide;
-                          console.log(other);
                           
                           if((layer === 6 || layer === 8 || layer >= 10)) {
                             if(Number(other) < 30 && Number(value) < 30)
