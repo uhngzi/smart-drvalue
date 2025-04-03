@@ -24,6 +24,7 @@ import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/tr
 import useToast from "@/utils/useToast";
 import { useBase } from "@/data/context/BaseContext";
 import CustomTree from "@/components/Tree/CustomTree";
+import { getPrtCsAPI } from "@/api/cache/client";
 const BuyMtListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -39,6 +40,11 @@ const BuyMtListPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
+
+  const { data:cs, isLoading:csLoading, refetch:csRefetch } = useQuery({
+    queryKey: ["getClientCs"],
+    queryFn: () => getPrtCsAPI(),
+  });
 
   // --------- 리스트 데이터 시작 ---------
   const [ groupCheck, setGroupCheck ] = useState<string | null>(null);
@@ -61,7 +67,11 @@ const BuyMtListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        setData(result.data?.data ?? []);
+        const resData = result.data?.data.map((d:materialType) => ({
+          ...d,
+          materialSuppliers: Array.isArray(d.materialSuppliers) ? d.materialSuppliers.map((item: any) => item.id) : [],
+        }))
+        setData(resData);
         setTotalData(result.data?.total ?? 0);
       } else {
         console.log('error:', result.response);
@@ -80,6 +90,13 @@ const BuyMtListPage: React.FC & {
   useEffect(() => {
     setAddModalInfoList((prev) => prev.map(v => v.name === 'unitType' ? {...v, option: unitSelectList.map(unit => ({value: unit.label, label: unit.label}))} : v))
   },[unitSelectList])
+  useEffect(() => {
+    if(!csLoading){
+      const csOptions = cs?.data?.data.map((cs:any) => ({value: cs.id, label: cs.prtNm}));
+      setAddModalInfoList((prev) => prev.map(v => v.name === 'materialSuppliers' ? {...v, option: csOptions} : v))
+    }
+    console.log(cs?.data?.data)
+  },[cs?.data?.data]);
   // ---------- 신규 데이터 시작 ----------
     // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
@@ -147,9 +164,11 @@ const BuyMtListPage: React.FC & {
       }
     }
     try {
+      const supplierIdxs = data?.materialSuppliers
+      const id = data.id;
       if(data?.id){
-        const id = data.id;
         delete data.id;
+        delete data.materialSuppliers
         
 
         const result = await patchAPI({
@@ -161,14 +180,32 @@ const BuyMtListPage: React.FC & {
         console.log(result);
 
         if(result.resultCode === 'OK_0000') {
-          setNewOpen(false);
-          setResultFunc('success', '원자재 수정 성공', '원자재 수정이 완료되었습니다.');
+          const supResult = await postAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: 'material/material-sup-default/edit',
+            jsx: 'default',
+            etc: true
+          }, {
+            materialGroupIdx: data.materialGroup.id,
+            materialIdx: id,
+            supplierIdxs: supplierIdxs,
+            useYn: true
+          });
+          if(supResult.resultCode === 'OK_0000') {
+            setNewOpen(false);
+            setResultFunc('success', '원자재 수정 성공', '원자재 수정이 완료되었습니다.');
+          }else{
+            setNewOpen(false);
+            setResultFunc('error', '원자재 수정 오류', '원자재 수정은 성공하였지만 공급처 저장에 실패하였습니다.');
+          }
         } else {
           setNewOpen(false);
           setResultFunc('error', '원자재 수정 실패', '원자재 수정을 실패하였습니다.');
         }
 
       }else{
+        delete data.materialSuppliers
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -178,8 +215,26 @@ const BuyMtListPage: React.FC & {
         console.log(result);
   
         if(result.resultCode === 'OK_0000') {
-          setNewOpen(false);
-          setResultFunc('success', '원자재 등록 성공', '원자재 등록이 완료되었습니다.');
+          const id = result.data?.entity.id;
+          const supResult = await postAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: 'material/material-sup-default/edit',
+            jsx: 'default',
+            etc: true
+          }, {
+            materialGroupIdx: data.materialGroup.id,
+            materialIdx: id,
+            supplierIdxs: supplierIdxs,
+            useYn: true
+          });
+          if(supResult.resultCode === 'OK_0000') {
+            setNewOpen(false);
+            setResultFunc('success', '원자재 등록 성공', '원자재 등록이 완료되었습니다.');
+          }else{
+            setNewOpen(false);
+            setResultFunc('error', '원자재 등록 오류', '원자재 등록은 성공하였지만 공급처 저장에 실패하였습니다.');
+          }
         } else {
           setNewOpen(false);
           setResultFunc('error', '원자재 등록 실패', '원자재 등록을 실패하였습니다.');

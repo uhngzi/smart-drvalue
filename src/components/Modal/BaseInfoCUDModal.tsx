@@ -81,6 +81,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
 
   function setData (field:string, value:any) {
     dataRef.current[field] = value
+    
   }
   useEffect(() => {
     dataRef.current = data
@@ -198,6 +199,16 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           options={item.option}
                           key={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
                           defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
+                          onChange={(value) => {setData(item.name, value)}}
+                        />
+                      )}
+                      {item.type === "mSelect" && (
+                        <Select 
+                          mode="multiple"
+                          className="w-full"
+                          options={item.option}
+                          key={data[item.name]}
+                          defaultValue={data[item.name]}
                           onChange={(value) => {setData(item.name, value)}}
                         />
                       )}
