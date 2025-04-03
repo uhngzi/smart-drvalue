@@ -80,6 +80,7 @@ export type specModelType = {
   aprType?: commonCodeRType;
   vcutYn?: boolean;
   vcutType?: commonCodeRType;
+  vcutText?: string;
   fpNo?: string;
   drgNo?: string;
   unit?: commonCodeRType;

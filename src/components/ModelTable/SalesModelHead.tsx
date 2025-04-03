@@ -478,7 +478,7 @@ const SalesModelHead:React.FC<Props> = ({
           />
 
           <Item
-            label1="수주단위"
+            label1="수주단위" size1={1}
             children1={
               <AntdSelectFill
                 options={[
@@ -491,7 +491,7 @@ const SalesModelHead:React.FC<Props> = ({
                 disabled={model.completed ?? read}
               />
             }
-            label2="수주수량"
+            label2="수주수량" size2={1}
             children2={
               <AntdInput 
                 value={model.orderPrdCnt}
@@ -512,8 +512,8 @@ const SalesModelHead:React.FC<Props> = ({
                 onChange={(e)=>{
                   handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnitPrice', e.target.value);
 
-                  const tot = (model.orderPrdCnt ?? 0) * Number(e.target.value ?? 0);
-                  handleModelDataChange(model.id ?? '', 'orderPrdPrice', tot);
+                  // const tot = (model.orderPrdCnt ?? 0) * Number(e.target.value ?? 0);
+                  // handleModelDataChange(model.id ?? '', 'orderPrdPrice', tot);
                 }}
                 styles={{ht:'32px'}} type="number"
                 disabled={model.completed ?? read}

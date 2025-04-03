@@ -566,7 +566,7 @@ const SayangModelAddPage: React.FC & {
                   key={index}
                   className="flex flex-col gap-15 mt-20"
                 >
-                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1820px]">
+                  <div className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1490px]">
                     <SalesModelHead
                       read={true}
                       model={model}
@@ -658,7 +658,7 @@ const SayangModelAddPage: React.FC & {
         type={resultType === "success" ? "confirm" : "error"}
         onOk={()=>{
           setResultOpen(false);
-          if(resultType === "success")  router.push('/sayang/pcb/wait');
+          if(resultType === "success")  router.push('/sayang/sample/wait');
         }}
         onCancle={()=>{
           refetch();

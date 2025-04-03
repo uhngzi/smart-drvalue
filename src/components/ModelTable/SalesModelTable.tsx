@@ -23,6 +23,7 @@ import { BoardGroupType, boardType } from "@/data/type/base/board";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 interface LogEntry {
   date: Date | Dayjs | null;
@@ -51,6 +52,7 @@ const SalesModelTable:React.FC<Props> = ({
   handleSubmitOrderModel,
   showToast,
 }) => {
+  const router = useRouter();
   // 베이스 값 가져오기
   const { 
     boardSelectList,
@@ -108,7 +110,7 @@ const SalesModelTable:React.FC<Props> = ({
     const updatedData = data.map((item) => {
       if (item.id === id) {
         const keys = name.split(".");
-        const updatedItem = { ...item };
+        let updatedItem = { ...item };
   
         // 마지막 키를 제외한 객체 탐색
         const lastKey = keys.pop()!;
@@ -128,6 +130,10 @@ const SalesModelTable:React.FC<Props> = ({
         if(name.includes("orderPrdCnt")){
           const tot = (item.currPrdInfo?.orderUnitPrice ?? 0) * Number(value ?? 0);
           targetObject["orderPrdPrice"] = tot;
+        } else if(name.includes("orderUnitPrice")) {
+          const tot = (item?.orderPrdCnt ?? 0) * Number(value ?? 0);
+          updatedItem["orderPrdPrice"] = tot;
+          console.log(targetObject, updatedItem);
         }
   
         return updatedItem;
@@ -278,8 +284,8 @@ const SalesModelTable:React.FC<Props> = ({
 
       return (
         <div
-          key={model.id}
-          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1820px]"
+          key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
+          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1490px]"
         >
           <SalesModelHead
             model={model}

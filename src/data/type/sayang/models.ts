@@ -139,6 +139,7 @@ export type modelsType = {
   spType: commonCodeRType;
   aprType: commonCodeRType;
   vcutYn: false,
+  vcutText: string;
   vcutType: commonCodeRType;
   fpNo: string;
   drgNo: string;
@@ -216,6 +217,7 @@ export type salesModelsType = {
   aprType?: commonCodeRType;
   vcutYn?: false,
   vcutType?: commonCodeRType;
+  vcutText?: string;
   fpNo?: string;
   drgNo?: string;
   unit?: commonCodeRType;

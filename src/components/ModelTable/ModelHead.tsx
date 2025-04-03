@@ -299,9 +299,10 @@ const ModelHead:React.FC<Props> = ({
           label2="제조사"
           children2={
             <AntdInput 
-              value={(model as orderModelType)?.tempPrdInfo?.mnfNm ?? model.currPrdInfo?.mnfNm}
+              value={model.editModel?.mnfNm ?? model?.tempPrdInfo?.mnfNm ?? model.currPrdInfo?.mnfNm}
               onChange={(e)=>{
                 handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
+                handleModelDataChange(model.id ?? '', 'editModel.mnfNm', e.target.value)
                 handleModelDataChange(model.id ?? '', 'tempPrdInfo.mnfNm', e.target.value)
               }}
               styles={{ht:'32px'}}

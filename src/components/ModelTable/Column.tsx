@@ -107,7 +107,7 @@ export const salesOrderModelClmn = (
                 inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
                 placeholder="외층 검색 또는 입력"
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+3}
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+1}
               />
             </div>
             <div className={divClass+"gap-5"}>
@@ -124,7 +124,7 @@ export const salesOrderModelClmn = (
                 inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
                 placeholder="내층 검색 또는 입력"
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+4}
+                readonly={selectId === record.id ? !newFlag : undefined} clear={false} tabIndex={record.index*40+2}
               />
             </div>
           </div>
@@ -147,19 +147,20 @@ export const salesOrderModelClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
               <AntdInputFill
-                value={record.currPrdInfo?.pltThk}
+                value={record.currPrdInfo?.pltThk ?? 25}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pltThk', e.target.value)}
                 className="!text-12"
                 type="number"
                 placeholder={"도금 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+5}
+                tabIndex={record.index*40+3}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
               <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.pltAlph', e.target.value)}
@@ -168,8 +169,9 @@ export const salesOrderModelClmn = (
                 placeholder={"도금± 입력"}
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
-                tabIndex={record.index*40+6}
+                tabIndex={record.index*40+4}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
           </div>
         )
@@ -194,41 +196,44 @@ export const salesOrderModelClmn = (
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltNi}
+                value={record.currPrdInfo?.spPltNi ?? 4}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltNi', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Ni 입력"}
-                tabIndex={record.index*40+7}
+                tabIndex={record.index*40+5}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltAu}
+                value={record.currPrdInfo?.spPltAu ?? 0.03}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltAu', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"Au 입력"}
-                tabIndex={record.index*40+8}
+                tabIndex={record.index*40+6}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltOsp}
+                value={record.currPrdInfo?.spPltOsp ?? 0.2}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPltOsp', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={selectId === record.id ? !newFlag : undefined}
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"OSP 입력"}
-                tabIndex={record.index*40+9}
+                tabIndex={record.index*40+7}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             {/* <div className={divClass+"gap-5"}>
               <AntdInputFill 
@@ -280,7 +285,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M인쇄 입력"}
-                tabIndex={record.index*40+10}
+                tabIndex={record.index*40+8}
               />
             </div>
             <div className={divClass}>
@@ -291,7 +296,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M색상 입력"}
-                tabIndex={record.index*40+11}
+                tabIndex={record.index*40+9}
               />
             </div>
             <div className={divClass}>
@@ -302,7 +307,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"S/M종류 입력"}
-                tabIndex={record.index*40+12}
+                tabIndex={record.index*40+10}
               />
             </div>
           </div>
@@ -333,7 +338,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K인쇄 입력"}
-                tabIndex={record.index*40+13}
+                tabIndex={record.index*40+11}
               />
             </div>
             <div className={divClass}>
@@ -344,7 +349,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K색상 입력"}
-                tabIndex={record.index*40+14}
+                tabIndex={record.index*40+12}
               />
             </div>
             <div className={divClass}>
@@ -355,7 +360,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"M/K종류 입력"}
-                tabIndex={record.index*40+15}
+                tabIndex={record.index*40+13}
               />
             </div>
           </div>
@@ -386,7 +391,7 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"특수인쇄 입력"}
-                tabIndex={record.index*40+16}
+                tabIndex={record.index*40+14}
               />
             </div>
             <div className={divClass}>
@@ -398,7 +403,16 @@ export const salesOrderModelClmn = (
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
                 placeholder={"외형가공형태 입력"}
-                tabIndex={record.index*40+17}
+                tabIndex={record.index*40+15}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.vcutText}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.vcutText', e.target.value)}
+                className="!text-12" placeholder={"브이컷형태 입력"} tabIndex={record.index*40+16}
+                readonly={selectId === record.id ? !newFlag : undefined}
+                disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
               />
             </div>
           </div>
@@ -831,15 +845,17 @@ export const salesOrderModelReadClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdInputFill
-                value={record.currPrdInfo?.pltThk}
+                value={record.currPrdInfo?.pltThk ?? 25}
                 className="!text-12" disabled type="number"
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass}>
               <AntdInputFill 
                 value={record.currPrdInfo?.pltAlph}
                 className="!text-12" disabled type="number"
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
           </div>
         )
@@ -864,23 +880,26 @@ export const salesOrderModelReadClmn = (
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltNi}
+                value={record.currPrdInfo?.spPltNi ?? 4}
                 className="!text-12" disabled type="number"
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltAu}
+                value={record.currPrdInfo?.spPltAu ?? 0.03}
                 className="!text-12" disabled type="number"
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
-                value={record.currPrdInfo?.spPltOsp}
+                value={record.currPrdInfo?.spPltOsp ?? 0.2}
                 className="!text-12" disabled type="number"
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             {/* <div className={divClass+"gap-5"}>
               <AntdInputFill 
@@ -1005,6 +1024,12 @@ export const salesOrderModelReadClmn = (
               <AntdSelectFill 
                 options={outSelectList} 
                 value={record.currPrdInfo?.aprType?.id ?? outSelectList?.[0]?.value}
+                className="!text-12" disabled
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record.currPrdInfo?.vcutText}
                 className="!text-12" disabled
               />
             </div>
@@ -1346,18 +1371,19 @@ export const salesOrderModelAddClmn = (
         align: 'center',
         render: (value, record) => (
           <div className={divTopClass}>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
               <AntdInputFill
-                value={record?.pltThk}
+                value={record?.pltThk ?? 25}
                 onChange={(e)=>handleModelDataChange('pltThk', e.target.value)}
                 className="!text-12"
                 type="number"
                 placeholder={"도금 입력"}
                 readonly={readonly}
-                tabIndex={40+6}
+                tabIndex={40+5}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
-            <div className={divClass}>
+            <div className={divClass+" gap-5"}>
               <AntdInputFill 
                 value={record?.pltAlph}
                 onChange={(e)=>handleModelDataChange('pltAlph', e.target.value)}
@@ -1365,8 +1391,9 @@ export const salesOrderModelAddClmn = (
                 type="number"
                 placeholder={"도금± 입력"}
                 readonly={readonly}
-                tabIndex={40+7}
+                tabIndex={40+6}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
           </div>
         )
@@ -1391,38 +1418,41 @@ export const salesOrderModelAddClmn = (
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Ni</div>
               <AntdInputFill 
-                value={record?.spPltNi}
+                value={record?.spPltNi ?? 4}
                 onChange={(e)=>handleModelDataChange('spPltNi', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"Ni 입력"}
-                tabIndex={40+8}
+                tabIndex={40+7}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>Au</div>
               <AntdInputFill 
-                value={record?.spPltAu}
+                value={record?.spPltAu ?? 0.03}
                 onChange={(e)=>handleModelDataChange('spPltAu', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"Au 입력"}
-                tabIndex={40+9}
+                tabIndex={40+8}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
             <div className={divClass+" gap-5"}>
               <div className='!min-w-26 !text-12 text-left'>OSP</div>
               <AntdInputFill 
-                value={record?.spPltOsp}
+                value={record?.spPltOsp ?? 0.2}
                 onChange={(e)=>handleModelDataChange('spPltOsp', e.target.value)}
                 type="number"
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"OSP 입력"}
-                tabIndex={40+10}
+                tabIndex={40+9}
               />
+              <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
           </div>
         )
@@ -1452,7 +1482,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M인쇄 입력"}
-                tabIndex={40+11}
+                tabIndex={40+10}
               />
             </div>
             <div className={divClass}>
@@ -1463,7 +1493,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M색상 입력"}
-                tabIndex={40+12}
+                tabIndex={40+11}
               />
             </div>
             <div className={divClass}>
@@ -1474,7 +1504,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M종류 입력"}
-                tabIndex={40+13}
+                tabIndex={40+12}
               />
             </div>
           </div>
@@ -1505,7 +1535,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K인쇄 입력"}
-                tabIndex={40+14}
+                tabIndex={40+13}
               />
             </div>
             <div className={divClass}>
@@ -1516,7 +1546,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K색상 입력"}
-                tabIndex={40+15}
+                tabIndex={40+14}
               />
             </div>
             <div className={divClass}>
@@ -1527,7 +1557,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K종류 입력"}
-                tabIndex={40+16}
+                tabIndex={40+15}
               />
             </div>
           </div>
@@ -1558,7 +1588,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"특수인쇄 입력"}
-                tabIndex={40+17}
+                tabIndex={40+16}
               />
             </div>
             <div className={divClass}>
@@ -1570,7 +1600,15 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"외형가공형태 입력"}
-                tabIndex={40+18}
+                tabIndex={40+17}
+              />
+            </div>
+            <div className={divClass}>
+              <AntdInputFill 
+                value={record?.vcutText}
+                onChange={(e)=>handleModelDataChange('vcutText', e.target.value)}
+                readonly={readonly} tabIndex={40+18} styles={{fs:'12px'}}
+                placeholder={"브이컷형태 입력"} className="!text-12"
               />
             </div>
           </div>
