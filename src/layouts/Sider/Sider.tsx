@@ -111,7 +111,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         },
         {
           key: 'sayang/sample',
-          title: 'sayang/sample/wait',
+          title: 'sayang/sample/regist',
           label: '사양 등록 및 현황',
         },
       ]
