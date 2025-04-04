@@ -1,10 +1,11 @@
 import get from "lodash/get";
 import dayjs from "dayjs";
-import XLSX from "xlsx-js-style";
-import { saveAs } from "file-saver";
-import { FinalGlbStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus } from "@/data/type/enum";
+import { FinalGlbStatus, HotGrade, ModelStatus, ModelTypeEm, SalesOrderStatus } from "@/data/type/enum";
+import { postAPI } from "@/api/post";
+import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
+import { toast } from "react-toastify";
 
-export const exportToExcelAndPrint = (
+export const exportToExcelAndPrint = async (
   columns: {
     title: string;
     dataIndex: string;
@@ -16,10 +17,59 @@ export const exportToExcelAndPrint = (
   pagination: { current: number; size: number },
   menuTitle: string,
   actionType: "excel" | "print",
-  showToast?: (message: string, type?: "success" | "error" | "info", duration?: number) => void
+  showToast?: (message: string, type?: "success" | "error" | "info", duration?: number) => void,
+  excelUrl?: string,
+  excelType?: "file-mng" | "auth" | "sync" | "baseinfo" | "core-d1" | "core-d2" | "core-d3" | "utility",
 ) => {
   if (!data || data.length === 0) {
     showToast?.("출력할 데이터가 없습니다.", "error");
+    return;
+  }
+
+  if(actionType === "excel" && excelUrl && excelType) {
+    const toastId = toast.loading("엑셀 파일을 생성 중입니다...", {
+      className: "custom-toast",
+    });
+
+    const cal = columns.flatMap((item, index) => {
+      const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
+      const values = item.title?.toString().split(/[/|*]/); // value도 같은 방식으로 분리
+    
+      return keys.map((key:string, i:number) => ({
+        key: key.trim(),
+        value: values?.[i]?.trim() || "",
+        order: index + 1 + i, // order 증가
+      }));
+    });
+
+    const result = await postAPI({
+      type: excelType, 
+      utype: 'tenant/',
+      jsx: 'jsxcrud',
+      url: `${excelUrl}/excel-download/jsxcrud`,
+      etc: true,
+    }, {cal: cal});
+    console.log(JSON.stringify({cal: cal}));
+
+    if(result.resultCode === 'OK_0000') {
+      const fileId = result.data.data as string;
+      console.log(fileId);
+      if(fileId) {
+        downloadFileByObjectName(fileId, {uid:fileId, name:`${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`})
+        toast.update(toastId, {
+          render: "엑셀 파일 다운로드가 완료되었습니다.",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+          className: "custom-toast",
+        });
+        return;
+      }
+    } else {
+      const msg = result.response?.data?.message;
+      showToast?.(msg, "error");
+      return;
+    }
     return;
   }
 
@@ -93,63 +143,63 @@ export const exportToExcelAndPrint = (
   });
 
   // ✅ **엑셀 다운로드 처리**
-  if (actionType === "excel") {
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  // if (actionType === "excel") {
+  //   const worksheet = XLSX.utils.json_to_sheet(formattedData);
 
-    worksheet["!cols"] = filteredColumns.map((col) => ({
-      wpx: col.width ?? 100,
-      hidden: false,
-    }));
+  //   worksheet["!cols"] = filteredColumns.map((col) => ({
+  //     wpx: col.width ?? 100,
+  //     hidden: false,
+  //   }));
 
-    worksheet["!rows"] = [
-      { hpx: 27 }, 
-      ...formattedData.map(() => ({ hpx: 20 })),
-    ];
+  //   worksheet["!rows"] = [
+  //     { hpx: 27 }, 
+  //     ...formattedData.map(() => ({ hpx: 20 })),
+  //   ];
 
-    const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
+  //   const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1");
 
-    for (let rowIdx = range.s.r; rowIdx <= range.e.r; rowIdx++) {
-      for (let colIdx = range.s.c; colIdx <= range.e.c; colIdx++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: rowIdx, c: colIdx });
-        if (!worksheet[cellAddress]) continue;
+  //   for (let rowIdx = range.s.r; rowIdx <= range.e.r; rowIdx++) {
+  //     for (let colIdx = range.s.c; colIdx <= range.e.c; colIdx++) {
+  //       const cellAddress = XLSX.utils.encode_cell({ r: rowIdx, c: colIdx });
+  //       if (!worksheet[cellAddress]) continue;
 
-        const columnDef = filteredColumns[colIdx] || {};
-        const alignment = columnDef.cellAlign || "center";
+  //       const columnDef = filteredColumns[colIdx] || {};
+  //       const alignment = columnDef.cellAlign || "center";
 
-        if (rowIdx === 0) {
-          worksheet[cellAddress].s = {
-            font: { bold: true },
-            alignment: { horizontal: "center", vertical: "center" },
-            fill: { fgColor: { rgb: "F2F2F2" } },
-            border: {
-              top: { style: "thin", color: { rgb: "D5D5D5" } },
-              left: { style: "thin", color: { rgb: "D5D5D5" } },
-              right: { style: "thin", color: { rgb: "D5D5D5" } },
-              bottom: { style: "medium", color: { rgb: "000000" } },
-            },
-          };
-        } else {
-          worksheet[cellAddress].s = {
-            alignment: { horizontal: alignment, vertical: "center" },
-            border: {
-              top: { style: "thin", color: { rgb: "D5D5D5" } },
-              left: { style: "thin", color: { rgb: "D5D5D5" } },
-              right: { style: "thin", color: { rgb: "D5D5D5" } },
-              bottom: { style: "thin", color: { rgb: "000000" } },
-            },
-          };
-        }
-      }
-    }
+  //       if (rowIdx === 0) {
+  //         worksheet[cellAddress].s = {
+  //           font: { bold: true },
+  //           alignment: { horizontal: "center", vertical: "center" },
+  //           fill: { fgColor: { rgb: "F2F2F2" } },
+  //           border: {
+  //             top: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             left: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             right: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             bottom: { style: "medium", color: { rgb: "000000" } },
+  //           },
+  //         };
+  //       } else {
+  //         worksheet[cellAddress].s = {
+  //           alignment: { horizontal: alignment, vertical: "center" },
+  //           border: {
+  //             top: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             left: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             right: { style: "thin", color: { rgb: "D5D5D5" } },
+  //             bottom: { style: "thin", color: { rgb: "000000" } },
+  //           },
+  //         };
+  //       }
+  //     }
+  //   }
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, menuTitle);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, menuTitle);
 
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const excelData = new Blob([excelBuffer], { type: "application/octet-stream" });
+  //   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  //   const excelData = new Blob([excelBuffer], { type: "application/octet-stream" });
 
-    saveAs(excelData, `${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`);
-  }
+  //   saveAs(excelData, `${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`);
+  // }
 
   // ✅ **프린트 기능**
   if (actionType === "print") {

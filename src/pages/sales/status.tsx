@@ -118,9 +118,9 @@ const SalesOrderStatusPage: React.FC & {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "수주현황", "excel", showToast, "sales-order/product/worksheet/detail", "core-d1");
     } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "수주현황", "print", showToast);
     }
   }
 

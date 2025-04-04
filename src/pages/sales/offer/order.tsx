@@ -28,6 +28,9 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
+import { postAPI } from "@/api/post";
+import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
+import dayjs from "dayjs";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -92,7 +95,7 @@ const SalesUserPage: React.FC & {
   const [orderId, setOrderId] = useState<string>('');
   const [orderDrawer, setOrderDrawer] = useState<boolean>(false);
 
-  const handlePageMenuClick = (key:number)=>{
+  const handlePageMenuClick = async (key:number)=>{
     const clmn = salesUserOrderClmn(
       totalData,
       setPartnerData,
@@ -100,14 +103,15 @@ const SalesUserPage: React.FC & {
       pagination,
       setOrderId,
       setOrderDrawer,
-      router).map((item) => ({
+      router).map((item, index) => ({
         title: item.title?.toString() as string,
         dataIndex: item.dataIndex,
         width: Number(item.width ?? item.minWidth ?? 0),
         cellAlign: item.cellAlign,
-      }))
+    }))
+
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast, "sales-order/product/worksheet/detail", "core-d1");
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);
     }

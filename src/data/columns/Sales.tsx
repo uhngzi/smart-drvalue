@@ -168,8 +168,8 @@ export const salesOrderStatusClmn = (
     align: 'center', 
   },
   {
-    title: '제품 Size',
-    width: 100,
+    title: '제품 W * 제품 H',
+    width: 130,
     dataIndex: 'worksheet.specModel.pcsW*worksheet.specModel.pcsL',
     key: 'worksheet.specModel.pcsW*worksheet.specModel.pcsL',
     align: 'center', 
@@ -184,8 +184,8 @@ export const salesOrderStatusClmn = (
     )
   },
   {
-    title: '판넬 Size',
-    width: 100,
+    title: '판넬 W * 판넬 H',
+    width: 130,
     dataIndex: 'worksheet.specModel.pnlW*worksheet.specModel.pnlL',
     key: 'worksheet.specModel.pnlW*worksheet.specModel.pnlL',
     align: 'center',
@@ -554,10 +554,10 @@ export const salesModelsClmn = (
     align: 'center',
   },
   {
-    title: '제품 Size',
-    width: 100,
-    dataIndex: 'pcsL*pcsW',
-    key: 'pcsL*pcsW',
+    title: '제품 W * 제품 H',
+    width: 150,
+    dataIndex: 'pcsW*pcsL',
+    key: 'pcsW*pcsL',
     align: 'center',
     render: (_, record:modelsType) => (
       <div>
@@ -570,10 +570,10 @@ export const salesModelsClmn = (
     )
   },
   {
-    title: '판넬 Size',
-    width: 100,
-    dataIndex: 'pnlL*pnlW',
-    key: 'pnlL*pnlW',
+    title: '판넬 W * 판넬 H',
+    width: 150,
+    dataIndex: 'pnlW*pnlL',
+    key: 'pnlW*pnlL',
     align: 'center',
     render: (_, record:modelsType) => (
       <div>
