@@ -68,7 +68,7 @@ const SalesUserPage: React.FC & {
         modelCnt: item.products?.filter(f=>f.glbStatus.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED).length,
       }))
       setData(arr);
-      setTotalData(queryData?.data.total ?? 0);
+      setTotalData(queryData?.data?.total ?? 0);
       setDataLoading(false);
     }
   }, [queryData]);

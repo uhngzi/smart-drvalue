@@ -58,7 +58,7 @@ const SalesModelPage: React.FC & {
         ...item,
       }))
       setData(arr);
-      setTotalData(queryData?.data.total ?? 0);
+      setTotalData(queryData?.data?.total ?? 0);
       setDataLoading(false);
     }
   }, [queryData]);

@@ -54,13 +54,14 @@ export const specStatusClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
         }}
       >
-        {record?.specModels?.[0]?.partner?.prtRegCd} / {record?.specModels?.[0]?.partner?.prtNm}
+        <FullChip label={record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record?.specModels?.[0]?.partner?.prtNm}
       </div>
     )
   },
@@ -235,13 +236,14 @@ export const specIngClmn = (
     align: 'center',
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="text-left cursor-pointer"
+      <div className="w-full h-center text-left cursor-pointer gap-5"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
         }}
       >
-        {record?.specModels?.[0]?.partner?.prtRegCd} / {record?.specModels?.[0]?.partner?.prtNm}
+        <FullChip label={record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record?.specModels?.[0]?.partner?.prtNm}
       </div>
     )
   },
@@ -479,13 +481,14 @@ export const sayangSampleWaitClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record.orderModel?.prtInfo.prt ?? null);
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
         }}
       >
-        {record.orderModel?.prtInfo.prt?.prtRegCd} / {record.orderModel?.prtInfo.prt?.prtNm}
+        <FullChip label={record.orderModel?.prtInfo.prt?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.orderModel?.prtInfo.prt?.prtNm}
       </div>
     )
   },
@@ -669,8 +672,9 @@ export const sayangSampleWaitAddClmn = (
             <div className="h-[50%] w-[100%] v-h-center !text-12">
               {record?.prdMngNo}
             </div>
-            <div className="h-[50%] w-[100%] v-h-center !text-12">
-              {record?.partner?.prtRegCd+'-'+record?.partner?.prtNm}
+            <div className="h-[50%] w-[100%] v-h-center !text-12 gap-5">
+              <FullChip label={record?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+              {record?.partner?.prtNm}
             </div>
           </>
         )
@@ -1391,13 +1395,14 @@ export const sayangModelWaitClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record.prtInfo.prt);
           setPartnerMngData(record.prtInfo.mng);
         }}
       >
-        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
+        <FullChip label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },

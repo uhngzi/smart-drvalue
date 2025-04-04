@@ -62,7 +62,7 @@ const SayangSampleStatPage: React.FC & {
         ...data,
       }))
       setData(arr);
-      setTotalData(queryData?.data.total ?? 0);
+      setTotalData(queryData?.data?.total ?? 0);
     }
   }, [queryData]);
   // --------------- 리스트 데이터 세팅 -------------- 끝

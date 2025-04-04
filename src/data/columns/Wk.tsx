@@ -393,12 +393,13 @@ export const WKStatusProcClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
+        <FullChip label={record.specModel?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.specModel?.partner?.prtNm}
       </div>
     )
   },
@@ -664,12 +665,13 @@ export const WKStatusInClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
+        <FullChip label={record.specModel?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.specModel?.partner?.prtNm}
       </div>
     )
   },
@@ -833,12 +835,13 @@ export const WkStatusOutClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        {record.specModel?.partner?.prtRegCd} / {record.specModel?.partner?.prtNm}
+        <FullChip label={record.specModel?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.specModel?.partner?.prtNm}
       </div>
     )
   },

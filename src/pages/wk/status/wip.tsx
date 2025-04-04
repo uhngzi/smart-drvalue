@@ -30,6 +30,7 @@ import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import { ExportOutlined } from "@ant-design/icons";
 import { processRType, processVendorRType } from "@/data/type/base/process";
 import { apiGetResponseType } from "@/data/type/apiResponse";
+import FullChip from "@/components/Chip/FullChip";
 
 const WKStatusWIPPage: {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -400,7 +401,11 @@ const WKStatusWIPPage: {
                 title1="모델명"
                 children1={select?.specModel?.prdNm}
                 title2="코드/업체명"
-                children2={(select?.specModel?.partner?.prtRegCd??"")+" / "+(select?.specModel?.partner?.prtNm??"")}
+                children2={<div className="w-full h-center text-left gap-5">
+                  <FullChip label={select?.specModel?.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+                  {select?.specModel?.partner?.prtNm??""}
+                </div>
+                }
                 title3="관리번호"
                 children3={select?.specModel?.prdMngNo}
                 />

@@ -56,7 +56,7 @@ const WkProcessGroupListPage: React.FC & {
 
       if (result.resultCode === 'OK_0000') {
         setData(result.data?.data ?? []);
-        setTotalData(result.data.total ?? 0);
+        setTotalData(result.data?.total ?? 0);
 
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,

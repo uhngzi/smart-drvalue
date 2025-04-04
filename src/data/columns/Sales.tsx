@@ -60,13 +60,14 @@ export const salesOrderStatusClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderWorkSheetType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt ?? null);
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
+        <FullChip label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },
@@ -227,13 +228,14 @@ export const salesUserOrderClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.prtInfo?.prt ?? null);
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        {record.prtInfo?.prt?.prtRegCd} / {record.prtInfo?.prt?.prtNm}
+        <FullChip label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.prtInfo?.prt?.prtNm}
       </div>
     )
   },
@@ -498,12 +500,13 @@ export const salesModelsClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover"
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
         onClick={()=>{
           setPartnerData(record?.partner);
         }}
       >
-        {record.partner?.prtRegCd} / {record.partner?.prtNm}
+        <FullChip label={record.partner?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.partner?.prtNm}
       </div>
     )
   },
