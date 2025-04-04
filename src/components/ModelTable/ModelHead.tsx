@@ -17,47 +17,49 @@ import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { DividerV } from "../Divider/Divider";
+import Items2 from "../Item/Items2";
+import BlueBox from "@/layouts/Body/BlueBox";
 
-const Label:React.FC<{label:string,className?:string}> = ({ label,className }) => {
-  return <p className={`h-center ${className}`}>{label}</p>
-}
+// const Label:React.FC<{label:string,className?:string}> = ({ label,className }) => {
+//   return <p className={`h-center ${className}`}>{label}</p>
+// }
 
-const Item:React.FC<{
-  children1: React.ReactNode;
-  children2?: React.ReactNode;
-  label1?: string;
-  label2?: string;
-  size1?: number;
-  size2?: number;
-}> = ({
-  label1,
-  label2,
-  children1,
-  children2,
-  size1 = 2,
-  size2 = 2,
-}) => {
-  return (
-    <div className="flex flex-col gap-15 justify-center">
-      <div
-        className="flex flex-col justify-center !h-54"
-        style={{width: 70*size1, minWidth: 70*size1}}
-      >
-        {label1 && <Label label={label1} />}
-        {children1}
-      </div>
-      { children2 &&
-        <div
-          className="flex flex-col justify-center !h-54"
-          style={{width: 70*size2, minWidth: 70*size2}}
-        >
-          {label2 && <Label label={label2} />}
-          {children2}
-        </div>
-      }
-    </div>
-  )
-}
+// const Item:React.FC<{
+//   children1: React.ReactNode;
+//   children2?: React.ReactNode;
+//   label1?: string;
+//   label2?: string;
+//   size1?: number;
+//   size2?: number;
+// }> = ({
+//   label1,
+//   label2,
+//   children1,
+//   children2,
+//   size1 = 2,
+//   size2 = 2,
+// }) => {
+//   return (
+//     <div className="flex flex-col gap-15 justify-center">
+//       <div
+//         className="flex flex-col justify-center !h-54"
+//         style={{width: 70*size1, minWidth: 70*size1}}
+//       >
+//         {label1 && <Label label={label1} />}
+//         {children1}
+//       </div>
+//       { children2 &&
+//         <div
+//           className="flex flex-col justify-center !h-54"
+//           style={{width: 70*size2, minWidth: 70*size2}}
+//         >
+//           {label2 && <Label label={label2} />}
+//           {children2}
+//         </div>
+//       }
+//     </div>
+//   )
+// }
 
 interface Props {
   model: orderModelType;
@@ -124,231 +126,228 @@ const ModelHead:React.FC<Props> = ({
   });
 
   return (
-    <div className="w-full min-h-32 h-center border-1 border-line rounded-14 bg-[#E9EDF5]">
-      <div className="h-full h-center gap-20 p-15">
-        <Item
-          size1={1}
-          children1={
-            <Tooltip title={matchFlag?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
-            <div>
-              <AntdSelect
-                options={[
-                  {value:ModelStatus.NEW,label:'신규'},
-                  {value:ModelStatus.REPEAT,label:'반복'},
-                  {value:ModelStatus.MODIFY,label:'수정'},
-                ]}
-                value={model.modelStatus}
-                onChange={(e)=>{
-                  if(matchFlag && e+"" !== ModelStatus.NEW) {
-                    setMatchFlag(false);
-                  }
-                  handleModelDataChange(model.id ?? '', 'modelStatus', e);
-                }}
-                className="w-[54px!important]"
-                styles={(selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT) || matchFlag ?
-                  {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
-                  {ht:'32px', bw:'0', pd:'0'}
-                }
-                disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-              />
-            </div>
-            </Tooltip>
-          }
-          size2={1}
-          children2={
+    <BlueBox className="!flex-row !items-center !gap-15">
+      <Items2
+        size1={1}
+        children1={
+          <Tooltip title={matchFlag?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
+          <div>
             <AntdSelect
               options={[
-                {value:ModelTypeEm.SAMPLE,label:'샘플'},
-                {value:ModelTypeEm.PRODUCTION,label:'양산'},
+                {value:ModelStatus.NEW,label:'신규'},
+                {value:ModelStatus.REPEAT,label:'반복'},
+                {value:ModelStatus.MODIFY,label:'수정'},
               ]}
-              value={model.editModel?.modelTypeEm ?? model.tempPrdInfo?.modelTypeEm ?? model.currPrdInfo?.modelTypeEm ?? "sample"}
-              onChange={(e)=>handleModelDataChange(model.id, 'editModel.modelTypeEm', e)}
-              styles={{ht:'32px', bw:'0', pd:'0'}}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-            />
-          }
-        />
-
-        <Item
-          label1="모델명" size1={3}
-          children1={
-            <CustomAutoCompleteLabel
-              ref={el => {
-                // 자동 스크롤 & 포커싱을 위해 Ref 추가
-                if(el && inputRef && inputRef.current && index !== undefined) {
-                  inputRef.current[index] = el;
-                }
-              }}
-              option={modelSelectList}
-              label={model.tempPrdInfo?.prdNm ?? model.orderTit}
-              onInputChange={(value) => {
-                if((value.toString()).length < 3) {
-                  setModelSelectList([]);
-                  setModelNoSelectList([]);
-                }
-                handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', value);
-                handleModelDataChange(model.id ?? '', 'editModel.prdNm', value);
-              }}
-              value={model.currPrdInfo?.modelId}
-              onChange={(value) => {
-                const m = modelList.find(f=>f.id === value);
-                if(m && model.id) {
-                  handleModelChange?.(m, model.id);
-                }
-                if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
-                  setMatchFlag(true);
-                }
-                setFlag(false);
-              }}
-              clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2" readonly={model.completed}
-              placeholder="모델명 검색 또는 입력 (3글자 이상)" dropdownStyle={{width:350, minWidth:'max-content'}}
-            />
-          }
-          label2="Rev" size2={3}
-          children2={
-            <AntdInput
-              value={model.editModel?.prdRevNo ?? model.tempPrdInfo?.prdRevNo ?? model.currPrdInfo?.prdRevNo}
-              onChange={(e)=>handleModelDataChange(model.id, 'editModel.prdRevNo', e.target.value)}
-              readonly={selectId === model.id ? !newFlag : undefined} styles={{ht:'32px'}}
-              disabled={model.completed}
-            />
-          }
-        />
-        
-        <Item
-          label1="관리번호"
-          children1={
-            <CustomAutoCompleteLabel
-              option={modelNoSelectList}
-              label={model.currPrdInfo?.prdMngNo}
-              onInputChange={(value) => {
-                if(value.length < 3) {
-                  setModelSelectList([]);
-                  setModelNoSelectList([]);
-                }
-                handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', value);
-                setFlag(true);
-              }}
-              value={model.prdMngNo}
-              onChange={(value) => {
-                const m = modelList.find(f=>f.id === value);
-                if(m && model.id) {
-                  handleModelChange?.(m, model.id);
-                }
-                if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
-                  setMatchFlag(true);
-                }
-                setFlag(false);
-              }}
-              clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
-              placeholder="관리번호 검색 (3글자 이상)" readonly={model.completed}
-            />
-          }
-          label2="필름번호"
-          children2={
-            <AntdInput
-              value={model.currPrdInfo?.fpNo}
+              value={model.modelStatus}
               onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'currPrdInfo.fpNo', e.target.value);
+                if(matchFlag && e+"" !== ModelStatus.NEW) {
+                  setMatchFlag(false);
+                }
+                handleModelDataChange(model.id ?? '', 'modelStatus', e);
               }}
-              readonly styles={{ht:'32px', bg:'#FFF'}} disabled={model.completed}
-            />
-          }
-        />
-        
-        <Item
-          label1="도면번호"
-          children1={
-            <AntdInput
-              value={model.editModel?.drgNo ?? model.tempPrdInfo?.drgNo ?? model.currPrdInfo?.drgNo}
-              onChange={(e)=>handleModelDataChange(model.id, 'editModel.drgNo', e.target.value)}
-              readonly={selectId === model.id ? !newFlag : undefined}
-              disabled={model.completed}
-            />
-          }
-          label2="재질"
-          children2={
-            <AntdSelectFill
-              options={metarialSelectList}
-              value={(model as orderModelType)?.tempPrdInfo?.material?.id ?? model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value
+              styles={(selectId === model.id && !newFlag && model.modelStatus !== ModelStatus.REPEAT) || matchFlag ?
+                {ht:'32px', bw:'1px', bc:'#FAAD14', pd:'0'} :
+                {ht:'32px', bw:'0', pd:'0'}
               }
-              onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'model.material.id', e)
-                handleModelDataChange(model.id ?? '', 'tempPrdInfo.material.id', e)
-              }}
-              styles={{ht:'32px', bg: '#FFF', br: '2px'}} dropWidth="180px"
               disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
             />
-          }
-        />
-        
-        <Item
-          label1="원판"
-          children1={
-            <AntdSelectFill
-              options={boardSelectList}
-              value={model?.tempPrdInfo?.board?.id ?? model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-              onChange={(e)=>{
-                  handleModelDataChange(model.id ?? '', 'model.board.id', e)
-                  handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
-              }}
-              styles={{ht:'32px', bg: '#FFF', br: '2px'}}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-            />
-          }
-          label2="제조사"
-          children2={
-            <AntdInput 
-              value={model.editModel?.mnfNm ?? model?.tempPrdInfo?.mnfNm ?? model.currPrdInfo?.mnfNm}
-              onChange={(e)=>{
-                handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
-                handleModelDataChange(model.id ?? '', 'editModel.mnfNm', e.target.value)
-                handleModelDataChange(model.id ?? '', 'tempPrdInfo.mnfNm', e.target.value)
-              }}
-              styles={{ht:'32px'}}
-              readonly={selectId === model.id ? !newFlag : undefined}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-            />
-          }
-        />
-        
-        <Item
-          label1="층" size1={1}
-          children1={
-            <AntdSelect
-              options={generateFloorOptions()}
-              value={model.editModel?.layerEm ?? model.tempPrdInfo?.layerEm ?? model.currPrdInfo?.layerEm ?? "L1"}
-              onChange={(e)=>handleModelDataChange(model.id, 'editModel.layerEm', e)}
-              styles={{ht:'32px', bg: '#FFF', br: '2px'}}
-              disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-            />
-            // <AntdSelectFill
-            //   options={boardSelectList}
-            //   value={model?.tempPrdInfo?.board?.id ?? model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
-            //   onChange={(e)=>{
-            //       handleModelDataChange(model.id ?? '', 'model.board.id', e)
-            //       handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
-            //   }}
-            //   className="w-[160px!important]" styles={{ht:'32px', bg: '#FFF', br: '2px'}}
-            //   disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
-            // />
-          }
-          label2="두께" size2={1}
-          children2={
-            <AntdInput
-              value={model.editModel?.thk ?? model.tempPrdInfo?.thk ?? model.currPrdInfo?.thk}
-              onChange={(e)=>handleModelDataChange(model.id, 'editModel.thk', e.target.value)}
-              type="number"
-              readonly={selectId === model.id ? !newFlag : undefined}
-              disabled={model.completed}
-            />
-          }
-        />
-      </div>
+          </div>
+          </Tooltip>
+        }
+        size2={1}
+        children2={
+          <AntdSelect
+            options={[
+              {value:ModelTypeEm.SAMPLE,label:'샘플'},
+              {value:ModelTypeEm.PRODUCTION,label:'양산'},
+            ]}
+            value={model.editModel?.modelTypeEm ?? model.tempPrdInfo?.modelTypeEm ?? model.currPrdInfo?.modelTypeEm ?? "sample"}
+            onChange={(e)=>handleModelDataChange(model.id, 'editModel.modelTypeEm', e)}
+            styles={{ht:'32px', bw:'0', pd:'0'}}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        }
+      />
 
-      <DividerV className="!h-[123px] border-[#00000025] mr-20"/>
+      <Items2
+        label1="모델명" size1={3}
+        children1={
+          <CustomAutoCompleteLabel
+            ref={el => {
+              // 자동 스크롤 & 포커싱을 위해 Ref 추가
+              if(el && inputRef && inputRef.current && index !== undefined) {
+                inputRef.current[index] = el;
+              }
+            }}
+            option={modelSelectList}
+            label={model.tempPrdInfo?.prdNm ?? model.orderTit}
+            onInputChange={(value) => {
+              if((value.toString()).length < 3) {
+                setModelSelectList([]);
+                setModelNoSelectList([]);
+              }
+              handleModelDataChange(model.id ?? '', 'tempPrdInfo.prdNm', value);
+              handleModelDataChange(model.id ?? '', 'editModel.prdNm', value);
+            }}
+            value={model.currPrdInfo?.modelId}
+            onChange={(value) => {
+              const m = modelList.find(f=>f.id === value);
+              if(m && model.id) {
+                handleModelChange?.(m, model.id);
+              }
+              if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
+                setMatchFlag(true);
+              }
+              setFlag(false);
+            }}
+            clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2" readonly={model.completed}
+            placeholder="모델명 검색 또는 입력 (3글자 이상)" dropdownStyle={{width:350, minWidth:'max-content'}}
+          />
+        }
+        label2="Rev" size2={3}
+        children2={
+          <AntdInput
+            value={model.editModel?.prdRevNo ?? model.tempPrdInfo?.prdRevNo ?? model.currPrdInfo?.prdRevNo}
+            onChange={(e)=>handleModelDataChange(model.id, 'editModel.prdRevNo', e.target.value)}
+            readonly={selectId === model.id ? !newFlag : undefined} styles={{ht:'32px'}}
+            disabled={model.completed}
+          />
+        }
+      />
+      
+      <Items2
+        label1="관리번호"
+        children1={
+          <CustomAutoCompleteLabel
+            option={modelNoSelectList}
+            label={model.currPrdInfo?.prdMngNo}
+            onInputChange={(value) => {
+              if(value.length < 3) {
+                setModelSelectList([]);
+                setModelNoSelectList([]);
+              }
+              handleModelDataChange(model.id ?? '', 'currPrdInfo.prdMngNo', value);
+              setFlag(true);
+            }}
+            value={model.prdMngNo}
+            onChange={(value) => {
+              const m = modelList.find(f=>f.id === value);
+              if(m && model.id) {
+                handleModelChange?.(m, model.id);
+              }
+              if(!matchFlag && model.modelStatus === ModelStatus.NEW) {
+                setMatchFlag(true);
+              }
+              setFlag(false);
+            }}
+            clear={false} inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+            placeholder="관리번호 검색 (3글자 이상)" readonly={model.completed}
+          />
+        }
+        label2="필름번호"
+        children2={
+          <AntdInput
+            value={model.currPrdInfo?.fpNo}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'currPrdInfo.fpNo', e.target.value);
+            }}
+            readonly styles={{ht:'32px', bg:'#FFF'}} disabled={model.completed}
+          />
+        }
+      />
+      
+      <Items2
+        label1="도면번호"
+        children1={
+          <AntdInput
+            value={model.editModel?.drgNo ?? model.tempPrdInfo?.drgNo ?? model.currPrdInfo?.drgNo}
+            onChange={(e)=>handleModelDataChange(model.id, 'editModel.drgNo', e.target.value)}
+            readonly={selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed}
+          />
+        }
+        label2="재질"
+        children2={
+          <AntdSelectFill
+            options={metarialSelectList}
+            value={(model as orderModelType)?.tempPrdInfo?.material?.id ?? model.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value
+            }
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'model.material.id', e)
+              handleModelDataChange(model.id ?? '', 'tempPrdInfo.material.id', e)
+            }}
+            styles={{ht:'32px', bg: '#FFF', br: '2px'}} dropWidth="180px"
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        }
+      />
+      
+      <Items2
+        label1="원판"
+        children1={
+          <AntdSelectFill
+            options={boardSelectList}
+            value={model?.tempPrdInfo?.board?.id ?? model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+            onChange={(e)=>{
+                handleModelDataChange(model.id ?? '', 'model.board.id', e)
+                handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
+            }}
+            styles={{ht:'32px', bg: '#FFF', br: '2px'}}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        }
+        label2="제조사"
+        children2={
+          <AntdInput 
+            value={model.editModel?.mnfNm ?? model?.tempPrdInfo?.mnfNm ?? model.currPrdInfo?.mnfNm}
+            onChange={(e)=>{
+              handleModelDataChange(model.id ?? '', 'model.mnfNm', e.target.value)
+              handleModelDataChange(model.id ?? '', 'editModel.mnfNm', e.target.value)
+              handleModelDataChange(model.id ?? '', 'tempPrdInfo.mnfNm', e.target.value)
+            }}
+            styles={{ht:'32px'}}
+            readonly={selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+        }
+      />
+      
+      <Items2
+        label1="층" size1={1}
+        children1={
+          <AntdSelect
+            options={generateFloorOptions()}
+            value={model.editModel?.layerEm ?? model.tempPrdInfo?.layerEm ?? model.currPrdInfo?.layerEm ?? "L1"}
+            onChange={(e)=>handleModelDataChange(model.id, 'editModel.layerEm', e)}
+            styles={{ht:'32px', bg: '#FFF', br: '2px'}}
+            disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          />
+          // <AntdSelectFill
+          //   options={boardSelectList}
+          //   value={model?.tempPrdInfo?.board?.id ?? model.currPrdInfo?.board?.id ?? boardSelectList?.[0]?.value}
+          //   onChange={(e)=>{
+          //       handleModelDataChange(model.id ?? '', 'model.board.id', e)
+          //       handleModelDataChange(model.id ?? '', 'tempPrdInfo.board.id', e)
+          //   }}
+          //   className="w-[160px!important]" styles={{ht:'32px', bg: '#FFF', br: '2px'}}
+          //   disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
+          // />
+        }
+        label2="두께" size2={1}
+        children2={
+          <AntdInput
+            value={model.editModel?.thk ?? model.tempPrdInfo?.thk ?? model.currPrdInfo?.thk}
+            onChange={(e)=>handleModelDataChange(model.id, 'editModel.thk', e.target.value)}
+            type="number"
+            readonly={selectId === model.id ? !newFlag : undefined}
+            disabled={model.completed}
+          />
+        }
+      />
 
-      <Item
+      <DividerV className="!h-[123px] border-[#00000025]"/>
+
+      <Items2
         label1="발주"
         children1={
           <AntdDatePicker
@@ -400,7 +399,8 @@ const ModelHead:React.FC<Props> = ({
         <FullChip label="폐기" className="!mr-20 !w-80 !h-30"/>
       }
       </div>
-    </div>
+    {/* </div> */}
+    </BlueBox>
   )
 }
 

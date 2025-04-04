@@ -24,6 +24,7 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import BlueBox from "@/layouts/Body/BlueBox";
 
 interface LogEntry {
   date: Date | Dayjs | null;
@@ -283,9 +284,9 @@ const SalesModelTable:React.FC<Props> = ({
           [{ date: dayjs(), content: "", isApproved: false }];
 
       return (
-        <div
+        <BlueBox 
           key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
-          className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 min-w-[1490px]"
+          className="min-w-[1490px]"
         >
           <SalesModelHead
             model={model}
@@ -329,7 +330,7 @@ const SalesModelTable:React.FC<Props> = ({
               tableProps={{split:'none'}}
             />
           </div>
-          <div className="w-full h-center justify-end py-15">
+          <div className="w-full h-center justify-end pt-5">
           { model.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_COMPLETED &&
             <Button
               className="w-[109px] h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
@@ -426,7 +427,7 @@ const SalesModelTable:React.FC<Props> = ({
               </div>
             </div>
           }
-        </div>
+        </BlueBox>
       )})
     }
     </div>

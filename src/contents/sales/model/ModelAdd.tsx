@@ -1,7 +1,9 @@
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Tooltip } from "antd";
+import { patchAPI } from "@/api/patch";
 import { postAPI } from "@/api/post";
 import { getAPI } from "@/api/get";
 import { getPrtCsAPI } from "@/api/cache/client";
@@ -24,6 +26,7 @@ import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
+import { MOCK } from "@/utils/Mock";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -33,6 +36,7 @@ import Edit from '@/assets/svg/icons/memo.svg';
 import Bag from "@/assets/svg/icons/bag.svg";
 
 import { Popup } from "@/layouts/Body/Popup";
+import { RightTab } from "@/layouts/Body/RightTab";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdInput from "@/components/Input/AntdInput";
@@ -41,58 +45,16 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { salesOrderModelAddClmn } from "@/components/ModelTable/Column";
 import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import { MOCK } from "@/utils/Mock";
-import { patchAPI } from "@/api/patch";
-import dayjs from "dayjs";
 import AntdSelectFill from "@/components/Select/AntdSelectFill";
 import CustomAutoCompleteLabel from "@/components/AutoComplete/CustomAutoCompleteLabel";
-import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import { LabelMedium } from "@/components/Text/Label";
+import Items2, { Label } from "@/components/Item/Items2";
+import BlueBox from "@/layouts/Body/BlueBox";
+
 import ModelList from "@/contents/base/model/ModelList";
-import AntdInputFill from "@/components/Input/AntdInputFill";
-
-const Label:React.FC<{label:string, className?:string}> = ({ label, className }) => {
-  return <p className={`h-center ${className}`}>{label}</p>
-}
-
-const Item:React.FC<{
-  children1: React.ReactNode;
-  children2?: React.ReactNode;
-  label1?: string;
-  label2?: string;
-  size1?: number;
-  size2?: number;
-}> = ({
-  label1,
-  label2,
-  children1,
-  children2,
-  size1 = 2,
-  size2 = 2,
-}) => {
-  return (
-    <div className="flex flex-col gap-10 justify-center">
-      <div
-        className="flex flex-col justify-center !h-54"
-        style={{width: 70*size1, minWidth: 70*size1}}
-      >
-        {label1 && <Label label={label1} />}
-        {children1}
-      </div>
-      { children2 &&
-        <div
-          className="flex flex-col justify-center !h-54"
-          style={{width: 70*size2, minWidth: 70*size2}}
-        >
-          {label2 && <Label label={label2} />}
-          {children2}
-        </div>
-      }
-    </div>
-  )
-}
+import BoxHead from "@/layouts/Body/BoxHead";
 
 const ModelAddLayout = () => {
   const router = useRouter();
@@ -390,10 +352,8 @@ const ModelAddLayout = () => {
       <div className="w-full v-between-h-center gap-20 h-full">
         <div className="w-[calc(100%-100px)] h-full !min-w-[1200px]">
           <Popup className="w-full">
-            <div
-              className="flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10"
-            >
-              <div className="w-full min-h-60 h-center gap-15">
+            <BlueBox>
+              <BoxHead>
                 <div className="!flex-1 !max-w-[calc(100%-90px)] flex flex-col gap-15">
                   <div className="h-center gap-15">
                     <div className="h-center gap-5">
@@ -416,7 +376,7 @@ const ModelAddLayout = () => {
                     </div>
                   </div>
                   <div className="h-center gap-15">
-                    <Item
+                    <Items2
                       size1={1}
                       children1={
                         <AntdSelect
@@ -454,7 +414,7 @@ const ModelAddLayout = () => {
                       }
                     />
                     
-                    <Item
+                    <Items2
                       label1="모델명" size1={3}
                       children1={
                         <CustomAutoCompleteLabel
@@ -494,7 +454,7 @@ const ModelAddLayout = () => {
                       }
                     />
 
-                    <Item
+                    <Items2
                       label1="관리번호"
                       children1={
                         <CustomAutoCompleteLabel
@@ -532,7 +492,7 @@ const ModelAddLayout = () => {
                       }
                     />
                     
-                    <Item
+                    <Items2
                       label1="도면번호"
                       children1={
                         <AntdInput
@@ -558,7 +518,7 @@ const ModelAddLayout = () => {
                       }
                     />
                     
-                    <Item
+                    <Items2
                       label1="원판"
                       children1={
                         <AntdSelectFill
@@ -591,7 +551,7 @@ const ModelAddLayout = () => {
                       }
                     />
                     
-                    <Item
+                    <Items2
                       label1="층" size1={1}
                       children1={
                         <AntdSelectFill
@@ -614,7 +574,7 @@ const ModelAddLayout = () => {
                   </div>
                 </div>
                 <div className="w-85">
-                  <Item
+                  <Items2
                     label1="모델 등록일"
                     children1={
                       <div className="h-32 h-center">
@@ -623,7 +583,7 @@ const ModelAddLayout = () => {
                     }
                   />
                 </div>
-              </div>
+              </BoxHead>
               <AntdTable
                 columns={salesOrderModelAddClmn(
                   unitSelectList,
@@ -646,7 +606,7 @@ const ModelAddLayout = () => {
                 styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
                 tableProps={{split:'none'}}
               />
-            </div>
+            </BlueBox>
             <div className="h-center justify-end">
               <Tooltip
                 title={model?.usedYn ? "사용한 모델은 수정할 수 없습니다." : undefined}

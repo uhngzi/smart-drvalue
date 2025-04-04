@@ -1,68 +1,29 @@
-import { Checkbox, Dropdown, InputRef, Space, Tooltip } from "antd";
-import { RefObject, SetStateAction, useEffect, useState } from "react";
+import { Dropdown, InputRef, Space, Tooltip } from "antd";
+import { RefObject, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { getAPI } from "@/api/get";
 
 import { selectType } from "@/data/type/componentStyles";
 import { generateFloorOptions, ModelStatus, ModelTypeEm, SalesOrderStatus } from "@/data/type/enum";
 import { salesOrderProcuctCUType } from "@/data/type/sales/order";
+import { apiAuthResponseType } from "@/data/type/apiResponse";
+import { modelsType } from "@/data/type/sayang/models";
+import { BoardGroupType } from "@/data/type/base/board";
 
 import AntdInput from "../Input/AntdInput";
 import AntdSelect from "../Select/AntdSelect";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
+import AntdSelectFill from "../Select/AntdSelectFill";
+import { DividerV } from "../Divider/Divider";
+import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
+import Items2, { Label } from "../Item/Items2";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
-import CustomAutoComplete from "../AutoComplete/CustomAutoComplete";
-import { useQuery } from "@tanstack/react-query";
-import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
-import { modelsType } from "@/data/type/sayang/models";
-import { getAPI } from "@/api/get";
-import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
-import { BoardGroupType, boardType } from "@/data/type/base/board";
-import AntdSelectFill from "../Select/AntdSelectFill";
-import { DividerV } from "../Divider/Divider";
 
-const Label:React.FC<{label:string,className?:string}> = ({ label,className }) => {
-  return <p className={`h-center ${className}`}>{label}</p>
-}
-
-const Item:React.FC<{
-  children1: React.ReactNode;
-  children2?: React.ReactNode;
-  label1?: string;
-  label2?: string;
-  size1?: number;
-  size2?: number;
-}> = ({
-  label1,
-  label2,
-  children1,
-  children2,
-  size1 = 2,
-  size2 = 2,
-}) => {
-  return (
-    <div className="flex flex-col gap-15 justify-center">
-      <div
-        className="flex flex-col justify-center !h-54"
-        style={{width: 70*size1, minWidth: 70*size1}}
-      >
-        {label1 && <Label label={label1} />}
-        {children1}
-      </div>
-      { children2 &&
-        <div
-          className="flex flex-col justify-center !h-54"
-          style={{width: 70*size2, minWidth: 70*size2}}
-        >
-          {label2 && <Label label={label2} />}
-          {children2}
-        </div>
-      }
-    </div>
-  )
-}
+import BoxHead from "@/layouts/Body/BoxHead";
 
 interface Props {
   read?: boolean;
@@ -139,7 +100,7 @@ const SalesModelHead:React.FC<Props> = ({
   });
 
   return (
-    <div className="w-full min-h-60 h-center gap-15">
+    <BoxHead>
       { !read &&
         <p className="w-24 h-24 bg-back rounded-6 v-h-center ">{model?.index}</p>
       }
@@ -166,7 +127,7 @@ const SalesModelHead:React.FC<Props> = ({
           </div>
         </div>
         <div className="h-center gap-15">
-          <Item
+          <Items2
             size1={1}
             children1={
               <Tooltip title={matchFlag&&!read?"기존 모델을 선택한 경우 수정 또는 반복이어야 합니다" : undefined}>
@@ -211,7 +172,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
 
-          <Item
+          <Items2
             label1="모델명" size1={3}
             children1={
               read ? 
@@ -263,7 +224,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
           
-          <Item
+          <Items2
             label1="관리번호"
             children1={
               read ? 
@@ -309,7 +270,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
           
-          <Item
+          <Items2
             label1="도면번호"
             children1={
               <AntdInput
@@ -331,7 +292,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
           
-          <Item
+          <Items2
             label1="원판"
             children1={
               <AntdSelectFill
@@ -358,7 +319,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
           
-          <Item
+          <Items2
             label1="층" size1={1}
             children1={
               <AntdSelectFill
@@ -383,7 +344,7 @@ const SalesModelHead:React.FC<Props> = ({
 
           <DividerV className="min-h-[123px] border-[#00000025]"/>
 
-          <Item
+          <Items2
             label1="요금 여부" size1={1}
             children1={
               <AntdSelectFill
@@ -417,7 +378,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
 
-          <Item
+          <Items2
             label1="통화" size1={1}
             children1={
               <AntdSelectFill
@@ -449,7 +410,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
 
-          <Item
+          <Items2
             label1="발주"
             children1={
               read && model.orderDt ? <div className="h-32 h-center">{dayjs(model.orderDt).format('YYYY-MM-DD')}</div> :
@@ -477,7 +438,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
 
-          <Item
+          <Items2
             label1="수주단위" size1={1}
             children1={
               <AntdSelectFill
@@ -504,7 +465,7 @@ const SalesModelHead:React.FC<Props> = ({
             }
           />
 
-          <Item
+          <Items2
             label1="수주단가"
             children1={
               <AntdInput 
@@ -561,7 +522,7 @@ const SalesModelHead:React.FC<Props> = ({
           </a>
         </Dropdown>
       }
-    </div>
+    </BoxHead>
   )
 }
 
