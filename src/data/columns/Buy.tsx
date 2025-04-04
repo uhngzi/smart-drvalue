@@ -974,9 +974,7 @@ export const BuyOrderClmn = (
 ]
 
 export const BuyOrderMtPriceClmn = (
-  selectMtPrice : materialPriceType[],
-  setSelectMtPrice : React.Dispatch<SetStateAction<materialPriceType[]>>,
-  selectMtIdx: {mtIdx:string, orderId:string, orderNo: number} | null,
+  item: buyOrderDetailType,
   orderDetails: buyOrderDetailType[],
   setOrderDetails: React.Dispatch<SetStateAction<buyOrderDetailType[]>>,
 ):CustomColumn[] => [
@@ -989,20 +987,15 @@ export const BuyOrderMtPriceClmn = (
     tooltip: '원자재명을 클릭하여 발주 품목의 단가를 선택할 수 있어요',
     render: (_, record:materialPriceType) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)" : ""
         }}
         className="w-full h-full h-center justify-left px-10 cursor-pointer"
         onClick={() => {
-          if(selectMtIdx) {
-            setSelectMtPrice([
-              {...record, orderId: selectMtIdx.orderId},
-              ...selectMtPrice.filter(f=>f.orderId !== selectMtIdx.orderId),
-            ]);
-
+          // handleDataChange(item.id ?? '', "orderId", record.id);
+          if(item.id) {
             const updateData = orderDetails;
-            const index = updateData.findIndex(f=> f.id === selectMtIdx.orderId);
+            const index = updateData.findIndex(f=> f.id === item.id);
             if(index > -1) {
               updateData[index] = { 
                 ...updateData[index],
@@ -1017,6 +1010,7 @@ export const BuyOrderMtPriceClmn = (
                 mtOrderAmount: (record.priceUnit ?? 0) * (record.cntMin ?? 0),
                 mtOrderUnit: record.unitType ?? "",
                 mtOrderTxtur: record.txturType ?? "",
+                orderId: record.id,
               };
         
               const newArray = [
@@ -1041,8 +1035,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1059,8 +1052,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1077,8 +1069,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1095,8 +1086,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center px-10"
@@ -1113,8 +1103,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1131,8 +1120,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1149,8 +1137,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div 
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1167,8 +1154,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-end px-10"
@@ -1185,8 +1171,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record:materialPriceType) => (
       <div
-        style={{background:selectMtPrice
-          .filter(f=>f.id===record.id && f.orderId===selectMtIdx?.orderId)?.length > 0 ?
+        style={{background:record.id === item.orderId ?
           "linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)" : ""
         }}
         className="w-full h-full h-center px-10"
@@ -1489,7 +1474,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '원자재명',
-    minWidth: 80,
+    minWidth: 100,
     dataIndex: 'mtNm',
     key: 'mtNm',
     align: 'center',
@@ -1497,21 +1482,21 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '단위',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderUnit',
     key: 'mtOrderUnit',
     align: 'center',
   },
   {
     title: '재질',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderTxtur',
     key: 'mtOrderTxtur',
     align: 'center',
   },
   {
     title: 'W',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderSizeW',
     key: 'mtOrderSizeW',
     align: 'center',
@@ -1523,7 +1508,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: 'H',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderSizeH',
     key: 'mtOrderSizeH',
     align: 'center',
@@ -1535,7 +1520,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '두께',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderThk',
     key: 'mtOrderThk',
     align: 'center',
@@ -1547,7 +1532,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '무게',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderWeight',
     key: 'mtOrderWeight',
     align: 'center',
@@ -1559,7 +1544,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '수량',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderQty',
     key: 'mtOrderQty',
     align: 'center',
@@ -1571,7 +1556,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '단가',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderInputPrice',
     key: 'mtOrderInputPrice',
     align: 'center',
@@ -1583,7 +1568,7 @@ export const BuyOrderMtViewClmn = (
   },
   {
     title: '금액',
-    width: 100,
+    width: 150,
     dataIndex: 'mtOrderAmount',
     key: 'mtOrderAmount',
     align: 'center',

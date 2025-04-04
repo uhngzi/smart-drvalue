@@ -250,17 +250,22 @@ const BuyOrderPage: React.FC & {
     
   const handlePageMenuClick = (key:number)=>{
     const clmn = BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router)
-    .map((item) => ({
-      title: item.title?.toString() as string,
-      dataIndex: item.dataIndex,
-      width: Number(item.width ?? item.minWidth ?? 0),
-      cellAlign: item.cellAlign,
-    }))
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "excel", showToast);
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "print", showToast);
-    }
+    .map((item, index) => ({
+      key: item.dataIndex,
+      value: item.title?.toString() as string,
+      order: index,
+      // title: item.title?.toString() as string,
+      // dataIndex: item.dataIndex,
+      // width: Number(item.width ?? item.minWidth ?? 0),
+      // cellAlign: item.cellAlign,
+    }));
+    console.log(clmn);
+
+    // if(key === 1) { // 엑셀 다운로드
+    //   exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "excel", showToast);
+    // } else {        // 프린트
+    //   exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "print", showToast);
+    // }
   }
 
   // 결과 모달창을 위한 변수
