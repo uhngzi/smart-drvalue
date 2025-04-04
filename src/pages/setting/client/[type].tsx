@@ -474,7 +474,7 @@ const ClientCuListPage: React.FC & {
             </div>
             <section className="rounded-lg border border-[#D9D9D9] !p-10">
               {prtData?.map((mng: any, idx:any) => mng?.id != "new" ? (
-                <div className="w-full h-40 h-center gap-5">
+                <div className="w-full h-40 h-center gap-5" key={idx}>
                   {mng?.mode !== 'edit' ? (
                     <>
                       <p className="w-50 h-center gap-8">{mng.prtMngNm}</p>
@@ -535,7 +535,7 @@ const ClientCuListPage: React.FC & {
                   )}
                 </div>
               ) : (
-                <div className="w-full h-40 h-center gap-5">
+                <div className="w-full h-40 h-center gap-5" key={idx}>
                   <div className="w-55">
                     <Input size="small" className="!p-0" onChange={({target}) => editPrt("prtMngNm", target.value)}/>
                   </div>
