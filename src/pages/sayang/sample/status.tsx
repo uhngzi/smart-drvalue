@@ -142,7 +142,7 @@ SayangSampleStatPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
     menuTitle="사양 등록 및 현황"
     menu={[
-      {text:'사양 등록', link:'/sayang/sample/wait'},
+      {text:'사양 등록', link:'/sayang/sample/regist'},
       {text:'사양 등록 현황', link:'/sayang/sample/status'},
     ]}
   >{page}</MainPageLayout>

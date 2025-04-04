@@ -249,7 +249,7 @@ const SayangSampleAddPage: React.FC & {
         // 모델 추가 시 임시 저장 후 메인으로 이동
         if(main) {
           router.push({
-            pathname:'/sayang/sample/wait',
+            pathname:'/sayang/sample/regist',
             query: {id: id, text: detailData.specNo}
           });
         }
@@ -449,7 +449,7 @@ const SayangSampleAddPage: React.FC & {
           setDeleted(null);
           showToast("사양 모델 취소 성공", "success");
           if(detailData.specModels?.length && detailData.specModels?.length < 2) {
-            router.push("/sayang/sample/wait");
+            router.push("/sayang/sample/regist");
           } else {
             refetch();
           }
@@ -652,7 +652,7 @@ const SayangSampleAddPage: React.FC & {
               }
             })
             if(flag) {
-              showToast("모델 내 생산 수량을 입력해주세요.", "error");
+              showToast("모델 내 작업량(PNL)을 입력해주세요.", "error");
               return;
             }
             
@@ -724,7 +724,7 @@ const SayangSampleAddPage: React.FC & {
         onOk={()=>{
           setResultOpen(false);
           if(resultType === "cf") {
-            router.push('/sayang/sample/wait');
+            router.push('/sayang/sample/regist');
           } else if(resultType === "del") {
             handleDeleteModel();
           } else if(resultType === "processClose") {

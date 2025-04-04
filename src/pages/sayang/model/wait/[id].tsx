@@ -658,7 +658,7 @@ const SayangModelAddPage: React.FC & {
         type={resultType === "success" ? "confirm" : "error"}
         onOk={()=>{
           setResultOpen(false);
-          if(resultType === "success")  router.push('/sayang/sample/wait');
+          if(resultType === "success")  router.push('/sayang/sample/regist');
         }}
         onCancle={()=>{
           refetch();

@@ -439,8 +439,8 @@ SalesUserEstimatePage.layout = (page: React.ReactNode) => (
   <MainPageLayout
     menuTitle="고객발주/견적"
     menu={[
-      { text: '고객발주', link: '/sales/order' },
-      { text: '견적', link: '/sales/estimate' },
+      { text: '고객발주', link: '/sales/offer/order' },
+      { text: '견적', link: '/sales/offer/estimate' },
     ]}
   >{page}</MainPageLayout>
 );

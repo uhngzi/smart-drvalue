@@ -590,7 +590,7 @@ const OrderAddLayout = () => {
             setAlertOpen(true);
             setAlertType("close");
           } else {
-            router.push("/sales/order");
+            router.push("/sales/offer/order");
           }
         })}
       >
@@ -849,7 +849,7 @@ const OrderAddLayout = () => {
             } else if(alertType === "cancle") {
               handleDeleteOrder();
             } else if(alertType === "discard" || alertType === "close") {
-              router.push('/sales/order');
+              router.push('/sales/offer/order');
             }
 
             setAlertOpen(false);
