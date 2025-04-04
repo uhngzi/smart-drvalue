@@ -49,7 +49,7 @@ const BuyMtListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [ groupCheck, setGroupCheck ] = useState<string | null>(null);
   const [ data, setData ] = useState<Array<materialType>>([]);
-  const { data:queryData, refetch } = useQuery<
+  const { data:queryData, refetch, isFetching } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['setting', 'buy', 'material', type, pagination.current, groupCheck],
@@ -69,7 +69,7 @@ const BuyMtListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         const resData = result.data?.data.map((d:materialType) => ({
           ...d,
-          materialSuppliers: Array.isArray(d.materialSuppliers) ? d.materialSuppliers.map((item: any) => item.id) : [],
+          materialSuppliers: Array.isArray(d.materialSuppliers) ? d.materialSuppliers.map((item: any) => item.supplier.id) : [],
         }))
         setData(resData);
         setTotalData(result.data?.total ?? 0);
@@ -83,7 +83,7 @@ const BuyMtListPage: React.FC & {
     },
   });
   // ---------- 리스트 데이터 끝 ----------
-
+  console.log(isFetching)
   // ---------- 등록 팝업 데이터 시작 -----------
   const [ mtGroupSelectData, setMtGroupSelectData ] = useState<selectType[]>([]);
   const [ addModalInfoList, setAddModalInfoList ] = useState<any[]>(MOCK.mtItems.CUDPopItems);
@@ -253,6 +253,7 @@ const BuyMtListPage: React.FC & {
         mtNm: '',
         mtEnm: "",
         unitType: "",
+        materialSuppliers: [],
         useYn: true,
       });
     }

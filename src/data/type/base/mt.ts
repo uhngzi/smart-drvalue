@@ -24,6 +24,7 @@ export type materialCUType =  {
   materialGroup: {
     id: string | null;
   };
+  materialSuppliers?: {id:string} | string[]
   mtNm: string;
   mtEnm: string;
   unitType: string;
@@ -36,6 +37,7 @@ export const setMaterialCUType = (data: any):materialCUType => {
     materialGroup: {
       id: data.materialGroup.id,
     },
+    materialSuppliers: data.materialSuppliers,
     mtNm: data.mtNm,
     mtEnm: data.mtEnm,
     unitType: data.unitType,

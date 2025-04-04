@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 
@@ -20,12 +20,21 @@ import CustomTree from "@/components/Tree/CustomTree";
 import { treeType } from "@/data/type/componentStyles";
 import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { CheckboxChangeEvent } from "antd";
+import { Button, Checkbox, CheckboxChangeEvent, Dropdown, Input } from "antd";
+
+import dayjs from "dayjs";
+import useToast from "@/utils/useToast";
+
+
+import Search from "@/assets/svg/icons/s_search.svg";
+import Bag from "@/assets/svg/icons/bag.svg";
+import { MoreOutlined } from "@ant-design/icons";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const {showToast, ToastContainer} = useToast();
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -38,6 +47,8 @@ const WkProcessVendorListPage: React.FC & {
   };
 
   // --------- 필요 데이터 시작 ----------
+
+
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
   const { data:queryTreeData } = useQuery<
     apiGetResponseType, Error
@@ -73,10 +84,10 @@ const WkProcessVendorListPage: React.FC & {
   });
 
   const [ dataVendor, setDataVendor ] = useState<Array<partnerRType>>([]);
-  const { data:queryDataVendor } = useQuery<
+  const { data:queryDataVendor, isLoading: vendorLoading } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'client', 'vndr'],
+    queryKey: ['setting', 'client', 'vndr', pagination.current],
     queryFn: async () => {
       setDataVendor([]);
       const result = await getAPI({
@@ -84,11 +95,14 @@ const WkProcessVendorListPage: React.FC & {
         utype: 'tenant/',
         url: 'biz-partner/jsxcrud/many'
       },{
+        limit: pagination.size,
+        page: pagination.current,
         s_query: [{key: "prtTypeEm", oper: "eq", value: "vndr"}]
       });
 
       if (result.resultCode === 'OK_0000') {
         setDataVendor(result.data?.data ?? []);
+        setTotalData(result.data.total ?? 0);
         console.log('vendor : ', result.data?.data);
       } else {
         console.log('error:', result.response);
@@ -145,21 +159,26 @@ const WkProcessVendorListPage: React.FC & {
   // ---------- 필요 데이터 끝 -----------
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<processVendorRType>>([]);
+  const [ data, setData ] = useState<Array<any>>([]);
+  const [childCheckId, setChildCheckId] = useState<string | null>(null);
+  useEffect(() => {
+    if (childCheckId == null) {
+      setData([]);
+    }
+  },[childCheckId]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['processVendor', pagination.current],
+    queryKey: ['processVendor', pagination.current, childCheckId],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
-        url: 'process-vendor/jsxcrud/many'
+        url: `process-vendor/jsxcrud/many`
       },{
-        limit: pagination.size,
-        page: pagination.current,
+        s_query: childCheckId ? { "process.id": { "$eq": childCheckId } } : undefined
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -172,6 +191,7 @@ const WkProcessVendorListPage: React.FC & {
       setDataLoading(false);
       return result;
     },
+    enabled: !!childCheckId, // childCheckId가 있을 때만 쿼리 실행
   });
   // ---------- 리스트 데이터 끝 ----------
 
@@ -237,69 +257,89 @@ const WkProcessVendorListPage: React.FC & {
   const handleCheck = (e: CheckboxChangeEvent) => {
   }
 
+  
+  function handleSelect(id: string) {
+    const selectId = id;
+    setChildCheckId(prev => prev === selectId ? null : selectId);
+  }
+  
+  function addVendor(record: partnerRType) {
+      if(data.find(item => item.vendor.id === record.id)) {
+        showToast('이미 등록된 공급처입니다.', 'error');
+        return;
+      }
+      const group = dataGroup.find(group => group.processes?.some(proc => proc.id === childCheckId));
+      const newData = {
+        process: {id: childCheckId},
+        processGroup: {id: group?.id ?? ''},
+        vendor: {id: record.id},
+        ordNo:0,
+        useYn: true,
+      }
+      const renderAddData = {
+        id: 'new',
+        processGroup: {id: group?.id ?? '', prcGrpNm: group?.prcGrpNm ?? ''},
+        process : {id: childCheckId, prcNm: group?.processes?.find(proc => proc.id === childCheckId)?.prcNm ?? ''},
+        vendor : {id: record.id, prtNm: record.prtNm},
+        createdAt: dayjs().format('YYYY-MM-DD'),
+        useYn: true,
+      }
+      console.log(newData);
+      setData(prev => ([renderAddData, ...prev]))
+  }
+  console.log(data)
   return (
     <>
-      {dataLoading && <>Loading...</>}
-      {!dataLoading &&
+      {(vendorLoading) && <>Loading...</>}
+      {!vendorLoading &&
       <>
         <div className="w-full flex gap-30">
-          <div className="w-[30%]">
+          <div className="w-[30%] rounded-14 p-20" style={{border: '1px solid #D9D9D9'}}>
             <CustomTreeCheck
               data={treeData}
               childCheck={true}
+              childCheckId={childCheckId}
+              setChildCheckId={handleSelect}
               onChange={handleCheck}
             />
           </div>
-          <div className="w-[70%]">
+          <div className="w-[70%] flex flex-col gap-15">
             <AntdTableEdit
               columns={[
                 {
-                  title: 'No',
+                  title: '',
                   width: 50,
                   dataIndex: 'no',
                   align: 'center',
-                  render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
                 },
                 {
                   title: '공정그룹명',
                   dataIndex: 'processGroup.prcGrpNm',
                   key: 'processGroup.prcGrpNm',
                   align: 'center',
-                  editable: true,
-                  editType: 'select',
-                  selectOptions: dataGroup?.map((item:processGroupRType)=>({value:item.id,label:item.prcGrpNm})) ?? [],
-                  selectValue: 'processGroup.id',
-                  req: true,
+                  
                 },
                 {
                   title: '공정명',
                   dataIndex: 'process.prcNm',
                   key: 'process.prcNm',
                   align: 'center',
-                  editable: true,
-                  editType: 'select',
-                  selectOptions: dataProcess?.map((item:processRType)=>({value:item.id,label:item.prcNm})) ?? [],
-                  selectValue: 'process.id',
-                  req: true,
+                  
                 },
                 {
                   title: '공급처명',
                   dataIndex: 'vendor.prtNm',
                   key: 'vendor.prtNm',
                   align: 'center',
-                  editable: true,
-                  editType: 'select',
-                  selectOptions: dataVendor?.map((item:partnerRType)=>({value:item.id,label:item.prtNm})) ?? [],
-                  selectValue: 'vendor.id',
-                  req: true,
+                  
                 },
                 {
                   title: '생성일',
                   dataIndex: 'createdAt',
                   key: 'createdAt',
                   align: 'center',
-                  editable: true,
-                  editType: 'date',
+                  
+                  render: (item: string) => item?.substring(0, 10),
                 },
                 {
                   title: '사용여부',
@@ -307,15 +347,110 @@ const WkProcessVendorListPage: React.FC & {
                   dataIndex: 'useYn',
                   key: 'useYn',
                   align: 'center',
-                  editable: true,
-                  editType: 'toggle',
+                  render: (item: boolean) => item ? "사용" : "미사용",
+                },
+                {
+                  title: '',
+                  width: 30,
+                  dataIndex: 'vendor.id',
+                  key: 'useYn',
+                  align: 'center',
+                  render: (item: boolean) => (
+                    <Dropdown trigger={['click']} menu={{ items:[
+                      {
+                        label: <div className="h-center gap-5"> <p className="w-16 h-16"><Bag/></p>외주처 지정해제</div>,
+                        key: 0,
+                        onClick: () => {}
+                      },
+                    ]}}>
+                    <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
+                  </Dropdown>
+                  )
                 },
               ]}
               data={data}
             />
+            <div className="v-between-h-center">
+              <p>총 {totalData}건</p>
+              <div className="flex">
+                <Input className="!rounded-0 w-[350px]" placeholder="외주처명 또는 업종 검색"/>
+                <Button className="!rounded-0 !w-38 !p-0"><p className="w-16 h-16"><Search /></p></Button>
+              </div>
+            </div>
+            
+            <AntdTable
+              columns={[
+                {
+                  title: '',
+                  width: 50,
+                  dataIndex: 'id',
+                  render: (_, record) => <Button size="small" onClick={() => addVendor(record)}>추가</Button>,
+                  align: 'center',
+                },
+                {
+                  title: '거래처명',
+                  dataIndex: 'prtNm',
+                  key: 'prtNm',
+                  align: 'center',
+                },
+                {
+                  title: '식별코드',
+                  width: 65,
+                  dataIndex: 'prtTypeEm',
+                  key: 'prtTypeEm',
+                  align: 'center',
+                },
+                {
+                  title: '축약명',
+                  width: 90,
+                  dataIndex: 'prtSnm',
+                  key: 'prtSnm',
+                  align: 'center',
+                },
+                {
+                  title: '영문명',
+                  width: 90,
+                  dataIndex: 'prtEngNm',
+                  key: 'prtEngNm',
+                  align: 'center',
+                },
+                {
+                  title: '영문축약',
+                  width: 65,
+                  dataIndex: 'prtEngSnm',
+                  key: 'prtEngSnm',
+                  align: 'center',
+                },
+                {
+                  title: '사업자등록번호',
+                  width: 130,
+                  dataIndex: 'prtRegNo',
+                  key: 'prtRegNo',
+                  align: 'center',
+                },
+                {
+                  title: '법인등록번호',
+                  width: 130,
+                  dataIndex: 'prtCorpRegNo',
+                  key: 'prtCorpRegNo',
+                  align: 'center',
+                },
+              ]}
+              styles={{round:'0'}}
+              data={dataVendor}
+            />
+
+            <div className="w-full h-50 h-center justify-end">
+              <AntdPagination
+                current={pagination.current}
+                total={totalData}
+                size={pagination.size}
+                onChange={handlePageChange}
+              />
+            </div>
           </div>
         </div>
-        <div className="v-between-h-center">
+        {/* <div className="v-between-h-center">
           <p>총 {totalData}건</p>
           <div
             className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
@@ -373,7 +508,7 @@ const WkProcessVendorListPage: React.FC & {
             size={pagination.size}
             onChange={handlePageChange}
           />
-        </div>
+        </div> */}
       </>}
         
       <AntdModal
@@ -436,18 +571,19 @@ const WkProcessVendorListPage: React.FC & {
         contents={resultType === "success" ? <div>공정 공급처 등록이 완료되었습니다.</div> : <div>공정 공급처 등록이 실패하였습니다.</div>}
         type={resultType} 
         onOk={()=>{
-          refetch();
+          // refetch();
           setResultOpen(false);
         }}
         hideCancel={true}
         theme="base"
       />
+      <ToastContainer/>
     </>
   )
 }
 
 WkProcessVendorListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'70px'}}
+  <SettingPageLayout styles={{pd:'50px'}}
     menu={[
       { text: '공정', link: '/setting/wk/process/list' },
       { text: '공정 공급처', link: '/setting/wk/process/vendor' },
