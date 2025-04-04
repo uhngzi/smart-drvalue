@@ -131,8 +131,10 @@ const AntdTableStyled = styled.div<{
     & > tr:last-child>th {
       /* padding-bottom: 10px; */
     }
+    & .hidden-column {
+      display: none;
+    }
     .req { color: #1814F3 !important; }
-
     & .ant-table-cell {
       height: ${({ $thHeight }) => $thHeight};
       padding: ${({ $thPadding }) => $thPadding};
@@ -172,7 +174,9 @@ const AntdTableStyled = styled.div<{
 
   .ant-table-tbody {
     background-color: ${({ $tdBackground }) => $tdBackground };
-
+    & .hidden-column {
+      display: none;
+    }
     & .ant-table-cell {
       height: ${({ $tdHeight }) => $tdHeight};
       padding: ${({ $tdPadding }) => $tdPadding};

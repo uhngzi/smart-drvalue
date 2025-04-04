@@ -81,13 +81,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
 
   function setData (field:string, value:any) {
     dataRef.current[field] = value
-    
   }
   useEffect(() => {
     dataRef.current = data
   },[data])
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
-
+  console.log(items)
   useEffect(() => {
     setFormData(data);
   }, [data]);
@@ -212,6 +211,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           onChange={(value) => {setData(item.name, value)}}
                         />
                       )}
+                      {}
                       {item.type === "date" && (
                         <DatePicker
                           placeholder={item?.placeholder}
