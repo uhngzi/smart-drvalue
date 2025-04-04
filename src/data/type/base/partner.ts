@@ -49,6 +49,7 @@ export type partnerCUType = {
   prtFax: string;
   prtEmail: string;
   emp?: { id?: string; };
+  managers?: Array<partnerMngRType>;
 }
 
 export const setDataPartnerType = (data:any):partnerCUType => {
@@ -72,6 +73,7 @@ export const setDataPartnerType = (data:any):partnerCUType => {
     prtFax: data.prtFax || "",
     prtEmail: data.prtEmail || "",
     emp: data.emp ? { id: data.emp.id } : undefined, // emp가 null이면 undefined
+    managers: data.managers || [],
   };
 }
 export const newDataPartnerType = ():partnerCUType => {
@@ -94,6 +96,7 @@ export const newDataPartnerType = ():partnerCUType => {
     prtFax: '',
     prtEmail: '',
     emp: {},
+    managers: [],
   }
 }
 

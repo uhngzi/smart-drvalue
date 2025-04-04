@@ -12,6 +12,7 @@ export type materialType = {
     updatedAt?: string;
     deletedAt?: string;
   };
+  materialSuppliers?: {id:string} | string[]
   useYn: boolean;
   createdAt?: string;
   updatedAt?: string;
