@@ -9,11 +9,13 @@ import { client } from '@/api/lib/reactQuery';
 
 import '@/styles/fonts.css';
 import '@/styles/globals.css';
+import "react-toastify/dist/ReactToastify.css";
 
 import StyledComponentsRegistry from '@/utils/registry';
 
 import { UserProvider } from '@/data/context/UserContext';
 import { BaseProvider } from '@/data/context/BaseContext';
+import { ToastContainer } from 'react-toastify';
 
 
 type AppPropsWithLayout = AppProps & {
@@ -43,6 +45,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           },
         }}
       >
+        <ToastContainer
+            position="top-right"
+            limit={1}
+            closeButton={false}
+            autoClose={4000}
+            hideProgressBar
+        />
         <AntdApp>
           <StyledComponentsRegistry>
             {Component.layout ? (
