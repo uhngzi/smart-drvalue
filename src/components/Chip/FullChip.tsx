@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 interface Props {
   label: string;
-  state?: 'purple' | 'pink' | 'yellow' | 'mint' | 'default';
+  state?: 'purple' | 'pink' | 'yellow' | 'mint' | 'line' | 'default';
   className?: string;
   click?: () => void;
 }
@@ -21,6 +21,7 @@ const FullChip: React.FC<Props> = ({
       case 'pink' : setBg('bg-[#D456FD20]'); setFc('text-[#D456FD]'); break;
       case 'yellow' : setBg('bg-[#FFA75620]'); setFc('text-[#FFA756]'); break;
       case 'mint' : setBg('bg-[#00B69B20]'); setFc('text-[#00B69B]'); break;
+      case 'line' : setBg('bg-white'); setFc('!text-[#444444] border-1 border-[#4880FF]'); break;
       case 'default' : setBg('bg-[#8D8D8D20]'); setFc('text-[#8D8D8D]'); break;
       default : setBg('bg-[#8D8D8D20]'); setFc('text-[#8D8D8D]'); break;
     }
