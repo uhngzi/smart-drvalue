@@ -79,10 +79,11 @@ export type processVendorRType = {
 }
 
 export type processVendorCUType = {
-  process: { id: string; };
+  process: { id: string|null; };
   processGroup: { id: string; };
   vendor: { id: string; };
   useYn: boolean;
+  ordNo?: number|string;
 }
 
 export const newDataProcessVendorCUType = ():processVendorCUType => {
