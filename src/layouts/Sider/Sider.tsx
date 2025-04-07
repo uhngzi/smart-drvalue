@@ -187,7 +187,8 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col max-h-[calc(100%-230px)] overflow-y-auto overflow-x-hidden">
+
+      <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         <Menu
           mode="inline"
           items={sider}
@@ -195,14 +196,14 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
             const it: any = item;
             router.push(`/${it.props.title}`);  //title이 실제 url이므로 title 추출
           }}
-          className="sider__menu h-[100vh]"
+          className="sider__menu"
           inlineCollapsed={collapsed}
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
           selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
         />
       </div>
       
-      <div className="flex flex-col mt-[auto] h-[150px]">
+      <div className="flex flex-col h-[150px]">
         <Menu
           mode="vertical"
           items={[
@@ -251,7 +252,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               }
             },
           ]}
-          className="sider__menu h-[100vh]"
+          className="sider__menu"
           inlineCollapsed={collapsed}
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
           selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
@@ -266,10 +267,11 @@ const SiderStyled = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 
   width: ${({ $width }) => $width};
-  height: 100%;
-  max-height: 100vh;
+  height: calc(100vh - 10px);
+  max-height: calc(100vh - 15px);
 
   background: white;
   

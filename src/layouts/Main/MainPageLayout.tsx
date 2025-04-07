@@ -68,7 +68,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
   // }, []);
   
   return (
-    <div className="flex" key="mainPageLayout">
+    <div className="flex max-h-[100vh]" key="mainPageLayout">
       <div>
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
@@ -81,7 +81,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
         { !modal && <>
           <MainHeader title={menuTitle} />
           
-          <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
+          <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40 mb-40">
             <Contents padding={pd} bg={bg} >
               { router.pathname !== "/" && selectMenu?.children && selectMenu?.children?.length > 1 && 
                 <TabLarge

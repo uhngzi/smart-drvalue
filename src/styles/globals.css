@@ -28,6 +28,8 @@ body.no-width{
 }
 body {
   min-width: 1920px;
+
+  overflow-y: hidden;
   
   &::-webkit-scrollbar {
     width: 10px;
