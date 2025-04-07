@@ -171,7 +171,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   useEffect(() => {
     setMounted(true);
   }, []);
-  
   if(!mounted)      return null;
   if(menuLoading)   return;
 
