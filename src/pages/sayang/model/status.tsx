@@ -145,9 +145,9 @@ const SayangModelStatPage: React.FC & {
         cellAlign: item.cellAlign,
       }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양모델현황", "excel", showToast, "models", "core-d1");
     } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "모델현황", "print", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양모델현황", "print", showToast);
     }
   }
   

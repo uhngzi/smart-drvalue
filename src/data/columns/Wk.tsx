@@ -103,8 +103,8 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
-    title: 'PCS SIZE',
-    width: 100,
+    title: 'PCS W * PCS H',
+    width: 130,
     dataIndex: 'specModel.pcsW*specModel.pcsL',
     key: 'specModel.pcsW*specModel.pcsL',
     align: 'center',
@@ -121,8 +121,8 @@ export const WkPalnWaitClmn = (
     )
   },
   {
-    title: 'KIT SIZE',
-    width: 100,
+    title: 'KIT W * KIT H',
+    width: 130,
     dataIndex: 'specModel.kitW*specModel.kitL',
     key: 'specModel.kitW*specModel.kitL',
     align: 'center',
@@ -139,8 +139,8 @@ export const WkPalnWaitClmn = (
     )
   },
   {
-    title: '재단 SIZE',
-    width: 100,
+    title: '재단 W * 재단 H',
+    width: 130,
     dataIndex: 'specModel.pnlW*specModel.pnlL',
     key: 'specModel.pnlW*specModel.pnlL',
     align: 'center',
@@ -735,7 +735,7 @@ export const WKStatusInClmn = (
     align: 'center',
   },
   {
-    title: '제품 Size',
+    title: '제품 W * 제품 H',
     width: 120,
     dataIndex: 'specModel.spec.wksizeW*specModel.spec.wksizeH',
     key: 'specModel.spec.wksizeW*specModel.spec.wksizeH',
@@ -750,7 +750,7 @@ export const WKStatusInClmn = (
     )
   },
   {
-    title: '판넬 Size',
+    title: '판넬 W * 판넬 H',
     width: 120,
     dataIndex: 'specModel.spec.stdW*specModel.spec.stdH',
     key: 'specModel.spec.stdW*specModel.spec.stdH',
@@ -905,7 +905,7 @@ export const WkStatusOutClmn = (
     align: 'center',
   },
   {
-    title: '제품 Size',
+    title: '제품 W * 제품 H',
     width: 120,
     dataIndex: 'specModel.spec.wksizeW*specModel.spec.wksizeH',
     key: 'specModel.spec.wksizeW*specModel.spec.wksizeH',
@@ -920,7 +920,7 @@ export const WkStatusOutClmn = (
     )
   },
   {
-    title: '판넬 Size',
+    title: '판넬 W * 판넬 H',
     width: 120,
     dataIndex: 'specModel.spec.stdW*specModel.spec.stdH',
     key: 'specModel.spec.stdW*specModel.spec.stdH',

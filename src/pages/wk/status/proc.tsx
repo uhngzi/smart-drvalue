@@ -165,7 +165,7 @@ const WKStatusProcPage: {
     }
   }, [open])
   // ------------ 디테일 데이터 세팅 ------------ 끝
-  
+  ///api/serv/core-d2/v1/tenant//excel-download/jsxcrud
   const handlePageMenuClick = (key:number)=>{
     const clmn = WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)
     .map((item) => ({
@@ -175,7 +175,7 @@ const WKStatusProcPage: {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정현황", "excel", showToast, "worksheet/production-status/process-status", "core-d2");
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "공정현황", "print", showToast);
     }

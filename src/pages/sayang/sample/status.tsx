@@ -79,7 +79,7 @@ const SayangSampleStatPage: React.FC & {
     }
   }, [drawerOpen]);
   // ------------ 거래처 드로워 데이터 세팅 ------------ 끝
-  
+
   const handlePageMenuClick = (key:number)=>{
     const clmn = specStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)
       .map((item) => ({
@@ -89,9 +89,9 @@ const SayangSampleStatPage: React.FC & {
         cellAlign: item.cellAlign,
       }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "excel", showToast, "spec", "core-d1");
     } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양현황", "print", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "print", showToast);
     }
   }
 

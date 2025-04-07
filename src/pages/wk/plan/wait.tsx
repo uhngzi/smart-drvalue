@@ -122,9 +122,9 @@ const WkPlanWaitPage: React.FC & {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "생산계획대기", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "생산대기", "excel", showToast, "worksheet/wait-for-production-plan", "core-d2");
     } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "생산계획대기", "print", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "생산대기", "print", showToast);
     }
   }
   

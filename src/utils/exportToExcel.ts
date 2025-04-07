@@ -32,24 +32,32 @@ export const exportToExcelAndPrint = async (
     });
 
     const cal = columns.flatMap((item, index) => {
-      const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
-      const values = item.title?.toString().split(/[/|*]/); // value도 같은 방식으로 분리
-    
-      return keys.map((key:string, i:number) => ({
-        key: key.trim(),
-        value: values?.[i]?.trim() || "",
-        order: index + 1 + i, // order 증가
-      }));
+      if(item.title.includes("M/K") || item.title.includes("S/M") ||
+        item.title.includes("Pcs/Kit") || item.title.includes("Kit/Pnl") ||
+        item.title.includes("Pcs/Sht") || item.title.includes("Pnl/Sht")) {
+        return {
+          key: item.dataIndex,
+          value: item.title,
+        };
+      } else {
+        const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
+        const values = item.title?.toString().split(/[/|*]/); // value도 같은 방식으로 분리
+
+        return keys.map((key:string, i:number) => ({
+          key: key.trim(),
+          value: values?.[i]?.trim() || "",
+        }));
+      }
     });
 
     const result = await postAPI({
       type: excelType, 
       utype: 'tenant/',
       jsx: 'jsxcrud',
-      url: `${excelUrl}/excel-download/jsxcrud`,
+      url: `${excelUrl}/excel-download/jsxcrud?sort=createdAt,DESC`,
       etc: true,
-    }, {cal: cal});
-    console.log(JSON.stringify({cal: cal}));
+    }, {cal: cal.filter(f=>f.key !== 'index' && f.key !== 'check').map((item, index)=>({...item, order:index+1}))});
+    console.log(JSON.stringify({cal: cal.filter(f=>f.key !== 'index' && f.key !== 'check').map((item, index)=>({...item, order:index+1}))}));
 
     if(result.resultCode === 'OK_0000') {
       const fileId = result.data.data as string;
@@ -68,6 +76,13 @@ export const exportToExcelAndPrint = async (
     } else {
       const msg = result.response?.data?.message;
       showToast?.(msg, "error");
+      toast.update(toastId, {
+        render: "엑셀 파일 다운로드를 하던 중에 문제가 생겼습니다. 잠시후에 시도해주세요.",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+        className: "custom-toast",
+      });
       return;
     }
     return;

@@ -2520,13 +2520,13 @@ export const sayangModelStatusClmn = (
     align: 'center',
   },
   {
-    title: '동박',
-    width: 120,
-    dataIndex: 'copIn',
-    key: 'copIn',
+    title: '동박외층/동박내층',
+    width: 150,
+    dataIndex: 'copOut/copIn',
+    key: 'copOut/copIn',
     align: 'center',
-    render: (value:number, record:modelsType) => {
-      return record.copOut+"(외) / "+value+"(내)";
+    render: (_,record:modelsType) => {
+      return record.copOut+" / "+record.copIn+"";
     }
   },
   {

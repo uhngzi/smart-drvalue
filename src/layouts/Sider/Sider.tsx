@@ -1,29 +1,30 @@
-import { useRouter } from "next/router"
-
-import Logo from "@/assets/logo/gpn-logo.png"
-import LogoSY from "@/assets/logo/sy-logo.png"
-
-import Star from "@/assets/svg/icons/star.svg"
-import DashBoard from "@/assets/svg/icons/dashboard.svg"
-import Buy from "@/assets/svg/icons/buy.svg"
-import Kpi from "@/assets/svg/icons/kpi.svg"
-import Mng from "@/assets/svg/icons/mng.svg"
-import Sales from "@/assets/svg/icons/sales.svg"
-import Sayang from "@/assets/svg/icons/sayang.svg"
-import Wk from "@/assets/svg/icons/l_calendar.svg"
-import MenuIcon from "@/assets/svg/icons/l_menu.svg"
-import Setting from "@/assets/svg/icons/s_setting.svg"
-import Logout from "@/assets/svg/icons/logout.svg"
-import Login from "@/assets/svg/icons/s_login.svg"
-import Err from "@/assets/svg/icons/s_excalm.svg"
-
 import { Menu } from "antd";
-import { ItemType, MenuItemType } from "antd/es/menu/interface";
-import styled from "styled-components";
+import cookie from "cookiejs";
 import Image from "next/image";
-import { useEffect, useState } from "react"
-import { loginCheck, logout } from "@/utils/signUtil"
-import cookie from "cookiejs"
+import styled from "styled-components";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { ItemType, MenuItemType } from "antd/es/menu/interface";
+
+import Logo from "@/assets/logo/gpn-logo.png";
+import LogoSY from "@/assets/logo/sy-logo.png";
+import Star from "@/assets/svg/icons/star.svg";
+import DashBoard from "@/assets/svg/icons/dashboard.svg";
+import Buy from "@/assets/svg/icons/buy.svg";
+import Kpi from "@/assets/svg/icons/kpi.svg";
+import Mng from "@/assets/svg/icons/mng.svg";
+import Sales from "@/assets/svg/icons/sales.svg";
+import Sayang from "@/assets/svg/icons/sayang.svg";
+import Wk from "@/assets/svg/icons/l_calendar.svg";
+import MenuIcon from "@/assets/svg/icons/l_menu.svg";
+import Setting from "@/assets/svg/icons/s_setting.svg";
+import Logout from "@/assets/svg/icons/logout.svg";
+import Login from "@/assets/svg/icons/s_login.svg";
+import Err from "@/assets/svg/icons/s_excalm.svg";
+
+import { loginCheck, logout } from "@/utils/signUtil";
+
+import { useMenu } from "@/data/context/MenuContext";
 
 interface Props {
   collapsed: boolean;
@@ -32,6 +33,7 @@ interface Props {
 
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
+  const { menu, menuLoading } = useMenu();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
@@ -46,7 +48,19 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const [signIn, setSignIn] = useState<boolean>(false);
   useEffect(()=>{
     setSignIn(loginCheck);
-  }, [signIn])
+  }, [signIn]);
+
+  useEffect(()=>{
+    if(!menuLoading) {
+      // console.log(menu);
+      menu?.map((m1) => ({
+        key: '/',
+        title:'/',
+        label: '홈 피드',
+        // icon: m1.menuNmOrigin === '' ? <p className={iconClassNm}><DashBoard /></p>,
+      }))
+    }
+  }, [menuLoading, menu])
 
   const items: ItemType<MenuItemType>[] = [
     {

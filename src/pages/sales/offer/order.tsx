@@ -111,7 +111,7 @@ const SalesUserPage: React.FC & {
     }))
 
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast, "sales-order/product/worksheet/detail", "core-d1");
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "excel", showToast, "sales-orders", "core-d1");
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "고객발주", "print", showToast);
     }

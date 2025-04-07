@@ -7,6 +7,8 @@ import { MoreOutlined } from "@ant-design/icons";
 import Excel from "@/assets/png/excel.png"
 import Print from "@/assets/png/print.png"
 import { LabelMedium } from "@/components/Text/Label";
+import AntdSelect from "@/components/Select/AntdSelect";
+import AntdInput from "@/components/Input/AntdInput";
 
 interface Props {
   totalData: number;
@@ -57,6 +59,16 @@ export const ListPagination: React.FC<Props> = ({
         {titleBtn}
       </div>
       <div className="h-50 gap-20 h-center">
+        <div className="flex h-center gap-5">
+          <AntdSelect
+            options={[]}
+            placeholder="목록"
+          />
+          <AntdInput
+            className="!min-w-[170px]"
+            placeholder="키워드 입력 (2글자 이상)"
+          />
+        </div>
         <span>총 {(totalData ?? 0).toLocaleString()}건</span>
         <Pagination 
           size="small"

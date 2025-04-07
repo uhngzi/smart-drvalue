@@ -70,7 +70,7 @@ const BuyCostStatusPage: React.FC & {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가현황", "excel", showToast, "worksheet/vender-price", "core-d2");
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "외주단가현황", "print", showToast);
     }

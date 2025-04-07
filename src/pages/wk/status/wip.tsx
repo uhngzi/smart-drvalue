@@ -203,9 +203,9 @@ const WKStatusWIPPage: {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "excel", showToast);
     } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정현황", "print", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "print", showToast);
     }
   }
 

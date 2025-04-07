@@ -86,7 +86,7 @@ const WKStatusOutPage: {
     }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
-
+  
   const handlePageMenuClick = (key:number)=>{
     const clmn = WkStatusOutClmn(totalData, pagination, setPartnerData, checkeds, setCheckeds, handleCheckedAllClick)
     .map((item) => ({
@@ -96,7 +96,7 @@ const WKStatusOutPage: {
       cellAlign: item.cellAlign,
     }))
     if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "excel", showToast);
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "excel", showToast, "worksheet/production-status/input-status", "core-d2");
     } else {        // 프린트
       exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "print", showToast);
     }

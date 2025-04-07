@@ -977,7 +977,7 @@ const OrderAddLayout = () => {
                     />
 
                     <Items2
-                      label1="단가"
+                      label1="단가" size1={1}
                       children1={
                         <AntdInput
                           value={item.mtOrderInputPrice}
@@ -1239,6 +1239,212 @@ const OrderAddLayout = () => {
             // 스크롤 자동을 위해 ref 추가
             ref={el => {if(el)  stepRef.current[3] = el;}}
           >
+            { orderDetails.length > 0 && orderDetails.map((item, index) => (
+              <BlueBox key={index}>
+                <BoxHead>
+                  <div className="w-24 h-24 bg-back rounded-4 v-h-center">
+                    {index+1}
+                  </div>
+                  <Items2
+                    label1="원자재 그룹 선택" size1={3}
+                    children1={
+                      <AntdSelectFill
+                        options={[
+                          {value:"직접입력", label:"직접입력"},
+                          ...(mtGrp.map((item)=>({
+                            value:item.id,
+                            label:item.mtGrpNm ?? "",
+                          })))
+                        ]}
+                        value={item.materialGrpIdx}
+                        onChange={(e)=>{
+                          if(e+"" === "직접입력") setSelectMtIdx(null);
+                          handleDataChange(item.id ?? '', "materialGrpIdx", e);
+                          handleDataChange(item.id ?? '', "materialIdx", null);
+                          handleDataChange(item.id ?? '', "mtNm", null);
+                        }}
+                        placeholder="원자재 그룹" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="원자재 선택" size1={3}
+                    children1={
+                      item.materialGrpIdx === "직접입력" ?
+                      <AntdInput
+                        value={item.mtNm}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtNm", e.target.value)}
+                        placeholder="원자재명 입력"
+                      />
+                      :
+                      <AntdSelect
+                        options={(mtGrp
+                          .find(f=>f.id === item.materialGrpIdx)?.materials ?? [])
+                          .map((item) => ({
+                            value:item.id,
+                            label:item.mtNm ?? ""
+                          })
+                        )}
+                        value={item.materialIdx}
+                        onChange={(e)=>{
+                          if(typeof e === "string")
+                            setSelectMtIdx({mtIdx:e, orderId:item.id ?? "", orderNo: index+1});
+                          handleDataChange(item.id ?? '', "materialIdx", e);
+                        }}
+                        placeholder="원자재 선택" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="단위"
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderUnit}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderUnit", e.target.value)}
+                        placeholder="단위 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="재질"
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderTxtur}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderTxtur", e.target.value)}
+                        placeholder="재질 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="W" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderSizeW}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeW", e.target.value)}
+                        type="number" placeholder="W 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="H" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderSizeH}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeH", e.target.value)}
+                        type="number" placeholder="H 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="두께" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderThk}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderThk", e.target.value)}
+                        type="number" placeholder="두께 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="무게" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderWeight}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderWeight", e.target.value)}
+                        type="number" placeholder="무게 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="수량" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderQty}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderQty", e.target.value)}
+                        type="number" placeholder="수량 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="단가" size1={1}
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderInputPrice}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderInputPrice", e.target.value)}
+                        type="number" placeholder="단가 입력"
+                      />
+                    }
+                  />
+
+                  <Items2
+                    label1="금액"
+                    children1={
+                      <AntdInput
+                        value={item.mtOrderAmount}
+                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderAmount", e.target.value)}
+                        type="number" placeholder="금액 입력"
+                      />
+                    }
+                  />
+
+                  <div className="flex-1 h-center justify-end">
+                    <Dropdown trigger={['click']} menu={{ items:[{
+                      label: 
+                        <div className="text-[red] h-center gap-5">
+                          <p className="w-16 h-16"><Trash /></p>
+                          삭제
+                        </div>,
+                      key: 0,
+                      onClick:()=>{
+                        handleDeleteMt(index);
+                      }}
+                    ]}}>
+                      <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          <div className="w-24 h-24 cursor-pointer v-h-center">
+                            <p className="w-16 h-16"><Edit/></p>
+                          </div>
+                        </Space>
+                      </a>
+                    </Dropdown>
+                  </div>
+                </BoxHead>
+                <div>
+                  { !item.materialIdx && item.materialGrpIdx !== "직접입력" &&
+                    <div className="w-full h-50 v-h-center bg-white">
+                    원자재 선택 시 구매처에 설정된 단가 목록을 확인할 수 있습니다.
+                    </div>
+                  }
+                  { item.materialIdx &&
+                  <AntdTableEdit
+                    columns={BuyOrderMtPriceClmn(
+                      item,
+                      orderDetails,
+                      setOrderDetails,
+                    )}
+                    data={mtPrice.filter(f=>f.material?.id === item.materialIdx)}
+                    styles={{
+                      th_bg: "#FAFAFA",
+                      td_bg: "#FFFFFF",
+                      td_ht: '40px',
+                      th_ht: '40px',
+                      round: "0",
+                      th_fw: "bold",
+                      td_pd: "0",
+                    }}
+                  />}
+                </div>
+              </BlueBox>
+            ))}
             <Popup
               title="발주 품목"
               titleEtc={ order?.status === "INPUT" &&

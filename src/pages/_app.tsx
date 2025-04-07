@@ -16,6 +16,7 @@ import StyledComponentsRegistry from '@/utils/registry';
 import { UserProvider } from '@/data/context/UserContext';
 import { BaseProvider } from '@/data/context/BaseContext';
 import { ToastContainer } from 'react-toastify';
+import { MenuProvider } from '@/data/context/MenuContext';
 
 
 type AppPropsWithLayout = AppProps & {
@@ -35,6 +36,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <QueryClientProvider client={client}>
+      <MenuProvider>
       <UserProvider>
       <BaseProvider>
       <ConfigProvider 
@@ -65,6 +67,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       </ConfigProvider>
       </BaseProvider>
       </UserProvider>
+      </MenuProvider>
     </QueryClientProvider>
   );
 }
