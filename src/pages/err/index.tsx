@@ -33,13 +33,36 @@ import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
 import { patchAPI } from "@/api/patch";
 import FullChip from "@/components/Chip/FullChip";
+import { useMenu } from "@/data/context/MenuContext";
 
 const ErrBoardPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { me, meLoading } = useUser();
+  const { selectMenu } = useMenu();
   const { showToast, ToastContainer } = useToast();
+    
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(true);
@@ -53,7 +76,7 @@ const ErrBoardPage: React.FC & {
   };
   const [data, setData] = useState<errBoardType[]>([]);
   const { refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["require-tenant-key/board/bugfix/jsxcrud/many", pagination],
+    queryKey: ["require-tenant-key/board/bugfix/jsxcrud/many", pagination, sQueryJson],
     queryFn: async () => {
       setDataLoading(true);
 
@@ -64,6 +87,7 @@ const ErrBoardPage: React.FC & {
       }, {
         page: pagination.current,
         limit: pagination.size,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
       });
 
       if (result.resultCode === "OK_0000") {
@@ -314,6 +338,8 @@ const ErrBoardPage: React.FC & {
         pagination={pagination}
         totalData={totalData}
         onChange={handlePageChange}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
 
       <List>
@@ -405,6 +431,8 @@ const ErrBoardPage: React.FC & {
         pagination={pagination}
         totalData={totalData}
         onChange={handlePageChange}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
 
       <AntdModal

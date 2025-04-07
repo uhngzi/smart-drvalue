@@ -38,16 +38,55 @@ import { handleDirectPrint } from "@/utils/printOrderForm";
 
 import Bag from "@/assets/svg/icons/bag.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import { useMenu } from "@/data/context/MenuContext";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { me, meLoading } = useUser();
+  const { selectMenu } = useMenu();
   const { showToast, ToastContainer } = useToast();
 
   // 발주 상세 또는 등록 저장 값
   const [ order, setOrder ] = useState<buyOrderType | null>(null);
+  
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
+
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router)
+    .map((item) => ({
+      title: item.title?.toString() as string,
+      dataIndex: item.dataIndex,
+      width: Number(item.width ?? item.minWidth ?? 0),
+      cellAlign: item.cellAlign,
+    }));
+
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "excel", showToast, "request/material", "core-d2");
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "print", showToast);
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
   // ------------ 구매처 데이터 세팅 ------------ 시작
   const [csList, setCsList] = useState<Array<{value:any,label:string}>>([]);
@@ -190,7 +229,7 @@ const BuyOrderPage: React.FC & {
   };
   const [ data, setData ] = useState<buyOrderType[]>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['request/material/jsxcrud/many', pagination],
+    queryKey: ['request/material/jsxcrud/many', pagination, sQueryJson],
     queryFn: async () => {
       return getAPI({
         type: 'core-d2',
@@ -199,6 +238,7 @@ const BuyOrderPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
       });
     }
   });
@@ -247,22 +287,6 @@ const BuyOrderPage: React.FC & {
     enabled: !!order?.id
   });
   // ------------ 디테일 데이터 세팅 ------------ 끝
-    
-  const handlePageMenuClick = (key:number)=>{
-    const clmn = BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router)
-    .map((item) => ({
-      title: item.title?.toString() as string,
-      dataIndex: item.dataIndex,
-      width: Number(item.width ?? item.minWidth ?? 0),
-      cellAlign: item.cellAlign,
-    }));
-
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "excel", showToast, "request/material", "core-d2");
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "구매 및 발주", "print", showToast);
-    }
-  }
 
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
@@ -300,6 +324,8 @@ const BuyOrderPage: React.FC & {
         totalData={totalData}
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
 
       <List>
@@ -316,6 +342,8 @@ const BuyOrderPage: React.FC & {
         totalData={totalData}
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
       
       {/* 구매처 등록 */}

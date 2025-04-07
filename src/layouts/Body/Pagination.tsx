@@ -10,6 +10,7 @@ import { LabelMedium } from "@/components/Text/Label";
 import AntdSelect from "@/components/Select/AntdSelect";
 import AntdInput from "@/components/Input/AntdInput";
 import { useMenu } from "@/data/context/MenuContext";
+import { SetStateAction } from "react";
 
 interface Props {
   totalData: number;
@@ -21,6 +22,9 @@ interface Props {
   onChange?: (page: number, size: number) => void;
   title?: string;
   titleBtn?: any;
+  searchs?: string;
+  setSearchs?: React.Dispatch<SetStateAction<string>>;
+  handleSearchs?: () => void;
 }
 
 export const ListPagination: React.FC<Props> = ({
@@ -30,9 +34,10 @@ export const ListPagination: React.FC<Props> = ({
   onChange,
   title,
   titleBtn,
+  searchs,
+  setSearchs,
+  handleSearchs,
 }) => {
-  const { selectMenu } = useMenu();
-
   const items: MenuProps['items'] = [
     {
       label: <span className="text-12">엑셀 다운로드</span>,
@@ -61,17 +66,7 @@ export const ListPagination: React.FC<Props> = ({
         {title && <LabelMedium label={title}/>}
         {titleBtn}
       </div>
-      <div className="h-50 gap-20 h-center">
-        <div className="flex h-center gap-5">
-          <AntdSelect
-            options={[]}
-            placeholder="목록"
-          />
-          <AntdInput
-            className="!min-w-[170px]"
-            placeholder="키워드 입력 (2글자 이상)"
-          />
-        </div>
+      <div className="h-50 gap-15 h-center">
         <span>총 {(totalData ?? 0).toLocaleString()}건</span>
         <Pagination 
           size="small"
@@ -87,6 +82,19 @@ export const ListPagination: React.FC<Props> = ({
           pageSizeOptions={pageSizeOptions}
           locale={{ items_per_page: "건씩 보기" }}
         />
+        <div className="flex h-center gap-5">
+          <AntdInput
+            value={searchs}
+            onChange={(e)=>setSearchs?.(e.target.value)}
+            onKeyDown={(e)=>{
+              if(e.key === "Enter") {
+                handleSearchs?.();
+              }
+            }}
+            className="!min-w-[205px] !rounded-4" styles={{ht:'24px',br:'4px'}}
+            placeholder="2글자 이상 키워드 입력 후 엔터"
+          />
+        </div>
         <Dropdown
           menu={{ items }}
           trigger={['click']}

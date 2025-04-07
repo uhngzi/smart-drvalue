@@ -121,7 +121,7 @@ export const getAPI = async (
     limit?: number;
     page?: number;
     s_totOper?: "and" | "or";
-    s_query?: SQueryType;
+    s_query?: SQueryType | string;
     sort?: string;
     anykeys?: { [key: string]: unknown };
   }

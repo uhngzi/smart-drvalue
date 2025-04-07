@@ -31,15 +31,53 @@ import { ExportOutlined } from "@ant-design/icons";
 import { processRType, processVendorRType } from "@/data/type/base/process";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import FullChip from "@/components/Chip/FullChip";
+import { useMenu } from "@/data/context/MenuContext";
 
 const WKStatusWIPPage: {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
   const { me } = useUser();
+  const { selectMenu } = useMenu();
   const { showToast, ToastContainer } = useToast();
 
   const [procTypeIdx, setProcTypeIdx] = useState<string>("");
+  
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
+  
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)
+    .map((item) => ({
+      title: item.title?.toString() as string,
+      dataIndex: item.dataIndex,
+      width: Number(item.width ?? item.minWidth ?? 0),
+      cellAlign: item.cellAlign,
+    }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "excel", showToast);
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "print", showToast);
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
   // ------------- 필요 데이터 세팅 ------------ 시작
   const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
@@ -104,7 +142,7 @@ const WKStatusWIPPage: {
   };
   const [ data, setData ] = useState<Array<wkPlanWaitType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['worksheet/production-status/process-status/by-type/jsxcrud/many', pagination, procTypeIdx],
+    queryKey: ['worksheet/production-status/process-status/by-type/jsxcrud/many', pagination, procTypeIdx, sQueryJson],
     queryFn: async () => {
       return getAPI({
         type: 'core-d2',
@@ -113,6 +151,7 @@ const WKStatusWIPPage: {
       },{
         limit: pagination.size,
         page: pagination.current,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
         anykeys: {applyAutoFilter : true},
       });
     }
@@ -193,21 +232,6 @@ const WKStatusWIPPage: {
     }
   }, [open])
   // ------------ 디테일 데이터 세팅 ------------ 끝
-  
-  const handlePageMenuClick = (key:number)=>{
-    const clmn = WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)
-    .map((item) => ({
-      title: item.title?.toString() as string,
-      dataIndex: item.dataIndex,
-      width: Number(item.width ?? item.minWidth ?? 0),
-      cellAlign: item.cellAlign,
-    }))
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "excel", showToast);
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "공정별현황", "print", showToast);
-    }
-  }
 
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
@@ -366,6 +390,8 @@ const WKStatusWIPPage: {
         totalData={totalData}
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
 
       <List>
@@ -382,6 +408,8 @@ const WKStatusWIPPage: {
         totalData={totalData}
         onChange={handlePageChange}
         handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
       />
     </div>
 

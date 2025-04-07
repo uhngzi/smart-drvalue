@@ -19,12 +19,50 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 
 import useToast from "@/utils/useToast";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import { useMenu } from "@/data/context/MenuContext";
 
 const SayangSampleStatPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { selectMenu } = useMenu();
   const { showToast, ToastContainer } = useToast();
+      
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
+
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = specStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)
+      .map((item) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+      }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "excel", showToast, "spec", "core-d1");
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "print", showToast);
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
   // --------------- 리스트 데이터 세팅 -------------- 시작
   const [pagination, setPagination] = useState({
@@ -40,7 +78,7 @@ const SayangSampleStatPage: React.FC & {
   const { data:queryData, isLoading } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['spec/jsxcrud/many', pagination],
+    queryKey: ['spec/jsxcrud/many', pagination, sQueryJson],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -51,6 +89,7 @@ const SayangSampleStatPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
       });
       setDataLoading(false);
       return result;
@@ -80,21 +119,6 @@ const SayangSampleStatPage: React.FC & {
   }, [drawerOpen]);
   // ------------ 거래처 드로워 데이터 세팅 ------------ 끝
 
-  const handlePageMenuClick = (key:number)=>{
-    const clmn = specStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)
-      .map((item) => ({
-        title: item.title?.toString() as string,
-        dataIndex: item.dataIndex,
-        width: Number(item.width ?? item.minWidth ?? 0),
-        cellAlign: item.cellAlign,
-      }))
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "excel", showToast, "spec", "core-d1");
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "사양등록현황", "print", showToast);
-    }
-  }
-
   if (dataLoading) {
     return <div className="w-full h-[90vh] v-h-center">
       <Spin tip="Loading..."/>
@@ -109,6 +133,8 @@ const SayangSampleStatPage: React.FC & {
           totalData={totalData}
           onChange={handlePageChange}
           handleMenuClick={handlePageMenuClick}
+          searchs={searchs} setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
         />
         <List>
           <AntdTableEdit
@@ -123,6 +149,8 @@ const SayangSampleStatPage: React.FC & {
           totalData={totalData}
           onChange={handlePageChange}
           handleMenuClick={handlePageMenuClick}
+          searchs={searchs} setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
         />
       </div>
 

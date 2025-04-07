@@ -3,6 +3,7 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { LabelMedium } from "@/components/Text/Label";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { WKStatusInClmn } from "@/data/columns/Wk";
+import { useMenu } from "@/data/context/MenuContext";
 import { useUser } from "@/data/context/UserContext";
 import { partnerRType } from "@/data/type/base/partner";
 import { wkPlanWaitType } from "@/data/type/wk/plan";
@@ -21,7 +22,44 @@ const WKStatusProcPage: {
 } = () => {
   const router = useRouter();
   const { me } = useUser();
+  const { selectMenu } = useMenu();
   const { showToast, ToastContainer } = useToast();
+  
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
+  
+  const handlePageMenuClick = (key:number)=>{
+    const clmn = WKStatusInClmn(totalData, pagination, setPartnerData)
+    .map((item) => ({
+      title: item.title?.toString() as string,
+      dataIndex: item.dataIndex,
+      width: Number(item.width ?? item.minWidth ?? 0),
+      cellAlign: item.cellAlign,
+    }))
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "excel", showToast, "worksheet/production-status/input-status", "core-d2");
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "print", showToast);
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [selectVendor, setSelectVendor] = useState<{
@@ -72,7 +110,7 @@ const WKStatusProcPage: {
   };
   const [ data, setData ] = useState<Array<wkPlanWaitType>>([]);
   const { data:queryData, isLoading, refetch } = useQuery({
-    queryKey: ['worksheet/production-status/input-status/jsxcrud/many', pagination, selectVendor],
+    queryKey: ['worksheet/production-status/input-status/jsxcrud/many', pagination, selectVendor, sQueryJson],
     queryFn: async () => {
       return getAPI({
         type: 'core-d2',
@@ -81,6 +119,7 @@ const WKStatusProcPage: {
       },{
         limit: pagination.size,
         page: pagination.current,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
         anykeys: {applyAutoFilter:true, procVenderIdx: selectVendor?.vendorId},
       });
     }
@@ -100,21 +139,6 @@ const WKStatusProcPage: {
     }
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
-  
-  const handlePageMenuClick = (key:number)=>{
-    const clmn = WKStatusInClmn(totalData, pagination, setPartnerData)
-    .map((item) => ({
-      title: item.title?.toString() as string,
-      dataIndex: item.dataIndex,
-      width: Number(item.width ?? item.minWidth ?? 0),
-      cellAlign: item.cellAlign,
-    }))
-    if(key === 1) { // 엑셀 다운로드
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "excel", showToast, "worksheet/production-status/input-status", "core-d2");
-    } else {        // 프린트
-      exportToExcelAndPrint(clmn, data, totalData, pagination, "투입현황", "print", showToast);
-    }
-  }
   
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
@@ -171,6 +195,8 @@ const WKStatusProcPage: {
           totalData={totalData}
           onChange={handlePageChange}
           handleMenuClick={handlePageMenuClick}
+          searchs={searchs} setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
         />
 
         <List>
@@ -187,6 +213,8 @@ const WKStatusProcPage: {
           totalData={totalData}
           onChange={handlePageChange}
           handleMenuClick={handlePageMenuClick}
+          searchs={searchs} setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
         />
 
         <PrtDrawer
