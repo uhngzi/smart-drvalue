@@ -987,7 +987,7 @@ export const BuyOrderMtPriceClmn = (
     tooltip: '원자재명을 클릭하여 발주 품목의 단가를 선택할 수 있어요',
     render: (_, record:materialPriceType) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "linear-gradient(to right, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)" : ""
         }}
         className="w-full h-full h-center justify-left px-10 cursor-pointer"
@@ -1010,7 +1010,7 @@ export const BuyOrderMtPriceClmn = (
                 mtOrderAmount: (record.priceUnit ?? 0) * (record.cntMin ?? 0),
                 mtOrderUnit: record.unitType ?? "",
                 mtOrderTxtur: record.txturType ?? "",
-                orderId: record.id,
+                mtPriceIdx: record.id,
               };
         
               const newArray = [
@@ -1035,7 +1035,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1052,7 +1052,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1069,7 +1069,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value:string, record:materialPriceType) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-left px-10"
@@ -1086,7 +1086,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center px-10"
@@ -1103,7 +1103,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1120,7 +1120,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1137,7 +1137,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div 
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full v-h-center"
@@ -1154,7 +1154,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "#F0F5FF" : ""
         }}
         className="w-full h-full h-center justify-end px-10"
@@ -1171,7 +1171,7 @@ export const BuyOrderMtPriceClmn = (
     align: 'center',
     render: (value, record:materialPriceType) => (
       <div
-        style={{background:record.id === item.orderId ?
+        style={{background:record.id === item.mtPriceIdx ?
           "linear-gradient(to left, transparent 0%, #F0F5FF 50%, #F0F5FF 100%)" : ""
         }}
         className="w-full h-full h-center px-10"

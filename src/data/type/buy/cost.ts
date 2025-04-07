@@ -4,7 +4,7 @@ import { partnerMngRType, partnerRType } from "../base/partner";
 import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
 import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
-import { materialType } from "../base/material_back";
+import { materialPriceType, materialType } from "../base/material_back";
 
 export type buyCostOutType = {
   id?: string;
@@ -406,6 +406,8 @@ export type buyOrderType = {
       deletedAt?: Date | Dayjs | null;
       mtNm?: string;
       materialGrpIdx?: string;
+      materialPrice?: materialPriceType;
+      mtPriceIdx?: string;
     }[];
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
@@ -464,5 +466,5 @@ export type buyOrderDetailType = {
   mtNm?: string;
   materialGrpIdx?: string;
   mtId?: string;
-  orderId?: string;
+  mtPriceIdx?: string;
 }

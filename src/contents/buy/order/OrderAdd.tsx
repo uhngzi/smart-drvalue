@@ -330,6 +330,7 @@ const OrderAddLayout = () => {
           requestMaterialQuality: item.requestMaterialQuality ?? [],
           mtNm: item.mtNm,
           materialGrpIdx: item.material ? item?.material?.materialGroup?.id : "직접입력",
+          mtPriceIdx: item?.materialPrice?.id,
         })) as buyOrderDetailType[];
         const orderEntity = {
           ...order,
@@ -433,6 +434,7 @@ const OrderAddLayout = () => {
             badCnt: f.cnt,
             materialBadIdx: f.badId,
           })) : [],
+          mtPriceIdx: item?.mtPriceIdx,
         }))
       }
       console.log(JSON.stringify(jsonData));
