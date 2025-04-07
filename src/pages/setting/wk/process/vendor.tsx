@@ -26,9 +26,11 @@ import dayjs from "dayjs";
 import useToast from "@/utils/useToast";
 
 
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Search from "@/assets/svg/icons/s_search.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
 import { MoreOutlined } from "@ant-design/icons";
+import { deleteAPI } from "@/api/delete";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -183,7 +185,6 @@ const WkProcessVendorListPage: React.FC & {
 
       if (result.resultCode === 'OK_0000') {
         setData(result.data?.data ?? []);
-        setTotalData(result.data?.total ?? 0);
         console.log('data : ', result.data?.data);
       } else {
         console.log('error:', result.response);
@@ -202,8 +203,9 @@ const WkProcessVendorListPage: React.FC & {
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<processVendorCUType>(newDataProcessVendorCUType);
+  const [ newData, setNewData ] = useState<any[]>([]);
     //값 변경 함수
+  const [deleteData, setDeleteData] = useState<string[]>([]); // 삭제할 데이터
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
@@ -240,7 +242,7 @@ const WkProcessVendorListPage: React.FC & {
         setNewOpen(false);
         setResultOpen(true);
         setResultType('success');
-        setNewData(newDataProcessVendorCUType);
+        setNewData([]);
       } else {
         setNewOpen(false);
         setResultOpen(true);
@@ -268,16 +270,18 @@ const WkProcessVendorListPage: React.FC & {
         showToast('이미 등록된 공급처입니다.', 'error');
         return;
       }
+      const newId = `new${Math.random()}`;
       const group = dataGroup.find(group => group.processes?.some(proc => proc.id === childCheckId));
       const newData = {
+        id: newId,
         process: {id: childCheckId},
         processGroup: {id: group?.id ?? ''},
-        vendor: {id: record.id},
+        vendor: {id: record.id ?? ''},
         ordNo:0,
         useYn: true,
       }
       const renderAddData = {
-        id: 'new',
+        id: newId,
         processGroup: {id: group?.id ?? '', prcGrpNm: group?.prcGrpNm ?? ''},
         process : {id: childCheckId, prcNm: group?.processes?.find(proc => proc.id === childCheckId)?.prcNm ?? ''},
         vendor : {id: record.id, prtNm: record.prtNm},
@@ -285,9 +289,69 @@ const WkProcessVendorListPage: React.FC & {
         useYn: true,
       }
       console.log(newData);
+      setNewData((prev:any) => [...prev, newData]);
       setData(prev => ([renderAddData, ...prev]))
   }
-  console.log(data)
+
+  async function vendorSave(){
+    console.log(newData)
+    console.log(deleteData)
+    let flag = false;
+    if(deleteData.length > 0) {
+      for(const item of deleteData) {
+        try{
+
+          const result = await deleteAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: `process-vendor`,
+            jsx: 'jsxcrud'
+          }, item);
+          console.log(result);
+          if(result.resultCode === 'OK_0000') {
+            flag = true;
+          }else{
+            flag = false;
+            showToast('삭제중 오류가 발생했습니다.', 'error');
+          }
+        } catch (e){
+          showToast('삭제중 오류가 발생했습니다.', 'error');
+          console.error('error', '삭제중 오류가 발생했습니다.');
+        }
+      }
+    }
+    if(newData.length > 0) {
+      for(const item of newData) {
+        try{
+          delete item.id
+          const result = await postAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: 'process-vendor',
+            jsx: 'jsxcrud'
+          }, item);
+          console.log(result);
+          if(result.resultCode === 'OK_0000') {
+            flag = true;
+          } else{
+            flag = false;
+            showToast('등록중 오류가 발생했습니다.', 'error');
+          }
+        } catch (e){
+          showToast('등록중 오류가 발생했습니다.', 'error');
+          console.error('error', '등록중 오류가 발생했습니다.');
+        }
+      }
+    }
+    if(flag) {
+      showToast('저장되었습니다.', 'success');
+    } else {
+      showToast('저장중 오류가 발생했습니다.', 'error');
+    }
+    setNewData([]);
+    setDeleteData([]);
+    refetch();
+  }
   return (
     <>
       {(vendorLoading) && <>Loading...</>}
@@ -304,72 +368,85 @@ const WkProcessVendorListPage: React.FC & {
             />
           </div>
           <div className="w-[70%] flex flex-col gap-15">
-            <AntdTableEdit
-              columns={[
-                {
-                  title: '',
-                  width: 50,
-                  dataIndex: 'no',
-                  align: 'center',
-                },
-                {
-                  title: '공정그룹명',
-                  dataIndex: 'processGroup.prcGrpNm',
-                  key: 'processGroup.prcGrpNm',
-                  align: 'center',
-                  
-                },
-                {
-                  title: '공정명',
-                  dataIndex: 'process.prcNm',
-                  key: 'process.prcNm',
-                  align: 'center',
-                  
-                },
-                {
-                  title: '공급처명',
-                  dataIndex: 'vendor.prtNm',
-                  key: 'vendor.prtNm',
-                  align: 'center',
-                  
-                },
-                {
-                  title: '생성일',
-                  dataIndex: 'createdAt',
-                  key: 'createdAt',
-                  align: 'center',
-                  
-                  render: (item: string) => item?.substring(0, 10),
-                },
-                {
-                  title: '사용여부',
-                  width: 130,
-                  dataIndex: 'useYn',
-                  key: 'useYn',
-                  align: 'center',
-                  render: (item: boolean) => item ? "사용" : "미사용",
-                },
-                {
-                  title: '',
-                  width: 30,
-                  dataIndex: 'vendor.id',
-                  key: 'useYn',
-                  align: 'center',
-                  render: (item: boolean) => (
-                    <Dropdown trigger={['click']} menu={{ items:[
-                      {
-                        label: <div className="h-center gap-5"> <p className="w-16 h-16"><Bag/></p>외주처 지정해제</div>,
-                        key: 0,
-                        onClick: () => {}
-                      },
-                    ]}}>
-                    <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
-                  </Dropdown>
-                  )
-                },
-              ]}
-              data={data}
-            />
+            <div className="flex flex-col">
+              <AntdTableEdit
+                columns={[
+                  {
+                    title: '',
+                    width: 50,
+                    dataIndex: 'no',
+                    align: 'center',
+                  },
+                  {
+                    title: '공정그룹명',
+                    dataIndex: 'processGroup.prcGrpNm',
+                    key: 'processGroup.prcGrpNm',
+                    align: 'center',
+                    
+                  },
+                  {
+                    title: '공정명',
+                    dataIndex: 'process.prcNm',
+                    key: 'process.prcNm',
+                    align: 'center',
+                    
+                  },
+                  {
+                    title: '공급처명',
+                    dataIndex: 'vendor.prtNm',
+                    key: 'vendor.prtNm',
+                    align: 'center',
+                    
+                  },
+                  {
+                    title: '생성일',
+                    dataIndex: 'createdAt',
+                    key: 'createdAt',
+                    align: 'center',
+                    
+                    render: (item: string) => item?.substring(0, 10),
+                  },
+                  {
+                    title: '사용여부',
+                    width: 130,
+                    dataIndex: 'useYn',
+                    key: 'useYn',
+                    align: 'center',
+                    render: (item: boolean) => item ? "사용" : "미사용",
+                  },
+                  {
+                    title: '',
+                    width: 30,
+                    dataIndex: 'id',
+                    key: 'id',
+                    align: 'center',
+                    render: (item: boolean) => (
+                      <Dropdown trigger={['click']} menu={{ items:[
+                        {
+                          label: <div className="h-center gap-5 flex"><Bag/>외주처 지정해제</div>,
+                          key: 0,
+                          onClick: () => {
+                            console.log(data, item)
+                            if(typeof item === 'string' && (item as string).includes('new')) {
+                              setNewData((prev:any) => prev.filter((data:any) => data.id !== item));
+                            }else{
+                              setDeleteData((prev:any) => [...prev, item])
+                            }
+                            setData((prev:any) => prev.filter((data:any) => data.id !== item));
+                          },
+                        },
+                      ]}}>
+                      <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
+                    </Dropdown>
+                    )
+                  },
+                ]}
+                data={data}
+              />
+              <div className="flex justify-end">
+                <Button type="primary" className="bg-[#038D07] text-white" onClick={vendorSave}><p className="w-16 h-16"><Arrow/></p>저장</Button>
+              </div>
+            </div>
             <div className="v-between-h-center">
               <p>총 {totalData}건</p>
               <div className="flex">
@@ -511,7 +588,7 @@ const WkProcessVendorListPage: React.FC & {
         </div> */}
       </>}
         
-      <AntdModal
+      {/* <AntdModal
         title={"공정 등록"}
         open={newOpen}
         setOpen={setNewOpen}
@@ -562,7 +639,7 @@ const WkProcessVendorListPage: React.FC & {
           setNewOpen(false);
           setNewData(newDataProcessVendorCUType);
         }}
-      />
+      /> */}
 
       <AntdAlertModal
         open={resultOpen}
