@@ -164,13 +164,13 @@ const ClientCuListPage: React.FC & {
             {partnerIdx: id, data: mngData}
           );
           if(mngResult.resultCode === 'OK_0000') {
-            setNewOpen(false);
+            modalClose()
             setResultOpen(true);
             setResultType('success');
             setResultTitle("거래처 수정 성공");
             setResultText("거래처 수정이 완료되었습니다.");
           } else{
-            setNewOpen(false);
+            modalClose()
             setResultOpen(true);
             setResultType('error');
             setResultTitle("거래처 수정 오류");
@@ -178,13 +178,16 @@ const ClientCuListPage: React.FC & {
           }
         
         } else {
-          setNewOpen(false);
-          setResultOpen(true);
-          setResultType('error');
-          setResultTitle("거래처 수정 실패");
-          setResultText("거래처 수정을 실패하였습니다.");
+          showToast(result.response)
+          // setNewOpen(false);
+          // setResultOpen(true);
+          // setResultType('error');
+          // setResultTitle("거래처 수정 실패");
+          // setResultText("거래처 수정을 실패하였습니다.");
         }
       }else{
+        console.log(data)
+        delete data.managers
         const result = await postAPI({
           type: 'baseinfo',
           utype: 'tenant/',
@@ -195,7 +198,8 @@ const ClientCuListPage: React.FC & {
         );
   
         if(result.resultCode === 'OK_0000') {
-          const id = result.data.id;
+          const id = result.data.entity.id;
+          console.log("12839012732139821",result)
           const mngData = prtData.map((mng:any) => {
             const idx = mng.id;
             delete mng?.id;
@@ -206,33 +210,42 @@ const ClientCuListPage: React.FC & {
             return {...mng, idx: idx};
           })
           console.log(mngData)
-          const mngResult = await postAPI({
-            type: 'baseinfo',
-            utype: 'tenant/',
-            url: 'biz-partner-mng/default/edit',
-            jsx: 'default',
-            etc: true},
-            {partnerIdx: id, data: prtData}
-          );
-          if(mngResult.resultCode === 'OK_0000') {
-            setNewOpen(false);
+          if(mngData.length > 0){
+            const mngResult = await postAPI({
+              type: 'baseinfo',
+              utype: 'tenant/',
+              url: 'biz-partner-mng/default/edit',
+              jsx: 'default',
+              etc: true},
+              {partnerIdx: id, data: prtData}
+            );
+            if(mngResult.resultCode === 'OK_0000') {
+              modalClose()
+              setResultOpen(true);
+              setResultType('success');
+              setResultTitle("거래처 등록 성공");
+              setResultText("거래처 등록이 완료되었습니다.");
+            } else{
+              modalClose()
+              setResultOpen(true);
+              setResultType('error');
+              setResultTitle("거래처 등록 오류");
+              setResultText("거래처 등록은 성공하였지만, 담당자 저장에 실패하였습니다.");
+            }
+          } else {
+            modalClose()
             setResultOpen(true);
             setResultType('success');
             setResultTitle("거래처 등록 성공");
             setResultText("거래처 등록이 완료되었습니다.");
-          } else{
-            setNewOpen(false);
-            setResultOpen(true);
-            setResultType('error');
-            setResultTitle("거래처 등록 오류");
-            setResultText("거래처 등록은 성공하였지만, 담당자 저장에 실패하였습니다.");
           }
         } else {
-          setNewOpen(false);
-          setResultOpen(true);
-          setResultType('error');
-          setResultTitle("거래처 등록 실패");
-          setResultText("거래처 등록을 실패하였습니다.");
+          showToast(result.response?.data.message, "error")
+          // setNewOpen(false);
+          // setResultOpen(true);
+          // setResultType('error');
+          // setResultTitle("거래처 등록 실패");
+          // setResultText("거래처 등록을 실패하였습니다.");
         }
       }
     } catch(e) {

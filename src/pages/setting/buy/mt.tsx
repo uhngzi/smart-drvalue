@@ -24,7 +24,7 @@ import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/tr
 import useToast from "@/utils/useToast";
 import { useBase } from "@/data/context/BaseContext";
 import CustomTree from "@/components/Tree/CustomTree";
-import { getPrtCsAPI } from "@/api/cache/client";
+import { getPrtBuyerAPI, getPrtCsAPI } from "@/api/cache/client";
 const BuyMtListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -42,8 +42,8 @@ const BuyMtListPage: React.FC & {
   };
 
   const { data:cs, isLoading:csLoading, refetch:csRefetch } = useQuery({
-    queryKey: ["getClientCs"],
-    queryFn: () => getPrtCsAPI(),
+    queryKey: ["getClientBuyer"],
+    queryFn: () => getPrtBuyerAPI(),
   });
 
   // --------- 리스트 데이터 시작 ---------
