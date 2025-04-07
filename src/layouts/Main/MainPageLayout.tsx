@@ -83,7 +83,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
           
           <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
             <Contents padding={pd} bg={bg} >
-              { selectMenu?.children && selectMenu?.children?.length > 1 && 
+              { router.pathname !== "/" && selectMenu?.children && selectMenu?.children?.length > 1 && 
                 <TabLarge
                   items={selectMenu.children.map((menu) => ({
                     text: menu.menuNm ?? "",
