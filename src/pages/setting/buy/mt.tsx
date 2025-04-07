@@ -69,8 +69,9 @@ const BuyMtListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         const resData = result.data?.data.map((d:materialType) => ({
           ...d,
-          materialSuppliers: Array.isArray(d.materialSuppliers) ? d.materialSuppliers.map((item: any) => item.supplier.id) : [],
+          materialSuppliers: Array.isArray(d.materialSuppliers) ? d.materialSuppliers.filter((item: any) => item?.supplier).map((sup:any) => sup.supplier.id) : [],
         }))
+        console.log(resData)
         setData(resData);
         setTotalData(result.data?.total ?? 0);
       } else {
