@@ -1,6 +1,7 @@
 import { modelsMatchRType, modelsType, orderModelType, salesModelsType } from "./models";
 import { selectType } from "../componentStyles";
 import { specModelType, specPrdGroupPrcs, specType } from "./sample";
+import { salesOrderProcuctCUType } from "../sales/order";
 
 // 사양 - 모델 등록 대기 내 임시 저장 값 변환
 export const changeModelAddTemp = (tempData:orderModelType | null) => {
@@ -470,6 +471,43 @@ export const changeSalesModelAddNewModel = (
     spPltAu: model?.spPltAu ?? 0,
     spPltAuAlph: model?.spPltAuAlph ?? 0,
     pinCnt: model?.pinCnt ?? 0,
+  }
+
+  return jsonData;
+}
+
+// 신양 모델 생성
+export const changeModelAddNewModelSy = (
+  tempData:salesOrderProcuctCUType, 
+  metarialSelectList: selectType[],
+  surfaceSelectList: selectType[],
+  partnerId: string,
+) => {
+  let jsonData = {
+    inactiveYn: false,
+    partner: { id: partnerId },
+    prdNm: tempData?.orderTit,
+    mnfNm: tempData?.currPrdInfo?.boardGroup?.id,
+    drgNo: tempData.currPrdInfo?.drgNo,
+    thk: tempData.currPrdInfo?.thk,
+    prdRevNo: tempData.currPrdInfo?.prdRevNo,
+    copOut: tempData.currPrdInfo?.copOut,
+    copIn: tempData.currPrdInfo?.copIn,
+    material: { id: tempData.currPrdInfo?.material?.id ?? metarialSelectList?.[0]?.value },
+    surface: { id: tempData.currPrdInfo?.surface?.id ?? surfaceSelectList?.[0]?.value },
+    spPrint: { id: tempData.currPrdInfo?.spPrint?.id },
+    spType: { id: tempData.currPrdInfo?.spType?.id },
+    aprType: { id: tempData.currPrdInfo?.aprType?.id },
+    vcutText: tempData.currPrdInfo?.vcutText,
+    approvalYn: tempData?.approvalYn ?? true,
+    pcsW: tempData.currPrdInfo?.pcsW,
+    pcsL: tempData.currPrdInfo?.pcsL,
+    pltThk: tempData.currPrdInfo?.pltThk ?? 25,
+    pltAlph: tempData.currPrdInfo?.pltAlph ?? 0,
+    spPltNi: tempData.currPrdInfo?.spPltNi ?? 4,
+    spPltNiAlph: tempData.currPrdInfo?.spPltNiAlph,
+    spPltAu: tempData.currPrdInfo?.spPltAu ?? 0.03,
+    spPltAuAlph: tempData.currPrdInfo?.spPltAuAlph,
   }
 
   return jsonData;

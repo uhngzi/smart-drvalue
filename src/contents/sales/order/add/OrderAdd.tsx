@@ -24,6 +24,7 @@ import {
 } from "@/data/type/base/partner";
 import { 
   HotGrade,
+  ModelStatus,
   SalesOrderStatus
 } from "@/data/type/enum";
 import { 
@@ -59,12 +60,29 @@ import { isValidTel } from "@/utils/formatPhoneNumber";
 import { Popup } from "@/layouts/Body/Popup";
 import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
+import cookie from "cookiejs";
+import { changeModelAddNewModel, changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
+import { modelReq, orderModelType } from "@/data/type/sayang/models";
+import { useBase } from "@/data/context/BaseContext";
 
 const OrderAddLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   const { me } = useUser();
   const { showToast, ToastContainer } = useToast();
+  const {
+    boardSelectList,
+    metarialSelectList,
+    surfaceSelectList,
+    outSelectList,
+    smPrintSelectList,
+    smColorSelectList,
+    smTypeSelectList,
+    mkPrintSelectList,
+    mkColorSelectList,
+    mkTypeSelectList,
+    unitSelectList,
+  } = useBase();
 
   // 스탭 저장 변수
   const [ stepCurrent, setStepCurrent ] = useState<number>(0);
@@ -319,7 +337,6 @@ const OrderAddLayout = () => {
         );
     
         if(result.resultCode === 'OK_0000') {
-          showToast("저장 완료", "success");
           const entity = result.data?.entity;
           const updateData = newProducts;
           const index = updateData.findIndex(f=> f.id === model?.id);
@@ -337,6 +354,14 @@ const OrderAddLayout = () => {
 
           // 발주도 자동 저장
           handleEditOrderMain(true);
+
+          if(cookie.get('company') === 'sy') {
+            if(model.modelStatus === ModelStatus.NEW) {
+              handleSubmit(entity.id, entity);
+            }
+          } else {
+            showToast("저장 완료", "success");
+          }
         } else {
           const msg = result?.response?.data?.message;
           setErrMsg(msg);
@@ -355,10 +380,17 @@ const OrderAddLayout = () => {
         );
     
         if(result.resultCode === 'OK_0000') {
-          showToast("저장 완료", "success");
-
           // 발주도 자동 저장
           handleEditOrderMain(true);
+
+          if(cookie.get('company') === 'sy') {
+            console.log(result.data);
+            if(model.modelStatus === ModelStatus.NEW) {
+              handleSubmit(model.id, model);
+            }
+          } else {
+            showToast("저장 완료", "success");
+          }
         } else {
           const msg = result?.response?.data?.message;
           setErrMsg(msg);
@@ -368,6 +400,58 @@ const OrderAddLayout = () => {
       }
     } catch(e) {
       console.log("CATCH ERROR :: ", e);
+    }
+  }
+
+  // 모델 신규 등록
+  const handleSubmit = async (id:string, data: salesOrderProcuctCUType) => {
+    const jsonData = changeModelAddNewModelSy(
+      data,
+      metarialSelectList,
+      surfaceSelectList,
+      formData.partnerId ?? "",
+    );
+    console.log(JSON.stringify(jsonData));
+
+    const resultPost = await postAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: 'models',
+      jsx: 'jsxcrud'
+    }, jsonData);
+
+    if(resultPost.resultCode === 'OK_0000') {
+      const modelId = resultPost.data?.entity?.id;
+      console.log('MODEL ID : ', modelId);
+      handleConfirm(id, modelId, data.modelStatus ?? ModelStatus.NEW);
+    } else {
+      const msg = resultPost?.response?.data?.message;
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
+      console.log(msg);
+    }
+  }
+
+  const handleConfirm = async (id: string, modelId: string, modelStatus:ModelStatus) => {
+    const resultPatch = await patchAPI({
+      type: 'core-d1',
+      utype: 'tenant/',
+      url: `models-match/default/confirm/input-model/${id}`,
+      jsx: 'default',
+      etc: true,
+    }, id, {
+      modelId: modelId,
+      modelStatus: modelStatus,
+    });
+
+    if(resultPatch.resultCode === 'OK_0000') {
+      showToast("확정 완료", "success");
+    } else {
+      const msg = resultPatch?.response?.data?.message;
+      setErrMsg(msg);
+      setAlertType("error");
+      setAlertOpen(true);
     }
   }
   // ------------ 모델 저장 함수 ------------- 끝

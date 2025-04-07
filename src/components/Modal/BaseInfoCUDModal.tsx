@@ -86,7 +86,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
     dataRef.current = data
   },[data])
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
-  console.log(items)
+  // console.log(items)
   useEffect(() => {
     setFormData(data);
   }, [data]);

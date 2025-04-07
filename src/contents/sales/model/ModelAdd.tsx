@@ -55,6 +55,8 @@ import BlueBox from "@/layouts/Body/BlueBox";
 
 import ModelList from "@/contents/base/model/ModelList";
 import BoxHead from "@/layouts/Body/BoxHead";
+import LabelItem from "@/components/Text/LabelItem";
+import cookie from "cookiejs";
 
 const ModelAddLayout = () => {
   const router = useRouter();
@@ -375,6 +377,163 @@ const ModelAddLayout = () => {
                       />
                     </div>
                   </div>
+                  { cookie.get('company') === 'sy' &&
+                  <div className="h-center gap-15">
+                    <Items2
+                      label1="고객"
+                      children1={
+                        <CustomAutoComplete
+                          option={csList}
+                          value={model?.partner?.id}
+                          onChange={(value) => {
+                            setModel({
+                              ...model,
+                              partner: {id: value ?? ""}
+                            });
+                          }}
+                          handleAddData={()=>setAddPartner(true)}
+                          addLabel="고객 추가하기"
+                          className="!h-32 !rounded-2" inputClassName="!h-32 !rounded-2"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="모델명" size1={3}
+                      children1={
+                        <CustomAutoCompleteLabel
+                          option={modelSelectList}
+                          label={model?.prdNm}
+                          onInputChange={(value) => {
+                            if(value.length < 3) {
+                              setModelSelectList([]);
+                              setModelNoSelectList([]);
+                            }
+                            setModel({...model, prdNm: value});
+                          }}
+                          value={model?.id}
+                          onChange={(value) => {
+                            const m = modelList.find(f=>f.id === value);
+                            if(m && model?.id) {
+                              console.log(m);
+                              setModel({
+                                ...m,
+                                id: model.id,
+                                usedYn: false,
+                              });
+                            }
+                          }}
+                          inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+                          placeholder="모델명 검색 또는 입력 (3글자 이상)"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="관리번호"
+                      children1={
+                        <CustomAutoCompleteLabel
+                          option={modelNoSelectList}
+                          label={model?.prdMngNo}
+                          onInputChange={(value) => {
+                            if(value.length < 3) {
+                              setModelSelectList([]);
+                              setModelNoSelectList([]);
+                            }
+                            setModel({...model, prdNm: "", prdMngNo: value});
+                          }}
+                          value={model?.id}
+                          onChange={(value) => {
+                            const m = modelList.find(f=>f.id === value);
+                            if(m && model?.id) {
+                              console.log(m);
+                              setModel({
+                                ...m,
+                                id: model.id,
+                                usedYn: false,
+                              });
+                            }
+                          }}
+                          inputClassName="!h-32 !rounded-2" className="!h-32 !rounded-2"
+                          placeholder="관리번호 검색"
+                          readonly={model?.usedYn} clear={false}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="Rev"
+                      children1={
+                        <AntdInput
+                          value={model?.prdRevNo}
+                          onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="도면번호"
+                      children1={
+                        <AntdInput
+                          value={model?.drgNo}
+                          onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                        />
+                      }
+                    />
+                    
+                    <Items2
+                      label1="재질"
+                      children1={
+                        <AntdSelectFill
+                          options={metarialSelectList}
+                          value={model?.material?.id ?? metarialSelectList?.[0]?.value}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              material: {id: e+""}
+                            });
+                          }}
+                          styles={{ht:'32px', bg:'#FFF', br: '2px'}} dropWidth="180px"
+                          readonly={model?.usedYn}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="제조사"
+                      children1={
+                        <AntdSelectFill
+                          options={boardGroupSelectList}
+                          value={model?.boardGroup?.id ?? boardGroupSelectList?.[0]?.value}
+                          onChange={(e)=>{
+                            setModel({
+                              ...model,
+                              boardGroup: {id: e+""}
+                            });
+                          }}
+                          styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                          readonly={model?.usedYn}
+                        />
+                      }
+                    />
+
+                    <Items2
+                      label1="두께" size1={1}
+                      children1={
+                        <AntdInput
+                          value={model?.thk}
+                          onChange={(e)=>handleModelDataChange('thk', e.target.value)}
+                          type="number"
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
+                        />
+                      }
+                    />
+                  </div>}
+                  { cookie.get('company') !== 'sy' &&
                   <div className="h-center gap-15">
                     <Items2
                       size1={1}
@@ -571,7 +730,7 @@ const ModelAddLayout = () => {
                         />
                       }
                     />
-                  </div>
+                  </div>}
                 </div>
                 <div className="w-85">
                   <Items2
@@ -585,7 +744,28 @@ const ModelAddLayout = () => {
                 </div>
               </BoxHead>
               <AntdTable
-                columns={salesOrderModelAddClmn(
+                columns={
+                cookie.get('company') === 'sy' ?
+                salesOrderModelAddClmn(
+                  unitSelectList,
+                  vcutSelectList,
+                  outSelectList,
+                  smPrintSelectList,
+                  smColorSelectList,
+                  smTypeSelectList,
+                  mkPrintSelectList,
+                  mkColorSelectList,
+                  mkTypeSelectList,
+                  spPrintSelectList,
+                  spTypeSelectList,
+                  surfaceSelectList,
+                  ozUnitSelectList,
+                  handleModelDataChange,
+                  model?.usedYn ?? false,
+                )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
+                  && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs')
+                :
+                salesOrderModelAddClmn(
                   unitSelectList,
                   vcutSelectList,
                   outSelectList,

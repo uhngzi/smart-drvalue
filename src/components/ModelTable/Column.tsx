@@ -11,6 +11,7 @@ import AntdInputFill from "../Input/AntdInputFill";
 import AntdSelectFill from "../Select/AntdSelectFill";
 import { SetStateAction } from "react";
 import CustomAutoCompleteLabel from "../AutoComplete/CustomAutoCompleteLabel";
+import cookie from "cookiejs";
 
 const divClass = "h-35 w-[100%] h-center justify-left ";
 const divTopClass = "h-[100%] flex flex-col items-start";
@@ -428,7 +429,7 @@ export const salesOrderModelClmn = (
     align: 'center',
     children: [
       {
-        title:'승인원 여부',
+        title:cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부',
         width: 60,
         dataIndex: 'surface',
         key:'surface',
@@ -453,7 +454,7 @@ export const salesOrderModelClmn = (
                 onChange={(e)=>handleModelDataChange(record.id, 'approvalYn', e)}
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                placeholder={"승인원 여부"}
+                placeholder={cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
                 tabIndex={record.index*40+19}
               />
             </div>
@@ -505,7 +506,7 @@ export const salesOrderModelClmn = (
   //   ]
   // },
   {
-    title: 'PCS SIZE',
+    title:cookie.get('company') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
     width:70,
     dataIndex: 'pcs',
     key: 'pcs',
@@ -1624,7 +1625,7 @@ export const salesOrderModelAddClmn = (
     align: 'center',
     children: [
       {
-        title:'승인원 여부',
+        title: cookie.get('company') === 'sy' ? 'Manhle Size 유무': '승인원 여부',
         width: 60,
         dataIndex: 'surface',
         key:'surface',
@@ -1648,7 +1649,7 @@ export const salesOrderModelAddClmn = (
                 value={record?.approvalYn ?? true}
                 onChange={(e)=>handleModelDataChange('approvalYn', e)}
                 styles={{fs:'12px'}}
-                placeholder={"승인원 여부"}
+                placeholder={cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
                 readonly={readonly}
                 tabIndex={40+20}
               />
@@ -1699,7 +1700,7 @@ export const salesOrderModelAddClmn = (
   //   ]
   // },
   {
-    title: 'PCS SIZE',
+    title: cookie.get('company') === 'sy' ? '제품 SIZE': 'PCS SIZE',
     width:70,
     dataIndex: 'pcs',
     key: 'pcs',

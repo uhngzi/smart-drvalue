@@ -25,6 +25,8 @@ import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import BlueBox from "@/layouts/Body/BlueBox";
+import cookie from "cookiejs";
+import SalesModelHeadSy from "./SalesModelHeadSy";
 
 interface LogEntry {
   date: Date | Dayjs | null;
@@ -288,7 +290,8 @@ const SalesModelTable:React.FC<Props> = ({
           key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
           className="min-w-[1490px]"
         >
-          <SalesModelHead
+          {cookie.get('company') === 'sy' &&
+          <SalesModelHeadSy
             model={model}
             handleModelDataChange={handleModelDataChange}
             boardGroup={boardGroup}
@@ -302,9 +305,50 @@ const SalesModelTable:React.FC<Props> = ({
             handleEdit={handleEdit}
             handleModelChange={handleModelChange}
           />
+          }
+          {cookie.get('company') !== 'sy' &&
+          <SalesModelHead
+            model={model}
+            handleModelDataChange={handleModelDataChange}
+            boardGroup={boardGroup}
+            boardGroupSelectList={boardGroupSelectList}
+            boardSelectList={boardSelectList}
+            metarialSelectList={metarialSelectList}
+            selectId={selectId}
+            newFlag={newFlag}
+            inputRef={inputRef}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            handleModelChange={handleModelChange}
+          />}
           <div className="flex flex-col ">
             <AntdTable
-              columns={salesOrderModelClmn(
+              columns={
+              cookie.get('company') === 'sy' ? 
+              salesOrderModelClmn(
+                data,
+                setData,
+                setDeleted,
+                unitSelectList,
+                vcutSelectList,
+                outSelectList,
+                smPrintSelectList,
+                smColorSelectList,
+                smTypeSelectList,
+                mkPrintSelectList,
+                mkColorSelectList,
+                mkTypeSelectList,
+                spPrintSelectList,
+                spTypeSelectList,
+                surfaceSelectList,
+                ozUnitSelectList,
+                handleModelDataChange,
+                newFlag,
+                selectId,
+              )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
+                && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs')
+              :
+              salesOrderModelClmn(
                 data,
                 setData,
                 setDeleted,

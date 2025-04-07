@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import { DividerH } from "@/components/Divider/Divider";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const SalesModelPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -136,6 +137,12 @@ const SalesModelPage: React.FC & {
     }
   }, [drawerOpen]);
   // ---------------- 거래처  ---------------- 끝
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if(!mounted)      return null;
 
   return (
     <>
@@ -162,7 +169,12 @@ const SalesModelPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)}
+          columns={
+            cookie.get('company') === 'sy' ? 
+            salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router).filter(f=>f.dataIndex !== 'fpNo' && !f.dataIndex.includes("pnl"))
+            :
+            salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)
+          }
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
