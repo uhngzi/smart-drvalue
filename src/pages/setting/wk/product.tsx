@@ -1,4 +1,6 @@
+import { deleteAPI } from "@/api/delete";
 import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
 import CustomTreeView from "@/components/Tree/CustomTreeView";
@@ -26,6 +28,7 @@ const WkProductListPage: React.FC & {
 
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
   const [ procTreeData, setProcTreeData ] = useState<treeType[]>([]);
+  const [ prdProcData, setPrdProcData ] = useState<{matchId:string, checkId:string}[]>([]);
 
   const [productGroupId, setProductGroupId] = useState<string | null>(null)
   const [checkProcessList, setCheckProcessList] = useState<string[]>([])
@@ -54,12 +57,40 @@ const WkProductListPage: React.FC & {
           ordNo: d.ordNo,
           open: true
         }))
+        
         setTreeData(arr);
       } else {
         console.log('error:', result.response);
       }
       return result;
     },
+  });
+
+  const { data:prdProcQueryData, refetch: prdProcRefetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['product-lines-group/jsxcrud/one', productGroupId],
+    queryFn: async () => {
+
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: `product-lines-group/jsxcrud/one/${productGroupId}`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data.productLines ?? []).map((d:any)=>({
+          matchId: d.id,
+          checkId: d.process.id
+        }))
+
+        setPrdProcData(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+    enabled: !!productGroupId,
   });
 
   const { data:queryData, refetch } = useQuery<
@@ -96,15 +127,55 @@ const WkProductListPage: React.FC & {
         return result;
       },
     });
+    console.log(procTreeData)
+  const handleCheck = async (e: CheckboxChangeEvent, matchId: any) => {
+    if(!productGroupId){
+      showToast('제품군을 먼저 선택해주세요.', 'error');
+      return;
+    }
+    console.log(e.target.checked, matchId)
 
-  const handleCheck = (e: CheckboxChangeEvent) => {
-    setCheckProcessList((prev) => {
-      if (prev.includes(e.target.value)) {
-        return prev.filter((id) => id !== e.target.value);
+    if(e.target.checked) {
+      const result = await postAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: 'product-lines',
+        jsx: 'jsxcrud'
+      }, {
+        productLinesGroup:{
+          id: productGroupId,
+        },
+        process:{
+          id: e.target.value,
+        },
+        ordNo:0,
+        useYn:true
+      });
+      if (result.resultCode === 'OK_0000') {
+        setPrdProcData((prev) => ([...prev, {matchId: result.data?.entity.id, checkId: e.target.value}]));
+        showToast('저장이 완료되었습니다.', 'success');
       } else {
-        return [...prev, e.target.value];
+        console.log('error:', result.response);
       }
-    });
+    } else {
+      const dResult = await deleteAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: `product-lines`,
+        jsx: 'jsxcrud'
+      }, matchId)
+      if(dResult.resultCode === 'OK_0000') {
+        setPrdProcData((prev) => prev.filter((item) => item.matchId !== matchId));
+        showToast('삭제가 완료되었습니다.', 'success');
+      }
+    }
+    // setPrdProcData((prev) => {
+    //   if (prev.includes(e.target.value)) {
+    //     return prev.filter((id) => id !== e.target.value);
+    //   } else {
+    //     return [...prev, e.target.value];
+    //   }
+    // });
   }
 
   function onSubmit() {
@@ -181,18 +252,19 @@ const WkProductListPage: React.FC & {
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
             <CustomTreeCheck
               data={procTreeData}
+              checkedData={prdProcData}
               childCheck={true}
               onChange={handleCheck}
             />
           </div>
         </div>
-        <div className="py-20">
+        {/* <div className="py-20">
           <Button type="primary" size="large" onClick={onSubmit} 
             className="w-full flex h-center gap-8 !h-[50px] " 
             style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
             <span>저장하기</span>
           </Button>
-        </div>
+        </div> */}
         <BaseTreeCUDModal
           title={{name: "제품군 관리"}}
           open={prodGroupOpen} 

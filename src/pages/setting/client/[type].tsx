@@ -145,6 +145,7 @@ const ClientCuListPage: React.FC & {
         );
   
         if(result.resultCode === 'OK_0000') {
+          console.log(prtData)
           const mngData = prtData.map((mng:any) => {
             const idx = mng.id;
             delete mng?.id;
@@ -199,7 +200,6 @@ const ClientCuListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const id = result.data.entity.id;
-          console.log("12839012732139821",result)
           const mngData = prtData.map((mng:any) => {
             const idx = mng.id;
             delete mng?.id;
@@ -508,7 +508,7 @@ const ClientCuListPage: React.FC & {
                             {
                               label: <div className="h-center gap-5"> <p className="w-16 h-16"><Edit/></p>정보 수정</div>,
                               key: 0,
-                              onClick: () => {setPrtData((prev:any) => prev.map((mng:any) => mng.id === mng.id ? {...mng, mode: 'edit'} : mng));}
+                              onClick: () => {setPrtData((prev:any) => prev.map((prevMng:any) => prevMng.id === mng.id ? {...mng, mode: 'edit'} : mng));}
                             },
                             // {
                             //   label: <div className="h-center gap-5"> <p className="w-16 h-16"><Plus /></p>담당자 추가</div>,
@@ -518,7 +518,7 @@ const ClientCuListPage: React.FC & {
                             {
                               label: <div className="text-[red] h-center gap-5"><p className="w-16 h-16"><Trash /></p>삭제</div>,
                               key: 2,
-                              onClick: () => {setPrtData((prev:any) => prev.filter((mng:any) => mng.id !== mng.id));}
+                              onClick: () => {setPrtData((prev:any) => prev.filter((prevMng:any) => prevMng.id !== mng.id));}
                             }
                           ]}}>
                         <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>

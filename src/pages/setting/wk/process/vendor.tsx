@@ -12,13 +12,9 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
-import AntdModal from "@/components/Modal/AntdModal";
 import AntdPagination from "@/components/Pagination/AntdPagination";
-import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
-import CustomTree from "@/components/Tree/CustomTree";
 import { treeType } from "@/data/type/componentStyles";
-import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { Button, Checkbox, CheckboxChangeEvent, Dropdown, Input } from "antd";
 
@@ -31,6 +27,7 @@ import Search from "@/assets/svg/icons/s_search.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
 import { MoreOutlined } from "@ant-design/icons";
 import { deleteAPI } from "@/api/delete";
+import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -86,7 +83,8 @@ const WkProcessVendorListPage: React.FC & {
   });
 
   const [ dataVendor, setDataVendor ] = useState<Array<partnerRType>>([]);
-  const { data:queryDataVendor, isLoading: vendorLoading } = useQuery<
+  const [vendorSch, setVendorSch] = useState<string>('');
+  const { data:queryDataVendor, isLoading: vendorLoading, refetch: vendorRefetch } = useQuery<
     apiGetResponseType, Error
   >({
     queryKey: ['setting', 'client', 'vndr', pagination.current],
@@ -99,7 +97,7 @@ const WkProcessVendorListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        s_query: [{key: "prtTypeEm", oper: "eq", value: "vndr"}]
+        s_query: [{key: "prtTypeEm", oper: "eq", value: "vndr"},{key: "prtNm", oper: "startsL", value: vendorSch}]
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -359,7 +357,7 @@ const WkProcessVendorListPage: React.FC & {
       <>
         <div className="w-full flex gap-30">
           <div className="w-[30%] rounded-14 p-20" style={{border: '1px solid #D9D9D9'}}>
-            <CustomTreeCheck
+            <CustomTreeSelect
               data={treeData}
               childCheck={true}
               childCheckId={childCheckId}
@@ -450,8 +448,8 @@ const WkProcessVendorListPage: React.FC & {
             <div className="v-between-h-center">
               <p>총 {totalData}건</p>
               <div className="flex">
-                <Input className="!rounded-0 w-[350px]" placeholder="외주처명 또는 업종 검색"/>
-                <Button className="!rounded-0 !w-38 !p-0"><p className="w-16 h-16"><Search /></p></Button>
+                <Input value={vendorSch} className="!rounded-0 w-[350px]" placeholder="외주처명 또는 업종 검색" onChange={({target}) => setVendorSch(target.value)}/>
+                <Button className="!rounded-0 !w-38 !p-0"><p className="w-16 h-16" onClick={() => vendorRefetch()}><Search /></p></Button>
               </div>
             </div>
             
