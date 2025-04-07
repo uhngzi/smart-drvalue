@@ -62,3 +62,20 @@ export const getPrtSupAPI = async (
 
   return result;
 };
+
+export const getPrtBuyerAPI = async (
+  pagination?:{size:number, current:number},
+) => {
+  const result = await getAPI({
+    type: 'baseinfo', 
+    utype: 'tenant/',
+    url: 'biz-partner/jsxcrud/many'
+  },{
+    limit: pagination?.size || 0,
+    page: pagination?.current || 0,
+    s_totOper: "or",
+    s_query: [{key: "prtTypeEm", oper: "eq", value: "both"}, {key: "prtTypeEm", oper: "eq", value: "sup"}]
+  });
+
+  return result;
+};
