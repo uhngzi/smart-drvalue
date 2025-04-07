@@ -1,6 +1,5 @@
 import { getPrtCsAPI } from "@/api/cache/client";
 import { getAPI } from "@/api/get";
-import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { salesModelsClmn } from "@/data/columns/Sales";
@@ -116,17 +115,17 @@ const SalesModelPage: React.FC & {
 
   return (
     <>
-    <div className="w-full h-50">
-      <ListTitleBtn
-        label="신규"
-        onClick={()=>{
-          router.push("/sales/model/new");
-        }}
-        icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
-      />
-    </div>
+      <div className="w-full h-50">
+        <ListTitleBtn
+          label="신규"
+          onClick={()=>{
+            router.push("/sales/model/new");
+          }}
+          icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
+        />
+      </div>
 
-    <DividerH />
+      <DividerH />
 
       <ListPagination
         pagination={pagination}

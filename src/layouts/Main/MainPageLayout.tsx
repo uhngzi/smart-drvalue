@@ -6,6 +6,7 @@ import { TabLarge } from "@/components/Tab/Tabs";
 import { loginCheck } from "@/utils/signUtil";
 import dynamic from "next/dynamic";
 import Close from "@/assets/svg/icons/s_close.svg";
+import { useMenu } from "@/data/context/MenuContext";
 
 interface Props {
   children : React.ReactNode;
@@ -29,6 +30,7 @@ const Sider = dynamic(() => import('../Sider/Sider'), { ssr: false });
 
 const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10px 30px 20px 30px", modal, head }) => {
   const router = useRouter();
+  const { selectMenu } = useMenu();
 
   useEffect(()=>{
     // 로그인 안 했을 경우 로그인 페이지로 이동
@@ -81,12 +83,21 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
           
           <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40">
             <Contents padding={pd} bg={bg} >
-              {menu && (
+              { selectMenu?.children && selectMenu?.children?.length > 1 && 
+                <TabLarge
+                  items={selectMenu.children.map((menu) => ({
+                    text: menu.menuNm ?? "",
+                    link: "/"+(menu.menuUrl ?? ""),
+                  }))}
+                  pathname={router.pathname}
+                />
+              }
+              {/* {menu && (
                 <TabLarge
                   items={menu}
                   pathname={router.pathname}
                 />
-              )}
+              )} */}
               {children}
             </Contents>
           </div>

@@ -33,7 +33,7 @@ interface Props {
 
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
-  const { menu, menuLoading } = useMenu();
+  const { menuLoading, sider } = useMenu();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
@@ -49,18 +49,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   useEffect(()=>{
     setSignIn(loginCheck);
   }, [signIn]);
-
-  useEffect(()=>{
-    if(!menuLoading) {
-      // console.log(menu);
-      menu?.map((m1) => ({
-        key: '/',
-        title:'/',
-        label: '홈 피드',
-        // icon: m1.menuNmOrigin === '' ? <p className={iconClassNm}><DashBoard /></p>,
-      }))
-    }
-  }, [menuLoading, menu])
 
   const items: ItemType<MenuItemType>[] = [
     {
@@ -184,7 +172,8 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     setMounted(true);
   }, []);
   
-  if (!mounted) return null;
+  if(!mounted)      return null;
+  if(menuLoading)   return;
 
   return (
     <SiderStyled $width={collapsed?'80px':'240px'}>
@@ -201,7 +190,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div className="flex flex-col max-h-[calc(100%-230px)] overflow-y-auto overflow-x-hidden">
         <Menu
           mode="inline"
-          items={items}
+          items={sider}
           onClick={({ key, item }) => {
             const it: any = item;
             router.push(`/${it.props.title}`);  //title이 실제 url이므로 title 추출

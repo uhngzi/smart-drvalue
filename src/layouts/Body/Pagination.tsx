@@ -9,6 +9,7 @@ import Print from "@/assets/png/print.png"
 import { LabelMedium } from "@/components/Text/Label";
 import AntdSelect from "@/components/Select/AntdSelect";
 import AntdInput from "@/components/Input/AntdInput";
+import { useMenu } from "@/data/context/MenuContext";
 
 interface Props {
   totalData: number;
@@ -30,6 +31,8 @@ export const ListPagination: React.FC<Props> = ({
   title,
   titleBtn,
 }) => {
+  const { selectMenu } = useMenu();
+
   const items: MenuProps['items'] = [
     {
       label: <span className="text-12">엑셀 다운로드</span>,

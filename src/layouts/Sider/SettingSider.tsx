@@ -1,6 +1,7 @@
 import { useRouter } from "next/router"
 
 import Logo from "@/assets/logo/gpn-logo.png"
+import LogoSY from "@/assets/logo/sy-logo.png";
 
 import Setting from "@/assets/svg/icons/s_setting.svg"
 import Logout from "@/assets/svg/icons/logout.svg"
@@ -18,6 +19,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import { useEffect, useState } from "react"
 import { loginCheck, logout } from "@/utils/signUtil"
+import cookie from "cookiejs";
 
 interface Props {
 }
@@ -196,12 +198,20 @@ const SettingSider: React.FC<Props> = ({ }) => {
     return [firstSegment];
   };
   
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if(!mounted)      return null;
+  
   return (
     <SiderStyled>
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" onClick={()=>{router.push('/');}}>
-            <Image src={Logo} alt="logo" width={120}/>
+            {/* <Image src={Logo} alt="logo" width={120}/> */}
+            <Image src={cookie.get('company') === 'gpn' ? Logo : cookie.get('company') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
           </div>
         </div>
       </div>
