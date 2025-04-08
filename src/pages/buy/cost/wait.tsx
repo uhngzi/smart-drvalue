@@ -24,6 +24,7 @@ import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const BuyCostWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -287,7 +288,18 @@ const BuyCostWaitPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={BuyCostOutClmn(totalData, pagination, setOpen, setSelect)}
+          columns={
+            cookie.get('company') === 'sy' ?
+            BuyCostOutClmn(totalData, pagination, setOpen, setSelect).filter(f=>
+              !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+              && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("pnlW") && !f.key?.toString().includes("kit")
+              && !f.key?.toString().includes("Kit") && !f.key?.toString().includes("prdMngNo") && !f.key?.toString().includes("wkOutCnt")
+              && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+              && !f.key?.toString().includes("rein") && !f.key?.toString().includes("m2")
+            )
+            :
+            BuyCostOutClmn(totalData, pagination, setOpen, setSelect)
+          }
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
@@ -341,15 +353,28 @@ const BuyCostWaitPage: React.FC & {
                     {/* 조건부 렌더링: 펼쳐진 경우에만 테이블 표시 */}
                     {isExpanded && (
                       <AntdTableEdit
-                        columns={BuyCostOutPriceClmn(
-                          selectPrice,
-                          setSelectPrice,
-                          selectPrice.find(
-                            (f) =>
-                              f.processId === proc.specPrdGrp?.process?.id &&
-                              f.vendorId === proc.vendor?.id
-                          )?.id
-                        )}
+                        columns={
+                          cookie.get('company') === 'sy' ?
+                          BuyCostOutPriceClmn(
+                            selectPrice,
+                            setSelectPrice,
+                            selectPrice.find(
+                              (f) =>
+                                f.processId === proc.specPrdGrp?.process?.id &&
+                                f.vendorId === proc.vendor?.id
+                            )?.id
+                          ).filter(f=> !f.key?.toString().includes("pnlcntMax") && !f.key?.toString().includes("m2"))
+                          :
+                          BuyCostOutPriceClmn(
+                            selectPrice,
+                            setSelectPrice,
+                            selectPrice.find(
+                              (f) =>
+                                f.processId === proc.specPrdGrp?.process?.id &&
+                                f.vendorId === proc.vendor?.id
+                            )?.id
+                          )
+                        }
                         data={prices.filter(
                           (f) =>
                             f.vendor.id === proc?.vendor?.id &&

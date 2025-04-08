@@ -39,6 +39,7 @@ import { handleDirectPrint } from "@/utils/printOrderForm";
 import Bag from "@/assets/svg/icons/bag.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -330,7 +331,17 @@ const BuyOrderPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router)}
+          columns={
+            cookie.get('company') === 'sy' ?
+            BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router).filter(f=>
+              !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+              && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
+              && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+              && !f.key?.toString().includes("rein") && !f.key?.toString().includes("m2")
+            )
+            :
+            BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router)
+          }
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}

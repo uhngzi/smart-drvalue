@@ -22,6 +22,7 @@ import Err from "@/assets/svg/icons/s_excalm.svg";
 
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { Dayjs } from "dayjs";
+import cookie from "cookiejs";
 
 interface MenuFlat {
   createdAt?: Date | Dayjs | null;
@@ -99,6 +100,7 @@ interface MenuContextType {
 }
 
 const iconClassNm = "h-40 min-w-[40px!important]";
+const SELECT_MENU_COOKIE_KEY = "select_menu_id";
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
@@ -200,6 +202,38 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...(arr ?? [])
     ]);
     setMenuLoading(false);
+  }, [menu]);
+
+  // 새로고침 시에도 어떤 메뉴를 선택중인지를 저장되기 위해 쿠키에 넣어줌
+  useEffect(() => {
+    if (selectMenu?.id) {
+      cookie.set(SELECT_MENU_COOKIE_KEY, selectMenu.id);
+    }
+  }, [selectMenu]);
+
+  // 쿠키에 들어가있는 메뉴 id값을 추출
+  useEffect(() => {
+    if (menu && menu.length > 0) {
+      const savedId = cookie.get(SELECT_MENU_COOKIE_KEY);
+      if (savedId) {
+        // menu 트리에서 ID에 맞는 메뉴 찾아서 복원
+        const findMenuById = (menus: Menu[]): Menu | null => {
+          for (const m of menus) {
+            if (m.id === savedId) return m;
+            if (m.children) {
+              const found = findMenuById(m.children);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+  
+        const restored = findMenuById(menu);
+        if (restored) {
+          setSelectMenu(restored);
+        }
+      }
+    }
   }, [menu]);
 
   return (

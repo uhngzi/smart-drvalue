@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import Close from "@/assets/svg/icons/s_close.svg";
 import CardList from "@/components/List/CardList";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const BuyCostStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -147,7 +148,18 @@ const BuyCostStatusPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={BuyCostOutStatusClmn(totalData, pagination, setSelect)}
+          columns={
+            cookie.get('company') === 'sy' ?
+            BuyCostOutStatusClmn(totalData, pagination, setSelect).filter(f=>
+              !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+              && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("pnlW") && !f.key?.toString().includes("kit")
+              && !f.key?.toString().includes("Kit") && !f.key?.toString().includes("prdMngNo") && !f.key?.toString().includes("wkOutCnt")
+              && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+              && !f.key?.toString().includes("rein") && !f.key?.toString().includes("m2")
+            )
+            :
+            BuyCostOutStatusClmn(totalData, pagination, setSelect)
+          }
           data={data}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
           loading={dataLoading}
