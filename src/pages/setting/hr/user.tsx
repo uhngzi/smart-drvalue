@@ -5,6 +5,8 @@ import People from "@/assets/svg/icons/people.svg";
 import UserSetting from "@/assets/svg/icons/user-setting.svg";
 import UserFollow from "@/assets/svg/icons/user-follow.svg";
 import UserAdd from "@/assets/svg/icons/user-add.svg";
+import Bag from "@/assets/svg/icons/bag.svg";
+
 import { useState } from "react";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import { useQuery } from "@tanstack/react-query";
@@ -14,11 +16,20 @@ import { CUtreeType } from "@/data/type/componentStyles";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
 import useToast from "@/utils/useToast";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
+import AntdModal from "@/components/Modal/AntdModal";
+import CustomTree from "@/components/Tree/CustomTree";
+import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
+import AntdTable from "@/components/List/AntdTable";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import { MOCK } from "@/utils/Mock";
+import { postAPI } from "@/api/post";
 
 const groupType = {
   dept: {name: '조직도', child:'team'},
-  workType: {name: '근무형태', child:''},
-  work: {name: '업무구분', child:''},
+  WORK_TYPE: {name: '근무형태', child:''},
+  JOB_TYPE: {name: '업무구분', child:''},
   user: {name: '조직 구성원', child:''},
 }
 
@@ -28,8 +39,19 @@ const HrUserListPage: React.FC & {
   const { showToast, ToastContainer } = useToast();
 
   const router = useRouter();
+
+  const [totalData, setTotalData] = useState<number>(1);
+  const [pagination, setPagination] = useState({ current: 1, size: 10 });
+  const handlePageChange = (page: number) => {
+    setPagination({ ...pagination, current: page });
+  };
+
+  // 구성원 관련 변수
+  const [addUserOpen, setAddUserOpen] = useState<boolean>(false)
+  const [selectedTeam, setSelectedTeam] = useState<string|null>(null)
+
   const [newOpen, setNewOpen] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState<keyof typeof groupType>('dept');
+  const [newTitle, setNewTitle] = useState<keyof typeof groupType | null>(null);
   const [newData, setNewData] = useState<any>([]);
 
   // 트리를 사용하는 메뉴인 경우, 추가, 수정, 삭제를 하기위한 리스트, 한번에 submit을 하기때문에 각각의 리스트를 만들어서 한번에 처리
@@ -41,34 +63,85 @@ const HrUserListPage: React.FC & {
 
   //데이터 관련
   const [dataLoading, setDataLoading] = useState<boolean>(true);
-
+  const [ addModalInfoList, setAddModalInfoList ] = useState<any[]>(MOCK.userItem.CUDPopItems);
   const { data:queryData, refetch } = useQuery< apiGetResponseType, Error>({
     queryKey: ['setting', 'hr', 'user', newTitle],
+    enabled: newTitle === "dept" || newTitle === "user",
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: `${newTitle}/jsxcrud/many`
+        url: `dept/jsxcrud/many`
       });
 
       if (result.resultCode === 'OK_0000') {
         console.log(result.data?.data)
         let arr = [];
         console.log(newTitle)
-        if(newTitle === 'dept'){
-          arr = (result.data?.data ?? []).map((group:any) => ({
-            id: group.id,
-            label: group.deptNm,
-            ordNo: group.ordNo,
-            children: group.teams.map((team:any) => ({
-              id: team.id,
-              label: team.teamNm,
-              ordNo: team.ordNo,
-            })),
-            open: true,
-          }));
-        }
+        arr = (result.data?.data ?? []).map((group:any) => ({
+          id: group.id,
+          label: group.deptNm,
+          ordNo: group.ordNo,
+          children: group.teams.map((team:any) => ({
+            id: team.id,
+            label: team.teamNm,
+            ordNo: team.ordNo,
+          })),
+          open: true,
+        }));
+        console.log(arr)
+        setNewData(arr);
+        setAddModalInfoList(MOCK.userItem.CUDPopItems.map((item) => {
+          if(item.name === 'deptId'){
+            return {
+              ...item,
+              option: arr.map((group:any) => ({
+                value: group.id,
+                label: group.label,
+                children: group.children.map((team:any) => ({
+                  value: team.id,
+                  label: team.label,
+                }))
+              })),
+            };
+          }else{
+            return item;
+          }
+        }));
+      } else {
+        console.log('error:', result.response);
+        setNewData([]);
+      }
+
+      setDataLoading(false);
+      console.log(result.data);
+      return result;
+    },
+  });
+  const { data:queryMetaData, refetch:metaRefetch } = useQuery< apiGetResponseType, Error>({
+    queryKey: ['setting', 'default-metadata', 'user', newTitle],
+    enabled: newTitle == "WORK_TYPE" || newTitle === "JOB_TYPE",
+    queryFn: async () => {
+      setDataLoading(true);
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: `default-metadata/jsxcrud/many`
+      },{
+        anykeys:{type: newTitle}
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data?.data)
+        let arr = [];
+        console.log(newTitle)
+        arr = (result.data?.data ?? []).map((meta:any) => ({
+          id: meta.id,
+          label: meta.data,
+          ordNo: meta.ordNo,
+          open: true,
+        }));
         console.log(arr)
         setNewData(arr);
       } else {
@@ -81,92 +154,141 @@ const HrUserListPage: React.FC & {
       return result;
     },
   });
+  const [userList, setUserList] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any>({});
+  const [userDetailOpen, setUserDetailOpen] = useState<boolean>(false);
+  
+  const { isLoading: usersLoading, refetch: userRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['auth', 'tenant', 'user'],
+    enabled: newTitle === "user",
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'auth',
+        utype: 'tenant/',
+        url: `user/jsxcrud/many`,
+      },{
+        limit: pagination.size,
+        page: pagination.current,
+        //s_query: {"detail.team.teamNm": { "$eq": "생산팀" }}
+      });
 
-  // function onTreeSubmit(list: treeType[]){
-  //   const newParentsList = list.filter((item) => item.id.includes('temp'));
-  //   if(newTitle === 'dept'){
-  //     newParentsList.forEach( async (item) => {
-  //       const jsonData = {deptNm: item.label, "useYn": true}
-  //       const parentResult = await postAPI({
-  //         type: 'baseinfo', 
-  //         utype: 'tenant/',
-  //         url: `${newTitle}/jsxcrud/many`,
-  //         jsx: 'jsxcrud'
-  //       }, jsonData);
+      if (result.resultCode === 'OK_0000') {
+        setUserList(result.data?.data)
+        setTotalData(result.data?.total ?? 0);
+      } else {
+        console.log('error:', result.response);
+      }
 
-  //       const parentId = parentResult.data.entity.id;
-  //       if(item.children && item.children.length > 0){
-  //         item.children.forEach( async (child) => {
+      return result;
+    },
+  });
 
-  //           const childJsonData = {
-  //             dept: {id: parentId},
-  //             teamNm: child.label,
-  //             useYn:  true
-  //           }
-  //           const childResult = await postAPI({
-  //             type: 'baseinfo', 
-  //             utype: 'tenant/',
-  //             url: `${newTitle}/jsxcrud/many`,
-  //             jsx: 'jsxcrud'
-  //           }, childJsonData);
-  //         })
-  //       }
-  //     })
-  //   }
-  // }
   async function onTreeSubmit(){
     console.log(addList, editList, deleteList);
     const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
     console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
     let result = false
-
-    for(const item of updatedAddList){
-      let url: string = newTitle;
-      let parent: string = '';
-      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
-
-      if(item.parentId) {
-        url = groupType[newTitle].child;
-        parent = newTitle;
-        jsonData[parent] = {id: item.parentId};
-        jsonData[`${groupType[newTitle].child}Nm`] = item.label;
-      }else{
-        jsonData[`${newTitle}Nm`] = item.label;
-      }
-      result = await onTreeAdd(url, jsonData);
-      if(!result) {
-        showToast('데이터 추가중 오류가 발생했습니다.', 'error');
-      }
-      console.log("add", result)
-    }
-
-    for(const item of finalEditList){
-      let url: string = newTitle;
-      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
-
-      if(item.parentId) {
-        url = groupType[newTitle].child;
-        jsonData[newTitle] = {id: item.parentId};
-        jsonData[`${groupType[newTitle].child}Nm`] = item.label;
-        jsonData.ordNo = Number(item.ordNo);
-      }else{
-        jsonData[`${newTitle}Nm`] = item.label;
-        jsonData.ordNo = Number(item.ordNo);
-      }
-      result = await onTreeEdit(item, url, jsonData);
-      if(!result){
-        showToast('데이터 수정중 오류가 발생했습니다.', 'error');
-      }
-    }
-
-    for(const item of updatedDeleteList){
-      let url: string = newTitle;
-      if(item.type === 'child'){
-        url = groupType[newTitle].child;
-      }
-      result = await onTreeDelete(item, url);
-      if(!result){
-        showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+    if(newTitle != null){
+      if(newTitle === 'dept'){
+        for(const item of updatedAddList){
+          let url: string = newTitle;
+          let parent: string = '';
+          const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+    
+          if(item.parentId) {
+            url = groupType[newTitle].child;
+            parent = newTitle;
+            jsonData[parent] = {id: item.parentId};
+            jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+          }else{
+            jsonData[`${newTitle}Nm`] = item.label;
+          }
+          result = await onTreeAdd(url, jsonData);
+          if(!result) {
+            showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+          }
+          console.log("add", result)
+        }
+    
+        for(const item of finalEditList){
+          let url: string = newTitle;
+          const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
+    
+          if(item.parentId) {
+            url = groupType[newTitle].child;
+            jsonData[newTitle] = {id: item.parentId};
+            jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+            jsonData.ordNo = Number(item.ordNo);
+          }else{
+            jsonData[`${newTitle}Nm`] = item.label;
+            jsonData.ordNo = Number(item.ordNo);
+          }
+          result = await onTreeEdit(item, url, jsonData);
+          if(!result){
+            showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+          }
+        }
+    
+        for(const item of updatedDeleteList){
+          let url: string = newTitle;
+          if(item.type === 'child'){
+            url = groupType[newTitle].child;
+          }
+          result = await onTreeDelete(item, url);
+          if(!result){
+            showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+          }
+        }
+      } else {
+        console.log(updatedAddList)
+        const data = updatedAddList.map((item) => (
+          {type: newTitle, data: item.label, useYn: true}
+        ));
+        if(data.length > 0){
+          const metaCreateRes = await patchAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: `default-metadata/default/create-many`,
+            jsx: 'default',
+            etc: true
+          }, "", {data: data});
+          if(metaCreateRes.resultCode === 'OK_0000'){
+            result = true;
+          } else{
+            showToast("저장중 오류가 발생했습니다.", 'error');
+          }
+        }
+        console.log(finalEditList)
+        if(finalEditList.length > 0){
+          for(const item of finalEditList){
+            const metaEditRes = await patchAPI({
+              type: 'baseinfo', 
+              utype: 'tenant/',
+              url: `default-metadata`,
+              jsx: 'jsxcrud',
+            }, item.id, {type: newTitle, data: item.label, ordNo:item.ordNo, useYn: true});
+            if(metaEditRes.resultCode === 'OK_0000'){
+              result = true;
+            } else{
+              showToast("저장중 오류가 발생했습니다.", 'error');
+            }
+          }
+        }
+        if(updatedDeleteList.length > 0){
+          for (const item of updatedDeleteList){
+            const deleteRes = await deleteAPI({
+              type: 'baseinfo', 
+              utype: 'tenant/',
+              url: `default-metadata`,
+              jsx: 'jsxcrud',
+            }, item.id);
+            if(deleteRes.resultCode === 'OK_0000'){
+              result = true;
+            }else{
+              showToast("저장중 오류가 발생했습니다.", 'error');
+            }
+          }
+        }
       }
     }
     console.log(result);
@@ -176,9 +298,29 @@ const HrUserListPage: React.FC & {
       setDeleteList([]);
       showToast('저장이 완료되었습니다.', 'success');
       refetch();
+      metaRefetch();
     }
   }
 
+  const handleSubmitNewData = async (data: any) => {
+    const newUserData = {status:"ACTIVE", ...data}
+
+    console.log({status:"ACTIVE", ...data})
+
+    const result = await postAPI({
+      type: 'auth',
+      utype: 'tenant/',
+      url: `user`,
+      jsx: 'default',
+    }, newUserData);
+
+    if(result.resultCode === 'OK_0000') {
+      showToast('저장이 완료되었습니다.', 'success');
+      setUserDetailOpen(false);
+      setUserData({});
+      userRefetch();
+    }
+  }
   
 
   function modalOpen(title: keyof typeof groupType){
@@ -186,10 +328,23 @@ const HrUserListPage: React.FC & {
     setNewTitle(title);
   }
 
-  function modalClose(){
-    setNewOpen(false);
+  function userAddOpen(title: keyof typeof groupType){
+    setAddUserOpen(true);
+    setNewTitle(title);
   }
 
+  function modalClose(){
+    console.log("close")
+    setNewTitle(null);
+    setNewOpen(false);
+    setNewData([])
+  }
+
+  function userModalClose(){
+    setUserDetailOpen(false);
+    setUserData({});
+  }
+  console.log(newData)
   return (
     <section className="flex flex-col gap-20">
       <div>
@@ -209,21 +364,21 @@ const HrUserListPage: React.FC & {
             <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
           </div>
         </div>
-        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("workType")}>
+        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("WORK_TYPE")}>
           <UserSetting/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>근무형태</span>
             <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
           </div>
         </div>
-        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("work")}>
+        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("JOB_TYPE")}>
           <UserFollow/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>업무구분</span>
             <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
           </div>
         </div>
-        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("user")}>
+        <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => userAddOpen("user")}>
           <UserAdd/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>조직 구성원</span>
@@ -233,7 +388,7 @@ const HrUserListPage: React.FC & {
       </div>
 
       <BaseTreeCUDModal
-        title={{name: `${groupType[newTitle].name} 설정`}}
+        title={{name: `${newTitle != null && groupType[newTitle].name} 설정`}}
         open={newOpen} 
         setOpen={setNewOpen} 
         data={newData}
@@ -248,6 +403,104 @@ const HrUserListPage: React.FC & {
           setDeleteList: setDeleteList,
         }}
       />
+      <AntdModal
+        width={1300}
+        title={"조직 구성원 설정"}
+        open={addUserOpen}
+        setOpen={setAddUserOpen}
+        contents={
+          <section>
+            <div className="h-center justify-end pb-10">
+              <div
+                className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+                onClick={()=>setUserDetailOpen(true)}
+              >
+                구성원 관리
+              </div>
+            </div>
+            <div className="flex gap-20">
+              <div className="w-[300px] rounded-14 p-20 bg-white" style={{border:'1px solid #D9D9D9'}}>
+                <CustomTreeSelect
+                  data={newData}
+                  childCheck={true}
+                  childCheckId={selectedTeam}
+                  setChildCheckId={setSelectedTeam}
+                />
+              </div>
+              <div>
+                <AntdTable
+                  columns={[
+                    {
+                      title: 'No',
+                      width: 50,
+                      dataIndex: 'no',
+                      render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                      align: 'center',
+                    },
+                    {
+                      title: '부서명',
+                      width: 130,
+                      dataIndex: 'detail.dept.deptNm',
+                      key: 'detail.dept.deptNm',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.dept?.deptNm}</>
+                      )
+                    },
+                    {
+                      title: '팀명',
+                      width: 130,
+                      dataIndex: 'detail.team.teamNm',
+                      key: 'detail.team.teamNm',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.team?.teamNm}</>
+                      )
+                    },
+                    {
+                      title: '이름',
+                      dataIndex: 'name',
+                      key: 'name',
+                      align: 'center',
+                      render: (_, record) => (
+                        <div
+                          className="w-full h-full h-center cursor-pointer"
+                          onClick={()=>{
+                            setUserData(record);
+                            setUserDetailOpen(true);
+                          }}
+                        >
+                          {record.name}
+                        </div>
+                      )
+                    },
+                    {
+                      title: '사용자 아이디',
+                      width: 130,
+                      dataIndex: 'userId',
+                      key: 'userId',
+                      align: 'center',
+                    },
+                    
+                  ]}
+                  data={userList}
+                />
+              </div>
+            </div>
+          </section>
+        }
+      />
+      <BaseInfoCUDModal 
+        popWidth={810}
+        title={{name: `구성원 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        open={userDetailOpen} 
+        setOpen={setUserDetailOpen} 
+        onClose={() => userModalClose()}
+        items={addModalInfoList} 
+        data={userData}
+        onSubmit={handleSubmitNewData}
+        onDelete={()=>{}}
+        />
       <ToastContainer/>
     </section>
   )

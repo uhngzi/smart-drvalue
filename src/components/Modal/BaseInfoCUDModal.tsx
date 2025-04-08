@@ -20,6 +20,7 @@ import useToast from "@/utils/useToast";
 interface Option {
   value: string | number | boolean ;
   label: string;
+  children?: Option[];
 }
 
 interface Item {
@@ -28,6 +29,8 @@ interface Item {
   type: string; // input, date, address, custom
   inputType?: string; // input의 type
   option?: Option[]; // select의 option
+  child?: string; // select의 child key값
+  isChild?: boolean; // select의 child 여부
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열 third: 3개씩 나열
   placeholder?: string; // input의 placeholder
   customhtml?: React.ReactNode;
@@ -74,6 +77,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles, addCustom}: CardInputListProps
 ): JSX.Element => {
   const {showToast, ToastContainer} = useToast();
+
+  const [ifChildList, setIfChildList] = useState<any>([]); // select의 child data
 
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
   const dataRef = useRef<{ [key: string]: any }>({})
@@ -195,10 +200,16 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       {item.type === "select" && (
                         <Select 
                           className="w-full"
-                          options={item.option}
+                          options={item.isChild ? ifChildList : item.option}
                           key={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
                           defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
-                          onChange={(value) => {setData(item.name, value)}}
+                          onChange={(value) => {
+                            setData(item.name, value)
+                            if(item.child) {
+                              const childData = item.option?.find((f) => f.value === value)?.children;
+                              setIfChildList(childData)
+                            }
+                          }}
                         />
                       )}
                       {item.type === "mSelect" && (
@@ -216,6 +227,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <DatePicker
                           placeholder={item?.placeholder}
                           className="w-full !rounded-0 h-32"
+                          onChange={(value) => {setData(item.name, dayjs(value).format("YYYY-MM-DD"))}}
+                          defaultValue={data[item.name] ? dayjs(data[item.name]) : null}
                           suffixIcon={<Calendar/>}
                         />
                       )}
