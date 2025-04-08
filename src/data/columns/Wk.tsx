@@ -38,7 +38,7 @@ export const WkPalnWaitClmn = (
     editable: false,
     render: (_, record) => (
       <div
-        className={`w-full text-left ${cookie.get('company') === 'sy' ? 'cursor-pointer' : ''}`}
+        className={`w-full text-left ${cookie.get('company') === 'sy' ? 'cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500' : ''}`}
         onClick={()=>{
           if(cookie.get('company') === 'sy') {
             router?.push(`/wk/plan/${record?.id}`);
@@ -318,6 +318,7 @@ export const WKStatusProcClmn = (
   checkeds?: wkPlanWaitType[],
   setCheckeds?: React.Dispatch<SetStateAction<wkPlanWaitType[]>>,
   handleCheckedAllClick?: () => void,
+  router?: NextRouter,
 ): CustomColumn[] => [
   {
     title: <div>
@@ -431,7 +432,11 @@ export const WKStatusProcClmn = (
       <div
         className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
-          setSelect?.(record);
+          if(cookie.get('company') !== 'sy') {
+            setSelect?.(record);
+          } else {
+            router?.push(`/wk/plan/${record.id}`);
+          }
         }}
       >
         {record.specModel?.prdNm}

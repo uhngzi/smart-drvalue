@@ -350,7 +350,7 @@ const WKStatusProcPage: {
       <AntdTableEdit
         columns={
           cookie.get('company') === 'sy'?
-          WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)?.filter(f=>
+          WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick, router)?.filter(f=>
             !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
             && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
             && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
