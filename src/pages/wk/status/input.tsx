@@ -159,6 +159,12 @@ const WKStatusProcPage: {
   }, [prtOpen]);
   // ---------------- 거래처  ---------------- 끝
   
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if(!mounted)      return null;
+  
   return (
     <div className="flex gap-20">
       <div className="w-[7%] pt-15">
