@@ -387,6 +387,8 @@ const OrderAddLayout = () => {
             console.log(result.data);
             if(model.modelStatus === ModelStatus.NEW) {
               handleSubmit(model.id, model);
+            } else {
+              handleConfirm(model.id, model.modelId ?? "", model.modelStatus ?? ModelStatus.REPEAT);
             }
           } else {
             showToast("저장 완료", "success");
