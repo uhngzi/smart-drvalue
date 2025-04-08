@@ -1460,6 +1460,66 @@ export const BuyOrderMtClmn = (
   },
 ]
 
+export const BuyOrderMtBadClmn = (
+  item: buyOrderDetailType,
+  badCnt: {
+    badNm: string;
+    badId: string;
+    mtId: string;
+    cnt: number;
+  }[],
+  setBadCnt: React.Dispatch<SetStateAction<{
+    badNm: string;
+    badId: string;
+    mtId: string;
+    cnt: number;
+  }[]>>,
+):CustomColumn[] => [
+  {
+    title: '불량명',
+    width: 150,
+    dataIndex: 'badNm',
+    key: 'badNm',
+    align: 'center',
+    cellAlign: 'left',
+  },
+  {
+    title: '불량설명',
+    minWidth: 150,
+    dataIndex: 'badDesc',
+    key: 'badDesc',
+    align: 'center',
+    cellAlign: 'left',
+  },
+  {
+    title: '불량수량',
+    width: 100,
+    dataIndex: 'badNm',
+    key: 'badNm',
+    align: 'center',
+    cellAlign: 'center',
+    render: (_, record) => (
+      <div>
+        <AntdInput
+          value={badCnt.find(f=>f.badId === record.id && f.mtId === item.id)?.cnt}
+          onChange={(e) => {
+            setBadCnt([
+              ...badCnt.filter(f=>!(f.badId === record.id && f.mtId === item.id)),
+              {
+                badNm: record.badNm ?? "",
+                badId: record.id ?? "",
+                mtId: item.id ?? "",
+                cnt: Number(e.target.value)
+              }
+            ]);
+          }}
+          type="number" className="!w-[150px]" styles={{ht:"32px"}} placeholder="해당 검사의 불량 개수"
+        />
+      </div>
+    )
+  },
+]
+
 export const BuyOrderMtViewClmn = (
 ):CustomColumn[] => [
   {

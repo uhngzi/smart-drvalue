@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { downloadFileByObjectName, sliceByDelimiter } from './upLoadUtils';
 import cookie from 'cookiejs';
 import { baseURL, cookieName } from '@/api/lib/config';
+import useToast from '@/utils/useToast';
 
 
 interface Props {
@@ -24,6 +25,8 @@ interface Props {
   divRef?: RefObject<HTMLDivElement | null>;
   changeHeight?: {width:number, height:number} | null;
   defaultHeight?: number;
+
+  max?: number;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -57,11 +60,22 @@ const AntdDraggerSmall: React.FC<Props> = ({
   divRef,
   changeHeight,
   defaultHeight,
+
+  max,
 }) => {
+  const { showToast, ToastContainer } = useToast();
+
   const UploadProp: UploadProps = {
     name: 'files',
     multiple: mult,
     showUploadList: false,
+    beforeUpload: (file, fileListNew) => {
+      if (max && fileList.length + fileListNew.length > max) {
+        showToast(`최대 ${max}개의 파일만 업로드할 수 있습니다.`, "error");
+        return false; // 업로드 무시
+      }
+      return true;
+    },
     onChange: async info => {
       const { status } = info.file;
 
@@ -141,7 +155,11 @@ const AntdDraggerSmall: React.FC<Props> = ({
         disabled={disabled}
         name="files"
         headers={{
-         'x-tenant-code' : 'gpntest-sebuk-ver',
+          'x-tenant-code' : (
+             cookie.get('company') === 'sy' ? 'shinyang-test' :
+             cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
+             'gpntest-sebuk-ver'
+           ),
           Authorization: `bearer ${cookie.get(cookieName)}`,
         }}
         action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}
@@ -155,6 +173,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
           </div>
         </div>
       </CustomDragger>
+      <ToastContainer />
     </>
   );
 };

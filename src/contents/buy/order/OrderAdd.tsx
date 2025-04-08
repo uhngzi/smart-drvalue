@@ -81,6 +81,7 @@ import BlueBox from "@/layouts/Body/BlueBox";
 import BoxHead from "@/layouts/Body/BoxHead";
 
 import CsMngContent from "@/contents/sales/order/add/CsMngContent";
+import MtList from "./MtList";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -409,7 +410,7 @@ const OrderAddLayout = () => {
           approvalDt: order?.orderRoot?.approvalDt ? dayjs(order?.orderRoot?.approvalDt).format("YYYY-MM-DD") : null,
         },
         orderDetail: orderDetails.map((item, index) => ({
-          id: item?.id,
+          id: item?.id?.includes("new") ? undefined : item.id,
           mtNm: item.mtNm,
           materialIdx: item?.materialIdx,
           order: index,
@@ -595,7 +596,7 @@ const OrderAddLayout = () => {
           {/* 발주 컨텐츠 */}
           <Popup
             title="발주 등록"
-            className="!min-h-[420px] !min-w-[800px]"
+            className={cookie.get('company') === 'sy' ? "!min-h-[570px] !min-w-[800px]" : "!min-h-[420px] !min-w-[800px]"}
           >
             <div
               className="w-full h-full flex gap-30 overflow-auto"
@@ -788,303 +789,8 @@ const OrderAddLayout = () => {
             </Button>}
           </div>
 
-          {/* 단가 및 품목 선택 */}
-          { stepCurrent === 1 &&
-          <div
-            className="flex flex-col gap-20"
-            // 스크롤 자동을 위해 ref 추가
-            ref={el => {if(el)  stepRef.current[1] = el;}}
-          >
-            <Popup title="발주 품목"
-              titleEtc={ order?.status === "INPUT" ?
-                <div className="h-center flex-1 justify-end gap-8">
-                  <LabelThin label="도착일" />
-                  <AntdDatePicker 
-                    value={order?.orderRoot?.arrivalDt ?? null}
-                    onChange={(e)=>{
-                      setOrder({
-                        ...order,
-                        orderRoot: {
-                          ...order?.orderRoot,
-                          arrivalDt: e,
-                        }
-                      })
-                    }}
-                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
-                  />
-                  <LabelThin label="승인일" className="!ml-10"/>
-                  <AntdDatePicker 
-                    value={order?.orderRoot?.approvalDt ?? null}
-                    onChange={(e)=>{
-                      setOrder({
-                        ...order,
-                        orderRoot: {
-                          ...order?.orderRoot,
-                          approvalDt: e,
-                        }
-                      })
-                    }}
-                    afterDate={dayjs()} placeholder="승인일 선택"
-                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
-                  />
-                </div>
-                :
-                <div className="flex-1 h-center justify-end gap-5">
-                  총 발주 금액
-                  <AntdInput
-                    value={tot}
-                    onChange={(e)=>setTot(Number(e.target.value))}
-                    type="number"
-                    className="!w-100"
-                  />
-                  원
-                </div>
-              }
-            >
-              { orderDetails.length > 0 && orderDetails.map((item, index) => (
-                <BlueBox key={index}>
-                  <BoxHead>
-                    <div className="w-24 h-24 bg-back rounded-4 v-h-center">
-                      {index+1}
-                    </div>
-                    <Items2
-                      label1="원자재 그룹 선택" size1={3}
-                      children1={
-                        <AntdSelectFill
-                          options={[
-                            {value:"직접입력", label:"직접입력"},
-                            ...(mtGrp.map((item)=>({
-                              value:item.id,
-                              label:item.mtGrpNm ?? "",
-                            })))
-                          ]}
-                          value={item.materialGrpIdx}
-                          onChange={(e)=>{
-                            if(e+"" === "직접입력") setSelectMtIdx(null);
-                            handleDataChange(item.id ?? '', "materialGrpIdx", e);
-                            handleDataChange(item.id ?? '', "materialIdx", null);
-                            handleDataChange(item.id ?? '', "mtNm", null);
-                          }}
-                          placeholder="원자재 그룹" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="원자재 선택" size1={3}
-                      children1={
-                        item.materialGrpIdx === "직접입력" ?
-                        <AntdInput
-                          value={item.mtNm}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtNm", e.target.value)}
-                          placeholder="원자재명 입력"
-                        />
-                        :
-                        <AntdSelect
-                          options={(mtGrp
-                            .find(f=>f.id === item.materialGrpIdx)?.materials ?? [])
-                            .map((item) => ({
-                              value:item.id,
-                              label:item.mtNm ?? ""
-                            })
-                          )}
-                          value={item.materialIdx}
-                          onChange={(e)=>{
-                            if(typeof e === "string")
-                              setSelectMtIdx({mtIdx:e, orderId:item.id ?? "", orderNo: index+1});
-                            handleDataChange(item.id ?? '', "materialIdx", e);
-                          }}
-                          placeholder="원자재 선택" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="단위"
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderUnit}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderUnit", e.target.value)}
-                          placeholder="단위 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="재질"
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderTxtur}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderTxtur", e.target.value)}
-                          placeholder="재질 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="W" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderSizeW}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeW", e.target.value)}
-                          type="number" placeholder="W 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="H" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderSizeH}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeH", e.target.value)}
-                          type="number" placeholder="H 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="두께" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderThk}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderThk", e.target.value)}
-                          type="number" placeholder="두께 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="무게" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderWeight}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderWeight", e.target.value)}
-                          type="number" placeholder="무게 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="수량" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderQty}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderQty", e.target.value)}
-                          type="number" placeholder="수량 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="단가" size1={1}
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderInputPrice}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderInputPrice", e.target.value)}
-                          type="number" placeholder="단가 입력"
-                        />
-                      }
-                    />
-
-                    <Items2
-                      label1="금액"
-                      children1={
-                        <AntdInput
-                          value={item.mtOrderAmount}
-                          onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderAmount", e.target.value)}
-                          type="number" placeholder="금액 입력"
-                        />
-                      }
-                    />
-
-                    <div className="flex-1 h-center justify-end">
-                      <Dropdown trigger={['click']} menu={{ items:[{
-                        label: 
-                          <div className="text-[red] h-center gap-5">
-                            <p className="w-16 h-16"><Trash /></p>
-                            삭제
-                          </div>,
-                        key: 0,
-                        onClick:()=>{
-                          handleDeleteMt(index);
-                        }}
-                      ]}}>
-                        <a onClick={(e) => e.preventDefault()}>
-                          <Space>
-                            <div className="w-24 h-24 cursor-pointer v-h-center">
-                              <p className="w-16 h-16"><Edit/></p>
-                            </div>
-                          </Space>
-                        </a>
-                      </Dropdown>
-                    </div>
-                  </BoxHead>
-                  <div>
-                    { !item.materialIdx && item.materialGrpIdx !== "직접입력" &&
-                      <div className="w-full h-50 v-h-center bg-white">
-                      원자재 선택 시 구매처에 설정된 단가 목록을 확인할 수 있습니다.
-                      </div>
-                    }
-                    { item.materialIdx &&
-                    <AntdTableEdit
-                      columns={BuyOrderMtPriceClmn(
-                        item,
-                        orderDetails,
-                        setOrderDetails,
-                      )}
-                      data={mtPrice.filter(f=>f.material?.id === item.materialIdx)}
-                      styles={{
-                        th_bg: "#FAFAFA",
-                        td_bg: "#FFFFFF",
-                        td_ht: '40px',
-                        th_ht: '40px',
-                        round: "0",
-                        th_fw: "bold",
-                        td_pd: "0",
-                      }}
-                    />}
-                  </div>
-                </BlueBox>
-              ))}
-              <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
-                onClick={() => {
-                  setOrderDetails((prev: buyOrderDetailType[]) =>[
-                    ...prev,
-                    {
-                      id:'new-'+prev.length+1,
-                      mtOrderQty: 0,
-                      mtOrderSizeW: 0,
-                      mtOrderSizeH: 0,
-                      mtOrderWeight: 0,
-                      mtOrderThk: 0,
-                      mtOrderPrice: 0,
-                      mtOrderInputPrice: 0,
-                      mtOrderAmount: 0,
-                    },
-                  ]);
-                }}
-              >
-                <PlusOutlined />
-                <span>품목 추가하기</span>
-              </div>
-            </Popup>
-
-            {/* 발주 하단 버튼 */}
-            <div className="w-full h-center px-30 justify-end">
-              <Button 
-                className="w-109 h-32 bg-point1 text-white rounded-6"
-                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={()=>handleSubmit()}
-              >
-                <Arrow /> 발주 저장
-              </Button>
-            </div>
-          </div>
-          }
-
           {/* 품질 검사 */}
-          { stepCurrent === 2 &&
+          {/* { stepCurrent === 2 &&
           <div
             className="flex flex-col gap-20"
             // 스크롤 자동을 위해 ref 추가
@@ -1218,284 +924,34 @@ const OrderAddLayout = () => {
               </div>
               ))}
             </Popup>
-
-            {/* 발주 하단 버튼 */}
-            <div className="w-full h-center px-30 justify-end">
-              <Button 
-                className="w-109 h-32 bg-point1 text-white rounded-6"
-                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={()=>handleSubmit()}
-              >
-                <Arrow /> 발주 저장
-              </Button>
-            </div>
           </div>
-          }
-
-          {/* 품목 확인 및 승인일 */}
-          { stepCurrent === 3 &&
+          } */}
+          
+          { stepCurrent > 0 &&
           <div
             className="flex flex-col gap-20"
             // 스크롤 자동을 위해 ref 추가
-            ref={el => {if(el)  stepRef.current[3] = el;}}
-          >
-            { orderDetails.length > 0 && orderDetails.map((item, index) => (
-              <BlueBox key={index}>
-                <BoxHead>
-                  <div className="w-24 h-24 bg-back rounded-4 v-h-center">
-                    {index+1}
-                  </div>
-                  <Items2
-                    label1="원자재 그룹 선택" size1={3}
-                    children1={
-                      <AntdSelectFill
-                        options={[
-                          {value:"직접입력", label:"직접입력"},
-                          ...(mtGrp.map((item)=>({
-                            value:item.id,
-                            label:item.mtGrpNm ?? "",
-                          })))
-                        ]}
-                        value={item.materialGrpIdx}
-                        onChange={(e)=>{
-                          if(e+"" === "직접입력") setSelectMtIdx(null);
-                          handleDataChange(item.id ?? '', "materialGrpIdx", e);
-                          handleDataChange(item.id ?? '', "materialIdx", null);
-                          handleDataChange(item.id ?? '', "mtNm", null);
-                        }}
-                        placeholder="원자재 그룹" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="원자재 선택" size1={3}
-                    children1={
-                      item.materialGrpIdx === "직접입력" ?
-                      <AntdInput
-                        value={item.mtNm}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtNm", e.target.value)}
-                        placeholder="원자재명 입력"
-                      />
-                      :
-                      <AntdSelect
-                        options={(mtGrp
-                          .find(f=>f.id === item.materialGrpIdx)?.materials ?? [])
-                          .map((item) => ({
-                            value:item.id,
-                            label:item.mtNm ?? ""
-                          })
-                        )}
-                        value={item.materialIdx}
-                        onChange={(e)=>{
-                          if(typeof e === "string")
-                            setSelectMtIdx({mtIdx:e, orderId:item.id ?? "", orderNo: index+1});
-                          handleDataChange(item.id ?? '', "materialIdx", e);
-                        }}
-                        placeholder="원자재 선택" styles={{ht:'32px', bg:'#FFF', br: '2px'}}
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="단위"
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderUnit}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderUnit", e.target.value)}
-                        placeholder="단위 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="재질"
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderTxtur}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderTxtur", e.target.value)}
-                        placeholder="재질 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="W" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderSizeW}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeW", e.target.value)}
-                        type="number" placeholder="W 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="H" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderSizeH}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderSizeH", e.target.value)}
-                        type="number" placeholder="H 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="두께" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderThk}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderThk", e.target.value)}
-                        type="number" placeholder="두께 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="무게" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderWeight}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderWeight", e.target.value)}
-                        type="number" placeholder="무게 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="수량" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderQty}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderQty", e.target.value)}
-                        type="number" placeholder="수량 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="단가" size1={1}
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderInputPrice}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderInputPrice", e.target.value)}
-                        type="number" placeholder="단가 입력"
-                      />
-                    }
-                  />
-
-                  <Items2
-                    label1="금액"
-                    children1={
-                      <AntdInput
-                        value={item.mtOrderAmount}
-                        onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderAmount", e.target.value)}
-                        type="number" placeholder="금액 입력"
-                      />
-                    }
-                  />
-
-                  <div className="flex-1 h-center justify-end">
-                    <Dropdown trigger={['click']} menu={{ items:[{
-                      label: 
-                        <div className="text-[red] h-center gap-5">
-                          <p className="w-16 h-16"><Trash /></p>
-                          삭제
-                        </div>,
-                      key: 0,
-                      onClick:()=>{
-                        handleDeleteMt(index);
-                      }}
-                    ]}}>
-                      <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                          <div className="w-24 h-24 cursor-pointer v-h-center">
-                            <p className="w-16 h-16"><Edit/></p>
-                          </div>
-                        </Space>
-                      </a>
-                    </Dropdown>
-                  </div>
-                </BoxHead>
-                <div>
-                  { !item.materialIdx && item.materialGrpIdx !== "직접입력" &&
-                    <div className="w-full h-50 v-h-center bg-white">
-                    원자재 선택 시 구매처에 설정된 단가 목록을 확인할 수 있습니다.
-                    </div>
-                  }
-                  { item.materialIdx &&
-                  <AntdTableEdit
-                    columns={BuyOrderMtPriceClmn(
-                      item,
-                      orderDetails,
-                      setOrderDetails,
-                    )}
-                    data={mtPrice.filter(f=>f.material?.id === item.materialIdx)}
-                    styles={{
-                      th_bg: "#FAFAFA",
-                      td_bg: "#FFFFFF",
-                      td_ht: '40px',
-                      th_ht: '40px',
-                      round: "0",
-                      th_fw: "bold",
-                      td_pd: "0",
-                    }}
-                  />}
-                </div>
-              </BlueBox>
-            ))}
-            <Popup
-              title="발주 품목"
-              titleEtc={ order?.status === "INPUT" &&
-                <div className="h-center flex-1 justify-end gap-8">
-                  <LabelThin label="도착일" />
-                  <AntdDatePicker 
-                    value={order?.orderRoot?.arrivalDt ?? null}
-                    onChange={(e)=>{
-                      setOrder({
-                        ...order,
-                        orderRoot: {
-                          ...order?.orderRoot,
-                          arrivalDt: e,
-                        }
-                      })
-                    }}
-                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
-                  />
-                  <LabelThin label="승인일" className="!ml-10"/>
-                  <AntdDatePicker 
-                    value={order?.orderRoot?.approvalDt ?? null}
-                    onChange={(e)=>{
-                      setOrder({
-                        ...order,
-                        orderRoot: {
-                          ...order?.orderRoot,
-                          approvalDt: e,
-                        }
-                      })
-                    }}
-                    afterDate={dayjs()} placeholder="승인일 선택"
-                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
-                  />
-                </div>
+            ref={el => {
+              if(el) {
+                stepRef.current[
+                  order?.status === "INPUT" ? 3 :
+                  order?.status === "ARRIVAL_WAITING" ? 2 :
+                  1
+                ] = el;
               }
-            >
-              <AntdTableEdit
-                columns={BuyOrderMtViewClmn()}
-                data={orderDetails}
-                setData={setOrderDetails}
-                styles={{
-                  th_bg: "#FAFAFA",
-                  td_bg: "#FFFFFF",
-                  td_ht: '40px',
-                  th_ht: '40px',
-                  round: "0",
-                  th_fw: "bold",
-                  td_pd: "0",
-                }}
-              />
-            </Popup>
+            }}
+          >
+            <MtList
+              step={stepCurrent}
+              order={order} setOrder={setOrder}
+              orderDetails={orderDetails} setOrderDetails={setOrderDetails}
+              tot={tot} setTot={setTot}
+              mtGrp={mtGrp} mtPrice={mtPrice}
+              mtBad={mtBad} badCnt={badCnt} setBadCnt={setBadCnt}
+              setSelectMtIdx={setSelectMtIdx}
+              handleDataChange={handleDataChange}
+              handleDeleteMt={handleDeleteMt}
+            />
 
             {/* 발주 하단 버튼 */}
             <div className="w-full h-center px-30 justify-end">

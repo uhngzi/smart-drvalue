@@ -27,6 +27,8 @@ import Down from "@/assets/svg/icons/s_drop_down.svg";
 import Right from "@/assets/svg/icons/s_drop_right.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import MessageOn from "@/assets/svg/icons/message_on.svg";
+import Box from "@/assets/svg/icons/spanner.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
 
 import useToast from "@/utils/useToast";
 
@@ -182,6 +184,10 @@ const SayangSampleAddPage: React.FC & {
       });
       setPrcNotice(rdata.prcNotice ?? "");
       setCamNotice(rdata.camNotice ?? "");
+      if(cookie.get('company') === 'sy' && (rdata.brdArrStorageKey ?? "").length > 0) {
+        setFileIdList((rdata.brdArrStorageKey ?? "").split(','));
+        setDetailChk(true);
+      }
       setTimeout(() => {
         setDetailDataLoading(false);
       }, 200);
@@ -189,6 +195,46 @@ const SayangSampleAddPage: React.FC & {
       setFilter({ ...filter, writeDt: dayjs(rdata.createdAt), writer: me?.userName ?? "", })
     }
   }, [queryData]);
+
+  const [detailChk, setDetailChk] = useState<boolean>(false);
+
+  // 데이터 세팅 시 파일 목록이 있을 경우 파일 정보 가져와서 세팅
+  useEffect(()=>{
+    if(detailChk) {
+      fetchFileInfo();
+    }
+    // 약간의 텀을 두고 update 값 변경 (form에 적용되는 세팅 시간이 있으므로 텀이 필요함)
+    setTimeout(()=>setFileSubmitFlag(true), 100);
+  }, [detailChk])
+
+  const fetchFileInfo = async () => {
+    if(fileIdList.length > 0) {
+      let fileArr:any[] = [];
+      for (const file of fileIdList) {
+        const result = await getAPI({
+          type: 'file-mng',
+          url: `every/file-manager/default/info/${file}`,
+          header: true,
+        });
+        
+        if(result.resultCode === "OK_0000") {
+          const entity = result?.data?.fileEntity;
+          fileArr.push({
+            ...entity,
+            name: entity?.originalName,
+            originFileObj: {
+              name: entity?.originalName,
+              size: entity?.size,
+              type: entity?.type,
+            }
+          });
+        }
+      }
+      setFileList(fileArr);
+      // 세팅이 완료되었으므로 false (이후 실행을 방지)
+      setDetailChk(false);
+    }
+  }
   // ------------ 세부 데이터 세팅 ------------ 끝
   
   // ----------- 모델 값 변경 함수 ------------ 시작
@@ -250,6 +296,7 @@ const SayangSampleAddPage: React.FC & {
         }
         // temp 값 초기화
         setTemp(true);
+        setFileSubmitFlag(true);
 
         // 모델 추가 시 임시 저장 후 메인으로 이동
         if(main) {
@@ -399,7 +446,7 @@ const SayangSampleAddPage: React.FC & {
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<"cf" | "error" | "del" | "processClose" | "">("");
+  const [resultType, setResultType] = useState<"cf" | "error" | "del" | "processClose" | "fileClose" | "">("");
   const [resultMsg, setResultMsg] = useState<string>("");
 
   // 로딩 후 결재창 보여주기
@@ -473,370 +520,418 @@ const SayangSampleAddPage: React.FC & {
   // 모델 영역 접었다 피기
   const [modelTabOpen, setModelTabOpen] = useState<boolean>(true);
 
+  // 신양 내 파일
+  const [ fileSubmitFlag, setFileSubmitFlag ] = useState<boolean>(false);
+  const [ fileList, setFileList ] = useState<any[]>([]);
+  const [ fileIdList, setFileIdList ] = useState<string[]>([]);
+
+  useEffect(()=>{
+    if(cookie.get('company') === 'sy' && fileIdList.length > 0) {
+      setDetailData({
+        ...detailData,
+        brdArrStorageKey: fileIdList.toString(),
+      });
+    }
+    setFileSubmitFlag(false);
+    console.log(fileIdList, fileSubmitFlag);
+  }, [fileIdList])
+
   return (
-    <div className="w-full pr-30 flex flex-col gap-40">
-      { detailDataLoading && <>
-        <div className="bg-white rounded-14 p-30 pt-70 flex flex-col overflow-auto gap-20 w-full h-[400px]">
-          <Skeleton.Node active className="!w-full !h-full" />
-        </div>
-        <div className="flex bg-white rounded-14 p-30 gap-40 w-full h-[430px]">
-          <div className="min-w-[300px]">
-            <Skeleton.Node active className="!w-full !h-full" />
-          </div>
-          <div className="w-full flex gap-40">
-            <div className="min-w-[300px] flex-grow-[44]">
-              <Skeleton.Node active className="!w-full !h-full" />
-            </div>
-            <div className="min-w-[400px] flex-grow-[32]">
-              <Skeleton.Node active className="!w-full !h-full" />
-            </div>
-            <div className="min-w-[300px] flex-grow-[24]">
-              <Skeleton.Node active className="!w-full !h-full" />
-            </div>
-          </div>
-        </div>
-      </>}
-      { !detailDataLoading && !modelTabOpen &&
-        <div
-          className="w-full h-46 bg-white py-30 px-16 h-center gap-12 rounded-14 cursor-pointer"
-          onClick={()=>setModelTabOpen(!modelTabOpen)}
-        >
-          <p className="w-16 h-16">
-            { !modelTabOpen ? <Right /> : <Down />}
-          </p>
-          모델 목록 보기
-        </div>
-      }
-      { !detailDataLoading && <>
-      { modelTabOpen &&
-      <Popup
-        className="overflow-auto !py-30"
-      >
-        <div className="v-between-h-center">
-          <div className="flex gap-10">
-            <Button onClick={()=>setModelTabOpen(!modelTabOpen)}>
-              모델 목록 접기
-            </Button>
-            <Button 
-              type="text"
-              icon={<DoubleRightOutlined/>}
-              className="!bg-[#F5F6FA] !h-32"
-              style={{border:'1px solid #D9D9D9'}}
-              onClick={toggleApproval}
-            >
-                결재
-            </Button>
-            <div className={`filter-container ${animate ? "open" : "close"}`}>
-              {approval && <DefaultFilter filter={filter} setFilter={setFilter} />}
-            </div>
-          </div>
-          <div className="h-center gap-20">
-            { !view && cookie.get('company') !== 'sy' &&
-            <Button
-              className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
-              onClick={()=>{
-                setTemp(false);
-                handleSumbitTemp(true);
-              }}
-            >모델추가</Button>}
-          </div>
-        </div>
-        <div>
-          <AntdTable
-            columns={
-            cookie.get('company') === 'sy' ?
-            sayangSampleWaitAddClmn(
-              surfaceSelectList,
-              unitSelectList,
-              vcutSelectList,
-              outSelectList,
-              smPrintSelectList,
-              smColorSelectList,
-              smTypeSelectList,
-              mkPrintSelectList,
-              mkColorSelectList,
-              mkTypeSelectList,
-              spPrintSelectList,
-              spTypeSelectList,
-              ul1SelectList,
-              ul2SelectList,
-              ozUnitSelectList,
-              metarialSelectList,
-              handleModelDataChange,
-              setDeleted,
-              view,
-              stampColorSelectList,
-            )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
-              && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs' && f.key !== 'im')
-            :
-            sayangSampleWaitAddClmn(
-              surfaceSelectList,
-              unitSelectList,
-              vcutSelectList,
-              outSelectList,
-              smPrintSelectList,
-              smColorSelectList,
-              smTypeSelectList,
-              mkPrintSelectList,
-              mkColorSelectList,
-              mkTypeSelectList,
-              spPrintSelectList,
-              spTypeSelectList,
-              ul1SelectList,
-              ul2SelectList,
-              ozUnitSelectList,
-              metarialSelectList,
-              handleModelDataChange,
-              setDeleted,
-              view,
-            )}
-            data={detailData.specModels}
-            styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
-            tableProps={{split:'none'}}
-            loading={detailDataLoading}
-          />
-        </div>
-      </Popup>}
-      { cookie.get('company') === 'sy' &&
-      <div className="flex gap-40 flex-row">
-        <Popup className="!w-[300px] flex-grow-[20]">
-          <TitleIcon
-            title="설계도면 첨부"
-            icon={<MessageOn />}
-          />
-          <AntdDragger
-            fileIdList={[]}
-            fileList={[]}
-            setFileIdList={()=>{}}
-            setFileList={()=>{}}
-          />
-        </Popup>
-
-        <Popup className="!w-[300px] flex-grow-[20]">
-          <TitleIcon
-            title="설계 전달사항"
-            icon={<MessageOn />}
-          />
-          <textarea
-            className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
-            value={camNotice}
-            onChange={(e)=>{setCamNotice(e.target.value)}}
-            disabled={view?true:false}
-          />
-        </Popup>
-
-        <Popup className="!w-[300px] flex-grow-[20]">
-          <TitleIcon
-            title="제조 전달사항"
-            icon={<MessageOn />}
-          />
-          <textarea
-            className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
-            value={prcNotice}
-            onChange={(e)=>{setPrcNotice(e.target.value)}}
-            disabled={view?true:false}
-          />
-        </Popup>
-      </div>
-      }
-      { cookie.get('company') !== 'sy' &&
-      <div className="flex gap-40 flex-row">
-        <Popup className="!w-[300px] flex-grow-[20]">
-          {/* 적층 구조 */}
-          <LaminationContents
-            defaultLayerEm={detailData.specModels?.[0]?.layerEm}
-            detailData={detailData}
-            setDetailData={setDetailData}
-            handleSumbitTemp={()=>{
-              handleSumbitTemp();
-            }}
-            view={view}
-          />
-        </Popup>
-        <Popup className="!w-[400px] flex-grow-[40]">
-          {/* 배열 도면 */}
-          <ArrayContents
-            board={board}
-            handleSumbitTemp={handleSumbitTemp}
-            detailData={detailData}
-            setDetailData={setDetailData}
-            view={view}
-          />
-        </Popup>
-        {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
-          {/* 재단 사이즈 */}
-          {/* <CutSizeContents
-            specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
-            detailData={detailData}
-          />
-        </Popup> */}
-        <Popup className="!w-[300px] flex-grow-[20]">
-          {/* 전달 사항 */}
-          <MessageContents
-            prcNotice={prcNotice}
-            setPrcNotice={setPrcNotice}
-            camNotice={camNotice}
-            setCamNotice={setCamNotice}
-            view={view}
-          />
-        </Popup>
-      </div>}
-
-      <div className="v-between-h-center px-30">
-        {
-          (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
-          <Button
-            className="!border-[#444444] !w-[107px]"
-            icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
-            onClick={()=>{
-              setOpen(true);
-            }}
-          >공정지정</Button>
-          :
-          <Tooltip title="공정을 지정하세요">
-          <Button
-            className="!border-[#444444] !w-[107px]"
-            icon={<Prc className="w-16 h-16"/>}
-            onClick={()=>{
-              setOpen(true);
-            }}
-            >공정지정</Button>
-          </Tooltip>
-        }
-
-        { !view &&
-        <div className="v-h-center gap-5">
-          <Button
-            className="h-32 rounded-6" variant="outlined" color="primary"
-            onClick={()=>{
-              handleSumbitTemp();
-            }}
-          >임시저장</Button>
-          <FullOkButtonSmall label="확정저장" click={()=>{
-            if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
-              showToast("공정을 선택해주세요.", "error");
-              return;
-            }
-
-            let flag = false;
-            detailData.specModels?.map(f=>{
-              if((f.prdCnt ?? 0) < 1) {
-                flag = true;
-                return;
-              }
-            })
-            if(flag && cookie.get('company') === 'sy') {
-              showToast("모델 내 수량을 입력해주세요.", "error");
-              return;
-            }
-            if(flag && cookie.get('company') !== 'sy') {
-              showToast("모델 내 작업량(PNL)을 입력해주세요.", "error");
-              return;
-            }
-            
-            handleSumbitTemp(false, true);
-          }}/>
-        </div>}
-      </div>
-      </>}
-
-      <AntdModal
-        open={open}
-        setOpen={setOpen}
-        title={"공정 지정"}
-        contents={
-        <ProcessSelection
-          open={open}
-          detailData={detailData}
-          setDetailData={setDetailData}
-          setUpdatePrc={setUpdatePrc}
-          prdGrpQueryData={prdGrpQueryData}
-          prdGrpSelectList={prdGrpSelectList}
-          selectPrdGrp={selectPrdGrp}
-          setSelectPrdGrp={setSelectPrdGrp}
-          selectPrc={selectPrc}
-          setSelectPrc={setSelectPrc}
-          selectedKeys={selectedKeys}
-          setSelectedKeys={setSelectedKeys}
-          selectedVendors={selectedVendors}
-          setSelectedVendors={setSelectedVendors}
-          view={view}
-        />}
-        width={1050}
-        onClose={()=>{
-          // 저장하지 않은 상태일 경우
-          if(!updatePrc) {
-            setResultType("processClose");
+  <>
+    <div className="p-30 flex v-between-h-center">
+      <p className="text-20 fw-500 font-semibold">사양 등록</p>
+      <p 
+        className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
+        onClick={()=>{
+          if(cookie.get('company') === 'sy' && !fileSubmitFlag) {
+            setResultType("fileClose");
             setResultOpen(true);
           } else {
-            setUpdatePrc(true);
-            setOpen(false);
+            router.back()
           }
         }}
-      />
-      
-      <AntdAlertModal
-        open={resultOpen}
-        setOpen={setResultOpen}
-        title={
-          resultType === "cf"? "사양 확정 완료" :
-          resultType === "error"? "요청 실패" :
-          resultType === "del"? "해당 모델을 삭제하시겠습니까?" :
-          resultType === "processClose"? "공정 지정을 하지 않고 닫으시겠습니까?" :
-          ""
-        }
-        contents={
-          resultType === "cf" ? <div className="h-40">사양 확정에 성공하였습니다.</div> :
-          resultType === "error" ? <div className="h-40">{resultMsg}</div> :
-          resultType === "del" ? <div className="h-40">해당 모델의 사양 등록을 취소하시겠습니까?</div> :
-          resultType === "processClose" ? <div className="h-40">저장되지 않은 공정이 있습니다.<br/>정말 저장하지 않고 닫으시겠습니까?</div> :
-          <div className="h-40"></div>
-        }
-        type={
-          resultType === "cf" ? "success" :
-          resultType === "error" ? "error" :
-          resultType === "del" ? "warning" :
-          resultType === "processClose" ? "warning" :
-          "success"
-        }
-        onOk={()=>{
-          setResultOpen(false);
-          if(resultType === "cf") {
-            router.push('/sayang/sample/regist');
-          } else if(resultType === "del") {
-            handleDeleteModel();
-          } else if(resultType === "processClose") {
-            setOpen(false);
-            setUpdatePrc(true);
-          }
-        }}
-        onCancle={()=>{
-          setResultOpen(false);
-          setDeleted(null);
-        }}
-        hideCancel={resultType === "del" || resultType === "processClose"  ? false : true}
-        okText={
-          resultType === "cf" ? "목록으로 이동" :
-          resultType === "error" ? "확인" :
-          resultType === "del" ? "네 사양 등록 대기로 변경하겠습니다" :
-          resultType === "processClose" ? "네 닫을래요" :
-          "목록으로 이동"
-        }
-        cancelText={
-          resultType === "del" || resultType === "processClose" ? "아니요 계속 등록할게요" :
-          ""
-        }
-      />
-
-      <ToastContainer />
+      >
+        <Close />
+      </p>
     </div>
+    <div className="w-full overflow-auto pl-30 pb-20">
+      <div className="w-full pr-30 flex flex-col gap-40">
+        { detailDataLoading && <>
+          <div className="bg-white rounded-14 p-30 pt-70 flex flex-col overflow-auto gap-20 w-full h-[400px]">
+            <Skeleton.Node active className="!w-full !h-full" />
+          </div>
+          <div className="flex bg-white rounded-14 p-30 gap-40 w-full h-[430px]">
+            <div className="min-w-[300px]">
+              <Skeleton.Node active className="!w-full !h-full" />
+            </div>
+            <div className="w-full flex gap-40">
+              <div className="min-w-[300px] flex-grow-[44]">
+                <Skeleton.Node active className="!w-full !h-full" />
+              </div>
+              <div className="min-w-[400px] flex-grow-[32]">
+                <Skeleton.Node active className="!w-full !h-full" />
+              </div>
+              <div className="min-w-[300px] flex-grow-[24]">
+                <Skeleton.Node active className="!w-full !h-full" />
+              </div>
+            </div>
+          </div>
+        </>}
+        { !detailDataLoading && !modelTabOpen &&
+          <div
+            className="w-full h-46 bg-white py-30 px-16 h-center gap-12 rounded-14 cursor-pointer"
+            onClick={()=>setModelTabOpen(!modelTabOpen)}
+          >
+            <p className="w-16 h-16">
+              { !modelTabOpen ? <Right /> : <Down />}
+            </p>
+            모델 목록 보기
+          </div>
+        }
+        { !detailDataLoading && <>
+        { modelTabOpen &&
+        <Popup
+          className="overflow-auto !py-30"
+        >
+          <div className="v-between-h-center">
+            <div className="flex gap-10">
+              <Button onClick={()=>setModelTabOpen(!modelTabOpen)}>
+                모델 목록 접기
+              </Button>
+              <Button 
+                type="text"
+                icon={<DoubleRightOutlined/>}
+                className="!bg-[#F5F6FA] !h-32"
+                style={{border:'1px solid #D9D9D9'}}
+                onClick={toggleApproval}
+              >
+                  결재
+              </Button>
+              <div className={`filter-container ${animate ? "open" : "close"}`}>
+                {approval && <DefaultFilter filter={filter} setFilter={setFilter} />}
+              </div>
+            </div>
+            <div className="h-center gap-20">
+              { !view && cookie.get('company') !== 'sy' &&
+              <Button
+                className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
+                onClick={()=>{
+                  setTemp(false);
+                  handleSumbitTemp(true);
+                }}
+              >모델추가</Button>}
+            </div>
+          </div>
+          <div>
+            <AntdTable
+              columns={
+              cookie.get('company') === 'sy' ?
+              sayangSampleWaitAddClmn(
+                surfaceSelectList,
+                unitSelectList,
+                vcutSelectList,
+                outSelectList,
+                smPrintSelectList,
+                smColorSelectList,
+                smTypeSelectList,
+                mkPrintSelectList,
+                mkColorSelectList,
+                mkTypeSelectList,
+                spPrintSelectList,
+                spTypeSelectList,
+                ul1SelectList,
+                ul2SelectList,
+                ozUnitSelectList,
+                metarialSelectList,
+                handleModelDataChange,
+                setDeleted,
+                view,
+                stampColorSelectList,
+              )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
+                && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs' && f.key !== 'im')
+              :
+              sayangSampleWaitAddClmn(
+                surfaceSelectList,
+                unitSelectList,
+                vcutSelectList,
+                outSelectList,
+                smPrintSelectList,
+                smColorSelectList,
+                smTypeSelectList,
+                mkPrintSelectList,
+                mkColorSelectList,
+                mkTypeSelectList,
+                spPrintSelectList,
+                spTypeSelectList,
+                ul1SelectList,
+                ul2SelectList,
+                ozUnitSelectList,
+                metarialSelectList,
+                handleModelDataChange,
+                setDeleted,
+                view,
+              )}
+              data={detailData.specModels}
+              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+              tableProps={{split:'none'}}
+              loading={detailDataLoading}
+            />
+          </div>
+        </Popup>}
+        { cookie.get('company') === 'sy' &&
+        <div className="flex gap-40 flex-row">
+          <Popup className="!w-[300px] flex-grow-[20]">
+            <TitleIcon
+              title="설계도면 첨부"
+              icon={<Box />}
+            />
+            <AntdDragger
+              fileIdList={fileIdList}
+              fileList={fileList}
+              setFileIdList={setFileIdList}
+              setFileList={setFileList}
+              mult max={5}
+            />
+          </Popup>
+
+          <Popup className="!w-[300px] flex-grow-[20]">
+            <TitleIcon
+              title="설계 전달사항"
+              icon={<MessageOn />}
+            />
+            <textarea
+              className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+              value={camNotice}
+              onChange={(e)=>{setCamNotice(e.target.value)}}
+              disabled={view?true:false}
+            />
+          </Popup>
+
+          <Popup className="!w-[300px] flex-grow-[20]">
+            <TitleIcon
+              title="제조 전달사항"
+              icon={<MessageOn />}
+            />
+            <textarea
+              className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+              value={prcNotice}
+              onChange={(e)=>{setPrcNotice(e.target.value)}}
+              disabled={view?true:false}
+            />
+          </Popup>
+        </div>
+        }
+        { cookie.get('company') !== 'sy' &&
+        <div className="flex gap-40 flex-row">
+          <Popup className="!w-[300px] flex-grow-[20]">
+            {/* 적층 구조 */}
+            <LaminationContents
+              defaultLayerEm={detailData.specModels?.[0]?.layerEm}
+              detailData={detailData}
+              setDetailData={setDetailData}
+              handleSumbitTemp={()=>{
+                handleSumbitTemp();
+              }}
+              view={view}
+            />
+          </Popup>
+          <Popup className="!w-[400px] flex-grow-[40]">
+            {/* 배열 도면 */}
+            <ArrayContents
+              board={board}
+              handleSumbitTemp={handleSumbitTemp}
+              detailData={detailData}
+              setDetailData={setDetailData}
+              view={view}
+            />
+          </Popup>
+          {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
+            {/* 재단 사이즈 */}
+            {/* <CutSizeContents
+              specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
+              detailData={detailData}
+            />
+          </Popup> */}
+          <Popup className="!w-[300px] flex-grow-[20]">
+            {/* 전달 사항 */}
+            <MessageContents
+              prcNotice={prcNotice}
+              setPrcNotice={setPrcNotice}
+              camNotice={camNotice}
+              setCamNotice={setCamNotice}
+              view={view}
+            />
+          </Popup>
+        </div>}
+
+        <div className="v-between-h-center px-30">
+          {
+            (detailData?.specPrdGroupPrcs && detailData?.specPrdGroupPrcs?.length > 0) ? 
+            <Button
+              className="!border-[#444444] !w-[107px]"
+              icon={ <CheckOutlined style={{color:"#4880FF"}}/> }
+              onClick={()=>{
+                setOpen(true);
+              }}
+            >공정지정</Button>
+            :
+            <Tooltip title="공정을 지정하세요">
+            <Button
+              className="!border-[#444444] !w-[107px]"
+              icon={<Prc className="w-16 h-16"/>}
+              onClick={()=>{
+                setOpen(true);
+              }}
+              >공정지정</Button>
+            </Tooltip>
+          }
+
+          { !view &&
+          <div className="v-h-center gap-5">
+            <Button
+              className="h-32 rounded-6" variant="outlined" color="primary"
+              onClick={()=>{
+                handleSumbitTemp();
+              }}
+            >임시저장</Button>
+            <FullOkButtonSmall label="확정저장" click={()=>{
+              if(detailData.specPrdGroupPrcs && detailData.specPrdGroupPrcs?.length < 1) {
+                showToast("공정을 선택해주세요.", "error");
+                return;
+              }
+
+              let flag = false;
+              detailData.specModels?.map(f=>{
+                if((f.prdCnt ?? 0) < 1) {
+                  flag = true;
+                  return;
+                }
+              })
+              if(flag && cookie.get('company') === 'sy') {
+                showToast("모델 내 수량을 입력해주세요.", "error");
+                return;
+              }
+              if(flag && cookie.get('company') !== 'sy') {
+                showToast("모델 내 작업량(PNL)을 입력해주세요.", "error");
+                return;
+              }
+              
+              handleSumbitTemp(false, true);
+            }}/>
+          </div>}
+        </div>
+        </>}
+
+        <AntdModal
+          open={open}
+          setOpen={setOpen}
+          title={"공정 지정"}
+          contents={
+          <ProcessSelection
+            open={open}
+            detailData={detailData}
+            setDetailData={setDetailData}
+            setUpdatePrc={setUpdatePrc}
+            prdGrpQueryData={prdGrpQueryData}
+            prdGrpSelectList={prdGrpSelectList}
+            selectPrdGrp={selectPrdGrp}
+            setSelectPrdGrp={setSelectPrdGrp}
+            selectPrc={selectPrc}
+            setSelectPrc={setSelectPrc}
+            selectedKeys={selectedKeys}
+            setSelectedKeys={setSelectedKeys}
+            selectedVendors={selectedVendors}
+            setSelectedVendors={setSelectedVendors}
+            view={view}
+          />}
+          width={1050}
+          onClose={()=>{
+            // 저장하지 않은 상태일 경우
+            if(!updatePrc) {
+              setResultType("processClose");
+              setResultOpen(true);
+            } else {
+              setUpdatePrc(true);
+              setOpen(false);
+            }
+          }}
+        />
+        
+        <AntdAlertModal
+          open={resultOpen}
+          setOpen={setResultOpen}
+          title={
+            resultType === "cf"? "사양 확정 완료" :
+            resultType === "error"? "요청 실패" :
+            resultType === "del"? "해당 모델을 삭제하시겠습니까?" :
+            resultType === "processClose"? "공정 지정을 하지 않고 닫으시겠습니까?" :
+            resultType === "fileClose"? "변경된 설계도면을 저장하지 않고 닫으시겠습니까?" :
+            ""
+          }
+          contents={
+            resultType === "cf" ? <div className="h-40">사양 확정에 성공하였습니다.</div> :
+            resultType === "error" ? <div className="h-40">{resultMsg}</div> :
+            resultType === "del" ? <div className="h-40">해당 모델의 사양 등록을 취소하시겠습니까?</div> :
+            resultType === "processClose" ? <div className="h-40">저장되지 않은 공정이 있습니다.<br/>정말 저장하지 않고 닫으시겠습니까?</div> :
+            resultType === "fileClose" ? <div className="h-40">저장되지 않은 설계도면이 있습니다.<br/>정말 저장하지 않고 나가시겠습니까?</div> :
+            <div className="h-40"></div>
+          }
+          type={
+            resultType === "cf" ? "success" :
+            resultType === "error" ? "error" :
+            resultType === "del" ? "warning" :
+            (resultType === "processClose" || resultType === "fileClose") ? "warning" :
+            "success"
+          }
+          onOk={()=>{
+            setResultOpen(false);
+            if(resultType === "cf") {
+              router.push('/sayang/sample/regist');
+            } else if(resultType === "del") {
+              handleDeleteModel();
+            } else if(resultType === "processClose") {
+              setOpen(false);
+              setUpdatePrc(true);
+            } else if(resultType === "fileClose") {
+              router.back();
+            }
+          }}
+          onCancle={()=>{
+            setResultOpen(false);
+            setDeleted(null);
+          }}
+          hideCancel={
+            resultType === "del"
+            || resultType === "processClose"
+            || resultType === "fileClose" ? false : true
+          }
+          okText={
+            resultType === "cf" ? "목록으로 이동" :
+            resultType === "error" ? "확인" :
+            resultType === "del" ? "네 사양 등록 대기로 변경하겠습니다" :
+            resultType === "processClose" ? "네 닫을래요" :
+            resultType === "fileClose" ? "네 나갈래요" :
+            "목록으로 이동"
+          }
+          cancelText={
+            resultType === "del"
+            || resultType === "processClose"
+            || resultType === "fileClose" ? "아니요 계속 등록할게요" :
+            ""
+          }
+        />
+
+        <ToastContainer />
+      </div>
+    </div>
+  </>
   )
 }
 
 SayangSampleAddPage.layout = (page: React.ReactNode) => (
   <MainPageLayout 
     menuTitle="사양 등록"
-    head={true}
+    head={false}
     modal={true}
   >{page}</MainPageLayout>
 );

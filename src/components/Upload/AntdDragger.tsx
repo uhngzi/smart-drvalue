@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 
 import Download from '@/assets/svg/icons/s_download.svg';
 import OpenNewWindow from '@/assets/svg/icons/l_open_window.svg';
@@ -14,6 +14,8 @@ import { downloadFileByObjectName, sliceByDelimiter, uploadFile } from './upLoad
 import { instance } from '@/api/lib/axios';
 import cookie from 'cookiejs';
 import { cookieName } from '@/api/lib/config';
+import useToast from '@/utils/useToast';
+import { Upload } from 'antd/lib';
 
 
 interface Props {
@@ -24,6 +26,7 @@ interface Props {
 
   disabled?: boolean;
   mult?: boolean;
+  max?: number;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -45,26 +48,34 @@ const AntdDragger: React.FC<Props> = ({
 
   disabled = false,
   mult = false,
+  max,
 }) => {
+  const { showToast, ToastContainer } = useToast();
+
   const UploadProp: UploadProps = {
     name: 'files',
     multiple: mult,
     showUploadList: false,
+    beforeUpload: (file, fileListNew) => {
+      if (max && fileList.length + fileListNew.length > max) {
+        showToast(`최대 ${max}개의 파일만 업로드할 수 있습니다.`, "error");
+        return false; // 업로드 무시
+      }
+      return true;
+    },
     onChange: async info => {
       const { status } = info.file;
 
       if (status === 'error') {
-        message.error(`${info.file.name} 파일 업로드에 실패했습니다.`);
-        Modal.error({
-          title: '업로드 실패',
-          content: '업로드에 실패하였습니다.',
-        });
+        showToast(`${info.file.name} 파일 업로드에 실패했습니다.`, "error");
+        return;
       }
 
-      if (info.file.status === 'done') {
-        const filesNm = (info.file.response.data ?? []).map((file:any) => {
+      if (status === 'done') {
+        const filesNm = (info.file.response.data ?? []).map((file: any) => {
           return file?.uploadEntityResult?.storageName;
         });
+    
         setFileList(prev => [...prev, info.file]);
         setFileIdList(prev => [...prev, ...filesNm]);
       }
@@ -88,7 +99,12 @@ const AntdDragger: React.FC<Props> = ({
         disabled={disabled}
         name="files"
         headers={{
-         'x-tenant-code' : 'gpntest-sebuk-ver',
+        //  'x-tenant-code' : 'gpntest-sebuk-ver',
+         'x-tenant-code' : (
+            cookie.get('company') === 'sy' ? 'shinyang-test' :
+            cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
+            'gpntest-sebuk-ver'
+          ),
           Authorization: `bearer ${cookie.get(cookieName)}`,
         }}
         action={`http://115.68.221.100:3300/api/serv/file-mng/v1/tenant/file-manager/upload/multiple`}
@@ -137,6 +153,7 @@ const AntdDragger: React.FC<Props> = ({
           </div>
         ))}
       </div>
+      <ToastContainer />
     </>
   );
 };
