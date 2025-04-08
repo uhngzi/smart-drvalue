@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import styled from "styled-components";
 
 import { getDaysBetween } from "@/utils/formatDate";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 
 import Edit from "@/assets/svg/icons/edit.svg";
@@ -36,6 +36,8 @@ import { patchAPI } from "@/api/patch";
 import { postAPI } from "@/api/post";
 import { deleteAPI } from "@/api/delete";
 import { useRouter } from "next/router";
+import { wkPlanWaitType } from "@/data/type/wk/plan";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
 const ProjcetPage: React.FC & {
@@ -48,6 +50,34 @@ const ProjcetPage: React.FC & {
   const [orderOpen, setOrderOpen] = useState<boolean>(false);
   const [processOpen, setProcessOpen] = useState<boolean>(false);
   const [selectId, setSelectId] = useState<string | null>(null);
+
+  // ------------ 세부 데이터 세팅 ------------ 시작
+  const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
+  const [detailData, setDetailData] = useState<wkPlanWaitType>({});
+  const { data:queryDetailData, isLoading, refetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['worksheet/wait-for-production-plan/jsxcrud/one/'],
+    queryFn: async () => {
+      setDetailDataLoading(true);
+      
+      const result = await getAPI({
+        type: 'core-d2', 
+        utype: 'tenant/',
+        url: `worksheet/wait-for-production-plan/jsxcrud/one/${id}`
+      });
+      return result;
+    },
+    enabled: !!id,
+  });
+
+  useEffect(()=>{
+    if(!isLoading && queryDetailData?.resultCode === "OK_0000") {
+      setDetailData(queryDetailData.data.data as wkPlanWaitType);
+      setDetailDataLoading(false);
+    }
+  }, [queryDetailData]);
+  // ------------ 세부 데이터 세팅 ------------ 끝
 
   // 인력계획 관련
   const [workerPlanOpen, setWorkerPlanOpen] = useState<boolean>(false);
@@ -92,10 +122,13 @@ const ProjcetPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
+        let wsExpDts:(string | null)[] = [];
         let arr = await Promise.all(
           result.data?.data?.map(async (item: any) => {
             const tasks = await Promise.all(
               item.process.map(async (task: any) => {
+                wsExpDts.push(task.wkProcStDtm);
+
                 const workerRes = await getAPI({
                   type: 'core-d3',
                   utype: 'tenant/',
@@ -130,7 +163,8 @@ const ProjcetPage: React.FC & {
             };
           })
         );
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", arr)
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", arr);
+        updateWsExpDt(wsExpDts);
         setSchedules(arr);
       } else {
         console.log('error:', result.response);
@@ -139,6 +173,67 @@ const ProjcetPage: React.FC & {
       return result;
     },
   });
+
+  // 생산 예정일 자동 입력
+  async function updateWsExpDt(dts:(string | null)[]) {
+    const validDates = dts
+      .filter((dt): dt is string => !!dt && dt.trim() !== "")
+      .map((dt) => new Date(dt));
+  
+    if (validDates.length === 0) {
+      console.log("유효한 날짜 없음");
+      return;
+    }
+  
+    const earliest = new Date(
+      Math.min(...validDates.map((date) => date.getTime()))
+    );
+  
+    console.log("가장 빠른 날짜:", earliest.toISOString().split("T")[0]);
+
+    if(earliest.toISOString().split("T")[0]) {
+      await postAPI({
+        type: 'core-d2', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `worksheet/wait-for-production-plan/default/update-production-plan-start-date`,
+        etc: true,
+      }, {
+        worksheetId: id,
+        wsExpDt: earliest.toISOString().split("T")[0],
+      });
+      console.log(id, earliest.toISOString().split("T")[0]);
+    }
+  }
+  
+  // 결과창
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<"cf" | "error" | "">("");
+  const [resultMsg, setResultMsg] = useState<string>("");
+
+  async function submitConfirm() {
+    const result = await postAPI({
+      type: 'core-d2', 
+      utype: 'tenant/',
+      jsx: 'default',
+      url: `worksheet/wait-for-production-plan/default/update-production-plans`,
+      etc: true,
+    }, {
+      worksheetId: id,
+      isPlanDtFixed: true,
+      isWorkPlanFixed: true
+    });
+
+    if(result.resultCode === 'OK_0000') {
+      setResultType('cf');
+      setResultOpen(true);
+    } else {
+      const msg = result?.response?.data?.message;
+      setResultType("error");
+      setResultMsg(msg);
+      setResultOpen(true);
+    }
+  }
  
 // const tempSchedules = [
 //   {
@@ -209,6 +304,7 @@ function addPopWorkers(data: any) {
       }
     } else {
       data = {startDate: otherDate, endDate: newDate}
+      console.log(data);
       const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
       if (from && dayjs(newDate).isBefore(dayjs(from))) {
         showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
@@ -240,9 +336,13 @@ function addPopWorkers(data: any) {
 
     if(result.resultCode === 'OK_0000') {
       pmsRefetch();
+      showToast("저장완료", "success");
     } else {
+      const msg = result?.response?.data?.message;
+      setResultType("error");
+      setResultMsg(msg);
+      setResultOpen(true);
     }
-
   }
 
   async function addWorkerPlan(workerPlanList: any[], procId: string | undefined) {
@@ -333,7 +433,7 @@ function addPopWorkers(data: any) {
   console.log(workerPlanList);
   return(
     <section className="flex flex-col w-full h-full">
-      <p className="font-medium px-20 h-40">{"다이나모터 지지구조물2  >  Guide vane actuator console 1 welded"}</p>
+      <p className="font-medium px-20 h-40">{detailData.specModel?.prdNm} ({detailData.specModel?.partner?.prtNm})</p>
       <div className="flex rounded-14" style={{border:'1px solid #D9D9D9'}}>
         <div>
           <ProjectTable>
@@ -455,6 +555,16 @@ function addPopWorkers(data: any) {
           </ProjectTable>
         </div>
         <GanttChart schedules={schedules}/>
+      </div>
+      <div className="w-full flex justify-end p-20">
+        <Button
+          className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+          onClick={()=>{
+            submitConfirm();
+          }}
+        >
+          <Arrow /> 확정 저장
+        </Button>
       </div>
       <AntdDrawer open={orderOpen} close={()=>setOrderOpen(false)} width={760}>
         <section className="p-20 flex flex-col gap-20">
@@ -588,6 +698,42 @@ function addPopWorkers(data: any) {
         </section>
       </AntdDrawer>
       <ToastContainer />
+
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={
+          resultType === "cf"? "확정 완료" :
+          resultType === "error"? "요청 실패" :
+          ""
+        }
+        contents={
+          resultType === "cf" ? <div className="h-40">확정에 성공하였습니다.</div> :
+          resultType === "error" ? <div className="h-40">{resultMsg}</div> :
+          <div className="h-40"></div>
+        }
+        type={
+          resultType === "cf" ? "success" :
+          resultType === "error" ? "error" :
+          "success"
+        }
+        onOk={()=>{
+          setResultOpen(false);
+          if(resultType === "cf") {
+            router.push('/wk/plan/wait');
+          }
+        }}
+        onCancle={()=>{
+          setResultOpen(false);
+        }}
+        hideCancel={true}
+        okText={
+          resultType === "cf" ? "목록으로 이동" :
+          resultType === "error" ? "확인" :
+          "목록으로 이동"
+        }
+        cancelText={""}
+      />
     </section>
   )
 }

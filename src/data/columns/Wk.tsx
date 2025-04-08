@@ -314,14 +314,14 @@ export const WKStatusProcClmn = (
   totalData: number,
   pagination: {current: number, size: number},
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
-  setSelect: React.Dispatch<React.SetStateAction<wkPlanWaitType | null>>,
-  checkeds: wkPlanWaitType[],
-  setCheckeds: React.Dispatch<SetStateAction<wkPlanWaitType[]>>,
-  handleCheckedAllClick: () => void,
+  setSelect?: React.Dispatch<React.SetStateAction<wkPlanWaitType | null>>,
+  checkeds?: wkPlanWaitType[],
+  setCheckeds?: React.Dispatch<SetStateAction<wkPlanWaitType[]>>,
+  handleCheckedAllClick?: () => void,
 ): CustomColumn[] => [
   {
     title: <div>
-      <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds.length === totalData}/>
+      <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds?.length === totalData}/>
     </div>,
     width: 80,
     dataIndex: 'check',
@@ -330,17 +330,17 @@ export const WKStatusProcClmn = (
     leftPin: true,
     render: (_: any, record: wkPlanWaitType) => (
       <Checkbox
-        checked={checkeds.filter(f=>f.id === record.id).length > 0}
+        checked={(checkeds ?? []).filter(f=>f.id === record.id).length > 0}
         onChange={(e)=>{
           const { checked } = e.target;
           console.log(checked);
           if(checked) {
-            setCheckeds([ 
-              ...checkeds,
+            setCheckeds?.([ 
+              ...(checkeds ?? []),
               { ...record }
             ]);
           } else {
-            setCheckeds(checkeds.filter(f=>f.id !== record.id));
+            setCheckeds?.((checkeds ?? []).filter(f=>f.id !== record.id));
           }
         }}
       />
@@ -374,8 +374,8 @@ export const WKStatusProcClmn = (
   {
     title: '재투입',
     width: 80,
-    dataIndex: 'index',
-    key: 'index',
+    dataIndex: 'rein',
+    key: 'rein',
     align: 'center',
   },
   {
@@ -431,7 +431,7 @@ export const WKStatusProcClmn = (
       <div
         className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
-          setSelect(record);
+          setSelect?.(record);
         }}
       >
         {record.specModel?.prdNm}
@@ -439,7 +439,7 @@ export const WKStatusProcClmn = (
     )
   },
   {
-    title: '투입일',
+    title: cookie.get('company') === 'sy'? '시작일' :'투입일',
     width: 100,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -508,7 +508,7 @@ export const WKStatusProcClmn = (
     align: 'center',
   },
   {
-    title: '수주량(PCS)',
+    title: cookie.get('company') === 'sy'? '수주량' :'수주량(PCS)',
     width: 80,
     dataIndex: 'wkPrdCnt',
     key: 'wkPrdCnt',

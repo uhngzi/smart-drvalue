@@ -2,7 +2,7 @@ import { getAPI } from "@/api/get";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import { LabelMedium } from "@/components/Text/Label";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
-import { WKStatusInClmn } from "@/data/columns/Wk";
+import { WKStatusInClmn, WKStatusProcClmn } from "@/data/columns/Wk";
 import { useMenu } from "@/data/context/MenuContext";
 import { useUser } from "@/data/context/UserContext";
 import { partnerRType } from "@/data/type/base/partner";
@@ -13,6 +13,7 @@ import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
 import { List } from "antd";
+import cookie from "cookiejs";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -201,7 +202,25 @@ const WKStatusProcPage: {
 
         <List>
           <AntdTableEdit
-            columns={WKStatusInClmn(totalData, pagination, setPartnerData)}
+            columns={
+              cookie.get('company') === 'sy'?
+              WKStatusProcClmn(totalData, pagination, setPartnerData)?.filter(f=> f.key !== 'check'
+                && !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+                && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
+                && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+                && !f.key?.toString().includes("rein") && !f.key?.toString().includes("m2")
+              )
+              :
+              WKStatusProcClmn(totalData, pagination, setPartnerData).filter(f=>f.key !== 'check')
+              // cookie.get('company') === 'sy' ?
+              // WKStatusInClmn(totalData, pagination, setPartnerData)?.filter(f=>
+              //   !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+              //   && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
+              //   && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+              // )
+              // :
+              // WKStatusInClmn(totalData, pagination, setPartnerData)
+            }
             data={data}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={dataLoading}

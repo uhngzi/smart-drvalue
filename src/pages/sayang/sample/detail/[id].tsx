@@ -725,6 +725,10 @@ const SayangSampleAddPage: React.FC & {
                 return;
               }
             })
+            if(flag && cookie.get('company') === 'sy') {
+              showToast("모델 내 수량을 입력해주세요.", "error");
+              return;
+            }
             if(flag && cookie.get('company') !== 'sy') {
               showToast("모델 내 작업량(PNL)을 입력해주세요.", "error");
               return;
