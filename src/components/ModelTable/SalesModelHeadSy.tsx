@@ -349,7 +349,7 @@ const SalesModelHeadSy:React.FC<Props> = ({
               <AntdDatePicker
                 value={model.currPrdInfo?.orderDt}
                 onChange={(e)=>handleModelDataChange(model.id ?? '', 'currPrdInfo.orderDt', e)}
-                suffixIcon={'cal'} afterDate={new Date()}
+                suffixIcon={'cal'}
                 styles={{bc:'#D9D9D9'}} className="!w-full !h-32 !rounded-2"
                 disabled={read ?? model.completed}
                 allowClear={false}
@@ -362,7 +362,7 @@ const SalesModelHeadSy:React.FC<Props> = ({
               <AntdDatePicker
                 value={model.orderPrdDueDt}
                 onChange={(e)=>handleModelDataChange(model.id ?? '', 'orderPrdDueDt', e)}
-                suffixIcon={'cal'} afterDate={new Date()}
+                suffixIcon={'cal'}
                 styles={{bc:'#D9D9D9'}} className="!w-full !h-32 !rounded-2"
                 disabled={model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED}
                 allowClear={false}
@@ -375,10 +375,11 @@ const SalesModelHeadSy:React.FC<Props> = ({
             children1={
               <AntdSelectFill
                 options={[
-                  {value:'pcs',label:'PCS'},
-                  {value:'kit',label:'KIT'},
+                  {value:'ea',label:'EA'},
+                  // {value:'pcs',label:'PCS'},
+                  // {value:'kit',label:'KIT'},
                 ]}
-                value={model.currPrdInfo?.orderUnit ?? 'pcs'}
+                value={model.currPrdInfo?.orderUnit ?? 'ea'}
                 onChange={(e)=>{handleModelDataChange(model.id ?? '', 'currPrdInfo.orderUnit', e)}}
                 styles={{ht:'32px', bg: '#FFF', br: '2px'}}
                 disabled={model.completed ?? read}
