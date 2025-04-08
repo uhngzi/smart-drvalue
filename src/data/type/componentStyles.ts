@@ -75,7 +75,7 @@ export type CUtreeType = {
   parentId?: string;
   id: string;
   label: string;
-  odNum?: number;
+  ordNo?: number;
   useYn?: boolean;
   [key: string]: any;
 }

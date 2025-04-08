@@ -92,7 +92,7 @@ export function updateTreeDatas (
     const editItem = filteredEditList.find((editItem) => editItem.id === addItem.id);
     if (editItem) {
       // id가 일치하면 addList의 label을 editItem의 label로 덮어쓴다
-      return { ...addItem, label: editItem.label };
+      return { ...addItem, label: editItem.label, ordNo: editItem.ordNo };
     }
     return addItem; // 일치하지 않으면 그대로 반환
   });

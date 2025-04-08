@@ -53,6 +53,27 @@ const MOCK = {
             { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:'사용'},{value:false,label:'미사용'}] },
             { name:'materialSuppliers',label:'구매처 선택', widthType:'full', type:'mSelect', option:[] },
         ]
+    },
+    userItem: {
+        tableColumns: [],
+        CUDPopItems: [
+            { name:'userName',label:'이름', widthType:'third', type:'input'},
+            { name:'userId',label:'아이디', widthType:'third', type:'input'},
+            { name:'userPassword',label:'비밀번호', widthType:'third', type:'input'},
+            { name:'deptId',label:'부서', widthType:'third', type:'select', option:[], child:'teamId'},
+            { name:'teamId',label:'팀', widthType:'third', type:'select', isChild:true, option:[]},
+            { name:'empTit',label:'직함', widthType:'third', type:'input'},
+            { name:'empRank',label:'직급', widthType:'third', type:'input'},
+            { name:'empStDt',label:'입사일', widthType:'third', type:'date'},
+            { name:'empSts',label:'근무상태', widthType:'third', type:'select', option:[{value:'대기',label:'대기'},{value:'근무',label:'근무'},{value:'휴직',label:'휴직'},{value:'병가',label:'병가'},{value:'퇴사',label:'퇴사'}]},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+            // { name:'userName',label:'이름', widthType:'third', type:'input'},
+        ]
     }
     
 }

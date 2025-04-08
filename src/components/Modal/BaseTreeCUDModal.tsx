@@ -82,7 +82,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
 
   useEffect(() => {
     if(!treeModalOpen)
-      setOpen(treeModalOpen);
+      onClose();
   },[treeModalOpen]);
 
   useEffect(() => {
