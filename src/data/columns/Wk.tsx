@@ -9,12 +9,14 @@ import { SetStateAction } from "react";
 import { processVendorRType } from "../type/base/process";
 import dayjs, { Dayjs } from "dayjs";
 import cookie from "cookiejs";
+import { NextRouter } from "next/router";
 
 
 export const WkPalnWaitClmn = (
   totalData: number,
   pagination: {current: number, size: number},
   handleSubmit: (id:string, value:string) => void,
+  router?: NextRouter,
 ): CustomColumn[] => [
   {
     title: 'No',
@@ -34,6 +36,18 @@ export const WkPalnWaitClmn = (
     align: 'center',
     cellAlign: 'left',
     editable: false,
+    render: (_, record) => (
+      <div
+        className={`w-full text-left ${cookie.get('company') === 'sy' ? 'cursor-pointer' : ''}`}
+        onClick={()=>{
+          if(cookie.get('company') === 'sy') {
+            router?.push(`/wk/plan/${record?.id}`);
+          }
+        }}
+      >
+        {record?.specModel?.prdNm}
+      </div>
+    )
   },
   {
     title: '생산예정일',

@@ -179,7 +179,8 @@ const WkPlanWaitPage: React.FC & {
             WkPalnWaitClmn(
               totalData,
               pagination,
-              handleSubmit
+              handleSubmit,
+              router,
             )?.filter(f=> !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
               && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")

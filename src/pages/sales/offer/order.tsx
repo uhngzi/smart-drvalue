@@ -32,6 +32,7 @@ import { postAPI } from "@/api/post";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
 import dayjs from "dayjs";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -162,7 +163,19 @@ const SalesUserPage: React.FC & {
 
       <List>
         <AntdTableEdit
-          columns={salesUserOrderClmn(
+          columns={
+          cookie.get('company') === 'sy' ?
+          salesUserOrderClmn(
+            totalData,
+            setPartnerData,
+            setPartnerMngData,
+            pagination,
+            setOrderId,
+            setOrderDrawer,
+            router,
+          ).filter(f=>f.key !== 'orderRepDt')
+          :
+          salesUserOrderClmn(
             totalData,
             setPartnerData,
             setPartnerMngData,
