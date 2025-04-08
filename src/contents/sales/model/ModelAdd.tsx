@@ -271,7 +271,7 @@ const ModelAddLayout = () => {
       console.log(JSON.stringify(jsonData));
       
       const val = validReq(jsonData, modelReq());
-      if(!val.isValid) {
+      if(!val.isValid && cookie.get('company') !== 'sy') {
         setErrMsg(val.missingLabels+'은(는) 필수 입력입니다.');
         setAlertType("error");
         setAlertOpen(true);

@@ -21,6 +21,7 @@ import { FinalGlbStatus, generateFloorOptions, HotGrade, LayerEm, ModelStatus, M
 import { CloseOutlined } from '@ant-design/icons';
 import AutoHideTooltip from '@/components/Tooltip/AntdHideTooltip';
 import CustomAutoCompleteLabel from '@/components/AutoComplete/CustomAutoCompleteLabel';
+import cookie from 'cookiejs';
 
 export const specStatusClmn = (
   totalData: number,
@@ -76,7 +77,7 @@ export const specStatusClmn = (
       <div
         className="w-full h-full h-center cursor-pointer"
         onClick={()=>{
-          router?.push({pathname:`/sayang/sample/pcb/${record.id}`, query: {view:true}})
+          router?.push({pathname:`/sayang/sample/detail/${record.id}`, query: {view:true}})
         }}
       >
         {record.specModels?.[0]?.prdNm}
@@ -258,7 +259,7 @@ export const specIngClmn = (
     render: (_, record:specType) => (
       <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
-          router?.push(`/sayang/sample/pcb/${record.id}`);
+          router?.push(`/sayang/sample/detail/${record.id}`);
         }}
       >
         {record.specModels?.[0]?.prdNm}
@@ -344,7 +345,7 @@ export const specIngClmn = (
     }
   },
   {
-    title: 'PCS',
+    title: cookie.get('company') === 'sy' ? '제품 SIZE' : 'PCS',
     width: 100,
     dataIndex: 'specModels.pcsW',
     key: 'specModels.pcsW',
@@ -386,7 +387,7 @@ export const specIngClmn = (
   //       <div 
   //         className="w-40 h-40 v-h-center cursor-pointer rounded-4 hover:bg-[#E9EDF5]" 
   //         onClick={()=>{
-  //           router?.push(`/sayang/sample/pcb/${value}`);
+  //           router?.push(`/sayang/sample/detail/${value}`);
   //         }}
   //       >
   //         <p className="w-18 h-18"><Edit /></p>
@@ -570,13 +571,13 @@ export const sayangSampleWaitClmn = (
     }
   },
   {
-    title: 'PCS',
+    title: cookie.get('company') === 'sy' ? '제품 SIZE' : 'PCS',
     width: 100,
     dataIndex: 'tempModel.pcsW',
     key: 'tempModel.pcsW',
     align: 'center',
     render: (_, record:modelsMatchRType) => {
-      return record.tempModel?.pcsL+'/'+record.model?.pcsW;
+      return (record.tempModel?.pcsL??"")+'/'+(record.model?.pcsW??"");
     }
   },
   {
@@ -622,6 +623,7 @@ export const sayangSampleWaitAddClmn = (
   ) => void,
   setDeleted: React.Dispatch<SetStateAction<specModelType | null>>,
   view: string | string[] | undefined,
+  stampColorSelectList?: selectType[],
 ): TableProps['columns'] => [
   {
     title: 'No',
@@ -707,17 +709,33 @@ export const sayangSampleWaitAddClmn = (
     ]
   },
   {
-    title: '층',
+    title: cookie.get('company') === 'sy' ? '두께(T)' : '층',
     dataIndex: 'layer',
     key: 'layer',
     align: 'center',
-    children: [
+    width: 55,
+    render: cookie.get('company') !== 'sy' ? undefined : (_, record:specModelType) => (
+      <div className={divTopClass}>
+        <div className={divClass}>
+          <AntdInputFill
+            value={record.thk}
+            onChange={(e)=>handleModelDataChange(record.id, 'thk', e.target.value)}
+            className='!text-12'
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+2}
+            disabled={view?true:false}
+          />
+        </div>
+      </div>
+    ),
+    children: cookie.get('company') !== 'sy' ? [
       {
         title:'두께(T)',
         width: 55,
         dataIndex: 'thic_layer',
         key:'thic_layer',
         align: 'center',
+        
         render: (_, record:specModelType) => (
           <div className={divTopClass}>
             <div className={divClass+"mb-3"}>
@@ -743,7 +761,7 @@ export const sayangSampleWaitAddClmn = (
           </div>
         )
       },
-    ]
+    ] : undefined
   },
   {
     title: '동박두께',
@@ -936,8 +954,8 @@ export const sayangSampleWaitAddClmn = (
   {
     title: 'M/K',
     width:120,
-    dataIndex: 'mkC',
-    key: 'mkC',
+    dataIndex: 'mk',
+    key: 'mk',
     align: 'center',
     render: (_, record:specModelType) => (
       <div className={divTopClass}>
@@ -975,7 +993,7 @@ export const sayangSampleWaitAddClmn = (
     )
   },
   {
-    title: '특수인쇄',
+    title: cookie.get('company') === 'sy'? '도장': '특수인쇄',
     width:80,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -984,10 +1002,10 @@ export const sayangSampleWaitAddClmn = (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill 
-            options={spPrintSelectList}
+            options={cookie.get('company') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
             value={record?.spPrint?.id}
             onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
-            styles={{fs:'12px'}} placeholder="특수인쇄"
+            styles={{fs:'12px'}} placeholder={cookie.get('company') === 'sy'? "도장컬러" : "특수인쇄"}
             tabIndex={(record?.index ?? 1)*40+15}
             disabled={view?true:false}
           />
@@ -997,7 +1015,7 @@ export const sayangSampleWaitAddClmn = (
             options={spTypeSelectList}
             value={record?.spType?.id}
             onChange={(e)=>handleModelDataChange(record.id, 'spType.id', e)}
-            styles={{fs:'12px'}} placeholder="특수인쇄 종류"
+            styles={{fs:'12px'}} placeholder={cookie.get('company') === 'sy'? "도장종류" : "특수인쇄종류"}
             tabIndex={(record?.index ?? 1)*40+16}
             disabled={view?true:false}
           />
@@ -1024,7 +1042,7 @@ export const sayangSampleWaitAddClmn = (
               <AntdSelectFill 
                 options={surfaceSelectList}
                 value={record?.surface?.id}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'surface.id', e)}
                 styles={{fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+17}
                 disabled={view?true:false}
@@ -1034,7 +1052,7 @@ export const sayangSampleWaitAddClmn = (
               <AntdSelectFill
                 options={outSelectList}
                 value={record?.aprType?.id}
-                onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
+                onChange={(e)=>handleModelDataChange(record.id, 'aprType.id', e)}
                 styles={{fs:'12px'}}
                 tabIndex={(record?.index ?? 1)*40+18}
                 disabled={view?true:false}
@@ -1126,7 +1144,7 @@ export const sayangSampleWaitAddClmn = (
     )
   },
   {
-    title: 'PCS SIZE',
+    title: cookie.get('company') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
     width:80,
     dataIndex: 'pcs',
     key: 'pcs',
@@ -1212,8 +1230,8 @@ export const sayangSampleWaitAddClmn = (
   {
     title: '연조KIT',
     width:55,
-    dataIndex: 'ar',
-    key: 'ar',
+    dataIndex: 'arkit',
+    key: 'arkit',
     align: 'center',
     children:[
       {
@@ -1272,9 +1290,65 @@ export const sayangSampleWaitAddClmn = (
     key: 'spec',
     align: 'center',
     render: (_, record:specModelType) => (
+      cookie.get('company') === 'sy' ? 
       <>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">LINE</p>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-50 w-50 !text-12">Design Press</p>
+          <AntdInputFill 
+            value={record?.specLine}
+            onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
+            className="!text-12"
+            maxPoint={3}
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+33}
+            disabled={view?true:false}
+          />
+          <p className="min-w-26 w-26 !text-12 !text-left">brag</p>
+        </div>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-50 w-50 !text-12">Design Temp</p>
+          <AntdInputFill 
+            value={record?.specSpace}
+            onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
+            className="!text-12"
+            maxPoint={3}
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+34}
+            disabled={view?true:false}
+          />
+          <p className="min-w-26 w-26 !text-12 !text-left">℃</p>
+        </div>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-50 w-50 !text-12">C.A.</p>
+          <AntdInputFill 
+            value={record?.specDr}
+            onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
+            className="!text-12"
+            maxPoint={2}
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+35}
+            disabled={view?true:false}
+          />
+          <p className="min-w-26 w-26 !text-12 !text-left">㎜</p>
+        </div>
+        <div className={divClass+" gap-5"}>
+          <p className="text-left min-w-50 w-50 !text-12">THK(S)</p>
+          <AntdInputFill
+            value={record?.specPad}
+            onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
+            className="!text-12"
+            maxPoint={2}
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+36}
+            disabled={view?true:false}
+          />
+          <p className="min-w-26 w-26 !text-12 !text-left">t</p>
+        </div>
+      </>
+      :
+      <>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-37 w-37 !text-12">LINE</p>
           <AntdInputFill 
             value={record?.specLine}
             onChange={(e)=>handleModelDataChange(record.id, 'specLine', e.target.value)}
@@ -1284,10 +1358,10 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+33}
             disabled={view?true:false}
           />
-          <p className="w-12 !text-12">㎜</p>
+          <p className="min-w-12 w-12 !text-12">㎜</p>
         </div>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">SPACE</p>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-37 w-37 !text-12">SPACE</p>
           <AntdInputFill 
             value={record?.specSpace}
             onChange={(e)=>handleModelDataChange(record.id, 'specSpace', e.target.value)}
@@ -1297,10 +1371,10 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+34}
             disabled={view?true:false}
           />
-          <p className="w-12 !text-12">㎜</p>
+          <p className="min-w-12 w-12 !text-12">㎜</p>
         </div>
-        <div className={divClass+"mb-3"}>
-          <p className="text-left w-37 !text-12">DR</p>
+        <div className={divClass+"mb-3 gap-5"}>
+          <p className="text-left min-w-37 w-37 !text-12">DR</p>
           <AntdInputFill 
             value={record?.specDr}
             onChange={(e)=>handleModelDataChange(record.id, 'specDr', e.target.value)}
@@ -1310,9 +1384,10 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+35}
             disabled={view?true:false}
           />
+          <p className="min-w-12 w-12 !text-12"></p>
         </div>
-        <div className={divClass}>
-          <p className="text-left w-37 !text-12">PAD</p>
+        <div className={divClass+" gap-5"}>
+          <p className="text-left min-w-37 w-37 !text-12">PAD</p>
           <AntdInputFill
             value={record?.specPad}
             onChange={(e)=>handleModelDataChange(record.id, 'specPad', e.target.value)}
@@ -1322,6 +1397,7 @@ export const sayangSampleWaitAddClmn = (
             tabIndex={(record?.index ?? 1)*40+36}
             disabled={view?true:false}
           />
+          <p className="min-w-12 w-12 !text-12"></p>
         </div>
       </>
     )
@@ -1333,11 +1409,14 @@ export const sayangSampleWaitAddClmn = (
     key: 'cnt',
     align: 'center',
     render: (_, record:specModelType) => (
+      cookie.get('company') !== 'sy' ?
       <div className={divTopClass}>
         <AutoHideTooltip title="수주량" className="w-full">
         <div className={divClass+" !w-full !justify-end !text-12 gap-5"}>
           <div className="!mr-10">{(record.modelMatch?.orderModel.orderPrdCnt ?? 0).toLocaleString()}</div>
-          <div className="!min-w-25 !w-25">PCS</div>
+          <div className="!min-w-25 !w-25">
+            {cookie.get('company') !== 'sy' ? 'PCS' : 'EA'}
+          </div>
         </div>
         </AutoHideTooltip>
         <AutoHideTooltip title="작업량">
@@ -1366,6 +1445,20 @@ export const sayangSampleWaitAddClmn = (
           <div className="!min-w-25 !w-25 !text-12">PCS</div>
         </div>
         </AutoHideTooltip>
+      </div>
+      :
+      <div className={divTopClass}>
+        <div className={divClass+" gap-5"}>
+          <AntdInputFill
+            value={record.prdCnt}
+            onChange={(e)=>handleModelDataChange(record.id, 'prdCnt', e.target.value)}
+            className='!text-12'
+            type="number"
+            tabIndex={(record?.index ?? 1)*40+38}
+            disabled={view?true:false}
+          />
+          <div className="!min-w-25 !w-25 !text-12">EA</div>
+        </div>
       </div>
     )
   },

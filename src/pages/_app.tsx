@@ -31,6 +31,8 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     if(pathname.startsWith('/setting') || pathname.startsWith('/sign')){
       document.body.classList.add('no-width')
+    } else {
+      document.body.classList.remove('no-width');
     }
   },[pathname]);
 

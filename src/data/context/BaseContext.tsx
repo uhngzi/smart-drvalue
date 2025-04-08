@@ -53,6 +53,9 @@ interface BaseContextType {
   ozUnit: commonCodeRType[];
   ozUnitSelectList: selectType[];
   refetchOzUnit: () => void;
+  stampColor: commonCodeRType[];
+  stampColorSelectList: selectType[];
+  refetchStampColor: () => void;
 }
 
 const BaseContext = createContext<BaseContextType | undefined>(undefined);
@@ -487,7 +490,35 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     enabled: login
   });
-  // ----------- 특수인쇄 ---------- 끝
+  // ----------- 동박외내층 ---------- 끝
+
+  // ---------- 도장 컬러 --------- 시작
+  const [stampColorSelectList, setStampColorSelectList] = useState<selectType[]>([]);
+  const [stampColor, setStampColor] = useState<commonCodeRType[]>([]);
+  const { refetch:refetchStampColor } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["stampColor", login],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/도장컬러'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
+          value: d.id,
+          label: d.cdNm,
+        }))
+        setStampColor(result.data?.data ?? []);
+        setStampColorSelectList(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+    enabled: login
+  });
+  // ----------- 동박외내층 ---------- 끝
 
   return (
     <BaseContext.Provider
@@ -507,6 +538,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         spPrint, spPrintSelectList, refetchSpPrint,
         spType, spTypeSelectList, refetchSpType,
         ozUnit, ozUnitSelectList, refetchOzUnit,
+        stampColor, stampColorSelectList, refetchStampColor,
       }}
     >
       {children}

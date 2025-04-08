@@ -67,6 +67,12 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
   //   return () => clearTimeout(timer);
   // }, []);
   
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if(!mounted)      return null;
+  
   return (
     <div className="flex max-h-[100vh]" key="mainPageLayout">
       <div>

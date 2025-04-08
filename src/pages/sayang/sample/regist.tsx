@@ -28,6 +28,7 @@ import { LabelIcon, LabelMedium } from "@/components/Text/Label";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 import useToast from "@/utils/useToast";
+import cookie from "cookiejs";
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -136,6 +137,12 @@ const SayangSampleListPage: React.FC & {
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
 
+    if(cookie.get('company') === 'sy') {
+      setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
+      handleSumbitTemp();
+      return;
+    }
+
     // 조합일 경우
     if(id) {
       const sd = ingData.find(f=>f.id === id);
@@ -175,7 +182,7 @@ const SayangSampleListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/pcb/${specId?.specId}`);
+          router.push(`/sayang/sample/detail/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
@@ -219,7 +226,7 @@ const SayangSampleListPage: React.FC & {
 
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/pcb/${specId?.specId}`);
+          router.push(`/sayang/sample/detail/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
@@ -249,7 +256,7 @@ const SayangSampleListPage: React.FC & {
   
         if(result.resultCode === 'OK_0000') {
           const specId:any = result.data;
-          router.push(`/sayang/sample/pcb/${specId?.specId}`);
+          router.push(`/sayang/sample/detail/${specId?.specId}`);
         } else {
           const msg = result?.response?.data?.message;
           setMsg(msg);
@@ -336,7 +343,21 @@ const SayangSampleListPage: React.FC & {
         </div>
         <List>
           <AntdTableEdit
-            columns={specIngClmn(ingData.length, setPartnerData, setPartnerMngData, router)}
+            columns={
+            cookie.get('company') === 'sy' ?
+            specIngClmn(
+              ingData.length,
+              setPartnerData,
+              setPartnerMngData,
+              router
+            ).filter(f=>f.key !== 'check' && !f.key?.toString().includes("layerEm"))
+            :
+            specIngClmn(
+              ingData.length,
+              setPartnerData,
+              setPartnerMngData,
+              router
+            )}
             data={ingData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={ingDataLoading}
@@ -353,7 +374,29 @@ const SayangSampleListPage: React.FC & {
         </div>
         <List>
           <AntdTableEdit
-            columns={sayangSampleWaitClmn(waitData.length, setPartnerData, setPartnerMngData, checkeds, setCheckeds, handleCheckedAllClick, handleCheckedClick, sayangPopOpen)}
+            columns={
+            cookie.get('company') === 'sy' ?
+            sayangSampleWaitClmn(
+              waitData.length,
+              setPartnerData,
+              setPartnerMngData,
+              checkeds,
+              setCheckeds,
+              handleCheckedAllClick,
+              handleCheckedClick,
+              sayangPopOpen,
+            ).filter(f=>f.key !== 'check' && !f.key?.toString().includes("layerEm"))
+            :
+            sayangSampleWaitClmn(
+              waitData.length,
+              setPartnerData,
+              setPartnerMngData,
+              checkeds,
+              setCheckeds,
+              handleCheckedAllClick,
+              handleCheckedClick,
+              sayangPopOpen,
+            )}
             data={waitData}
             styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
             loading={waitDataLoading}

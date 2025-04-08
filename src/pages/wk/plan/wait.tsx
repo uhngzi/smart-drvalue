@@ -18,6 +18,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/data/context/MenuContext";
+import cookie from "cookiejs";
 
 const WkPlanWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -173,7 +174,23 @@ const WkPlanWaitPage: React.FC & {
       <List>
         <AntdTableEdit
           create={true}
-          columns={WkPalnWaitClmn(totalData, pagination, handleSubmit)}
+          columns={
+            cookie.get('company') === 'sy' ?
+            WkPalnWaitClmn(
+              totalData,
+              pagination,
+              handleSubmit
+            )?.filter(f=> !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
+              && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
+              && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
+            )
+            :
+            WkPalnWaitClmn(
+              totalData,
+              pagination,
+              handleSubmit
+            )
+          }
           data={data}
           setData={setData}
           styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}

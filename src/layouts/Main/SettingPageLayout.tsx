@@ -58,7 +58,14 @@ const SettingPageLayout: React.FC<Props> = ({ children, styles, menu, menuTitle 
           <div className="w-full h-[100vh] overflow-auto">
             <div className="w-full flex justify-end pr-50 pt-30">
               <p className="w-32 h-32 bg-white text-right rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
-                onClick={()=>{router.push(sessionStorage.getItem('prevUrl') || '/')}}>
+                onClick={()=>{
+                  if(sessionStorage.getItem('prevUrl')?.includes("[type]")) {
+                    router.push("/");
+                  } else {
+                    router.push(sessionStorage.getItem('prevUrl') || '/')}
+                  }
+                }
+              >
                 <Close />
               </p>
             </div>

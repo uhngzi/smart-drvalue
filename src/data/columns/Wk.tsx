@@ -8,6 +8,7 @@ import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import { SetStateAction } from "react";
 import { processVendorRType } from "../type/base/process";
 import dayjs, { Dayjs } from "dayjs";
+import cookie from "cookiejs";
 
 
 export const WkPalnWaitClmn = (
@@ -40,6 +41,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
     align: 'center',
+    editable: cookie.get('company') === 'sy' ? false : true,
     editType: 'date',
     enter: true,
     enterSubmit: (id, value)=>handleSubmit(id, value),
@@ -103,7 +105,7 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
-    title: 'PCS W * PCS H',
+    title: cookie.get('company') === 'sy' ? '제품 W * 제품 H' : 'PCS W * PCS H',
     width: 130,
     dataIndex: 'specModel.pcsW*specModel.pcsL',
     key: 'specModel.pcsW*specModel.pcsL',

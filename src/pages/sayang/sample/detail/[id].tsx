@@ -26,6 +26,7 @@ import Prc from "@/assets/svg/icons/data.svg";
 import Down from "@/assets/svg/icons/s_drop_down.svg";
 import Right from "@/assets/svg/icons/s_drop_right.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import MessageOn from "@/assets/svg/icons/message_on.svg";
 
 import useToast from "@/utils/useToast";
 
@@ -44,6 +45,9 @@ import { Popup } from "@/layouts/Body/Popup";
 import { productLinesGroupRType } from "@/data/type/base/product";
 import { processRType } from "@/data/type/base/process";
 import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
+import cookie from "cookiejs";
+import TitleIcon from "@/components/Text/TitleIcon";
+import AntdDragger from "@/components/Upload/AntdDragger";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -70,6 +74,7 @@ const SayangSampleAddPage: React.FC & {
     spTypeSelectList,
     ozUnitSelectList,
     metarialSelectList,
+    stampColorSelectList,
   } = useBase();
 
   // 결재
@@ -526,7 +531,7 @@ const SayangSampleAddPage: React.FC & {
             </div>
           </div>
           <div className="h-center gap-20">
-            { !view &&
+            { !view && cookie.get('company') !== 'sy' &&
             <Button
               className="!text-point1 !border-point1" icon={<Models className="w-16 h-16"/>}
               onClick={()=>{
@@ -538,7 +543,33 @@ const SayangSampleAddPage: React.FC & {
         </div>
         <div>
           <AntdTable
-            columns={sayangSampleWaitAddClmn(
+            columns={
+            cookie.get('company') === 'sy' ?
+            sayangSampleWaitAddClmn(
+              surfaceSelectList,
+              unitSelectList,
+              vcutSelectList,
+              outSelectList,
+              smPrintSelectList,
+              smColorSelectList,
+              smTypeSelectList,
+              mkPrintSelectList,
+              mkColorSelectList,
+              mkTypeSelectList,
+              spPrintSelectList,
+              spTypeSelectList,
+              ul1SelectList,
+              ul2SelectList,
+              ozUnitSelectList,
+              metarialSelectList,
+              handleModelDataChange,
+              setDeleted,
+              view,
+              stampColorSelectList,
+            )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
+              && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs' && f.key !== 'im')
+            :
+            sayangSampleWaitAddClmn(
               surfaceSelectList,
               unitSelectList,
               vcutSelectList,
@@ -566,6 +597,49 @@ const SayangSampleAddPage: React.FC & {
           />
         </div>
       </Popup>}
+      { cookie.get('company') === 'sy' &&
+      <div className="flex gap-40 flex-row">
+        <Popup className="!w-[300px] flex-grow-[20]">
+          <TitleIcon
+            title="설계도면 첨부"
+            icon={<MessageOn />}
+          />
+          <AntdDragger
+            fileIdList={[]}
+            fileList={[]}
+            setFileIdList={()=>{}}
+            setFileList={()=>{}}
+          />
+        </Popup>
+
+        <Popup className="!w-[300px] flex-grow-[20]">
+          <TitleIcon
+            title="설계 전달사항"
+            icon={<MessageOn />}
+          />
+          <textarea
+            className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+            value={camNotice}
+            onChange={(e)=>{setCamNotice(e.target.value)}}
+            disabled={view?true:false}
+          />
+        </Popup>
+
+        <Popup className="!w-[300px] flex-grow-[20]">
+          <TitleIcon
+            title="제조 전달사항"
+            icon={<MessageOn />}
+          />
+          <textarea
+            className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+            value={prcNotice}
+            onChange={(e)=>{setPrcNotice(e.target.value)}}
+            disabled={view?true:false}
+          />
+        </Popup>
+      </div>
+      }
+      { cookie.get('company') !== 'sy' &&
       <div className="flex gap-40 flex-row">
         <Popup className="!w-[300px] flex-grow-[20]">
           {/* 적층 구조 */}
@@ -606,7 +680,7 @@ const SayangSampleAddPage: React.FC & {
             view={view}
           />
         </Popup>
-      </div>
+      </div>}
 
       <div className="v-between-h-center px-30">
         {
@@ -651,7 +725,7 @@ const SayangSampleAddPage: React.FC & {
                 return;
               }
             })
-            if(flag) {
+            if(flag && cookie.get('company') !== 'sy') {
               showToast("모델 내 작업량(PNL)을 입력해주세요.", "error");
               return;
             }
