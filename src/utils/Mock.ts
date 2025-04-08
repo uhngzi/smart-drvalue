@@ -59,7 +59,7 @@ const MOCK = {
         CUDPopItems: [
             { name:'userName',label:'이름', widthType:'third', type:'input'},
             { name:'userId',label:'아이디', widthType:'third', type:'input'},
-            { name:'userPassword',label:'비밀번호', widthType:'third', type:'input'},
+            { name:'userPassword',label:'비밀번호', widthType:'third', type:'password'},
             { name:'deptId',label:'부서', widthType:'third', type:'select', option:[], child:'teamId'},
             { name:'teamId',label:'팀', widthType:'third', type:'select', isChild:true, option:[]},
             { name:'empTit',label:'직함', widthType:'third', type:'input'},

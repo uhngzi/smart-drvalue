@@ -25,6 +25,7 @@ import AntdTable from "@/components/List/AntdTable";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { MOCK } from "@/utils/Mock";
 import { postAPI } from "@/api/post";
+import AntdPagination from "@/components/Pagination/AntdPagination";
 
 const groupType = {
   dept: {name: '조직도', child:'team'},
@@ -49,6 +50,18 @@ const HrUserListPage: React.FC & {
   // 구성원 관련 변수
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false)
   const [selectedTeam, setSelectedTeam] = useState<string|null>(null)
+
+    // 결과 모달창을 위한 변수
+    const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+    const [ resultType, setResultType ] = useState<AlertType>('info');
+    const [ resultTitle, setResultTitle ] = useState<string>('');
+    const [ resultText, setResultText ] = useState<string>('');
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    setResultType(type);
+    setResultTitle(title);
+    setResultText(text);
+  }
 
   const [newOpen, setNewOpen] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<keyof typeof groupType | null>(null);
@@ -159,7 +172,7 @@ const HrUserListPage: React.FC & {
   const [userDetailOpen, setUserDetailOpen] = useState<boolean>(false);
   
   const { isLoading: usersLoading, refetch: userRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['auth', 'tenant', 'user'],
+    queryKey: ['auth', 'tenant', 'user', selectedTeam],
     enabled: newTitle === "user",
     queryFn: async () => {
       const result = await getAPI({
@@ -169,7 +182,7 @@ const HrUserListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        //s_query: {"detail.team.teamNm": { "$eq": "생산팀" }}
+        s_query: selectedTeam ? {"detail.team.id": { "$eq": selectedTeam }} : ""
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -306,22 +319,69 @@ const HrUserListPage: React.FC & {
     const newUserData = {status:"ACTIVE", ...data}
 
     console.log({status:"ACTIVE", ...data})
+    if(data?.id){
+      const id = data.id;
+      delete newUserData.id;
 
-    const result = await postAPI({
-      type: 'auth',
-      utype: 'tenant/',
-      url: `user`,
-      jsx: 'default',
-    }, newUserData);
+      const result = await patchAPI({
+        type: 'auth',
+        utype: 'tenant/',
+        url: `user`,
+        jsx: 'default',
+      }, id, newUserData);
 
-    if(result.resultCode === 'OK_0000') {
-      showToast('저장이 완료되었습니다.', 'success');
-      setUserDetailOpen(false);
-      setUserData({});
-      userRefetch();
+      if(result.resultCode === 'OK_0000') {
+        showToast('수정이 완료되었습니다.', 'success');
+        setUserDetailOpen(false);
+        setUserData({});
+        userRefetch();
+      }else {
+        showToast(result.response.data.message.split(",")[0], "error");
+      }
+    }else{
+      const result = await postAPI({
+        type: 'auth',
+        utype: 'tenant/',
+        url: `user`,
+        jsx: 'default',
+      }, newUserData);
+  
+      if(result.resultCode === 'OK_0000') {
+        showToast('저장이 완료되었습니다.', 'success');
+        setUserDetailOpen(false);
+        setUserData({});
+        userRefetch();
+      }else{
+        showToast(result.response.data.message.split(",")[0], "error");
+      }
+    }
+
+  }
+
+  const handleDataDelete = async (id: string) => {
+    try {
+      const result = await deleteAPI({
+        type: 'auth', 
+        utype: 'tenant/',
+        url: 'user',
+        jsx: 'jsxcrud'},
+        id,
+      );
+      console.log(result);
+
+      if(result.resultCode === 'OK_0000') {
+        setNewOpen(false);
+        setResultFunc('success', '삭제 성공', '구성원 삭제가 완료되었습니다.');
+      } else {
+        setNewOpen(false);
+        setResultFunc('error', '삭제 실패', '구성원 삭제를 실패하였습니다.');
+      }
+    }
+    catch(e) {
+      setNewOpen(false);
+      setResultFunc('error', '삭제 실패', '구성원 삭제를 실패하였습니다.');
     }
   }
-  
 
   function modalOpen(title: keyof typeof groupType){
     setNewOpen(true);
@@ -427,7 +487,7 @@ const HrUserListPage: React.FC & {
                   setChildCheckId={setSelectedTeam}
                 />
               </div>
-              <div>
+              <div className="w-full">
                 <AntdTable
                   columns={[
                     {
@@ -466,7 +526,18 @@ const HrUserListPage: React.FC & {
                         <div
                           className="w-full h-full h-center cursor-pointer"
                           onClick={()=>{
-                            setUserData(record);
+                            const recordData = {
+                              id: record.id,
+                              userName: record.name,
+                              userId: record.userId,
+                              empTit: record.detail?.empTit,
+                              empRank: record.detail?.empRank,
+                              empStDt: record.detail?.empStDt,
+                              empSts: record.detail?.empSts,
+                              deptId: record.detail?.dept.id,
+                              teamId: record.detail?.team.id,
+                            }
+                            setUserData(recordData);
                             setUserDetailOpen(true);
                           }}
                         >
@@ -481,10 +552,58 @@ const HrUserListPage: React.FC & {
                       key: 'userId',
                       align: 'center',
                     },
+                    {
+                      title: '직함',
+                      width: 130,
+                      dataIndex: 'detail.empTit',
+                      key: 'detail.empTit',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.empTit}</>
+                      )
+                    },
+                    {
+                      title: '직급',
+                      width: 130,
+                      dataIndex: 'detail.empRank',
+                      key: 'detail.empRank',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.empRank}</>
+                      )
+                    },
+                    {
+                      title: '입사일',
+                      width: 130,
+                      dataIndex: 'detail.empStDt',
+                      key: 'detail.empStDt',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.empStDt}</>
+                      )
+                    },
+                    {
+                      title: '근무상태',
+                      width: 130,
+                      dataIndex: 'detail.empRank',
+                      key: 'detail.empRank',
+                      align: 'center',
+                      render: (_, record) => (
+                        <>{record.detail?.empSts}</>
+                      )
+                    },
                     
                   ]}
                   data={userList}
                 />
+                <div className="w-full h-100 h-center justify-end">
+                  <AntdPagination
+                    current={pagination.current}
+                    total={totalData}
+                    size={pagination.size}
+                    onChange={handlePageChange}
+                  />
+                </div>
               </div>
             </div>
           </section>
@@ -499,7 +618,21 @@ const HrUserListPage: React.FC & {
         items={addModalInfoList} 
         data={userData}
         onSubmit={handleSubmitNewData}
-        onDelete={()=>{}}
+        onDelete={handleDataDelete}
+        />
+        <AntdAlertModal
+          open={resultOpen}
+          setOpen={setResultOpen}
+          title={resultTitle}
+          contents={resultText}
+          type={resultType} 
+          onOk={()=>{
+            userRefetch();
+            setResultOpen(false);
+            setUserData({});
+          }}
+          hideCancel={true}
+          theme="base"
         />
       <ToastContainer/>
     </section>

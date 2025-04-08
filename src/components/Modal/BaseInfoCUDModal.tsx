@@ -89,6 +89,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   }
   useEffect(() => {
     dataRef.current = data
+    items.forEach((item) => {
+      if (item.type === "select" && item?.child) {
+        const childData = item.option?.find((f) => f.value === data[item.name])?.children;
+        setIfChildList(childData)
+      }
+    })
   },[data])
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
   // console.log(items)
@@ -197,17 +203,28 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           placeholder={item.placeholder}
                         />
                       )}
+                      {item.type === "password" && (
+                        <Input.Password 
+                          name={item.name}
+                          defaultValue={data[item.name] || data?.id ? '000000000' : ''}
+                          onChange={(e) => {
+                            setData(item.name, e.target.value)
+                          }}
+                          placeholder={item.placeholder}
+                        />
+                      )}
                       {item.type === "select" && (
                         <Select 
                           className="w-full"
                           options={item.isChild ? ifChildList : item.option}
-                          key={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
-                          defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
+                          key={item?.isChild ? ifChildList?.[0]?.value : item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
+                          defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (item?.isChild ? ifChildList?.find((c:any) => c.value === data[item.name])?.label : data[item.name] || null)}
                           onChange={(value) => {
                             setData(item.name, value)
                             if(item.child) {
                               const childData = item.option?.find((f) => f.value === value)?.children;
                               setIfChildList(childData)
+                              console.log(childData)
                             }
                           }}
                         />
@@ -225,6 +242,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       {}
                       {item.type === "date" && (
                         <DatePicker
+                          key={data[item.name]}
                           placeholder={item?.placeholder}
                           className="w-full !rounded-0 h-32"
                           onChange={(value) => {setData(item.name, dayjs(value).format("YYYY-MM-DD"))}}
