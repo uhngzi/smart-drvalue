@@ -73,6 +73,8 @@ const SalesModelTable:React.FC<Props> = ({
     spTypeSelectList,
     surfaceSelectList,
     ozUnitSelectList,
+    stampColorSelectList,
+    stampTypeSelectList,
   } = useBase();
 
   // ------------ 원판그룹(제조사) ------------ 시작
@@ -345,6 +347,8 @@ const SalesModelTable:React.FC<Props> = ({
                 handleModelDataChange,
                 newFlag,
                 selectId,
+                stampColorSelectList,
+                stampTypeSelectList,
               )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
                 && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs')
               :

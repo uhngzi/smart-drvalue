@@ -36,6 +36,8 @@ export const salesOrderModelClmn = (
   handleModelDataChange: (id:string, name:string, value:any) => void,
   newFlag: boolean,
   selectId: string | null,
+  stampColorSelectList?: selectType[],
+  stampTypeSelectList?: selectType[],
 ): TableProps['columns'] => [
   // {
   //   title: '층',
@@ -370,7 +372,7 @@ export const salesOrderModelClmn = (
     ]
   },
   {
-    title: '특수인쇄',
+    title: cookie.get('company') === 'sy' ? '도장' : '특수인쇄',
     width:125,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -386,15 +388,27 @@ export const salesOrderModelClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdSelectFill 
-                options={spPrintSelectList}
+                options={cookie.get('company') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
                 value={record.currPrdInfo?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPrint.id', e)}
                 styles={{fs:'12px'}}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                placeholder={"특수인쇄 입력"}
-                tabIndex={record.index*40+14}
+                placeholder={cookie.get('company') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
+                tabIndex={cookie.get('company') === 'sy' ? record.index*40+13 : record.index*40+14}
               />
             </div>
+            { cookie.get('company') === 'sy' &&
+            <div className={divClass}>
+              <AntdSelectFill
+                options={stampTypeSelectList ?? []}
+                value={record.currPrdInfo?.mkType?.id}
+                onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.mkType.id', e)}
+                styles={{fs:'12px'}}
+                disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
+                placeholder={"도장종류 입력"}
+                tabIndex={record.index*40+14}
+              />
+            </div>}
             <div className={divClass}>
               <AntdSelectFill 
                 className='w-[90px]'
@@ -1263,6 +1277,8 @@ export const salesOrderModelAddClmn = (
   ozUnitSelectList: selectType[],
   handleModelDataChange: (name:string, value:any) => void,
   readonly: boolean,
+  stampColorSelectList?: selectType[],
+  stampTypeSelectList?: selectType[],
 ): TableProps['columns'] => [
   // {
   //   title: '층',
@@ -1333,7 +1349,7 @@ export const salesOrderModelAddClmn = (
                 }}
                 inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
                 placeholder="외층 검색 또는 입력"
-                readonly={readonly} clear={false} tabIndex={40+3}
+                readonly={readonly} clear={false} tabIndex={40+1}
               />
             </div>
             <div className={divClass+"gap-5"}>
@@ -1349,7 +1365,7 @@ export const salesOrderModelAddClmn = (
                 }}
                 inputClassName="!h-32 !rounded-2 !bg-[#F9F9FB]" className="!h-32 !rounded-2 !bg-[#F9F9FB]"
                 placeholder="내층 검색 또는 입력"
-                readonly={readonly} clear={false} tabIndex={40+4}
+                readonly={readonly} clear={false} tabIndex={40+2}
               />
             </div>
           </div>
@@ -1380,7 +1396,7 @@ export const salesOrderModelAddClmn = (
                 type="number"
                 placeholder={"도금 입력"}
                 readonly={readonly}
-                tabIndex={40+5}
+                tabIndex={40+3}
               />
               <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
@@ -1392,7 +1408,7 @@ export const salesOrderModelAddClmn = (
                 type="number"
                 placeholder={"도금± 입력"}
                 readonly={readonly}
-                tabIndex={40+6}
+                tabIndex={40+4}
               />
               <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
@@ -1425,7 +1441,7 @@ export const salesOrderModelAddClmn = (
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"Ni 입력"}
-                tabIndex={40+7}
+                tabIndex={40+5}
               />
               <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
@@ -1438,7 +1454,7 @@ export const salesOrderModelAddClmn = (
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"Au 입력"}
-                tabIndex={40+8}
+                tabIndex={40+6}
               />
               <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
@@ -1451,7 +1467,7 @@ export const salesOrderModelAddClmn = (
                 className="!text-12"
                 readonly={readonly}
                 placeholder={"OSP 입력"}
-                tabIndex={40+9}
+                tabIndex={40+7}
               />
               <div className='!min-w-20 !text-12 text-left'>μm</div>
             </div>
@@ -1483,7 +1499,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M인쇄 입력"}
-                tabIndex={40+10}
+                tabIndex={40+8}
               />
             </div>
             <div className={divClass}>
@@ -1494,7 +1510,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M색상 입력"}
-                tabIndex={40+11}
+                tabIndex={40+9}
               />
             </div>
             <div className={divClass}>
@@ -1505,7 +1521,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"S/M종류 입력"}
-                tabIndex={40+12}
+                tabIndex={40+10}
               />
             </div>
           </div>
@@ -1536,7 +1552,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K인쇄 입력"}
-                tabIndex={40+13}
+                tabIndex={40+11}
               />
             </div>
             <div className={divClass}>
@@ -1547,7 +1563,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K색상 입력"}
-                tabIndex={40+14}
+                tabIndex={40+12}
               />
             </div>
             <div className={divClass}>
@@ -1558,7 +1574,7 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"M/K종류 입력"}
-                tabIndex={40+15}
+                tabIndex={40+13}
               />
             </div>
           </div>
@@ -1567,7 +1583,7 @@ export const salesOrderModelAddClmn = (
     ]
   },
   {
-    title: '특수인쇄',
+    title: cookie.get('company') === 'sy' ? '도장' : '특수인쇄',
     width:125,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -1583,15 +1599,27 @@ export const salesOrderModelAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdSelectFill 
-                options={spPrintSelectList}
+                options={cookie.get('company') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
                 value={record?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange('spPrint.id', e)}
                 styles={{fs:'12px'}}
                 readonly={readonly}
-                placeholder={"특수인쇄 입력"}
-                tabIndex={40+16}
+                placeholder={cookie.get('company') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
+                tabIndex={40+14}
               />
             </div>
+            { cookie.get('company') === 'sy' &&
+            <div className={divClass}>
+              <AntdSelectFill
+                options={stampTypeSelectList ?? []}
+                value={record?.mkType?.id}
+                onChange={(e)=>handleModelDataChange('mkType.id', e)}
+                styles={{fs:'12px'}}
+                readonly={readonly}
+                placeholder={"도장종류 입력"}
+                tabIndex={40+15}
+              />
+            </div>}
             <div className={divClass}>
               <AntdSelectFill 
                 className='w-[90px]'
@@ -1601,14 +1629,14 @@ export const salesOrderModelAddClmn = (
                 styles={{fs:'12px'}}
                 readonly={readonly}
                 placeholder={"외형가공형태 입력"}
-                tabIndex={40+17}
+                tabIndex={40+16}
               />
             </div>
             <div className={divClass}>
               <AntdInputFill 
                 value={record?.vcutText}
                 onChange={(e)=>handleModelDataChange('vcutText', e.target.value)}
-                readonly={readonly} tabIndex={40+18} styles={{fs:'12px'}}
+                readonly={readonly} tabIndex={40+17} styles={{fs:'12px'}}
                 placeholder={"브이컷형태 입력"} className="!text-12"
               />
             </div>

@@ -56,6 +56,9 @@ interface BaseContextType {
   stampColor: commonCodeRType[];
   stampColorSelectList: selectType[];
   refetchStampColor: () => void;
+  stampType: commonCodeRType[];
+  stampTypeSelectList: selectType[];
+  refetchStampType: () => void;
 }
 
 const BaseContext = createContext<BaseContextType | undefined>(undefined);
@@ -518,7 +521,35 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     enabled: login
   });
-  // ----------- 동박외내층 ---------- 끝
+  // ----------- 도장 컬러 ---------- 끝
+
+  // ---------- 도장 종류 --------- 시작
+  const [stampTypeSelectList, setStampTypeSelectList] = useState<selectType[]>([]);
+  const [stampType, setStampType] = useState<commonCodeRType[]>([]);
+  const { refetch:refetchStampType } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["stampType", login],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'common-code/jsxcrud/many/by-cd-grp-nm/도장종류'
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const arr = (result.data?.data ?? []).map((d:commonCodeRType) => ({
+          value: d.id,
+          label: d.cdNm,
+        }))
+        setStampType(result.data?.data ?? []);
+        setStampTypeSelectList(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+    enabled: login
+  });
+  // ----------- 도장 컬러 ---------- 끝
 
   return (
     <BaseContext.Provider
@@ -539,6 +570,7 @@ export const BaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         spType, spTypeSelectList, refetchSpType,
         ozUnit, ozUnitSelectList, refetchOzUnit,
         stampColor, stampColorSelectList, refetchStampColor,
+        stampType, stampTypeSelectList, refetchStampType,
       }}
     >
       {children}

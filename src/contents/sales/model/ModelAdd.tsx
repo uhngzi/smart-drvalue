@@ -81,6 +81,8 @@ const ModelAddLayout = () => {
     spPrintSelectList,
     spTypeSelectList,
     ozUnitSelectList,
+    stampColorSelectList,
+    stampTypeSelectList,
   } = useBase();
 
   const [model, setModel] = useState<salesModelsType | null>(null);
@@ -762,6 +764,8 @@ const ModelAddLayout = () => {
                   ozUnitSelectList,
                   handleModelDataChange,
                   model?.usedYn ?? false,
+                  stampColorSelectList,
+                  stampTypeSelectList,
                 )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
                   && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs')
                 :
