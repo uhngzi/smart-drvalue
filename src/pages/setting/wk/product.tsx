@@ -234,13 +234,13 @@ const WkProductListPage: React.FC & {
     <>
       <section className="w=full">
         <div className="h-center justify-between pb-20">
-            <div
-              className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-              onClick={()=>setProdGroupOpen(true)}
-            >
-              제품군 관리
-            </div>
+          <div
+            className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+            onClick={()=>setProdGroupOpen(true)}
+          >
+            제품군 관리
           </div>
+        </div>
         <div className="w=full flex gap-30">
 
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>

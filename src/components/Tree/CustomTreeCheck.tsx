@@ -16,6 +16,7 @@ interface Props {
   checkedData: {matchId: string, checkId: string}[];
   mainCheck?: boolean;
   childCheck?: boolean;
+  isChild?: boolean;
   onChange?: (e: CheckboxChangeEvent, matchId: any) => void;
 }
 
@@ -24,6 +25,7 @@ const CustomTreeCheck:React.FC<Props> = ({
   checkedData,
   mainCheck = false,
   childCheck = false,
+  isChild = false,
   onChange,
 }) => {
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
@@ -69,16 +71,20 @@ const CustomTreeCheck:React.FC<Props> = ({
             <div key={item.id}>
               <div className={`w-full h-30 h-center pl-5 gap-10`} key={item.id} 
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
-                { item.open ? (
-                  <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                    <CaretDownFilled />
-                  </Button>
-                ) : (
-                  <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                    <CaretUpFilled />
-                  </Button>
-                )}
-                { mainCheck ? <Checkbox onChange={(e) => onChange?.(e, checkedData.find(chk => chk.checkId === item.id)?.matchId || null)} value={item.id}/> : <></> }
+                {isChild ? (
+                  <>
+                    { item.open ? (
+                      <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                        <CaretDownFilled />
+                      </Button>
+                    ) : (
+                      <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
+                        <CaretUpFilled />
+                      </Button>
+                    )}
+                  </>
+                ) : (<>{ mainCheck ? <Checkbox onChange={(e) => onChange?.(e, checkedData.find(chk => chk.checkId === item.id)?.matchId || null)} value={item.id} checked={checkedData.some(chk => chk.checkId === item.id)}/> : <></> }</>)}
+                {/* { mainCheck ? <Checkbox onChange={(e) => onChange?.(e, checkedData.find(chk => chk.checkId === item.id)?.matchId || null)} value={item.id}/> : <></> } */}
                 <span className="flex-1 text-left">{item.label}</span>
               </div>
               <div
