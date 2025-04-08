@@ -33,7 +33,15 @@ interface CardInputListProps {
     gap?: string;
     bg?: string;
     pd?: string;
-  }
+  };
+  addEdits?: { 
+    info: any[], 
+    childInfo?: any[],
+    setInfo: Dispatch<SetStateAction<any[]>>, 
+    setChildInfo?: Dispatch<SetStateAction<any[]>>,
+    addParentEditList: {type: string, key: string, name: string, selectData?:any[]}[] 
+    addChildEditList?: {type: string, key: string, name: string, selectData?:any[]}[]
+  };
 }
 
 /**
@@ -49,13 +57,22 @@ interface CardInputListProps {
  * @param {function} props.onDelete - 모달 안에 데이터를 삭제할때 사용하는 함수
  * @param {function} props.onUpdateDataFunc - 모달 안에 데이터를 추가, 수정, 삭제할때 사용하는 함수
  * @param {Object} props.styles - 모달의 커스텀 스타일.
+ * @param {Object} props.addEdits - 모달 안에 데이터를 추가, 수정할때 사용하는 함수와 tree 상태에서 추가적으로 입력받을 항목을 담은
  * 
  * @returns {JSX.Element} 렌더링된 BaseInfoCUDModal 컴포넌트.
  */
 
 const BaseTreeCUDModal: React.FC<CardInputListProps> = (
   {open, setOpen, onClose, popWidth, title, data, isChild,
-    onSubmit, onUpdateDataFunc, styles
+    onSubmit, onUpdateDataFunc, styles,
+    addEdits = { 
+      info: [], 
+      setInfo: ()=>{},
+      childInfo: [],
+      setChildInfo: ()=>{},
+      addParentEditList: [],
+      addChildEditList: [],
+    },
   } : CardInputListProps
 ): JSX.Element => {
   
@@ -131,6 +148,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
                 setAddList={onUpdateDataFunc.setAddList}
                 setEditList={onUpdateDataFunc.setEditList}
                 setDelList={onUpdateDataFunc.setDeleteList}
+                addEdits={addEdits}
               />
             </section>
             <AntdAlertModal

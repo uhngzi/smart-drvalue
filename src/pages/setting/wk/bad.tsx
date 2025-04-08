@@ -1,11 +1,18 @@
+import { deleteAPI } from "@/api/delete";
 import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
+import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import CustomTree from "@/components/Tree/CustomTree";
 import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
+import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
+import CustomTreeView from "@/components/Tree/CustomTreeView";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { processGroupRType, processRType } from "@/data/type/base/process";
 import { treeType } from "@/data/type/componentStyles";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
+import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
 import { CheckboxChangeEvent } from "antd";
 import { useRouter } from "next/router";
@@ -15,19 +22,19 @@ const WkBadListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { showToast, ToastContainer } = useToast();
   
-  const [dataLoading, setDataLoading] = useState<boolean>(true);
-  const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
     current: 1,
     size: 10,
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
-  };
+  
 
   // ---------- 필요 데이터 ---------- 시작
+  const [processId, setProcessId] = useState<string | null>(null)
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
+  const [badGroupData, setBadGroupData] = useState<treeType[]>([]);
+  const [ procBadData, setProcBadData ] = useState<{matchId:string, checkId:string}[]>([]);
   const { data:queryTreeData } = useQuery<
     apiGetResponseType, Error
   >({
@@ -62,72 +69,247 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-
-  const [ dataGroup, setDataGroup ] = useState<Array<processGroupRType>>([]);
-  const { data:queryDataGroup } = useQuery<
+  const { data:querybadData, refetch: badGroupRefetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['process-group/jsxcrud/many'],
+    queryKey: ['setting', 'wk', 'bad-group'],
     queryFn: async () => {
-      setDataGroup([]);
       const result = await getAPI({
-        type: 'baseinfo',
+        type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process-group/jsxcrud/many'
+        url: 'process-bad-group/jsxcrud/many'
       });
 
       if (result.resultCode === 'OK_0000') {
-        setDataGroup(result.data?.data ?? []);
-        console.log('group : ', result.data?.data);
-      } else {
-        console.log('error:', result.response);
-      };
-      return result;
-    },
-  });
-
-  const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
-  const { data:queryDataProcess } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['process/jsxcrud/many'],
-    queryFn: async () => {
-      setDataProcess([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process/jsxcrud/many'
-      });
-
-      if (result.resultCode === 'OK_0000') {
-        setDataProcess(result.data?.data ?? []);
-        console.log('process : ', result.data?.data);
+        const arr = (result.data?.data ?? []).map((group:any) => ({
+          id: group.id,
+          label: group.badGrpNm,
+          ordNo: group.ordNo,
+          open: true,
+        }));
+        setBadGroupData(arr);
       } else {
         console.log('error:', result.response);
       }
+      console.log(result.data);
       return result;
     },
   });
+  const { data:badData, refetch: procBadRefetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    queryKey: ['setting', 'wk', 'bad', processId],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo', 
+        utype: 'tenant/',
+        url: `process/bad/jsxcrud/many`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data ?? []).filter((d:any)=> d.process.id === processId).map((d:any)=>({
+          matchId: d.id,
+          checkId: d.processBadGroup.id
+        }))
+
+        setProcBadData(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      console.log(result.data);
+      return result;
+    },
+    enabled: !!processId,
+  });
+
+  // const [ dataGroup, setDataGroup ] = useState<Array<processGroupRType>>([]);
+  // const { data:queryDataGroup } = useQuery<
+  //   apiGetResponseType, Error
+  // >({
+  //   queryKey: ['process-group/jsxcrud/many'],
+  //   queryFn: async () => {
+  //     setDataGroup([]);
+  //     const result = await getAPI({
+  //       type: 'baseinfo',
+  //       utype: 'tenant/',
+  //       url: 'process-group/jsxcrud/many'
+  //     });
+
+  //     if (result.resultCode === 'OK_0000') {
+  //       setDataGroup(result.data?.data ?? []);
+  //       console.log('group : ', result.data?.data);
+  //     } else {
+  //       console.log('error:', result.response);
+  //     };
+  //     return result;
+  //   },
+  // });
+
+  // const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
+  // const { data:queryDataProcess } = useQuery<
+  //   apiGetResponseType, Error
+  // >({
+  //   queryKey: ['process/jsxcrud/many'],
+  //   queryFn: async () => {
+  //     setDataProcess([]);
+  //     const result = await getAPI({
+  //       type: 'baseinfo',
+  //       utype: 'tenant/',
+  //       url: 'process/jsxcrud/many'
+  //     });
+
+  //     if (result.resultCode === 'OK_0000') {
+  //       setDataProcess(result.data?.data ?? []);
+  //       console.log('process : ', result.data?.data);
+  //     } else {
+  //       console.log('error:', result.response);
+  //     }
+  //     return result;
+  //   },
+  // });
+
+  const handleCheck = async (e: CheckboxChangeEvent, matchId: any) => {
+      if(!processId){
+        showToast('공정을 먼저 선택해주세요.', 'error');
+        return;
+      }
+      console.log(treeData)
+      const processGroupId = treeData.find((item) => item.children?.some((child) => child.id === processId))?.id;
+      const badNm = badGroupData.find((item) => item.id === e.target.value)?.label;
+      console.log(e.target.checked, matchId, e.target.value)
+      const data = {
+        processGroup:{
+          id: processGroupId,
+        },
+        process:{
+          id: processId,
+        },
+        processBadGroup:{
+          id: e.target.value,
+        },
+        badNm: badNm,
+        ordNo:0,
+        useYn:true
+      }
+  
+      if(e.target.checked) {
+        const result = await postAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: 'process/bad',
+          jsx: 'jsxcrud'
+        }, data);
+        if (result.resultCode === 'OK_0000') {
+          setProcBadData((prev) => ([...prev, {matchId: result.data?.data.id, checkId: e.target.value}]));
+          showToast('저장이 완료되었습니다.', 'success');
+        } else {
+          console.log('error:', result.response);
+        }
+      } else {
+        const dResult = await deleteAPI({
+          type: 'baseinfo', 
+          utype: 'tenant/',
+          url: `process/bad`,
+          jsx: 'jsxcrud'
+        }, matchId)
+        if(dResult.resultCode === 'OK_0000') {
+          setProcBadData((prev) => prev.filter((item) => item.matchId !== matchId));
+          showToast('삭제가 완료되었습니다.', 'success');
+        }
+      }
+      setProcBadData((prev) => {
+        if (prev.includes(e.target.value)) {
+          return prev.filter((id) => id !== e.target.value);
+        } else {
+          return [...prev, e.target.value];
+        }
+      });
+    }
+
   // ---------- 필요 데이터 ---------- 끝
 
   const [ addList, setAddList ] = useState<any[]>([]);
   const [ editList, setEditList ] = useState<any[]>([]);
   const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
+  const [badPopOpen, setBadPopOpen] = useState<boolean>(false);
+
+  async function onBadPopSubmit(list: treeType[]){
+      const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
+      console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
+      let result = false
+      const url = "process-bad-group";
+      
+      for(const item of updatedAddList){
+        const jsonData = {badGrpNm: item.label, useYn: true};
+  
+        result = await onTreeAdd(url, jsonData);
+  
+        if(!result) {
+          showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+        }
+        console.log("add", result)
+      }
+  
+      for(const item of finalEditList){
+        const jsonData = {badGrpNm: item.label, ordNo: Number(item.ordNo)};
+           
+        result = await onTreeEdit(item, url, jsonData);
+        if(!result){
+          showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+        }
+      }
+      
+      for(const item of updatedDeleteList){
+       
+        result = await onTreeDelete(item, url);
+  
+        if(!result){
+          showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+        }
+      }
+      console.log(result);
+      if(result) {
+        setAddList([]);
+        setEditList([]);
+        setDeleteList([]);
+        showToast('저장이 완료되었습니다.', 'success');
+        badGroupRefetch();
+      }
+    }
+
+  function modalClose(){
+    setBadPopOpen(false);
+  }
 
   return (
-    <>
+    <section>
+      <div className="h-center justify-end pb-20">
+        <div
+          className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+          onClick={()=>setBadPopOpen(true)}
+        >
+          불량 관리
+        </div>
+      </div>
       <div className="w-full flex gap-30">
-        <div className="w-[30%] max-h-[calc(100vh-200px)] overflow-y-auto">
-          <CustomTree
+        
+        <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
+          <CustomTreeSelect
             data={treeData}
-            onSubmit={()=>{}}
-            setAddList={setAddList}
-            setEditList={setEditList}
-            setDelList={setDeleteList}
+            childCheck={true}
+            childCheckId={processId}
+            setChildCheckId={setProcessId}
           />
         </div>
-        <div className="w-[70%] max-h-[calc(100vh-200px)] overflow-y-auto">
-          <AntdTableEdit
+        <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
+        <CustomTreeCheck
+          mainCheck={true}
+          data={badGroupData}
+          checkedData={procBadData}
+          childCheck={true}
+          onChange={handleCheck}
+        />
+          {/* <AntdTableEdit
             columns={[
               {
                 title: 'No',
@@ -214,15 +396,33 @@ const WkBadListPage: React.FC & {
               },
             ]}
             data={[]}
-          />
+          /> */}
         </div>
       </div>
-    </>
+      <BaseTreeCUDModal
+        title={{name: "불량 관리"}}
+        open={badPopOpen} 
+        setOpen={setBadPopOpen} 
+        data={badGroupData}
+        isChild={false}
+        onClose={() => modalClose()}
+        onSubmit={onBadPopSubmit}
+        onUpdateDataFunc={{
+          addList: addList,
+          editList: editList,
+          deleteList: deleteList,
+          setAddList: setAddList,
+          setEditList: setEditList,
+          setDeleteList: setDeleteList,
+        }}
+      />
+      <ToastContainer/>
+    </section>
   )
 }
 
 WkBadListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout>{page}</SettingPageLayout>
+  <SettingPageLayout styles={{pd:'50px'}}>{page}</SettingPageLayout>
 )
 
 export default WkBadListPage;
