@@ -95,6 +95,7 @@ export const ListPagination: React.FC<Props> = ({
             placeholder="2글자 이상 키워드 입력 후 엔터"
           />
         </div>
+        { handleMenuClick &&
         <Dropdown
           menu={{ items }}
           trigger={['click']}
@@ -104,7 +105,7 @@ export const ListPagination: React.FC<Props> = ({
           <Tooltip title="엑셀 다운로드 또는 프린트를 할 수 있어요">
           <Button type="text" size="small" icon={<MoreOutlined />} style={{backgroundColor: "#E9EDF5"}}/>
           </Tooltip>
-        </Dropdown>
+        </Dropdown>}
       </div>
     </div>
   )

@@ -164,7 +164,7 @@ const ProjcetPage: React.FC & {
           })
         );
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", arr);
-        updateWsExpDt(wsExpDts);
+        // updateWsExpDt(wsExpDts);
         setSchedules(arr);
       } else {
         console.log('error:', result.response);

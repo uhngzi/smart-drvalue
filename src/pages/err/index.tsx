@@ -5,10 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import TextArea from "antd/lib/input/TextArea";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
 
 import { useUser } from "@/data/context/UserContext";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { errBoardType, errCommentType, errReq } from "@/data/type/err/err";
+import { useMenu } from "@/data/context/MenuContext";
 
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -31,9 +33,7 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { LabelMedium, LabelThin } from "@/components/Text/Label";
 import AntdDraggerSmall from "@/components/Upload/AntdDraggerSmall";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
-import { patchAPI } from "@/api/patch";
 import FullChip from "@/components/Chip/FullChip";
-import { useMenu } from "@/data/context/MenuContext";
 
 const ErrBoardPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
