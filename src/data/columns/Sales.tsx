@@ -3,7 +3,7 @@ import FullChip from '@/components/Chip/FullChip';
 
 import Edit from '@/assets/svg/icons/memo.svg';
 import { FinalGlbStatus, HotGrade, LayerEm, ModelStatus, SalesOrderStatus } from '../type/enum';
-import { salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType, salesOrderWorkSheetType } from '../type/sales/order';
+import { salesEstimateType, salesOrderCUType, salesOrderProcuctCUType, salesOrderProductRType, salesOrderRType, salesOrderWorkSheetType } from '../type/sales/order';
 import { CustomColumn } from '@/components/List/AntdTableEdit';
 import { partnerMngRType, partnerRType } from '../type/base/partner';
 
@@ -594,6 +594,133 @@ export const salesModelsClmn = (
     render: (_, record) => (
       <div>
 
+      </div>
+    )
+  },
+]
+
+export const salesEstimateClmn = (
+  totalData: number,
+  setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
+  setPartnerMngData: React.Dispatch<React.SetStateAction<partnerMngRType | null>>,
+  pagination: {current: number, size: number},
+  router: NextRouter,
+):CustomColumn[] => [
+  {
+    title: 'No',
+    width: 50,
+    dataIndex: 'index',
+    key: 'index',
+    align: 'center',
+    leftPin: true,
+    render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+  },
+  {
+    title: '코드/업체명',
+    width: 180,
+    dataIndex: 'partner.prtRegCd/partner.prtNm',
+    key: 'partner.prtRegCd/partner.prtNm',
+    align: 'center',
+    tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
+    render: (_, record:salesEstimateType) => (
+      <div
+        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        onClick={()=>{
+          setPartnerData(record?.prtInfo?.prt ?? null);
+          setPartnerMngData(record?.prtInfo?.mng ?? null);
+        }}
+      >
+        <FullChip label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""} state="line" className="!font-normal"/>
+        {record.prtInfo?.prt?.prtNm}
+      </div>
+    )
+  },
+  {
+    title: '견적명',
+    minWidth: 130,
+    dataIndex: 'estimateNm',
+    key: 'estimateNm',
+    align: 'center',
+  },
+  {
+    title: '모델 수',
+    width: 100,
+    dataIndex: 'modelCnt',
+    key: 'modelCnt',
+    align: 'center',
+  },
+  {
+    title: '업체 담당',
+    width: 120,
+    dataIndex: 'prtInfo.mng.prtMngNm',
+    key: 'prtInfo.mng.prtMngNm',
+    align: 'center',
+  },
+  {
+    title: '담당 전화번호',
+    width: 130,
+    dataIndex: 'prtInfo.mng.prtMngTel',
+    key: 'prtInfo.mng.prtMngTel',
+    align: 'center',
+  },
+  {
+    title: '담당 이메일',
+    width: 140,
+    dataIndex: 'prtInfo.mng.prtMngEmail',
+    key: 'prtInfo.mng.prtMngEmail',
+    align: 'center',
+  },
+  {
+    title: '긴급',
+    width: 80,
+    dataIndex: 'hotGrade',
+    key: 'hotGrade',
+    align: 'center',
+    render: (value: HotGrade) => (
+      <div className="v-h-center">
+        { value === HotGrade.SUPER_URGENT ? (
+          <FullChip label="초긴급" state="purple"/>
+        ) : value === HotGrade.URGENT ? (
+          <FullChip label="긴급" state="pink" />
+        ) : (
+          <FullChip label="일반" />
+        )}
+      </div>
+    ),
+  },
+  {
+    title: '영업담당',
+    width: 120,
+    dataIndex: 'emp.name',
+    align: 'center',
+    key: 'emp.name',
+  },
+  {
+    title: '견적일',
+    width: 130,
+    dataIndex: 'orderRepDt',
+    align: 'center',
+    key: 'orderRepDt',
+  },
+  {
+    title: '수주여부',
+    width: 90,
+    dataIndex: 'finalGlbStatus',
+    key: 'finalGlbStatus',
+    align: 'center',
+    render: (value:any, record:salesEstimateType) => (
+      <div className="w-full h-full v-h-center">
+        { record.isDiscard ? (
+          <FullChip label="폐기" />
+        ): value === FinalGlbStatus.WAITING ? (
+          <FullChip label="대기" state="yellow" />
+        ) : value === FinalGlbStatus.COMPLETED ? (
+          <FullChip label="완료" />
+        ) : value === FinalGlbStatus.REGISTERING ? (
+          <FullChip label="등록중" state="mint" />
+        ) : (
+          <></>
+        )}
       </div>
     )
   },

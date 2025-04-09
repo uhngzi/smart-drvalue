@@ -11,20 +11,29 @@ import AntdTable from "@/components/List/AntdTable";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import Edit from "@/assets/svg/icons/edit.svg"
+import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+import Close from "@/assets/svg/icons/s_close.svg";
 
 import dynamic from "next/dynamic";
-import { Button, Checkbox, TableProps } from "antd";
-import { useRef, useState } from "react";
+import { Button, Checkbox, List, TableProps } from "antd";
+import { useEffect, useRef, useState } from "react";
 import AntdDragger from "@/components/Upload/AntdDragger";
 import YieldCalculate from "@/contents/base/yield/YieldCalculate";
-
-const QuillTextArea = dynamic(
-  () => import('@/components/TextArea/QuillTextArea'),
-  {
-    ssr: false,
-  },
-);
-
+import { useRouter } from "next/router";
+import { useMenu } from "@/data/context/MenuContext";
+import useToast from "@/utils/useToast";
+import { exportToExcelAndPrint } from "@/utils/exportToExcel";
+import { getAPI } from "@/api/get";
+import { useQuery } from "@tanstack/react-query";
+import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { salesEstimateType } from "@/data/type/sales/order";
+import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
+import { ListPagination } from "@/layouts/Body/Pagination";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import cookie from "cookiejs";
+import PrtDrawer from "@/contents/partner/PrtDrawer";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
+import { salesEstimateClmn } from "@/data/columns/Sales";
 
 const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): TableProps['columns'] => [
   {
@@ -226,212 +235,175 @@ const sampleDt = [
 const SalesUserEstimatePage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
-  const [ open, setOpen ] = useState<boolean>(false);
-  const [ value, setValue ] = useState<string>('');
-  const [ textarea, setTextarea ] = useState<string>('');
-  const [ length, setLength ] = useState<number>(0);
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [fileIdList, setFileIdList] = useState<string[]>([]);
+  const router = useRouter();
+  const { selectMenu } = useMenu();
+  const { showToast, ToastContainer } = useToast();
 
-  const [yieldPopOpen, setYieldPopOpen] = useState<boolean>(false);
+  // ------------- 페이지네이션 세팅 ------------ 시작
+  const [searchs, setSearchs] = useState<string>("");
+  const [sQueryJson, setSQueryJson] = useState<string>("");
+  useEffect(()=>{
+    if(searchs.length < 2)  setSQueryJson("");
+  }, [searchs])
+  const handleSearchs = () => {
+    if(searchs.length < 2) {
+      showToast("2글자 이상 입력해주세요.", "error");
+      return;
+    }
+    // url를 통해 현재 메뉴를 가져옴
+    const jsx = selectMenu?.children?.find(f=>router.pathname.includes(f.menuUrl ?? ""))?.menuSearchJsxcrud;
+    if(jsx) {
+      setSQueryJson(jsx.replaceAll("##REPLACE_TEXT##", searchs));
+    } else {
+      setSQueryJson("");
+    }
+  }
 
-  // 모델 등록 드래그 앤 드롭으로 크기 조절
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(800);
-  const handleModelMouseDown = (e: React.MouseEvent) => {
-    const startX = e.clientX;
-    const startWidth = width;
+  const handlePageMenuClick = async (key:number)=>{
+    const clmn = salesEstimateClmn(
+      totalData,
+      setPartnerData,
+      setPartnerMngData,
+      pagination,
+      router
+    ).map((item, index) => ({
+        title: item.title?.toString() as string,
+        dataIndex: item.dataIndex,
+        width: Number(item.width ?? item.minWidth ?? 0),
+        cellAlign: item.cellAlign,
+    }))
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const diffX = startX - moveEvent.clientX; // 왼쪽으로 이동 → diffX 증가
-      const newWidth = startWidth + diffX;
-      if (newWidth >= 100 && newWidth <= 1100) { // 최소/최대 너비 제한
-        setWidth(newWidth);
-      }
-    };
+    if(key === 1) { // 엑셀 다운로드
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "견적", "excel", showToast, "sales-estimate", "core-d1");
+    } else {        // 프린트
+      exportToExcelAndPrint(clmn, data, totalData, pagination, "견적", "print", showToast);
+    }
+  }
+  // ------------- 페이지네이션 세팅 ------------ 끝
 
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+  // ------------ 리스트 데이터 세팅 ------------ 시작
+  const [dataLoading, setDataLoading] = useState<boolean>(true);
+  const [totalData, setTotalData] = useState<number>(1);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    size: 10,
+  });
+  const handlePageChange = (page: number, size: number) => {
+    setPagination({ current: page, size: size });
   };
+  const [ data, setData ] = useState<Array<salesEstimateType>>([]);
+  const { data:queryData, isLoading, refetch } = useQuery({
+    queryKey: ['sales-estimate/jsxcrud/many', pagination, sQueryJson],
+    queryFn: async () => {
+      return getAPI({
+        type: 'core-d1',
+        utype: 'tenant/',
+        url: 'sales-estimate/jsxcrud/many'
+      },{
+        limit: pagination.size,
+        page: pagination.current,
+        s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+      });
+    }
+  });
+
+  useEffect(()=>{
+    setDataLoading(true);
+    if(!isLoading) {
+      const arr = (queryData?.data?.data ?? []).map((item:salesEstimateType) => ({
+        ...item,
+        modelCnt: item.products?.length,
+      }))
+      setData(arr);
+      setTotalData(queryData?.data?.total ?? 0);
+      setDataLoading(false);
+    }
+  }, [queryData]);
+  // ------------ 리스트 데이터 세팅 ------------ 끝
+
+  // ---------------- 거래처  ---------------- 시작
+    // 리스트 내 거래처
+  const [ drawerOpen, setDrawerOpen ] = useState<boolean>(false);
+  const [ partnerData, setPartnerData ] = useState<partnerRType | null>(null);
+  const [ partnerMngData, setPartnerMngData ] = useState<partnerMngRType | null>(null);
+
+    // 드로워 닫힐 때 값 초기화
+  useEffect(()=>{
+    if(!drawerOpen) {
+      setPartnerData(null);
+      setPartnerMngData(null);
+    }
+  }, [drawerOpen]);
+  // ---------------- 거래처  ---------------- 끝
+
 
   return (
-    <div className="flex flex-col gap-20">
-      <Button className="w-16" onClick={() => setYieldPopOpen(true)}>임시</Button>
-      {/* <div className="">총 4건</div> */}
-      <AntdTable
-        columns={sampleCl(setOpen)}
-        data={sampleDt}
-        styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+    <>
+      <ListTitleBtn
+        label="신규"
+        onClick={()=>{
+          router.push('/sales/order/new');
+        }}
+        icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
       />
-      <AntdModal 
-        open={open}
-        setOpen={setOpen}
-        width={1250}
-        title={"고객발주 등록"}
-        contents={
-          <div className="w-full">
-            <div className="w-full flex">
-              <div className="w-[65%] h-[550px] flex flex-col">
-                <div className="border-1 border-line h-[450px] px-20 py-10">
-                  <Description separatorColor="#e7e7ed">
-                    <DescriptionItems title="고객">
-                      <AntdSelect options={[{value:1, label:'고객1'}]} />
-                    </DescriptionItems>
-                    <DescriptionItems title="발주 제목">
-                      <AntdInput value={value} onChange={(e)=>{setValue(e.target.value)}} className="w-full" />
-                    </DescriptionItems>
-                  </Description>
-                  <div className="mt-30">
-                    <QuillTextArea
-                      value={textarea}
-                      setValue={(v)=>{setTextarea(v)}}
-                      length={length}
-                      setLength={setLength}
-                      height="200px"
-                    />
-                  </div>
-                </div>
-                <div className="px-10 py-20 flex flex-col gap-10">
-                  <p className="font-semibold text-16">담당자 정보</p>
-                  <div className="v-between-h-center">
-                    <AntdSelect options={[{value:1, label:'담당자1'}]} className="w-[150px]" defaultValue={1}/>
-                    <p className="font-semibold">010-0000-0000</p>
-                    <p className="font-semibold">dravinon@naver.com</p>
-                    <p className="font-semibold">010-0000-0000</p>
-                    <div className="h-center gap-2">
-                      사업관리
-                      <div className="w-20 h-24 bg-[#E9EDF5] rounded-4 v-h-center cursor-pointer">
-                        <Edit />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[45%] pl-20 flex flex-col gap-10">
-                <p className="text-16">발주 첨부파일</p>
-                <div className="w-full h-[300px]">
-                  <AntdDragger
-                    fileList={fileList}
-                    setFileList={setFileList}
-                    fileIdList={fileIdList}
-                    setFileIdList={setFileIdList}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-full v-h-center gap-10">
-              <PopupOkButton label="등록" click={()=>setOpen(false)} />
-              <PopupCancleButton label="취소" click={()=>setOpen(false)} />
-            </div>
-          </div>
-        }
-      />
-      {/* <AntdModal
-        open={yieldPopOpen}
-        setOpen={setYieldPopOpen}
-        width={1540}
-        title="원판수율계산"
-        contents={<YieldCalculate
-          board={[]}
-          disk={[]}
-          setDisk={()=>{}}
-          setYielddata={()=>{}}
-          yielddata={null}
-        />}
-      /> */}
 
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
+      />
+
+      <List>
+        <AntdTableEdit
+          columns={
+          cookie.get('company') === 'sy' ?
+          salesEstimateClmn(
+            totalData,
+            setPartnerData,
+            setPartnerMngData,
+            pagination,
+            router,
+          ).filter(f=>f.key !== 'orderRepDt')
+          :
+          salesEstimateClmn(
+            totalData,
+            setPartnerData,
+            setPartnerMngData,
+            pagination,
+            router,
+          )}
+          data={data}
+          styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          loading={dataLoading}
+        />
+      </List>
+
+      <ListPagination
+        pagination={pagination}
+        totalData={totalData}
+        onChange={handlePageChange}
+        handleMenuClick={handlePageMenuClick}
+        searchs={searchs} setSearchs={setSearchs}
+        handleSearchs={handleSearchs}
+      />
+
+      <PrtDrawer
+        open={drawerOpen}
+        setOpen={setDrawerOpen}
+        partnerId={partnerData?.id ?? ''}
+        partnerData={partnerData}
+        partnerMngData={partnerMngData}
+        prtSuccessFn={()=>{
+          refetch();
+          showToast("고객 정보가 성공적으로 수정되었습니다.", "success");
+        }}
+      />
       
-      {/* <AntdModalStep2
-        open={open}
-        setOpen={setOpen}
-        items={stepItems}
-        current={stepCurrent}
-        onClose={stepModalClose}
-        width={1300}
-        contents={
-        <div className="flex h-full overflow-x-hidden">
-          <div style={{width:stepCurrent>0 ? `calc(100% - ${width});`:'100%'}} className="overflow-x-auto">
-            <AddOrderContents
-              csList={csList}
-              csMngList={csMngList}
-              setCsMngList={setCsMngList}
-              fileList={fileList}
-              fileIdList={fileIdList}
-              setFileList={setFileList}
-              setFileIdList={setFileIdList}
-              setOpen={setOpen}
-              formData={formData}
-              setFormData={setFormData}
-              stepCurrent={stepCurrent}
-              setStepCurrent={setStepCurrent}
-              setEdit={setEdit}
-              handleEditOrder={handleEditOrder}
-            />
-          </div>
-          {
-            // 모델 등록
-            stepCurrent > 0 ?
-            <div ref={containerRef} className="flex relative pl-10" style={{width:`${width}px`}}>
-              <div className="absolute top-0 left-0 h-full w-10 cursor-col-resize hover:bg-gray-200 h-center" onMouseDown={handleModelMouseDown}>
-                <DragHandle />
-              </div>
-              <div className="w-full">
-                <div className="w-full flex flex-col bg-white rounded-14 overflow-auto px-20 py-30 gap-20">
-                  <div className=""><LabelMedium label="모델 등록"/></div>
-                  <div className="w-full h-1 border-t-1"/>
-                    <AntdTableEdit
-                      create={true}
-                      columns={salesUserOrderModelClmn(newProducts, setNewProducts, setDeleted)}
-                      data={newProducts}
-                      setData={setNewProducts}
-                      styles={{th_bg:'#FAFAFA',td_bg:'#FFFFFF',round:'0px',line:'n'}}
-                    />
-                    <div className="pt-5 pb-5 gap-4 justify-center h-center cursor-pointer" style={{border:"1px dashed #4880FF"}} 
-                      onClick={() => {
-                        setNewProducts((prev: salesOrderProcuctCUType[]) =>[
-                          ...prev,
-                          {...newDataSalesOrderProductCUType(), id:'new-'+prev.length+1}
-                        ]);
-                      }}
-                    >
-                    <SplusIcon/>
-                    <span>모델 추가하기</span>
-                  </div>
-                  <div className="flex w-full h-50 v-between-h-center">
-                    <Button
-                      className="w-109 h-32 rounded-6"
-                      onClick={()=>{
-                        setStepCurrent(0);
-                      }}
-                    >
-                      <p className="w-16 h-16 text-[#222222]"><Back /></p> 이전단계
-                    </Button>
-                    <Button
-                      className="w-109 h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                      onClick={()=>{
-                        if(edit && detailId !== "") {
-                          handleEditOrder();
-                        } else {
-                          handleSubmitOrder();
-                        }
-                      }}
-                    >
-                      <Arrow /> { edit ? '모델수정' : '모델저장'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            :<></>
-          }
-        </div>}
-      /> */}
-    </div>
+      <ToastContainer />
+    </>
   )
 };
 

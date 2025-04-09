@@ -49,8 +49,8 @@ export const specStatusClmn = (
   {
     title: '코드/업체명',
     width: 180,
-    dataIndex: 'prtNm',
-    key: 'prtNm',
+    dataIndex: 'specModels.partner.prtRegCd/specModels.partner.prtNm',
+    key: 'specModels.partner.prtRegCd/specModels.partner.prtNm',
     align: 'center',
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (

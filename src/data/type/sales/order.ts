@@ -429,3 +429,78 @@ export type salesOrderWorkSheetType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
 }
+
+export type salesEstimateType = {
+  id?: string;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  isDiscard?: boolean;
+  estimateNm?: string;
+  estimateDt?: Date | Dayjs | null;
+  estimateNo?: string;
+  estimateTxt?: string;
+  totalEstimatePrice?: number;
+  hotGrade?: HotGrade;
+  emp?: {
+    id?: string;
+    name?: string;
+    userId?: string;
+    status?: string;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  },
+  products?: [
+    {
+      id?: string;
+      currPrdInfo?: string;
+      tempPrdInfo?: string;
+      selected?: boolean;
+      model?: { id: string; }
+      modelStatus?: ModelStatus;
+      modelTypeEm?: ModelTypeEm;
+      layerEm?: LayerEm;
+      estimateModelNm?: string;
+      array?: string;
+      texture?: commonCodeRType;
+      sizeH?: number;
+      sizeW?: number;
+      thickness?: number;
+      quantity?: number;
+      unitPrice?: number;
+      calculatedUnitPrice?: number;
+      surfaceTreatment?: string;
+      cost?: number;
+      calculatedCost?: number;
+      autoCalculatedUnitPrice?: number;
+      autoCalculatedCost?: number;
+      remark?: string;
+      specialSpecifications?: {
+        processIdx?: string;
+        remark?: string;
+        weight?: number;
+        addCost?: number;
+        minRange?: number;
+        maxRange?: number;
+        unitIdx?: string;
+      }[];
+      createdAt?: Date | Dayjs | null;
+      updatedAt?: Date | Dayjs | null;
+      deletedAt?: Date | Dayjs | null;
+    }
+  ],
+  prtInfo?: {
+    id?: string;
+    prt?: partnerRType;
+    mng?: partnerMngRType;
+  },
+  files?: {
+    id?: string;
+    storageId?: string;
+    ordNo?: number;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  }[];
+}
