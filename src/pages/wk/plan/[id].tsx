@@ -434,7 +434,7 @@ function addPopWorkers(data: any) {
   }
   console.log(workerPlanList);
   return(
-    <Popup className="w-full h-full overflow-auto h-[calc(100vh-140px)]">
+    <div className="w-full h-full overflow-auto h-[calc(100vh-140px)] pr-20">
       <section className="flex flex-col w-full h-full">
         <p className="font-medium text-16 pb-20 h-40 h-center gap-5">
           <span>{detailData.specModel?.partner?.prtNm}</span>
@@ -745,7 +745,7 @@ function addPopWorkers(data: any) {
           cancelText={""}
         />
       </section>
-    </Popup>
+    </div>
   )
 }
 ProjcetPage.layout = (page: React.ReactNode) => (
