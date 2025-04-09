@@ -54,6 +54,7 @@ const ProjcetPage: React.FC & {
   const [selectId, setSelectId] = useState<string | null>(null);
 
   // ------------ 세부 데이터 세팅 ------------ 시작
+  const [basicDate, setBasicDate] = useState<Date>(new Date());
   const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<wkPlanWaitType>({});
   const { data:queryDetailData, isLoading, refetch } = useQuery<
@@ -434,15 +435,24 @@ function addPopWorkers(data: any) {
   }
   console.log(workerPlanList);
   return(
-    <div className="w-full h-full overflow-auto h-[calc(100vh-140px)] pr-20">
+    <div className="w-full overflow-auto h-[calc(100vh-140px)] pr-20">
       <section className="flex flex-col w-full h-full">
-        <p className="font-medium text-16 pb-20 h-40 h-center gap-5">
-          <span>{detailData.specModel?.partner?.prtNm}</span>
-          <span>-</span>
-          <span>{detailData.specModel?.prdNm}</span>
-          <span>{"("}시작일 : {detailData.wsSchDt ? dayjs(detailData.wsSchDt).format("YYYY-MM-DD"): "-"}</span>
-          <span>납기일 : {detailData.wsExpDt ? dayjs(detailData.wsExpDt).format("YYYY-MM-DD"): "-"}{")"}</span>
-        </p>
+        <div className="flex gap-20 h-center pb-10 ">
+          <p className="font-medium text-16 h-40 h-center gap-5">
+            <span>{detailData.specModel?.partner?.prtNm}</span>
+            <span>-</span>
+            <span>{detailData.specModel?.prdNm}</span>
+            <span>{"("}시작일 : {detailData.wsSchDt ? dayjs(detailData.wsSchDt).format("YYYY-MM-DD"): "-"}</span>
+            <span>납기일 : {detailData.wsExpDt ? dayjs(detailData.wsExpDt).format("YYYY-MM-DD"): "-"}{")"}</span>
+          </p>
+          <div className="flex gap-10 h-center">
+            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() - 1)))}>{"<< 달"}</Button>
+            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() - 7)))}>{"< 주"}</Button>
+            <span>{dayjs(basicDate).format("YYYY년 MM월 DD일")}</span>
+            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() + 7)))}>{"주 >"}</Button>
+            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() + 1)))}>{"달 >>"}</Button>
+          </div>
+        </div>
 
         <div className="flex rounded-14" style={{border:'1px solid #D9D9D9'}}>
           <div>
@@ -564,7 +574,7 @@ function addPopWorkers(data: any) {
               </tbody>
             </ProjectTable>
           </div>
-          <GanttChart schedules={schedules}/>
+          <GanttChart schedules={schedules} basicDate={basicDate}/>
         </div>
         <div className="w-full flex justify-end p-20">
           <Button
