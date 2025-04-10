@@ -313,7 +313,7 @@ const EstimateAddLayout = () => {
                           totalEstimatePrice: Number(e.target.value ?? 0),
                         });
                       }}
-                      styles={{ht:'36px'}}
+                      styles={{ht:'36px'}} type="number"
                     />
                   </LabelItem>
 

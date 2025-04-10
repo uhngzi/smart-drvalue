@@ -1,5 +1,5 @@
 import { Dropdown, InputRef, Space, Tooltip } from "antd";
-import { RefObject, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { getAPI } from "@/api/get";
@@ -60,12 +60,22 @@ const SalesModelHead:React.FC<Props> = ({
 }) => {
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
+  
+  const [searchFlag, setSearchFlag] = useState<boolean>(false);
+  useEffect(()=>{
+    if((model.orderTit && model.orderTit.length > 2)
+      || (model.currPrdInfo?.prdMngNo && model.currPrdInfo?.prdMngNo.length > 2)) {
+      setTimeout(()=>setSearchFlag(true), 1000);
+    } else {
+      setSearchFlag(false);
+    }
+  }, [model.orderTit, model.currPrdInfo?.prdMngNo]);
 
   const [modelList, setModelList] = useState<modelsType[]>([]);
   const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
   const [modelNoSelectList, setModelNoSelectList] = useState<selectType[]>([]);
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["models", model.orderTit, model.currPrdInfo?.prdMngNo],
+    queryKey: ["models", model.orderTit, model.currPrdInfo?.prdMngNo, searchFlag],
     queryFn: async () => {
       const result = await getAPI({
         type: "core-d1",
@@ -91,12 +101,13 @@ const SalesModelHead:React.FC<Props> = ({
           value: item.id,
           label: item.prdMngNo,
         })));
+        setSearchFlag(false);
       } else {
         console.log("MODELS ERROR:", result.response);
       }
       return result;
     },
-    enabled: (flag && ((model.orderTit ?? "").length > 2 || (model.currPrdInfo?.prdMngNo ?? "").length > 2))
+    enabled: (searchFlag && flag && ((model.orderTit ?? "").length > 2 || (model.currPrdInfo?.prdMngNo ?? "").length > 2))
   });
 
   return (

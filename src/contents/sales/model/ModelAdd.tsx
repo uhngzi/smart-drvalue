@@ -180,11 +180,21 @@ const ModelAddLayout = () => {
   // ------------ 거래처 데이터 등록 ------------ 끝
 
   // ------------- 모델 데이터 세팅 ------------ 시작
+  const [searchFlag, setSearchFlag] = useState<boolean>(false);
+  useEffect(()=>{
+    if((model?.prdNm && model.prdNm.length > 2)
+      || (model?.prdMngNo && model.prdMngNo.length > 2)) {
+      setTimeout(()=>setSearchFlag(true), 1000);
+    } else {
+      setSearchFlag(false);
+    }
+  }, [model?.prdNm, model?.prdMngNo]);
+
   const [modelList, setModelList] = useState<salesModelsType[]>([]);
   const [modelSelectList, setModelSelectList] = useState<selectType[]>([]);
   const [modelNoSelectList, setModelNoSelectList] = useState<selectType[]>([]);
   const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["models", model?.prdNm, model?.prdMngNo],
+    queryKey: ["models", model?.prdNm, model?.prdMngNo, searchFlag],
     queryFn: async () => {
       const result = await getAPI({
         type: "core-d1",
@@ -210,12 +220,13 @@ const ModelAddLayout = () => {
           value: item.id,
           label: item.prdMngNo ?? "",
         })));
+        setSearchFlag(false);
       } else {
         console.log("MODELS ERROR:", result.response);
       }
       return result;
     },
-    enabled: (model?.prdNm ?? "").length > 2 || (model?.prdMngNo ?? "").length > 2
+    enabled: searchFlag && ((model?.prdNm ?? "").length > 2 || (model?.prdMngNo ?? "").length > 2)
   });
   // ------------- 모델 데이터 세팅 ------------ 끝
 
