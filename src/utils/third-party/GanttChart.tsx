@@ -17,13 +17,14 @@ type schdules = {
 
 type GanttChartProps = {
   schedules: schdules[];
+  basicDate: string | Date;
   chartStart?: string | Date;
   chartEnd?: string | Date;
 };
 
-const GanttChart: React.FC<GanttChartProps> = ({ schedules }) => {
+const GanttChart: React.FC<GanttChartProps> = ({ schedules, basicDate }) => {
   
-  return <JseoGantt schedules={schedules} chartStart={new Date("2025-03-01")} chartEnd={new Date("2025-05-31")}/>;
+  return <JseoGantt schedules={schedules} chartStart={new Date("2025-03-01")} chartEnd={new Date("2025-05-31")} basicDate={basicDate}/>;
 };
 
 export default GanttChart;

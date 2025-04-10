@@ -89,7 +89,7 @@ const ProjcetPage: React.FC & {
       const result = await getAPI({
         type: 'core-d3',
         utype: 'tenant/',
-        url: 'pms/proc/default/many/6dc4322f-d40d-43b3-b501-a68712469207'
+        url: 'pms/proc/default/many/788d1447-92da-4931-950f-cfa45fcdf588'
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -455,7 +455,7 @@ function addPopWorkers(data: any) {
             </tbody>
           </ProjectTable>
         </div>
-        <GanttChart schedules={schedules}/>
+        {/* <GanttChart schedules={schedules}/> */}
       </div>
       <AntdDrawer open={orderOpen} close={()=>setOrderOpen(false)} width={760}>
         <section className="p-20 flex flex-col gap-20">
