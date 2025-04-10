@@ -94,7 +94,7 @@ const CsMngContent:React.FC<Props> = ({
       >
         <p className="w-16 h-16"><SplusIcon/></p>
       </Button>}
-      className="min-h-[200px]"
+      className="min-h-auto"
     >
     { csMngList.length < 1 && <Empty imageStyle={{ height: 50 }} /> }
     { csMngList.length > 0 && csMngList.map((mng:partnerMngRType) => (

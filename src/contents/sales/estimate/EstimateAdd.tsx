@@ -7,9 +7,7 @@ import { useRouter } from "next/router";
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
-import Edit from "@/assets/svg/icons/edit.svg";
-import Memo from "@/assets/svg/icons/memo.svg";
-import Trash from "@/assets/svg/icons/trash.svg";
+
 import { useEffect, useRef, useState } from "react";
 import { newSalesEstimateProductType, salesEstimateProductType, salesEstimateType } from "@/data/type/sales/order";
 import { newDataPartnerType, partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
@@ -36,20 +34,23 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { MOCK } from "@/utils/Mock";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { LabelMedium } from "@/components/Text/Label";
-import BlueBox from "@/layouts/Body/BlueBox";
-import BoxHead from "@/layouts/Body/BoxHead";
-import Items2 from "@/components/Item/Items2";
-import CustomAutoCompleteLabel from "@/components/AutoComplete/CustomAutoCompleteLabel";
 import { modelsType } from "@/data/type/sayang/models";
-import { selectType } from "@/data/type/componentStyles";
-import { apiAuthResponseType } from "@/data/type/apiResponse";
 import EstimateModelHead from "./EstimateModelHead";
+import { baseSpecType } from "@/data/type/base/spec";
+import { patchAPI } from "@/api/patch";
+import { changeEstimateNewEdit } from "@/data/type/sales/changeData";
 
 const EstimateAddLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   const { me } = useUser();
   const { showToast, ToastContainer } = useToast();
+
+  // 베이스 값 가져오기
+  const { 
+    metarialSelectList,
+    unitSelectList,
+  } = useBase();
 
   // 견적 메인
   const [ formData, setFormData ] = useState<salesEstimateType | null>(null);
@@ -66,9 +67,11 @@ const EstimateAddLayout = () => {
 
   // 수정일 경우 id 값 넣어줌 => id 값이 변경될 경우 하단에 있는 detail query 실행되어 세팅됨
   useEffect(()=>{
-    if(id && typeof id === "string" && !id.includes("new"))
-      setFormData({id:id});
-  }, [id])
+    console.log(id);
+    if(id && typeof id === "string" && !id.includes("new")) {
+      setFormData({ ...formData, id:id });
+    }
+  }, [id]);
 
   // 스탭 저장 변수
   const [ stepCurrent, setStepCurrent ] = useState<number>(0);
@@ -109,9 +112,12 @@ const EstimateAddLayout = () => {
   useEffect(()=>{
     // 구매처 변경 시 담당자 세팅 및 초기화
     if(prtId && prtId !== "" && cs?.data?.data && cs?.data?.data?.length) {
-      setCsMngList((cs?.data?.data as partnerRType[] ?? []).find(f=>f.id === prtId)?.managers ?? []);
-      if(!detailFlag) setPrtMngId(""); 
-      else            setDetailFlag(false);
+      const managers = (cs?.data?.data as partnerRType[] ?? []).find(f=>f.id === prtId)?.managers;
+      setCsMngList(managers ?? []);
+      if(!detailFlag)
+        setPrtMngId(managers && managers.length > 0 ? managers[0].id : ""); 
+      else
+        setDetailFlag(false);
     } else {
       setCsMngList([]);
       setPrtMngId("");
@@ -153,13 +159,34 @@ const EstimateAddLayout = () => {
   }
   // ------------ 구매처 데이터 등록 ------------ 끝
 
+  // ------------- 필요 데이터 세팅 ------------ 시작
+  // 특수사양 목록
+  const [spec, setSpec] = useState<baseSpecType[]>([]);
+  const {data:querySpecData} = useQuery({
+    queryKey: ['special-specifications/jsxcrud/many'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: "special-specifications/jsxcrud/many"
+      });
+
+      if(result.resultCode === "OK_0000") {
+        setSpec(result.data.data);
+      }
+
+      return result;
+    },
+  });
+  // ------------- 필요 데이터 세팅 ------------ 끝
+
   // ------------ 디테일 데이터 세팅 ------------ 시작
     // id 값이 변경될 경우마다 실행됨
   const {data:queryDetailData} = useQuery({
     queryKey: ['sales-estimate/jsxcrud/one', formData?.id],
     queryFn: async () => {
       const result = await getAPI({
-        type: 'core-d2',
+        type: 'core-d1',
         utype: 'tenant/',
         url: `sales-estimate/jsxcrud/one/${formData?.id}`
       });
@@ -177,7 +204,7 @@ const EstimateAddLayout = () => {
         // ** 아래 순서 반드시 지킬 것
         setPrtId(entity?.prtInfo?.prt?.id ?? "");
         setDetailFlag(true);
-        setPrtMngId(entity?.prtInfo?.mng?.id ?? "");
+        setTimeout(()=>setPrtMngId(entity?.prtInfo?.mng?.id ?? ""), 30);
         
         // 단계 설정
         setStepCurrent(1);
@@ -212,43 +239,127 @@ const EstimateAddLayout = () => {
           }
           targetObject = targetObject[key];
         });
+
+        if(name === "unitPrice"){
+          const tot = (item.quantity ?? 0) * Number(value ?? 0);
+          targetObject["cost"] = tot;
+        } else if(name === "quantity") {
+          const tot = (
+            (item.autoCalculatedUnitPrice && item.autoCalculatedUnitPrice > 0) ? item.autoCalculatedUnitPrice :
+            item.unitPrice ?? 0
+          ) * Number(value ?? 0);
+          targetObject["cost"] = tot;
+        } else if(name === "autoCalculatedUnitPrice") {
+          const tot = (item.quantity ?? 0) * Number(value ?? 0);
+          targetObject["cost"] = tot;
+        }
   
         // 최종 키에 새 값 할당
         targetObject[lastKey] = value;
 
-        // if(name.includes("orderPrdCnt")){
-        //   const tot = (item.currPrdInfo?.orderUnitPrice ?? 0) * Number(value ?? 0);
-        //   targetObject["orderPrdPrice"] = tot;
-        // } else if(name.includes("orderUnitPrice")) {
-        //   const tot = (item?.orderPrdCnt ?? 0) * Number(value ?? 0);
-        //   updatedItem["orderPrdPrice"] = tot;
-        //   console.log(targetObject, updatedItem);
-        // }
-  
         return updatedItem;
       }
       return item; // 다른 데이터는 그대로 유지
     });
+    console.log(updatedData);
     setProducts(updatedData); // 상태 업데이트
   };
 
-  // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
-  const handleModelChange = (
-    model: modelsType,
-    productId: string,
-  ) => {
-    const newData = [...products];
-    const index = newData.findIndex(f => f.id === productId);
-    if(index > -1) {
-      newData[index] = {
-        ...newData[index],
-        currPrdInfo: { ...JSON.parse(newData[index].currPrdInfo ?? "{}"), ...model }.toString(),
-        estimateModelNm: model.prdNm,
-        model: { id : model.id },
-      };
-      setProducts(newData);
+  // ---------------- 임시 저장 --------------- 시작
+  const handleSubmitTemp = async () => {
+    try {
+      const jsonData = changeEstimateNewEdit(
+        me?.id ?? "1", prtId, prtMngId,
+        formData, fileIdList, products,
+        metarialSelectList, unitSelectList,
+      )
+      console.log(JSON.stringify(jsonData));
+
+      if(id?.includes("new")){  // 견적 생성
+        const result = await postAPI({
+          type: 'core-d1', 
+          utype: 'tenant/',
+          url: 'sales-estimate',
+          jsx: 'default'
+        }, jsonData);
+
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setErrMsg(msg);
+          setAlertType("error");
+          setAlertOpen(true);
+        }
+      } else {                // 견적 수정
+        const result = await patchAPI({
+          type: 'core-d1', 
+          utype: 'tenant/',
+          url: 'sales-estimate',
+          jsx: 'default'
+        }, formData?.id ?? "", jsonData);
+
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setErrMsg(msg);
+          setAlertType("error");
+          setAlertOpen(true);
+        }
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
     }
   }
+  // ---------------- 임시 저장 --------------- 끝
+
+  // ---------------- 확정 저장 --------------- 시작
+  const handleSubmitConfirm = async () => {
+    try {
+      const result = await patchAPI({
+        type: 'core-d1', 
+        utype: 'tenant/',
+        url: `sales-estimate/default/change-status/${formData?.id ?? ""}`,
+        jsx: 'default',
+        etc: true,
+      }, formData?.id ?? "", {
+        status: "order"
+      });
+
+      if(result.resultCode === 'OK_0000') {
+        showToast("확정 완료", "success");
+      } else {
+        const msg = result?.response?.data?.message;
+        setErrMsg(msg);
+        setAlertType("error");
+        setAlertOpen(true);
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ---------------- 확정 저장 --------------- 끝
+
+  //
+  const [ totAll, setTotAll ] = useState<number>(0);
+  useEffect(()=>{
+    if(products.length > 0) {
+      // 최종 금액이 변경되면 총 견적 금액과 모델 총 합계 금액이 자동으로 세팅되어야 함
+      let totPrice = 0;
+      let totModelPrice = 0;
+      products.map((item) => {
+        // 총 견적 금액은 선택된 모델만 저장
+        if(item.selected) totPrice += item.cost ?? 0;
+        totModelPrice += item.cost ?? 0;
+      });
+      setFormData({
+        ...formData,
+        totalEstimatePrice: Number(totPrice ?? 0)
+      });
+      setTotAll(Number(totModelPrice ?? 0));
+    }
+  }, [products.map((row) => row.cost).join(",")])
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
@@ -421,7 +532,7 @@ const EstimateAddLayout = () => {
                   }
                   setStepCurrent(1);
                   if(id?.includes("new")) {
-                    setProducts([newSalesEstimateProductType(1)]);
+                    setProducts([newSalesEstimateProductType(0)]);
                   }
                 }}
               >
@@ -432,7 +543,7 @@ const EstimateAddLayout = () => {
             {/* 모델 컨텐츠 */}
             { stepCurrent > 0 &&
               <div
-                className="flex w-full relative pl-10"
+                className="flex w-full relative pl-10 flex flex-col gap-20"
                 ref={el => {
                   if (el) {
                     stepRef.current[1] = el;
@@ -449,17 +560,17 @@ const EstimateAddLayout = () => {
                       <span>등록된 모델 중 선택 체크된 모델만 견적서에 포함됩니다.</span>
                       <div className="flex-1 h-center justify-end gap-20 h-46">
                         <span>선택된 모델의 합계 금액(총 견적 금액) : {(formData?.totalEstimatePrice ?? 0).toLocaleString()}원</span>
-                        <span>모델 총 합계 금액 : 0원</span>
+                        <span>모델 총 합계 금액 : {totAll.toLocaleString()}원</span>
                       </div>
                     </div>
 
                     { products && products.map((model, index) => (
                     <EstimateModelHead
-                      key={index}
-                      model={model}
-                      inputRef={inputRef}
-                      handleModelChange={handleModelChange}
+                      key={index} spec={spec}
+                      model={model} inputRef={inputRef}
+                      products={products} setProducts={setProducts}
                       handleModelDataChange={handleModelDataChange}
+                      showToast={showToast}
                     />
                     ))}
 
@@ -496,6 +607,31 @@ const EstimateAddLayout = () => {
                       <span>품목 추가하기</span>
                     </div>
                   </Popup>
+                </div>
+                <div className="w-full h-center justify-end gap-15 px-30">
+                  <Button
+                    className="h-32 rounded-6"
+                    onClick={()=>{
+                    }}
+                  >
+                    견적서 미리보기
+                  </Button>
+                  <Button
+                    className="h-32 rounded-6"
+                    onClick={()=>{
+                      handleSubmitTemp();
+                    }}
+                  >
+                    임시 저장
+                  </Button>
+                  <Button
+                    className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                    onClick={()=>{
+                      handleSubmitConfirm();
+                    }}
+                  >
+                    <Arrow /> 확정 저장
+                  </Button>
                 </div>
               </div>
             }

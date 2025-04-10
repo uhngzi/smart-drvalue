@@ -386,9 +386,9 @@ const OrderAddLayout = () => {
           if(cookie.get('company') === 'sy') {
             console.log(result.data);
             if(model.modelStatus === ModelStatus.NEW) {
-              handleSubmit(model.id, model);
+              setTimeout(()=>handleSubmit(model.id ?? "", model), 500);
             } else {
-              handleConfirm(model.id, model.modelId ?? "", model.modelStatus ?? ModelStatus.REPEAT);
+              setTimeout(()=>handleConfirm(model.id ?? "", model.modelId ?? "", model.modelStatus ?? ModelStatus.REPEAT), 500);
             }
           } else {
             showToast("저장 완료", "success");
@@ -425,7 +425,7 @@ const OrderAddLayout = () => {
     if(resultPost.resultCode === 'OK_0000') {
       const modelId = resultPost.data?.entity?.id;
       console.log('MODEL ID : ', modelId);
-      handleConfirm(id, modelId, data.modelStatus ?? ModelStatus.NEW);
+      setTimeout(()=>handleConfirm(id, modelId, data.modelStatus ?? ModelStatus.NEW), 500);
     } else {
       const msg = resultPost?.response?.data?.message;
       setErrMsg(msg);

@@ -715,7 +715,7 @@ export const salesEstimateClmn = (
     key: 'orderRepDt',
   },
   {
-    title: '수주여부',
+    title: '견적상태',
     width: 90,
     dataIndex: 'status',
     key: 'status',

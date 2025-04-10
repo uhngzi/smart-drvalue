@@ -6,6 +6,7 @@ import { AnyStatus, FinalGlbStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm,
 import { commonCodeRType } from "../base/common";
 import { boardType } from "../base/board";
 import { processRType } from "../base/process";
+import { baseSpecType } from "../base/spec";
 
 // 고객발주 읽기 타입
 export type salesOrderRType = {
@@ -494,17 +495,18 @@ export type salesEstimateProductType = {
   autoCalculatedUnitPrice?: number;
   autoCalculatedCost?: number;
   remark?: string;
-  specialSpecifications?: {
-    processIdx?: string;
-    remark?: string;
-    weight?: number;
-    addCost?: number;
-    minRange?: number;
-    maxRange?: number;
-    unitIdx?: string;
-    process?: processRType;
-    unit?: commonCodeRType;
-  }[];
+  specialSpecifications?: baseSpecType[];
+  // {
+  //   processIdx?: string;
+  //   remark?: string;
+  //   weight?: number;
+  //   addCost?: number;
+  //   minRange?: number;
+  //   maxRange?: number;
+  //   unitIdx?: string;
+  //   process?: processRType;
+  //   unit?: commonCodeRType;
+  // }[];
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

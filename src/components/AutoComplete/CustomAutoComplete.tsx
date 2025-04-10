@@ -35,7 +35,6 @@ const CustomAutoComplete: React.FC<Props> = ({
 
   useEffect(() => {
     // 기본값이 있으면 초기 inputValue 설정
-    console.log(defaultValue);
     if (defaultValue) {
       const label = option?.find((f) => f.value === defaultValue)?.label;
       if (label) setInputValue(label);
