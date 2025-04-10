@@ -35,9 +35,7 @@ const WkBadListPage: React.FC & {
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
   const [badGroupData, setBadGroupData] = useState<treeType[]>([]);
   const [ procBadData, setProcBadData ] = useState<{matchId:string, checkId:string}[]>([]);
-  const { data:queryTreeData } = useQuery<
-    apiGetResponseType, Error
-  >({
+  const { data:queryTreeData } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'process', pagination.current],
     queryFn: async () => {
       const result = await getAPI({
@@ -69,9 +67,7 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-  const { data:querybadData, refetch: badGroupRefetch } = useQuery<
-    apiGetResponseType, Error
-  >({
+  const { data:querybadData, refetch: badGroupRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'bad-group'],
     queryFn: async () => {
       const result = await getAPI({
@@ -85,6 +81,11 @@ const WkBadListPage: React.FC & {
           id: group.id,
           label: group.badGrpNm,
           ordNo: group.ordNo,
+          children: group.processBads.map((process:any) => ({
+            id: process.id,
+            label: process.badNm,
+            ordNo: process.ordNo,
+          })),
           open: true,
         }));
         setBadGroupData(arr);
@@ -95,21 +96,26 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-  const { data:badData, refetch: procBadRefetch } = useQuery<
-    apiGetResponseType, Error
-  >({
+
+  useEffect(() => {
+    if (processId == null) {
+      setProcBadData([]);
+    }
+  },[processId]);
+
+  const { data:badData, refetch: procBadRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'bad', processId],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: `process/bad/jsxcrud/many`
+        url: `process/bad-mapping/jsxcrud/many`
       });
 
       if (result.resultCode === 'OK_0000') {
         const arr = (result.data?.data ?? []).filter((d:any)=> d.process.id === processId).map((d:any)=>({
           matchId: d.id,
-          checkId: d.processBadGroup.id
+          checkId: d.processBad.id
         }))
 
         setProcBadData(arr);
@@ -173,30 +179,21 @@ const WkBadListPage: React.FC & {
         showToast('공정을 먼저 선택해주세요.', 'error');
         return;
       }
-      console.log(treeData)
-      const processGroupId = treeData.find((item) => item.children?.some((child) => child.id === processId))?.id;
-      const badNm = badGroupData.find((item) => item.id === e.target.value)?.label;
       console.log(e.target.checked, matchId, e.target.value)
       const data = {
-        processGroup:{
-          id: processGroupId,
-        },
         process:{
           id: processId,
         },
-        processBadGroup:{
+        processBad:{
           id: e.target.value,
         },
-        badNm: badNm,
-        ordNo:0,
-        useYn:true
       }
   
       if(e.target.checked) {
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
-          url: 'process/bad',
+          url: 'process/bad-mapping',
           jsx: 'jsxcrud'
         }, data);
         if (result.resultCode === 'OK_0000') {
@@ -209,7 +206,7 @@ const WkBadListPage: React.FC & {
         const dResult = await deleteAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
-          url: `process/bad`,
+          url: `process/bad-mapping`,
           jsx: 'jsxcrud'
         }, matchId)
         if(dResult.resultCode === 'OK_0000') {
@@ -236,12 +233,19 @@ const WkBadListPage: React.FC & {
   async function onBadPopSubmit(list: treeType[]){
       const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
       console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
-      let result = false
-      const url = "process-bad-group";
+      let result:boolean = false
       
       for(const item of updatedAddList){
-        const jsonData = {badGrpNm: item.label, useYn: true};
-  
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo:0}
+        let url = "";
+        if(item.parentId){
+          url = "process/bad"
+          jsonData.processBadGroup = {id: item.parentId};
+          jsonData.badNm = item.label;
+        }else{
+          url = "process-bad-group"
+          jsonData.badGrpNm = item.label;
+        }
         result = await onTreeAdd(url, jsonData);
   
         if(!result) {
@@ -251,7 +255,16 @@ const WkBadListPage: React.FC & {
       }
   
       for(const item of finalEditList){
-        const jsonData = {badGrpNm: item.label, ordNo: Number(item.ordNo)};
+        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo: Number(item.ordNo)};
+        let url = "";
+        if(item.parentId){
+          url = "process/bad"
+          jsonData.processBadGroup = {id: item.parentId};
+          jsonData.badNm = item.label;
+        }else{
+          url = "process-bad-group"
+          jsonData.badGrpNm = item.label;
+        }
            
         result = await onTreeEdit(item, url, jsonData);
         if(!result){
@@ -260,7 +273,12 @@ const WkBadListPage: React.FC & {
       }
       
       for(const item of updatedDeleteList){
-       
+        let url = "";
+        if(item.type === "child"){
+          url = "process/bad"
+        }else{
+          url = "process-bad-group"
+        }
         result = await onTreeDelete(item, url);
   
         if(!result){
@@ -303,9 +321,9 @@ const WkBadListPage: React.FC & {
         </div>
         <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
         <CustomTreeCheck
-          mainCheck={true}
           data={badGroupData}
           checkedData={procBadData}
+          isChild={true}
           childCheck={true}
           onChange={handleCheck}
         />
@@ -404,7 +422,6 @@ const WkBadListPage: React.FC & {
         open={badPopOpen} 
         setOpen={setBadPopOpen} 
         data={badGroupData}
-        isChild={false}
         onClose={() => modalClose()}
         onSubmit={onBadPopSubmit}
         onUpdateDataFunc={{
