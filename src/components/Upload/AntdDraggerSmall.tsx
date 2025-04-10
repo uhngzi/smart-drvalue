@@ -109,6 +109,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
   const [height, setHeight] = useState<number>(0);
   useEffect(()=>{
     if(divRef?.current?.clientHeight) {
+      console.log(divRef);
       const divHeight = Number(divRef?.current?.clientHeight) - (defaultHeight ?? 0);
       if(divHeight > 0) setHeight(divHeight);
       else              setHeight(172);

@@ -147,7 +147,7 @@ const SalesUserPage: React.FC & {
       <ListTitleBtn 
         label="신규"
         onClick={()=>{
-          router.push('/sales/order/new');
+          router.push('/sales/offer/order/new');
         }}
         icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
       />

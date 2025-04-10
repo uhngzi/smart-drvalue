@@ -4,7 +4,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import ModelAddLayout from "@/contents/sales/model/ModelAdd";
 import EstimateAddLayout from "@/contents/sales/estimate/EstimateAdd";
 
-const AddPage: React.FC & {
+const SalesOfferAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
@@ -14,9 +14,6 @@ const AddPage: React.FC & {
     type === "order" ?
     <OrderAddLayout />
     :
-    type === "model" ?
-    <ModelAddLayout />
-    :
     type === "estimate" ?
     <EstimateAddLayout />
     :
@@ -24,7 +21,7 @@ const AddPage: React.FC & {
   );
 };
 
-AddPage.layout = (page: React.ReactNode) => (
+SalesOfferAddPage.layout = (page: React.ReactNode) => (
   <MainPageLayout
     menuTitle="모달"
     head={false}
@@ -32,4 +29,4 @@ AddPage.layout = (page: React.ReactNode) => (
   >{page}</MainPageLayout>
 );
 
-export default AddPage;
+export default SalesOfferAddPage;

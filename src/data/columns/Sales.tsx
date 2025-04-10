@@ -253,7 +253,7 @@ export const salesUserOrderClmn = (
         onClick={()=> {
           if(!record.isDiscard && (record.finalGlbStatus === FinalGlbStatus.REGISTERING || record.finalGlbStatus === FinalGlbStatus.WAITING)) {
             // 완료 및 폐기가 아닐 경우에는 페이지 이동
-            router.push(`/sales/order/${record.id}`);
+            router.push(`/sales/offer/order/${record.id}`);
           } else {
             // 완료 및 폐기 또는 unknown일 경우에는 드로워 세팅
             setOrderId(record.id);
@@ -641,6 +641,18 @@ export const salesEstimateClmn = (
     dataIndex: 'estimateNm',
     key: 'estimateNm',
     align: 'center',
+    tooltip: "견적명을 클릭하면 상세 정보를 볼 수 있어요",
+    cellAlign: 'left',
+    render: (value:string, record:salesEstimateType) => (
+      <div
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        onClick={()=>{
+          router.push(`/sales/estimate/${record.id}`);
+        }}
+      >
+        {value}
+      </div>
+    )
   },
   {
     title: '모델 수',
@@ -705,19 +717,19 @@ export const salesEstimateClmn = (
   {
     title: '수주여부',
     width: 90,
-    dataIndex: 'finalGlbStatus',
-    key: 'finalGlbStatus',
+    dataIndex: 'status',
+    key: 'status',
     align: 'center',
     render: (value:any, record:salesEstimateType) => (
       <div className="w-full h-full v-h-center">
         { record.isDiscard ? (
           <FullChip label="폐기" />
-        ): value === FinalGlbStatus.WAITING ? (
-          <FullChip label="대기" state="yellow" />
-        ) : value === FinalGlbStatus.COMPLETED ? (
-          <FullChip label="완료" />
-        ) : value === FinalGlbStatus.REGISTERING ? (
-          <FullChip label="등록중" state="mint" />
+        ): value === 'register' ? (
+          <FullChip label="등록" state="yellow" />
+        ) : value === 'send' ? (
+          <FullChip label="발송" state="purple" />
+        ) : value === 'order' ? (
+          <FullChip label="수주" state="mint" />
         ) : (
           <></>
         )}

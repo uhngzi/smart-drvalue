@@ -5,6 +5,7 @@ import { partnerMngRType, partnerRType } from "../base/partner";
 import { AnyStatus, FinalGlbStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, PrtTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
 import { commonCodeRType } from "../base/common";
 import { boardType } from "../base/board";
+import { processRType } from "../base/process";
 
 // 고객발주 읽기 타입
 export type salesOrderRType = {
@@ -432,6 +433,7 @@ export type salesOrderWorkSheetType = {
 
 export type salesEstimateType = {
   id?: string;
+  status?: 'register' | 'send' | 'order';
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
@@ -451,45 +453,7 @@ export type salesEstimateType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   },
-  products?: [
-    {
-      id?: string;
-      currPrdInfo?: string;
-      tempPrdInfo?: string;
-      selected?: boolean;
-      model?: { id: string; }
-      modelStatus?: ModelStatus;
-      modelTypeEm?: ModelTypeEm;
-      layerEm?: LayerEm;
-      estimateModelNm?: string;
-      array?: string;
-      texture?: commonCodeRType;
-      sizeH?: number;
-      sizeW?: number;
-      thickness?: number;
-      quantity?: number;
-      unitPrice?: number;
-      calculatedUnitPrice?: number;
-      surfaceTreatment?: string;
-      cost?: number;
-      calculatedCost?: number;
-      autoCalculatedUnitPrice?: number;
-      autoCalculatedCost?: number;
-      remark?: string;
-      specialSpecifications?: {
-        processIdx?: string;
-        remark?: string;
-        weight?: number;
-        addCost?: number;
-        minRange?: number;
-        maxRange?: number;
-        unitIdx?: string;
-      }[];
-      createdAt?: Date | Dayjs | null;
-      updatedAt?: Date | Dayjs | null;
-      deletedAt?: Date | Dayjs | null;
-    }
-  ],
+  products?: salesEstimateProductType[];
   prtInfo?: {
     id?: string;
     prt?: partnerRType;
@@ -503,4 +467,79 @@ export type salesEstimateType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   }[];
+}
+
+export type salesEstimateProductType = {
+  id?: string;
+  currPrdInfo?: string;
+  tempPrdInfo?: string;
+  selected?: boolean;
+  model?: { id: string; }
+  modelStatus?: ModelStatus;
+  modelTypeEm?: ModelTypeEm;
+  layerEm?: LayerEm;
+  estimateModelNm?: string;
+  array?: string;
+  texture?: commonCodeRType;
+  textureIdx?: string;
+  sizeH?: number;
+  sizeW?: number;
+  thickness?: number;
+  quantity?: number;
+  unitPrice?: number;
+  calculatedUnitPrice?: number;
+  surfaceTreatment?: string;
+  cost?: number;
+  calculatedCost?: number;
+  autoCalculatedUnitPrice?: number;
+  autoCalculatedCost?: number;
+  remark?: string;
+  specialSpecifications?: {
+    processIdx?: string;
+    remark?: string;
+    weight?: number;
+    addCost?: number;
+    minRange?: number;
+    maxRange?: number;
+    unitIdx?: string;
+    process?: processRType;
+    unit?: commonCodeRType;
+  }[];
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+  index?: number;
+  quantityUnit?: commonCodeRType;
+  quantityUnitIdx?: string;
+}
+
+export const newSalesEstimateProductType = (length:number) => {
+  return {
+    id: "new-"+length,
+    selected: true,
+    modelStatus: ModelStatus.NEW,
+    modelTypeEm: ModelTypeEm.SAMPLE,
+    layerEm: LayerEm.L1,
+    estimateModelNm: "",
+    array: "",
+    textureIdx: "",
+    sizeH: 0,
+    sizeW: 0,
+    thickness: 0,
+    quantity: 0,
+    unitPrice: 0,
+    calculatedUnitPrice: 0,
+    surfaceTreatment: "",
+    cost: 0,
+    calculatedCost: 0,
+    autoCalculatedUnitPrice: 0,
+    autoCalculatedCost: 0,
+    remark: "",
+  }
+}
+
+export const salesEstimateReq = () => {
+  return [
+    { field : 'estimateNm', label: '견적명' },
+  ]
 }
