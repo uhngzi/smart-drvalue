@@ -441,8 +441,8 @@ const EstimateModelHead:React.FC<Props> = ({
             </div>
             { specFlag &&
             <div className="w-full bg-[#FFFFFF50] px-30 py-15 gap-15 flex">
-              { spec.map((spec) => (
-                <div className="w-1/2 h-center gap-5">
+              { spec.map((spec, index) => (
+                <div className="w-1/2  h-center gap-5" key={index}>
                   <Checkbox
                     checked={(model.specialSpecifications ?? [])?.filter(f=>f.id === spec.id).length > 0}
                     onChange={()=>{
