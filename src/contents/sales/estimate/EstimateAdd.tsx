@@ -453,8 +453,9 @@ const EstimateAddLayout = () => {
                       </div>
                     </div>
 
-                    { products && products.map((model) => (
+                    { products && products.map((model, index) => (
                     <EstimateModelHead
+                      key={index}
                       model={model}
                       inputRef={inputRef}
                       handleModelChange={handleModelChange}
