@@ -57,6 +57,7 @@ const ProjectDrawer: React.FC<Props> = ({
   const { me } = useUser();
   const [selectKey, setSelectKey] = useState<number>(1);
 
+  // -----------------메모 관련 변수 함수들 ---------------------
   const [memoText, setMemoText] = useState<string>('');
   const [memoList, setMemoList] = useState<any[]>([]);
   const { isLoading: memoLoading, refetch: memoRefetch } = useQuery<apiGetResponseType, Error>({
@@ -87,38 +88,6 @@ const ProjectDrawer: React.FC<Props> = ({
     enabled: !!selectId
   });
   
-  const [procDailyData, setProcDailyData] = useState<any[]>([]);
-  const { isLoading: procDailyLoading, refetch: procDailyRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['pms', 'proc', 'daily', selectId],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'core-d3',
-        utype: 'tenant/',
-        url: `pms/daily/default/many/${selectId}`
-      });
-
-      if (result.resultCode === 'OK_0000') {
-        console.log(result.data.data)
-        const dailyData = result.data.data.map((data:any) =>({...data, files: JSON.parse(data.files), open: false}));
-        setProcDailyData(dailyData);
-      } else {
-        console.log('error:', result.response);
-      }
-
-      return result.data;
-    },
-    enabled: !!selectId
-  });
-  
-
-  // -------------------진행관리 변수, 함수들--------------------
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [fileIdList, setFileIdList] = useState<string[]>([]);
-  
-  const processData = useRef<any>({});
-
-  const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
-
   async function addMemo() {
 
     const data = {
@@ -160,12 +129,112 @@ const ProjectDrawer: React.FC<Props> = ({
     }
   }
 
+  // -------------------진행관리 변수, 함수들--------------------
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileIdList, setFileIdList] = useState<string[]>([]);
+  
+  const processData = useRef<any>({});
+  const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
+
+  const [procDailyData, setProcDailyData] = useState<any[]>([]);
+  const { isLoading: procDailyLoading, refetch: procDailyRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'daily', selectId],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: `pms/daily/default/many/${selectId}`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data.data)
+        const dailyData = result.data.data.map((data:any) =>({...data, files: JSON.parse(data.files), open: false}));
+        setProcDailyData(dailyData);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      return result.data;
+    },
+    enabled: !!selectId
+  });
+  
+
   function onProcessDataChange(name:string, data: any) {
     processData.current = {...processData.current, [name]: data};
   }
+  
   // -----------------------------------------------------
   // -------------------품질관리 변수, 함수들--------------------
   const qualityData = useRef<any>({});
+  const qualControlData = useRef<any>([]);
+  const [qualityList, setQualityList] = useState<any[]>([]);
+  const [qualDoDate, setQualDoDate] = useState<string | Date | null>(new Date());
+  const { isLoading: qualChkLoading, refetch: qualChkRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'QualityChk', selectId, qualDoDate],
+    queryFn: async () => {
+
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: `pms/daily-quality-check/default/one/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data.data)
+        const QualData = result.data.data.map((data:any) =>({
+          procBadIdx: data.id,
+          badNm: data?.badNm,
+          badDesc: data?.badDesc || "",
+          check: {
+            id: data?.check?.id || null,
+            wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
+            wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
+            wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+          }
+        }));
+        setQualityList(QualData);
+        qualControlData.current = result.data.data.map((data:any) =>({
+          procBadIdx: data.id,
+          id: data?.check?.id || null,
+          wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
+          wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
+          wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+        }));
+      } else {
+        console.log('error:', result.response);
+      }
+      return result.data;
+
+    },
+    enabled: !!qualDoDate
+  });
+
+  function onQualCheck(e: any, record: any) {
+    const checked = e.target.checked;
+    console.log(checked, record)
+
+    qualControlData.current = qualControlData.current.some((item:any) => item.procBadIdx === record.procBadIdx)
+    ? qualControlData.current.map((item:any) =>
+        item.procBadIdx === record.procBadIdx 
+          ? {...item, id: record.check?.id, wkProcDailyBadYn: checked }  // 기존 객체 수정
+          : item
+      )
+    : [...qualControlData.current, { id: record?.id, procBadIdx: record.procBadIdx, wkProcDailyBadYn: checked }];
+
+    console.log(qualControlData.current)
+  }
+
+  function onQualChange(e: any, record: any) {
+    const value = e.target.value;
+    qualControlData.current = qualControlData.current.some((item:any) => item.procBadIdx === record.procBadIdx)
+    ? qualControlData.current.map((item:any) =>
+        item.procBadIdx === record.procBadIdx 
+          ? {...item, [e.target.name]: value }  // 기존 객체 수정
+          : item
+      )
+    : [...qualControlData.current, { procBadIdx: record.procBadIdx, [e.target.name]: value }];
+  }
   // -----------------------------------------------------
 
   // -------------------인력투입 변수, 함수들--------------------
@@ -320,6 +389,61 @@ const ProjectDrawer: React.FC<Props> = ({
 
     } else if(selectKey === 2) {
       console.log('품질관리 저장');
+      console.log(qualControlData.current)
+      for(const item of qualControlData.current){
+        if(item.wkProcDailyBadYn &&  item.wkProcDailyBadCnt === 0) {
+          showToast('불량 수량을 입력해주세요.', 'error');
+          return;
+        }
+      }
+      const createData = qualControlData.current.filter((item:any) => !!item?.id === false).map((v:any) => ({
+        procBadIdx: v.procBadIdx,
+        wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
+        wkProcDailyBadYn: v.wkProcDailyBadYn,
+        wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
+      }));
+      const updateData = qualControlData.current.filter((item:any) => !!item?.id === true).map((v:any) => ({
+        procBadIdx: v.procBadIdx,
+        wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
+        wkProcDailyBadYn: v.wkProcDailyBadYn,
+        wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
+      }));
+      console.log(createData, updateData)
+      if(createData.length > 0) {
+        const result = await postAPI({
+          type: 'core-d3', 
+          utype: 'tenant/',
+          jsx: 'default',
+          url: `pms/daily-quality-check/default/create/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`,
+          etc: true,
+        }, {badList: createData});
+
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장되었습니다.", "success");
+          qualChkRefetch();
+        } else {
+          showToast("품질관리 등록중 문제가 발생했습니다..", "error");
+          return;
+        }
+      }
+
+      if(updateData.length > 0) {
+        const result = await patchAPI({
+          type: 'core-d3',
+          utype: 'tenant/',
+          jsx: 'default',
+          url: `pms/daily-quality-check/default/update/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`,
+          etc: true,
+        },"", {badList: updateData});
+        if(result.resultCode === 'OK_0000') {
+          showToast("저장되었습니다.", "success");
+          qualChkRefetch();
+        } else {
+          showToast("품질관리 수정중 문제가 발생했습니다..", "error");
+          return;
+        }
+      }
+
     } else if(selectKey === 3) {
       console.log('인력투입 저장');
       
@@ -516,7 +640,7 @@ const ProjectDrawer: React.FC<Props> = ({
                   <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                     <div className="col-span-2">
                       <p className="pb-8">품질관리일</p>
-                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>}/>
+                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={dayjs(qualDoDate)} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
                     </div>
                   </div>
                   <AntdTableEdit
@@ -524,53 +648,53 @@ const ProjectDrawer: React.FC<Props> = ({
                       {
                         title: '불량여부',
                         width:84,
-                        dataIndex: 'errorYn',
-                        key: 'errorYn',
+                        dataIndex: 'wkProcDailyBadYn',
+                        key: 'wkProcDailyBadYn',
                         align: 'center',
-                        render:() => (
-                          <Checkbox/>
+                        render:(_, record) => (
+                          <Checkbox key={String(qualDoDate)} defaultChecked={record.check?.wkProcDailyBadYn} onChange={(e) => onQualCheck(e, record)} disabled={qualDoDate ? false : true}/>
                         )
                       },
                       {
                         title: '불량 항목',
                         width:87,
-                        dataIndex: 'errorCode',
-                        key: 'prdRevNo',
+                        dataIndex: 'badNm',
+                        key: 'badNm',
                         align: 'center',
                       },
                       {
                         title: '불량 내용',
                         width:200,
-                        dataIndex: 'errorText',
-                        key: 'errorText',
+                        dataIndex: 'badDesc',
+                        key: 'badDesc',
                         align: 'center',
                       },
                       {
                         title: '수량',
                         width:82,
-                        dataIndex: 'amount',
-                        key: 'amount',
+                        dataIndex: 'wkProcDailyBadCnt',
+                        key: 'wkProcDailyBadCnt',
                         align: 'center',
-                        render: (value) => (
+                        render: (value, record) => (
                           <div className="w-full h-full v-h-center">
-                            <AntdInputFill value={value} onChange={(e) => {}} placeholder="수량"/>
+                            <Input key={String(qualDoDate)} type="number" name="wkProcDailyBadCnt" defaultValue={record.check?.wkProcDailyBadCnt} onChange={(e) => onQualChange(e, record)} placeholder="수량" disabled={qualDoDate ? false : true}/>
                           </div>
                         )
                       },
                       {
                         title: '불량 상태',
                         width:248,
-                        dataIndex: 'errorsts',
-                        key: 'errorsts',
+                        dataIndex: 'wkProcDailyBadDesc',
+                        key: 'wkProcDailyBadDesc',
                         align: 'center',
                         render: (value, record) => (
                           <div className="w-full h-full v-h-center">
-                            <AntdInputFill value={value} onChange={(e) => {}} placeholder="example"/>
+                            <Input key={String(qualDoDate)} defaultValue={record.check?.wkProcDailyBadDesc} name="wkProcDailyBadDesc" onChange={(e) => onQualChange(e, record)} placeholder="example" disabled={qualDoDate ? false : true}/>
                           </div>
                         )
                       },
                     ]}
-                    data={[]}
+                    data={qualityList}
                     styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
                   />
                 </section>

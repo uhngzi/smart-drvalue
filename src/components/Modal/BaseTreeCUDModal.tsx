@@ -35,11 +35,11 @@ interface CardInputListProps {
     pd?: string;
   };
   addEdits?: { 
-    info: any[], 
+    info?: any[], 
     childInfo?: any[],
-    setInfo: Dispatch<SetStateAction<any[]>>, 
+    setInfo?: Dispatch<SetStateAction<any[]>>, 
     setChildInfo?: Dispatch<SetStateAction<any[]>>,
-    addParentEditList: {type: string, key: string, name: string, selectData?:any[]}[] 
+    addParentEditList?: {type: string, key: string, name: string, selectData?:any[]}[] 
     addChildEditList?: {type: string, key: string, name: string, selectData?:any[]}[]
   };
 }

@@ -29,8 +29,17 @@ const WkBadListPage: React.FC & {
     size: 10,
   });
   
-
   // ---------- 필요 데이터 ---------- 시작
+  const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
+
+  const addEdits = {
+    childInfo: addChildEditsInfo,
+    setChildInfo: setAddChildEditsInfo,
+    addChildEditList:[
+      {type:"input", key:"badDesc", name:"불량 내용"},
+    ]
+  }
+
   const [processId, setProcessId] = useState<string | null>(null)
   const [ treeData, setTreeData ] = useState<treeType[]>([]);
   const [badGroupData, setBadGroupData] = useState<treeType[]>([]);
@@ -84,11 +93,20 @@ const WkBadListPage: React.FC & {
           children: group.processBads.map((process:any) => ({
             id: process.id,
             label: process.badNm,
+            badDesc: process.badDesc || "",
             ordNo: process.ordNo,
           })),
           open: true,
         }));
         setBadGroupData(arr);
+        const childInfoArr = (result.data?.data ?? []).flatMap((d:any) => 
+          (d.processBads ?? []).map((c:any) => ({
+            id: c.id,
+            label: c.cdNm,
+            cdDesc: c.badDesc,
+            ordNo: c.ordNo
+          })))
+          setAddChildEditsInfo(childInfoArr);
       } else {
         console.log('error:', result.response);
       }
@@ -96,7 +114,7 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-
+  console.log(badGroupData)
   useEffect(() => {
     if (processId == null) {
       setProcBadData([]);
@@ -261,6 +279,7 @@ const WkBadListPage: React.FC & {
           url = "process/bad"
           jsonData.processBadGroup = {id: item.parentId};
           jsonData.badNm = item.label;
+          jsonData.badDesc = item.badDesc;
         }else{
           url = "process-bad-group"
           jsonData.badGrpNm = item.label;
@@ -432,6 +451,7 @@ const WkBadListPage: React.FC & {
           setEditList: setEditList,
           setDeleteList: setDeleteList,
         }}
+        addEdits={addEdits}
       />
       <ToastContainer/>
     </section>
