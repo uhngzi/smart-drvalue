@@ -494,14 +494,14 @@ function addPopWorkers(data: any) {
                               <div className="w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
                               <div className="flex items-center w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}><WorkerFill/>{task?.workers?.length || 0}</div>
                               <Dropdown trigger={["click"]} menu={{ items:[
-                                {
+                                ( detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? {
                                   label: <div className="h-center gap-5">
                                             <p className="w-16 h-16"><Load /></p>
                                             진행관리
                                           </div>,
                                   key: 0,
                                   onClick:()=>{setSelectId(task.id), setProcessOpen(true)}
-                                },
+                                } : null,
                                 {
                                   label: <div className="h-center gap-5">
                                             <p className="w-16 h-16"><Reg /></p>
@@ -510,7 +510,7 @@ function addPopWorkers(data: any) {
                                   key: 1,
                                   onClick:()=>{setSelectId(task.id), setOrderOpen(true)}
                                 },
-                                {
+                                (!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) ? {
                                   label: <div className="h-center gap-5">
                                             <p className="w-16 h-16"><WorkerOutline /></p>
                                             인력계획
@@ -521,8 +521,8 @@ function addPopWorkers(data: any) {
                                     setWorkerPlan({id: task.id, date: `${schedule.process} > ${task.name}(${dayjs(task.from).format("YYYY-MM-DD")} ~ ${dayjs(task.to).format("YYYY-MM-DD")})`});
                                     setWorkerPlanOpen(true);
                                     }
-                                },
-                              ]}}>
+                                } : null,
+                              ].filter((item): item is Exclude<typeof item, null> => item !== null)}}>
                                 <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
                                   <p className="w-16 h-16"><Edit/></p>
                                 </Button>
@@ -533,11 +533,13 @@ function addPopWorkers(data: any) {
                             <div className="flex items-center gap-5">
                               <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                                 value={dayjs(task.from).isValid() ? dayjs(task.from) : null} 
-                                onChange={(date) => changeDate(date, task.id, "from", task.to)} />
+                                onChange={(date) => changeDate(date, task.id, "from", task.to)} 
+                                disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                               <p className="w-32 flex justify-center"><RightArrow/></p>
                               <CustomDatePicker size="small" suffixIcon={<Calendar/>} allowClear={false} 
                                 value={dayjs(task.to).isValid() ? dayjs(task.to) : null} 
-                                onChange={(date) => changeDate(date, task.id, "to", task.from)} />
+                                onChange={(date) => changeDate(date, task.id, "to", task.from)} 
+                                disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                             </div>
                           </td>
                           
@@ -556,11 +558,11 @@ function addPopWorkers(data: any) {
                               <div className="flex items-center gap-5">
                                 <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                                   value={dayjs(worker.workPlanStart).isValid() ? dayjs(worker.workPlanStart) : null} 
-                                  open={false} readOnly={true}/>
+                                  open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                                 <p className="w-32 flex justify-center"><RightArrow/></p>
                                 <CustomDatePicker size="small" suffixIcon={<Calendar/>} allowClear={false} 
                                   value={dayjs(worker.workPlanEnd).isValid() ? dayjs(worker.workPlanEnd) : null} 
-                                open={false} readOnly={true}/>
+                                open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                               </div>
                             </td>
                             
