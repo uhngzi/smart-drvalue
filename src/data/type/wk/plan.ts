@@ -234,6 +234,8 @@ export type wkPlanWaitType = {
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
   },
+  isPlanDtFixed?: boolean;
+  isWorkPlanFixed?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

@@ -34,11 +34,11 @@ interface Props {
   setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
   setDelList: Dispatch<SetStateAction<{type: string, id: string}[]>>;
   addEdits?: { 
-    info: any[], 
+    info?: any[], 
     childInfo?: any[],
-    setInfo: Dispatch<SetStateAction<any[]>>, 
+    setInfo?: Dispatch<SetStateAction<any[]>>, 
     setChildInfo?: Dispatch<SetStateAction<any[]>>,
-    addParentEditList: {type: string, key: string, name: string, selectData?:any[]}[] 
+    addParentEditList?: {type: string, key: string, name: string, selectData?:any[]}[] 
     addChildEditList?: {type: string, key: string, name: string, selectData?:any[]}[]
   };
 }
@@ -68,7 +68,7 @@ const CustomTree:React.FC<Props> = ({
   const [ ordNo, setOrdNo ] = useState<string|number>('');
 
   const customEditItems = (type: "main" | "child", id: string, parentId?: string, useYn?:boolean) => (
-    <div className={`flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[${addEdits.addParentEditList.length < 1 ? '200' : '350'}px]`} style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
+    <div className={`flex flex-col gap-12 px-16 py-9 bg-white rounded-8 w-[${(addEdits?.addParentEditList?.length ?? 0) < 1 ? '200' : '350'}px]`} style={{boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.0'}}>
       <div className="relative h-center ">
         <AntdInput className="w-full" value={treeName} 
           onChange={(e) => setTreeName(e.target.value)}
@@ -81,15 +81,15 @@ const CustomTree:React.FC<Props> = ({
           }}/> 
         <span className="absolute right-5 text-12" style={{color:'#00000073'}}>Enter</span>
       </div>
-      {type === "main" && addEdits.addParentEditList.map((edit, index) => (
+      {type === "main" && (addEdits?.addParentEditList ?? []).map((edit, index) => (
         <div key={`addEdits-${index}`}>
           <label className="text-12">{edit.name}</label>
           {(edit.type === "input" || edit.type === "number") && (
             <div className="relative h-center">
               <AntdInput className="w-full"  
                 type={edit.type === "number" ? "text" : "text"}
-                value={addEdits.info.find((v) => v.id === id)?.[edit.key] || ''}
-                onChange={(e) => addEdits.setInfo((prev) => prev.map((item) => item.id === id ? { ...item, [edit.key]: e.target.value } : item))}
+                value={(addEdits.info ?? []).find((v) => v.id === id)?.[edit.key] || ''}
+                onChange={(e) => addEdits.setInfo?.((prev) => prev.map((item) => item.id === id ? { ...item, [edit.key]: e.target.value } : item))}
                 onKeyDown={(e) => {
                   if(e.key === "Enter") {
                     const inputValue = (e.target as HTMLInputElement).value;
@@ -103,7 +103,7 @@ const CustomTree:React.FC<Props> = ({
           {edit.type === "select" && (
             <div key={`addEdits-${index}`} className="relative h-center">
               <AntdSelect className="w-full" options={edit.selectData || []}
-                value={addEdits.info.find((v) => v.id === id)?.[edit.key] || null}
+                value={(addEdits?.info ?? []).find((v) => v.id === id)?.[edit.key] || null}
                 onChange={(value) => handleDataUpdate(type, id, treeName, parentId, {[edit.key]: value})}
                 /> 
             </div>
@@ -241,11 +241,11 @@ const CustomTree:React.FC<Props> = ({
     console.log(type, id, value, parentsId, adds);
     console.log(ordNo)
     if (type === 'main') {
-      const addChk = addEdits.addParentEditList.length > 0
-      let edits = addChk ? addEdits.info.find(v => v.id === id) : {};
+      const addChk = (addEdits.addParentEditList ?? []).length > 0
+      let edits = addChk ? (addEdits.info ?? []).find(v => v.id === id) : {};
       if(adds){
-        const newEdit = addEdits.info.map((item) => item.id === id ? { ...item, ...adds } : item);
-        addEdits.setInfo(newEdit);
+        const newEdit = (addEdits.info ?? []).map((item) => item.id === id ? { ...item, ...adds } : item);
+        addEdits.setInfo?.(newEdit);
         edits = newEdit.find(v => v.id === id);
       }
       
