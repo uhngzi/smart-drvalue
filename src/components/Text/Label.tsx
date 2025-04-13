@@ -22,6 +22,15 @@ export const LabelMedium:React.FC<Props> = ({
   )
 }
 
+export const LabelBold:React.FC<Props> = ({
+  label,
+  className,
+}) => {
+  return (
+    <p className={className+" text-[rgba(0, 0, 0, 0.85)] text-16 font-bold"} style={{ whiteSpace: 'pre-line' }}>{label}</p>
+  )
+}
+
 export const LabelIcon:React.FC<Props> = ({
   label,
   icon,
