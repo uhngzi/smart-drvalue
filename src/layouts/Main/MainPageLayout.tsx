@@ -153,8 +153,9 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
         />
 
         {/* 팝업들 */}
-        {menuItems.map((item) => (
+        {menuItems.map((item, idx) => (
           <AntdModal
+            key={idx}
             open={activePopup === item.key}
             setOpen={()=>{}}
             title={
@@ -200,8 +201,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
 
         {/* 확장 메뉴 버튼들 */}
         <AnimatePresence>
-        { menuItems.map((item, idx) => (
-          open?
+        { open && menuItems.map((item, idx) => (
           <motion.div
             key={item.key}
             initial={{ opacity: 0, y: 20}}
@@ -221,7 +221,6 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
               onClick={() => setActivePopup(item.key)}
             />
           </motion.div>
-          : null
         ))}
         </AnimatePresence>
       </AntdFooterBtnStyled>
