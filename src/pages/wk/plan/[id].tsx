@@ -144,6 +144,7 @@ const ProjcetPage: React.FC & {
                   name: worker.emp.name,
                   workPlanStart: worker.wkEmpProcScheInDt,
                   workPlanEnd: worker.wkEmpProcScheOutDt,
+                  workDetail: worker.emp?.workDetail
                 }));
         
                 return {
@@ -578,16 +579,18 @@ function addPopWorkers(data: any) {
           </div>
           <GanttChart schedules={schedules} basicDate={basicDate}/>
         </div>
-        <div className="w-full flex justify-end p-20">
-          <Button
-            className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-            onClick={()=>{
-              submitConfirm();
-            }}
-          >
-            <Arrow /> 확정 저장
-          </Button>
-        </div>
+        {(!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) && (
+          <div className="w-full flex justify-end p-20">
+            <Button
+              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+              onClick={()=>{
+                submitConfirm();
+              }}
+            >
+              <Arrow /> 확정 저장
+            </Button>
+          </div>
+        )}
         <AntdDrawer open={orderOpen} close={()=>setOrderOpen(false)} width={760}>
           <section className="p-20 flex flex-col gap-20">
             <div className="flex justify-between items-center">
