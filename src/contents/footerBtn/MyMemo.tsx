@@ -217,7 +217,10 @@ const MyMemo:React.FC<Props> = ({
 
       <div className="flex flex-col gap-10 overflow-y-auto h-[calc(100vh-350px)]">
       { fdata.map((item, idx) => (
-        <div className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative">
+        <div
+          key={idx}
+          className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative"
+        >
           <div className="w-full h-center gap-10 h-24">
             <Ordering />
             <p className="flex-1 text-[#00000045] font-300 leading-[150%]">{dayjs(item.createdAt).format("YYYY-MM-DD")}</p>
