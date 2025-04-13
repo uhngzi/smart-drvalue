@@ -67,9 +67,10 @@ const EstimateAddLayout = () => {
 
   // 수정일 경우 id 값 넣어줌 => id 값이 변경될 경우 하단에 있는 detail query 실행되어 세팅됨
   useEffect(()=>{
-    console.log(id);
     if(id && typeof id === "string" && !id.includes("new")) {
       setFormData({ ...formData, id:id });
+    } else {
+      setFormData({ ...formData, id: "new" });
     }
   }, [id]);
 
@@ -212,7 +213,7 @@ const EstimateAddLayout = () => {
 
       return result;
     },
-    enabled: !!formData?.id
+    enabled: !!formData?.id && !formData.id.includes("new")
   });
   // ------------ 디테일 데이터 세팅 ------------ 끝
   
@@ -266,7 +267,7 @@ const EstimateAddLayout = () => {
   };
 
   // ---------------- 임시 저장 --------------- 시작
-  const handleSubmitTemp = async () => {
+  const handleSubmitTemp = async (cf?:boolean) => {
     try {
       const jsonData = changeEstimateNewEdit(
         me?.id ?? "1", prtId, prtMngId,
@@ -275,7 +276,7 @@ const EstimateAddLayout = () => {
       )
       console.log(JSON.stringify(jsonData));
 
-      if(id?.includes("new")){  // 견적 생성
+      if((formData?.id ?? "").includes("new")){  // 견적 생성
         const result = await postAPI({
           type: 'core-d1', 
           utype: 'tenant/',
@@ -285,6 +286,10 @@ const EstimateAddLayout = () => {
 
         if(result.resultCode === 'OK_0000') {
           showToast("저장 완료", "success");
+          const entity = result.data.entity;
+          if(cf) {
+            handleSubmitConfirm(entity.id);
+          }
         } else {
           const msg = result?.response?.data?.message;
           setErrMsg(msg);
@@ -315,15 +320,21 @@ const EstimateAddLayout = () => {
   // ---------------- 임시 저장 --------------- 끝
 
   // ---------------- 확정 저장 --------------- 시작
-  const handleSubmitConfirm = async () => {
+  const handleSubmitConfirm = async (tempId?:string) => {
     try {
+      let id = "";
+      if(formData?.id && !formData?.id?.includes("new"))  id = formData.id;
+      else if(tempId)                                     id = tempId;
+      else                                                return;
+
       const result = await patchAPI({
         type: 'core-d1', 
         utype: 'tenant/',
-        url: `sales-estimate/default/change-status/${formData?.id ?? ""}`,
+        url: `sales-estimate/default/change-status/${id}`,
         jsx: 'default',
         etc: true,
-      }, formData?.id ?? "", {
+      }, id, {
+        // 등록 : register | 발송 : send |  확정 : order;
         status: "order"
       });
 
@@ -359,7 +370,8 @@ const EstimateAddLayout = () => {
       });
       setTotAll(Number(totModelPrice ?? 0));
     }
-  }, [products.map((row) => row.cost).join(",")])
+  }, [products.map((row) => row.cost).join(","),
+    products.map((row) => row.selected).join(",")])
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
@@ -368,7 +380,7 @@ const EstimateAddLayout = () => {
   return (
     <>
       <div className="p-30 flex v-between-h-center w-full">
-        <p className="text-20 fw-500 font-semibold">{ id?.includes("new") ? "견적 등록" : "견적 수정"}</p>
+        <p className="text-20 fw-500 font-semibold">{ (formData?.id ?? "").includes("new") ? "견적 등록" : "견적 수정"}</p>
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={(()=>{
@@ -519,7 +531,7 @@ const EstimateAddLayout = () => {
                 onClick={() => {
                 }}
               >
-                <CloseOutlined /> {!id?.includes("new") ? "삭제" : "취소"}
+                <CloseOutlined /> {!(formData?.id ?? "").includes("new") ? "삭제" : "취소"}
               </Button>
             { stepCurrent < 1 &&
               <Button 
@@ -531,7 +543,7 @@ const EstimateAddLayout = () => {
                     return;
                   }
                   setStepCurrent(1);
-                  if(id?.includes("new")) {
+                  if((formData.id ?? "").includes("new")) {
                     setProducts([newSalesEstimateProductType(0)]);
                   }
                 }}
@@ -627,7 +639,11 @@ const EstimateAddLayout = () => {
                   <Button
                     className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                     onClick={()=>{
-                      handleSubmitConfirm();
+                      if((formData?.id ?? "").includes("new")) {
+                        handleSubmitTemp(true);
+                      } else {
+                        handleSubmitConfirm();
+                      }
                     }}
                   >
                     <Arrow /> 확정 저장

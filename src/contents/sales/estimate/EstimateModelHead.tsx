@@ -203,7 +203,6 @@ const EstimateModelHead:React.FC<Props> = ({
   const [ priceFlag, setPriceFlag ] = useState<boolean>(false);
   // 값이 변경될 때마다 계산되어야 함
   useEffect(()=>{
-    setPriceFlag(true);
     if(model.quantity && model.quantity > 0 && priceFlag) handleCalUnitPrice();
   }, [model.quantity, model.layerEm, model.thickness,
     model.textureIdx, model.specialSpecifications])
@@ -217,6 +216,7 @@ const EstimateModelHead:React.FC<Props> = ({
         <Checkbox
           checked={model.selected}
           onChange={(e) => {
+            console.log(e.target.checked);
             handleModelDataChange(model.id ?? '', 'selected', e.target.checked);
           }}
         />
@@ -280,7 +280,10 @@ const EstimateModelHead:React.FC<Props> = ({
                 <AntdSelectFill
                   options={generateFloorOptions()}
                   value={model.layerEm ?? "L1"}
-                  onChange={(e)=>handleModelDataChange(model.id ?? "", 'layerEm', e)}
+                  onChange={(e)=>{
+                    setPriceFlag(true);
+                    handleModelDataChange(model.id ?? "", 'layerEm', e)
+                  }}
                   styles={{ht:'32px', bg: '#FFF', br: '2px'}}
                 />
               }
@@ -303,7 +306,10 @@ const EstimateModelHead:React.FC<Props> = ({
                 <AntdSelectFill
                   options={metarialSelectList}
                   value={model.texture?.id ?? metarialSelectList?.[0]?.value}
-                  onChange={(e)=>{handleModelDataChange(model.id ?? '', 'texture.id', e)}}
+                  onChange={(e)=>{
+                    setPriceFlag(true);
+                    handleModelDataChange(model.id ?? '', 'texture.id', e)
+                  }}
                   styles={{ht:'32px', bg: '#FFF', br: '2px'}} dropWidth="180px"
                 />
               }
@@ -335,7 +341,10 @@ const EstimateModelHead:React.FC<Props> = ({
               children1={
                 <AntdInput
                   value={model.thickness}
-                  onChange={(e)=>handleModelDataChange(model.id ?? "", 'thickness', e.target.value)}
+                  onChange={(e)=>{
+                    setPriceFlag(true);
+                    handleModelDataChange(model.id ?? "", 'thickness', e.target.value)
+                  }}
                   styles={{ht:'32px', bg:'#FFF'}} type="number"
                 />
               }
@@ -346,7 +355,10 @@ const EstimateModelHead:React.FC<Props> = ({
               children1={
                 <AntdInput
                   value={model.quantity}
-                  onChange={(e)=>handleModelDataChange(model.id ?? "", 'quantity', e.target.value)}
+                  onChange={(e)=>{
+                    setPriceFlag(true);
+                    handleModelDataChange(model.id ?? "", 'quantity', e.target.value)
+                  }}
                   styles={{ht:'32px', bg:'#FFF'}} type="number"
                 />
               }
@@ -379,8 +391,8 @@ const EstimateModelHead:React.FC<Props> = ({
                       showToast("특수사양이 설정된 상태에서는 단가 변경이 불가능합니다.", "error");
                       return;
                     }
-                    handleModelDataChange(model.id ?? "", 'unitPrice', e.target.value);
                     setPriceFlag(true);
+                    handleModelDataChange(model.id ?? "", 'unitPrice', e.target.value);
                   }}
                   styles={{ht:'32px', bg:'#FFF'}} type="number"
                 />
@@ -446,6 +458,7 @@ const EstimateModelHead:React.FC<Props> = ({
                   <Checkbox
                     checked={(model.specialSpecifications ?? [])?.filter(f=>f.id === spec.id).length > 0}
                     onChange={()=>{
+                      setPriceFlag(true);
                       handleSpecChange(
                         (model.specialSpecifications ?? []).filter(f=>f.id === spec.id).length < 1,
                         spec,

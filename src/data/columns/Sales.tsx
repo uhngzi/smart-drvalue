@@ -727,9 +727,9 @@ export const salesEstimateClmn = (
         ): value === 'register' ? (
           <FullChip label="등록" state="yellow" />
         ) : value === 'send' ? (
-          <FullChip label="발송" state="purple" />
+          <FullChip label="발송" state="mint" />
         ) : value === 'order' ? (
-          <FullChip label="수주" state="mint" />
+          <FullChip label="확정" state="purple" />
         ) : (
           <></>
         )}
