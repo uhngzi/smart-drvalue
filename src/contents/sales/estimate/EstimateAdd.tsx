@@ -334,8 +334,8 @@ const EstimateAddLayout = () => {
         jsx: 'default',
         etc: true,
       }, id, {
-        // 등록 : register | 발송 : send |  확정 : order;
-        status: "order"
+        // 등록 : register | 확정 : send |  수주 : order;
+        status: "send"
       });
 
       if(result.resultCode === 'OK_0000') {

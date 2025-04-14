@@ -65,7 +65,7 @@ const SalesModelHead:React.FC<Props> = ({
   useEffect(()=>{
     if((model.orderTit && model.orderTit.length > 2)
       || (model.currPrdInfo?.prdMngNo && model.currPrdInfo?.prdMngNo.length > 2)) {
-      setTimeout(()=>setSearchFlag(true), 1000);
+      setTimeout(()=>setSearchFlag(true), 500);
     } else {
       setSearchFlag(false);
     }
