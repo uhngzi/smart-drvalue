@@ -623,8 +623,8 @@ export const salesEstimateClmn = (
   {
     title: '코드/업체명',
     width: 180,
-    dataIndex: 'partner.prtRegCd/partner.prtNm',
-    key: 'partner.prtRegCd/partner.prtNm',
+    dataIndex: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
+    key: 'prtInfo.prt.prtRegCd/prtInfo.prt.prtNm',
     align: 'center',
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesEstimateType) => (
@@ -715,9 +715,9 @@ export const salesEstimateClmn = (
   {
     title: '견적일',
     width: 130,
-    dataIndex: 'orderRepDt',
+    dataIndex: 'estimateDt',
     align: 'center',
-    key: 'orderRepDt',
+    key: 'estimateDt',
   },
   {
     title: '견적상태',
@@ -732,9 +732,9 @@ export const salesEstimateClmn = (
         ): value === 'register' ? (
           <FullChip label="등록" state="yellow" />
         ) : value === 'send' ? (
-          <FullChip label="발송" state="mint" />
-        ) : value === 'order' ? (
           <FullChip label="확정" state="purple" />
+        ) : value === 'order' ? (
+          <FullChip label="수주" state="mint" />
         ) : (
           <></>
         )}
