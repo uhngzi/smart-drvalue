@@ -13,6 +13,7 @@ import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 import { isValidEmail } from "@/utils/formatEmail";
 import { inputFax } from "@/utils/formatFax";
 import { isValidEnglish, formatEnglish } from "@/utils/formatEnglish";
+import { isValidNumber } from "@/utils/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
@@ -280,6 +281,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         영문만 입력 가능합니다.
+                      </div> :
+                      // 숫자 입력 체크 (가로/세로)
+                      formData[item?.name] && (item.name === "brdW" || item.name === "brdH") && !isValidNumber(formData[item?.name]?.toString()) ?
+                      <div className="h-center gap-3 text-[red]">
+                        <p className="w-15 h-15"><Hint/></p>
+                        숫자만 입력 가능합니다.
                       </div> :
                       <></>
                     }
