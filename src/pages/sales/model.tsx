@@ -146,7 +146,7 @@ const SalesModelPage: React.FC & {
 
   return (
     <>
-      <div className="w-full h-50">
+      <div className="w-full h-50 pointer-events-none">
         <ListTitleBtn
           label="신규"
           onClick={()=>{
