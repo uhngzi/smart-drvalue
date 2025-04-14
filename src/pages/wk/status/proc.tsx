@@ -529,7 +529,7 @@ const WKStatusProcPage: {
         setResultOpen(false);
         if(resultType === "cf") handleSubmitOut();
       }}
-      onCancle={()=>{
+      onCancel={()=>{
         setResultOpen(false);
       }}
       theme="main"

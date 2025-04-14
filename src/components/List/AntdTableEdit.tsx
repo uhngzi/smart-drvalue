@@ -713,7 +713,7 @@ const AntdTableEdit: React.FC<Props> = ({
           ''
         }</div>}
         type={resultCode === 'esc' ? 'warning' : 'info'} 
-        onCancle={resultCode === 'esc' ? ()=>{
+        onCancel={resultCode === 'esc' ? ()=>{
           setAlertOpen(false);
         } : ()=>{}}
         onOk={resultCode === 'esc' ? ()=>{

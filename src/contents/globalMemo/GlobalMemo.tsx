@@ -6,10 +6,15 @@ import { apiAuthResponseType } from "@/data/type/apiResponse";
 import useToast from "@/utils/useToast";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Spin } from "antd";
+import { Button, Checkbox, Spin } from "antd";
 import { Dayjs } from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+
+import Close from "@/assets/svg/icons/l_close.svg";
+import Back from "@/assets/svg/icons/back.svg";
+
+import { patchAPI } from "@/api/patch";
 
 type Memo = {
   createdAt?: Date | Dayjs | null;
@@ -19,11 +24,12 @@ type Memo = {
   metaData?: {
     teamIdx?: string;
     shared?: boolean;
+    cancel?: boolean;
     cancle?: boolean;
-    cancledAt?: Date | Dayjs | null;
+    canceldAt?: Date | Dayjs | null;
     empIdx?: string;
     empName?: string;
-    cancledEmpName?: string;
+    canceldEmpName?: string;
   }
 }
 
@@ -104,11 +110,40 @@ const GlobalMemo:React.FC<Props> = ({
       }, {
         memo: value,
         extraKey: id,
-        shared: true,
+        shared: shared,
       });
         
       if(result.resultCode === "OK_0000") {
         setValue("");
+        setShared(true);
+        handleList();
+      } else {
+        const msg = result?.response?.data?.message;
+        console.log(msg);
+        setDataLoading(false);
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ---------------- 메모 등록 -------------- 끝
+  
+  // ---------------- 메모 등록 -------------- 시작
+  const handleDelete = async (id:string, cancel:boolean) => {
+    try {
+      const result = await patchAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `global-memo/default/update-cancel/${id}/${cancel}`,
+        etc: true,
+      }, id);
+        
+      if(result.resultCode === "OK_0000") {
+        if(cancel)
+          showToast("취소 완료", "success");
+        else
+          showToast("복구 완료", "success");
         handleList();
       } else {
         const msg = result?.response?.data?.message;
@@ -148,6 +183,7 @@ const GlobalMemo:React.FC<Props> = ({
     }
   };
 
+  const [shared, setShared] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
   const [focus, setFocus] = useState<boolean>(false);
   const newInputRef = useRef<HTMLInputElement>(null);
@@ -189,7 +225,7 @@ const GlobalMemo:React.FC<Props> = ({
               <div className="relative flex-1 pr-10">
                 <input
                   ref={newInputRef}
-                  className="w-full h-32 px-5 rounded-2 border-1 border-line focus:outline-none focus:ring-2 focus:ring-[#0593ff20]"
+                  className="w-full h-36 px-5 rounded-2 border-1 border-line focus:outline-none focus:ring-2 focus:ring-[#0593ff20]"
                   value={value}
                   onChange={(e)=>{
                     setValue(e.target.value);
@@ -211,10 +247,39 @@ const GlobalMemo:React.FC<Props> = ({
                   </span>
                 )}
               </div>
+              <div className="flex flex-col v-h-center">
+                <span className="text-12">공개</span>
+                <Checkbox
+                  checked={shared} onChange={(e)=>setShared(e.target.checked)}
+                />
+              </div>
             </div>
             { data.map((item, index) => (
-            <div key={index}>
+            <div
+              key={index}
+              className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${item.metaData?.cancle ? "line-through text-gray-400" : ""}`}
+              style={item.metaData?.cancel ? {} : {}}
+            >
               {item.memo}
+              { !item.metaData?.cancle ?
+              <p
+                className="w-12 h-12 text-[#00000040] cursor-pointer"
+                onClick={()=>{
+                  handleDelete(item.id ?? "", true);
+                }}
+              >
+                <Close />
+              </p>
+              :
+              <p
+                className="w-12 h-12 text-[#FF000098] cursor-pointer"
+                onClick={()=>{
+                  handleDelete(item.id ?? "", false);
+                }}
+              >
+                <Back />
+              </p>
+              }
             </div>
             ))}</>}
           </motion.div>

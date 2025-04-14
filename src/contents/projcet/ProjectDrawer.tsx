@@ -784,13 +784,13 @@ const ProjectDrawer: React.FC<Props> = ({
                   
                   {memoList.map((m, idx) => 
                     {
-                      const isCancle = m.metaData?.cancle;
+                      const isCancel = m.metaData?.cancel;
                       return (
                         <>
                           <Divider style={{margin:"10px 0"}}/>
-                          <p className="text-12 text-[#00000073]" style={{textDecoration: isCancle ? "line-through" : "unset"}}>{m.metaData?.empName} | {dayjs(m.createdAt).format("YYYY-MM-DD HH:mm")}</p>
-                          {isCancle && <p className="text-12 text-[#00000073]">{m.metaData?.cancledEmpName} | {dayjs(m.metaData.cancledAt).format("YYYY-MM-DD HH:mm")}</p>}
-                          <p key={idx} className="flex h-36 p-3 v-between-h-center" style={{textDecoration: isCancle ? "line-through" : "unset"}}>
+                          <p className="text-12 text-[#00000073]" style={{textDecoration: isCancel ? "line-through" : "unset"}}>{m.metaData?.empName} | {dayjs(m.createdAt).format("YYYY-MM-DD HH:mm")}</p>
+                          {isCancel && <p className="text-12 text-[#00000073]">{m.metaData?.canceldEmpName} | {dayjs(m.metaData.canceldAt).format("YYYY-MM-DD HH:mm")}</p>}
+                          <p key={idx} className="flex h-36 p-3 v-between-h-center" style={{textDecoration: isCancel ? "line-through" : "unset"}}>
                             <span className={`text-14 font-normal ${m.status === "delete" ? "line-through text-[#00000073]" : ""}`}>{m.memo}</span>
                             <span className="cursor-pointer" onClick={() => deleteMemo(m.id)}><Close/></span>
                           </p>

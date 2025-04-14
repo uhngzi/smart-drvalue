@@ -15,7 +15,7 @@ interface Props {
   title?: string;
   contents?: React.ReactNode;
   onOk?: () => void;
-  onCancle?: () => void;
+  onCancel?: () => void;
   hideCancel?: boolean;
   type?: AlertType;
   theme?: 'main' | 'base';
@@ -47,7 +47,7 @@ const AntdAlertModal: React.FC<Props> = ({
   title,
   contents,
   onOk,
-  onCancle,
+  onCancel,
   hideCancel = false,
   type,
   theme = 'main',
@@ -70,7 +70,7 @@ const AntdAlertModal: React.FC<Props> = ({
         </div>
       }
       onOk={onOk || (() => setOpen(false))}
-      onCancel={onCancle || (() => setOpen(false))}
+      onCancel={onCancel || (() => setOpen(false))}
       cancelButtonProps={{ style: { display: hideCancel ? 'none' : 'inline-block' } }}
       okText={okText}
       cancelText={cancelText}

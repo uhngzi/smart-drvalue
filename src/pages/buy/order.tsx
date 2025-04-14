@@ -404,7 +404,7 @@ const BuyOrderPage: React.FC & {
         onOk={()=>{
           setResultOpen(false);
         }}
-        onCancle={()=>{
+        onCancel={()=>{
           setResultOpen(false);
         }}
         theme="main"

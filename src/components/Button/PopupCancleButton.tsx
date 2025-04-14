@@ -8,7 +8,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const PopupCancleButton : React.FC<Props> = ({
+const PopupCancelButton : React.FC<Props> = ({
   label,
   click,
   className,
@@ -29,4 +29,4 @@ const PopupCancleButton : React.FC<Props> = ({
   )
  }
 
- export default PopupCancleButton;
+ export default PopupCancelButton;

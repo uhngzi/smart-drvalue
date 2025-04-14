@@ -567,7 +567,7 @@ const OrderAddLayout = () => {
   // -------------- step 3단계 -------------- 끝
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
+  const [alertType, setAlertType] = useState<"del" | "cancel" | "discard" | "close" | "error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
 
   return (<>
@@ -864,7 +864,7 @@ const OrderAddLayout = () => {
         onOk={()=>{
           setAlertOpen(false);
         }}
-        onCancle={()=>{
+        onCancel={()=>{
           setAlertOpen(false);
         }}
         hideCancel={alertType === "error" ? true : false}

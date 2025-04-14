@@ -748,7 +748,7 @@ function addPopWorkers(data: any) {
               router.push('/wk/plan/wait');
             }
           }}
-          onCancle={()=>{
+          onCancel={()=>{
             setResultOpen(false);
           }}
           hideCancel={true}

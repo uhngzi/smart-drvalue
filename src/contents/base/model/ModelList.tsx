@@ -370,7 +370,7 @@ const ModelList:React.FC<Props> = ({
           </CustomRadioGroup>
         </div>}
         type={'info'} 
-        onCancle={()=>{
+        onCancel={()=>{
           setAlertOpen(false);
         }}
         onOk={()=>{
@@ -432,7 +432,7 @@ const ModelList:React.FC<Props> = ({
             setDrawerOpen?.(false);
           }
         }}
-        onCancle={()=>{
+        onCancel={()=>{
           setProductChk(false);
           setAlertProductOpen(false);
         }}

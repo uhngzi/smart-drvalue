@@ -894,7 +894,7 @@ const ModelAddLayout = () => {
           router.push("/sales/model");
         }
       }}
-      onCancle={()=>{
+      onCancel={()=>{
         setAlertOpen(false);
       }}
       hideCancel={alertType === "error" ? true : false}

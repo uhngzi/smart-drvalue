@@ -649,7 +649,7 @@ const OrderAddLayout = () => {
   const [newFlag, setNewFlag] = useState<boolean>(true);
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [alertType, setAlertType] = useState<"del" | "cancle" | "discard" | "close" | "error" | "">("");
+  const [alertType, setAlertType] = useState<"del" | "cancel" | "discard" | "close" | "error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
 
   return (<>
@@ -766,7 +766,7 @@ const OrderAddLayout = () => {
                   className="w-109 h-32 rounded-6"
                   style={{color:"#444444E0"}}
                   onClick={() => {
-                    setAlertType('cancle');
+                    setAlertType('cancel');
                     setAlertOpen(true);
                   }}
                 >
@@ -916,14 +916,14 @@ const OrderAddLayout = () => {
             "warning"}
           title={
             alertType === "del" ? "해당 모델을 정말 삭제하시겠습니까?" :
-            alertType === "cancle" ? "해당 발주를 폐기하시겠습니까?" :
+            alertType === "cancel" ? "해당 발주를 폐기하시겠습니까?" :
             alertType === "close" ? "저장되지 않은 모델 정보 또는 미등록된 고객 발주 정보가 있습니다." :
             alertType === "error" ? "오류 발생" :
             alertType === "discard" ? "고객 발주 폐기 성공" : ""
           }
           contents={
             alertType === "del" ? <div>이미 등록된 모델을 삭제하실 경우 모델 등록 대기에서도 사라집니다.<br/>정말 삭제하시겠습니까?</div> :
-            alertType === "cancle" ? <>해당 발주를 폐기할 경우 하위에 등록된 모델도 사라집니다.<br/>정말 폐기하시겠습니까?</> :
+            alertType === "cancel" ? <>해당 발주를 폐기할 경우 하위에 등록된 모델도 사라집니다.<br/>정말 폐기하시겠습니까?</> :
             alertType === "close" ? <>저장하지 않고 나가시면 해당 정보는 삭제됩니다.<br/>정말 나가시겠습니까?</> :
             alertType === "error" ? <>{errMsg}</> :
             alertType === "discard" ? <>고객 발주 삭제가 완료되었습니다.</> : <></>
@@ -932,7 +932,7 @@ const OrderAddLayout = () => {
             if(alertType === "del") {
               handleDelete();
               setDeleted(false);
-            } else if(alertType === "cancle") {
+            } else if(alertType === "cancel") {
               handleDeleteOrder();
             } else if(alertType === "discard" || alertType === "close") {
               router.push('/sales/offer/order');
@@ -940,14 +940,14 @@ const OrderAddLayout = () => {
 
             setAlertOpen(false);
           }}
-          onCancle={()=>{
+          onCancel={()=>{
             setAlertOpen(false);
             setDeleted(false);
           }}
           hideCancel={alertType === "discard" || alertType === "error" ? true : false}
           okText={
             alertType === "del" ? "네 삭제할래요" :
-            alertType === "cancle" ? "네 폐기할래요" :
+            alertType === "cancel" ? "네 폐기할래요" :
             alertType === "close" ? "그래도 나갈게요" :
             alertType === "error" ? "확인" :
             alertType === "discard" ? "목록으로 이동" : ""
@@ -955,7 +955,7 @@ const OrderAddLayout = () => {
           cancelText={
             alertType === "del" ? "아니요 삭제 안할래요" :
             alertType === "close" ? "아니요 이어서 작성할게요" :
-            alertType === "cancle" ? "아니요 폐기 안할래요" : ""}
+            alertType === "cancel" ? "아니요 폐기 안할래요" : ""}
         />
 
         <ToastContainer />

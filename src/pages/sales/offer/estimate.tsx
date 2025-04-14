@@ -1,12 +1,4 @@
-import PopupCancleButton from "@/components/Button/PopupCancleButton";
-import PopupOkButton from "@/components/Button/PopupOkButton";
 import FullChip from "@/components/Chip/FullChip";
-import Description from "@/components/Description/Description";
-import DescriptionItems from "@/components/Description/DescriptionItems";
-import AntdInput from "@/components/Input/AntdInput";
-import AntdModal from "@/components/Modal/AntdModal";
-import AntdSelect from "@/components/Select/AntdSelect";
-import AntdTable from "@/components/List/AntdTable";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
@@ -14,11 +6,8 @@ import Edit from "@/assets/svg/icons/edit.svg"
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 
-import dynamic from "next/dynamic";
-import { Button, Checkbox, List, TableProps } from "antd";
-import { useEffect, useRef, useState } from "react";
-import AntdDragger from "@/components/Upload/AntdDragger";
-import YieldCalculate from "@/contents/base/yield/YieldCalculate";
+import { Checkbox, List, TableProps } from "antd";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useMenu } from "@/data/context/MenuContext";
 import useToast from "@/utils/useToast";
@@ -32,7 +21,6 @@ import { ListPagination } from "@/layouts/Body/Pagination";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import cookie from "cookiejs";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
-import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import { salesEstimateClmn } from "@/data/columns/Sales";
 
 const sampleCl = (setOpen: React.Dispatch<React.SetStateAction<boolean>>): TableProps['columns'] => [

@@ -896,7 +896,7 @@ const SayangSampleAddPage: React.FC & {
               router.back();
             }
           }}
-          onCancle={()=>{
+          onCancel={()=>{
             setResultOpen(false);
             setDeleted(null);
           }}

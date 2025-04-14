@@ -660,7 +660,7 @@ const SayangModelAddPage: React.FC & {
           setResultOpen(false);
           if(resultType === "success")  router.push('/sayang/sample/regist');
         }}
-        onCancle={()=>{
+        onCancel={()=>{
           refetch();
           setResultOpen(false);
         }}

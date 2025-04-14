@@ -982,7 +982,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
           }
           setResultOpen(false);
         }}
-        onCancle={()=>{
+        onCancel={()=>{
           setResultOpen(false);
         }}
         hideCancel={resultType === "error"}
