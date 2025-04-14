@@ -13,7 +13,6 @@ import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 import { isValidEmail } from "@/utils/formatEmail";
 import { inputFax } from "@/utils/formatFax";
 import { isValidEnglish, formatEnglish } from "@/utils/formatEnglish";
-import { isValidNumber } from "@/utils/formatNumber";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
@@ -97,12 +96,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
         setIfChildList(childData)
       }
     })
-  },[data])
+  },[data]);
+
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
-  // console.log(items)
-  useEffect(() => {
-    setFormData(data);
-  }, [data]);
   
   function handleInputChange(itemName: string, newValue: string) {
     let value = newValue;
@@ -182,7 +178,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           <Input 
                             name={item.name}
                             key={data.id}
-                            defaultValue={data[item.name]}                            
+                            defaultValue={formData[item.name]}                            
                             placeholder={item?.placeholder}
                             readOnly={true}
                           />
@@ -208,9 +204,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       {item.type === "password" && (
                         <Input.Password 
                           name={item.name}
-                          defaultValue={data[item.name] || data?.id ? '000000000' : ''}
+                          value={formData[item.name] || ''}
                           onChange={(e) => {
-                            setData(item.name, e.target.value)
+                            setData(item.name, e.target.value);
+                            setFormData(prev => ({ ...prev, [item.name]: e.target.value }));
                           }}
                           placeholder={item.placeholder}
                         />
@@ -219,10 +216,11 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         <Select 
                           className="w-full"
                           options={item.isChild ? ifChildList : item.option}
-                          key={item?.isChild ? ifChildList?.[0]?.value : item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (data[item.name] || null)}
-                          defaultValue={item.name.includes(".") ? data[item.name.split(".")[0]]?.id : (item?.isChild ? ifChildList?.find((c:any) => c.value === data[item.name])?.label : data[item.name] || null)}
+                          key={item?.isChild ? ifChildList?.[0]?.value : item.name.includes(".") ? formData[item.name.split(".")[0]]?.id : (formData[item.name] || null)}
+                          defaultValue={item.name.includes(".") ? formData[item.name.split(".")[0]]?.id : (item?.isChild ? ifChildList?.find((c:any) => c.value === formData[item.name])?.label : formData[item.name] || null)}
                           onChange={(value) => {
                             setData(item.name, value)
+                            setFormData(prev => ({ ...prev, [item.name]: value }));
                             if(item.child) {
                               const childData = item.option?.find((f) => f.value === value)?.children;
                               setIfChildList(childData)
@@ -236,19 +234,22 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           mode="multiple"
                           className="w-full"
                           options={item.option}
-                          key={data[item.name]}
-                          defaultValue={data[item.name]}
+                          key={formData[item.name]}
+                          defaultValue={formData[item.name]}
                           onChange={(value) => {setData(item.name, value)}}
                         />
                       )}
                       {}
                       {item.type === "date" && (
                         <DatePicker
-                          key={data[item.name]}
+                          key={formData[item.name]}
                           placeholder={item?.placeholder}
                           className="w-full !rounded-0 h-32"
-                          onChange={(value) => {setData(item.name, dayjs(value).format("YYYY-MM-DD"))}}
-                          defaultValue={data[item.name] ? dayjs(data[item.name]) : null}
+                          onChange={(value) => {
+                            setData(item.name, dayjs(value).format("YYYY-MM-DD"));
+                            setFormData(prev => ({ ...prev, [item.name]: value }));
+                          }}
+                          defaultValue={formData[item.name] ? dayjs(formData[item.name]) : null}
                           suffixIcon={<Calendar/>}
                         />
                       )}
@@ -281,12 +282,6 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         영문만 입력 가능합니다.
-                      </div> :
-                      // 숫자 입력 체크 (가로/세로)
-                      formData[item?.name] && (item.name === "brdW" || item.name === "brdH") && !isValidNumber(formData[item?.name]?.toString()) ?
-                      <div className="h-center gap-3 text-[red]">
-                        <p className="w-15 h-15"><Hint/></p>
-                        숫자만 입력 가능합니다.
                       </div> :
                       <></>
                     }
