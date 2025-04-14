@@ -15,7 +15,23 @@ import More from "@/assets/svg/icons/edit.svg";
 import Paste from "@/assets/svg/icons/paste.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
-import AntdModal from "@/components/Modal/AntdModal";
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 import { postAPI } from "@/api/post";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import useToast from "@/utils/useToast";
@@ -23,6 +39,7 @@ import TextArea from "antd/es/input/TextArea";
 import AntdPagination from "@/components/Pagination/AntdPagination";
 import { deleteAPI } from "@/api/delete";
 import { patchAPI } from "@/api/patch";
+import SortableMemoItem from "./SortableMemoItem";
 
 
 type Memo = {
@@ -198,6 +215,56 @@ const MyMemo:React.FC<Props> = ({
   };
   // ------------- 메모 더보기/접기 ------------ 끝
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+  
+  // -------------- 메모 순서 변경 ------------ 시작
+  const handleOrderNoUpdate = async (id:string, orderNo:number) => {
+    try {
+      const result = await patchAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `personal-memo/default/update-order-no/${id}`,
+        etc: true,
+      }, id, {orderNo: orderNo});
+      
+      if(result.resultCode === "OK_0000") {
+        showToast("변경 완료", "success");
+        refetch();
+        setNewMemo("");
+        setEditMemo(undefined);
+      } else {
+        const msg = result?.response?.data?.message;
+        setErrMsg(msg);
+        setAlertType("error");
+        setAlertOpen(true);
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // -------------- 메모 순서 변경 ------------ 끝
+
+  ///api/serv/core-d3/v1/tenant/personal-memo/default/update-order-no/{id}
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = fdata.findIndex((i) => i.id === active.id);
+      const newIndex = fdata.findIndex((i) => i.id === over?.id);
+      const newData = arrayMove(fdata, oldIndex, newIndex);
+      setFData(newData);
+      
+      console.log(active.id, oldIndex, newIndex);
+      handleOrderNoUpdate(active.id.toString(), newIndex)
+    }
+  };
+
   return (
     <div className="flex flex-col gap-10">
       <LabelBold label={"나의 메모 ("+data.length.toLocaleString()+")"} className="text-18"/>
@@ -216,97 +283,137 @@ const MyMemo:React.FC<Props> = ({
       </div>
 
       <div className="flex flex-col gap-10 overflow-y-auto h-[calc(100vh-350px)]">
-      {/* 메모 */}
-      { fdata.map((item, idx) => (
-        <div
-          key={idx}
-          className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative"
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={fdata.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
         >
-          <div className="w-full h-center gap-10 h-24">
-            <Ordering />
-            <p className="flex-1 text-[#00000045] font-300 leading-[150%]">{dayjs(item.createdAt).format("YYYY-MM-DD")}</p>
-            <Dropdown trigger={['click']} menu={{ items:[
-              {
-                label:
-                  <div className="h-center gap-5">
-                    <p className="w-16 h-16"><Edit /></p>
-                    메모 수정
-                  </div>,
-                key: 0,
-                onClick:()=>{
-                  setEditMemo(item);
-                  setNewMemo(item.memo);
-                  setAlertType("edit");
-                  setAlertOpen(true);
-                }
-              },
-              {
-                label:
-                  <div className="h-center gap-5">
-                    <p className="w-16 h-16"><Paste /></p>
-                    내용 복사
-                  </div>,
-                key: 1,
-                onClick:()=>{
-                  navigator.clipboard.writeText(item.memo)
-                    .then(() => {
-                      showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
-                    })
-                    .catch((err) => {
-                      showToast("복사 완료", "error");
-                    });
-                }
-              },
-              {
-                label:
-                  <div className="text-[red] h-center gap-5">
-                    <p className="w-16 h-16"><Trash /></p>
-                    삭제
-                  </div>,
-                key: 2,
-                onClick:()=>{
-                  handleDelete(item.id);
-                }
-              }
-            ]}}>
-              <a onClick={(e) => e.preventDefault()}>
-                <Space>
-                  <div className="w-24 h-24 cursor-pointer v-h-center">
-                    <p className="w-16 h-16"><More/></p>
-                  </div>
-                </Space>
-              </a>
-            </Dropdown>
-          </div>
-
-          {/* 메모 내용 */}
-          <div
-            ref={(el) => {
-              refs.current[idx] = el;
-            }}
-            className={`px-5 whitespace-pre-line transition-all duration-200 ${
-              expandedList[idx] ? "" : "line-clamp-4"
-            }`}
-          >
-            {item.memo}
-          </div>
-          {clampedList[idx] && (
-            <div
-              className="w-full cursor-pointer v-h-center h-15"
-              onClick={() => toggleExpanded(idx)}
-            >
-              {expandedList[idx] ? "접기" : "더보기"}
-            </div>
-          )}
-
-          {/* 메모 접히는 부분 */}
-          <div
-            className="w-20 h-20 absolute bottom-0 right-0"
-            style={{backgroundImage: 'linear-gradient(to top left, #FFF 50%, #00000020 50%)'}}
-          />
-        </div>
-      ))}
+          {fdata.map((item, idx) => (
+            <SortableMemoItem
+              key={item.id}
+              item={item}
+              idx={idx}
+              handleEdit={()=>{
+                setEditMemo(item);
+                setNewMemo(item.memo);
+                setAlertType("edit");
+                setAlertOpen(true);
+              }}
+              handlePaste={()=>{
+                navigator.clipboard.writeText(item.memo)
+                  .then(() => {
+                    showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
+                  })
+                  .catch((err) => {
+                    showToast("복사 완료", "error");
+                  });
+              }}
+              handleDelete={()=>{
+                handleDelete(item.id);
+              }}
+              refs={refs}
+              expandedList={expandedList}
+              clampedList={clampedList}
+              toggleExpanded={toggleExpanded}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
       </div>
+
+      {/* <div className="flex flex-col gap-10 overflow-y-auto h-[calc(100vh-350px)]"> */}
+      {/* { fdata.map((item, idx) => (<></> */}
+        {/* // <div
+        //   key={idx}
+        //   className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative"
+        // >
+        //   <div className="w-full h-center gap-10 h-24">
+        //     <Ordering />
+        //     <p className="flex-1 text-[#00000045] font-300 leading-[150%]">{dayjs(item.createdAt).format("YYYY-MM-DD")}</p>
+        //     <Dropdown trigger={['click']} menu={{ items:[
+        //       {
+        //         label:
+        //           <div className="h-center gap-5">
+        //             <p className="w-16 h-16"><Edit /></p>
+        //             메모 수정
+        //           </div>,
+        //         key: 0,
+        //         onClick:()=>{
+        //           setEditMemo(item);
+        //           setNewMemo(item.memo);
+        //           setAlertType("edit");
+        //           setAlertOpen(true);
+        //         }
+        //       },
+        //       {
+        //         label:
+        //           <div className="h-center gap-5">
+        //             <p className="w-16 h-16"><Paste /></p>
+        //             내용 복사
+        //           </div>,
+        //         key: 1,
+        //         onClick:()=>{
+        //           navigator.clipboard.writeText(item.memo)
+        //             .then(() => {
+        //               showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
+        //             })
+        //             .catch((err) => {
+        //               showToast("복사 완료", "error");
+        //             });
+        //         }
+        //       },
+        //       {
+        //         label:
+        //           <div className="text-[red] h-center gap-5">
+        //             <p className="w-16 h-16"><Trash /></p>
+        //             삭제
+        //           </div>,
+        //         key: 2,
+        //         onClick:()=>{
+        //           handleDelete(item.id);
+        //         }
+        //       }
+        //     ]}}>
+        //       <a onClick={(e) => e.preventDefault()}>
+        //         <Space>
+        //           <div className="w-24 h-24 cursor-pointer v-h-center">
+        //             <p className="w-16 h-16"><More/></p>
+        //           </div>
+        //         </Space>
+        //       </a>
+        //     </Dropdown>
+        //   </div>
+
+        //   <div
+        //     ref={(el) => {
+        //       refs.current[idx] = el;
+        //     }}
+        //     className={`px-5 whitespace-pre-line transition-all duration-200 ${
+        //       expandedList[idx] ? "" : "line-clamp-4"
+        //     }`}
+        //   >
+        //     {item.memo}
+        //   </div>
+        //   {clampedList[idx] && (
+        //     <div
+        //       className="w-full cursor-pointer v-h-center h-15"
+        //       onClick={() => toggleExpanded(idx)}
+        //     >
+        //       {expandedList[idx] ? "접기" : "더보기"}
+        //     </div>
+        //   )}
+
+        //   <div
+        //     className="w-20 h-20 absolute bottom-0 right-0"
+        //     style={{backgroundImage: 'linear-gradient(to top left, #FFF 50%, #00000020 50%)'}}
+        //   />
+        // </div> */}
+      {/* ))} */}
+      {/* </div> */}
       {/* <div className="w-full h-100 h-center justify-end">
         <AntdPagination
           current={pagination.current}
@@ -368,7 +475,7 @@ const MyMemo:React.FC<Props> = ({
           alertType === "edit" ? "수정" :
           ""
         }
-        onCancle={()=>{
+        onCancel={()=>{
           setAlertOpen(false);
           setOpen(false);
           setNewMemo("");
