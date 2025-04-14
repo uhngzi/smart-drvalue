@@ -59,7 +59,7 @@ const EstimateModelHead:React.FC<Props> = ({
   const [searchFlag, setSearchFlag] = useState<boolean>(false);
   useEffect(()=>{
     if(model.estimateModelNm && model.estimateModelNm .length > 2) {
-      setTimeout(()=>setSearchFlag(true), 1000);
+      setTimeout(()=>setSearchFlag(true), 500);
     } else {
       setSearchFlag(false);
     }

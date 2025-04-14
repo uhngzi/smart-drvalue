@@ -184,7 +184,7 @@ const ModelAddLayout = () => {
   useEffect(()=>{
     if((model?.prdNm && model.prdNm.length > 2)
       || (model?.prdMngNo && model.prdMngNo.length > 2)) {
-      setTimeout(()=>setSearchFlag(true), 1000);
+      setTimeout(()=>setSearchFlag(true), 500);
     } else {
       setSearchFlag(false);
     }
