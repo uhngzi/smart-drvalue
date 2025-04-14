@@ -7,7 +7,7 @@ import Hint from "@/assets/svg/icons/s_excalm.svg";
 import { HtmlContext } from "next/dist/server/route-modules/pages/vendored/contexts/entrypoints";
 import AntdInput from "../Input/AntdInput";
 import { isValidEmail } from "@/utils/formatEmail";
-import { isValidTel } from "@/utils/formatPhoneNumber";
+import { isValidTel, inputTel } from "@/utils/formatPhoneNumber";
 import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import dayjs from "dayjs";
 import styled from "styled-components";
@@ -108,7 +108,14 @@ const CardInputList: React.FC<CardInputListProps> = ({
                     <AntdInput 
                       value={item.value ?? undefined}
                       onChange={(e)=>{
-                        handleDataChange(e, item.name, 'input')
+                        if (item.name.toLowerCase().includes("tel") || 
+                            item.name.toLowerCase().includes("mobile") ||
+                            item.name === "taxManagerPhone") {
+                          const formattedValue = inputTel(e.target.value);
+                          handleDataChange({ ...e, target: { ...e.target, value: formattedValue }}, item.name, 'input');
+                        } else {
+                          handleDataChange(e, item.name, 'input');
+                        }
                         if(item.name === "prtRegCd") {
                           if(temp === Number(e.target.value)) {
                             setCdChk?.(false);
@@ -153,7 +160,8 @@ const CardInputList: React.FC<CardInputListProps> = ({
                   </div> :
                   // 전화번호 형식 체크
                   (item.name.toLowerCase().includes("tel")
-                  || item.name.toLowerCase().includes("mobile"))
+                  || item.name.toLowerCase().includes("mobile")
+                  || item.name === "taxManagerPhone")
                   && !isValidTel(item?.value?.toString()) ? 
                     <div className="h-center gap-3 text-[red]">
                       <p className="w-15 h-15"><Hint/></p>

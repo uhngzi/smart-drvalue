@@ -15,7 +15,7 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdModal from "@/components/Modal/AntdModal";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AddContents from "@/contents/base/client/AddContents";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
@@ -450,7 +450,7 @@ const ClientCuListPage: React.FC & {
         />
         
         <div className="w-full h-100 h-center justify-end">
-          <AntdPagination
+          <AntdSettingPagination
             current={pagination.current}
             total={totalData}
             size={pagination.size}

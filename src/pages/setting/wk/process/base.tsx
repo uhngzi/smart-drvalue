@@ -14,7 +14,7 @@ import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AddContents from "@/contents/base/wk/process/base/AddContents";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 
 const WkProcessListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -190,7 +190,7 @@ const WkProcessListPage: React.FC & {
         />
 
         <div className="w-full h-100 v-h-center">
-          <AntdPagination
+          <AntdSettingPagination
             current={pagination.current}
             total={totalData}
             size={pagination.size}

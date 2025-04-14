@@ -25,7 +25,7 @@ import AntdTable from "@/components/List/AntdTable";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { MOCK } from "@/utils/Mock";
 import { postAPI } from "@/api/post";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 
 const groupType = {
   dept: {name: '조직도', child:'team'},
@@ -597,7 +597,7 @@ const HrUserListPage: React.FC & {
                   data={userList}
                 />
                 <div className="w-full h-100 h-center justify-end">
-                  <AntdPagination
+                  <AntdSettingPagination
                     current={pagination.current}
                     total={totalData}
                     size={pagination.size}

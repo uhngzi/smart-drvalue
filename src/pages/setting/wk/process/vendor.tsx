@@ -12,7 +12,7 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import { partnerRType } from "@/data/type/base/partner";
 import { treeType } from "@/data/type/componentStyles";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
@@ -516,7 +516,7 @@ const WkProcessVendorListPage: React.FC & {
             />
 
             <div className="w-full h-50 h-center justify-end">
-              <AntdPagination
+              <AntdSettingPagination
                 current={pagination.current}
                 total={totalData}
                 size={pagination.size}
