@@ -160,7 +160,7 @@ const ModelAddLayout = () => {
         url: 'biz-partner',
         jsx: 'jsxcrud'},
         
-        { ...data, prtTypeEm: 'cs'}
+        { ...data, prtTypeEm: 'cs', managers: undefined }
       );
 
       if(result.resultCode === 'OK_0000') {

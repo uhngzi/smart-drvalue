@@ -188,14 +188,13 @@ const GlobalMemo:React.FC<Props> = ({
   const [focus, setFocus] = useState<boolean>(false);
   const newInputRef = useRef<HTMLInputElement>(null);
 
-///api/serv/core-d3/v1/tenant/global-memo/default/create
-
   return (
     <div className="relative inline-block">
       <Button
         ref={anchorRef}
         onClick={handleClick}
         icon={<PlusOutlined />}
+        className="border-0"
       />
 
       <AnimatePresence>
