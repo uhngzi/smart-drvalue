@@ -41,6 +41,7 @@ interface Props {
     addParentEditList?: {type: string, key: string, name: string, selectData?:any[]}[] 
     addChildEditList?: {type: string, key: string, name: string, selectData?:any[]}[]
   };
+  notCollapsed?: boolean;
 }
 
 
@@ -62,7 +63,7 @@ const CustomTree:React.FC<Props> = ({
     addParentEditList: [],
     addChildEditList: [],
   },
-  
+  notCollapsed,
 }) => {
   const [ treeName, setTreeName ] = useState<string>('');
   const [ ordNo, setOrdNo ] = useState<string|number>('');
@@ -478,7 +479,7 @@ const CustomTree:React.FC<Props> = ({
         />
       </div> */}
       <div className="v-between-h-center ">
-        <p>전체 ({list.length})</p>
+        <p className="min-w-70">전체 ({list.length})</p>
 
         <div className="h-center gap-8">
           {!isSearch ? (
@@ -501,10 +502,11 @@ const CustomTree:React.FC<Props> = ({
           <p className="w-16 h-16 cursor-pointer" onClick={handleAddList}>
             <Plus />
           </p>
+          { !notCollapsed &&
           <p className="cursor-pointer flex h-center gap-3" onClick={handleCollapseAll} >
             { collapsedAll ? <Button size="small" type="text" style={{color:'#00000073'}}><AllOpen /> 모두 펼치기</Button> : 
               <Button size="small" type="text" style={{color:'#00000073'}}><AllClose /> 모두 접기</Button> }
-          </p>
+          </p> }
         </div>
       </div>
       <div>

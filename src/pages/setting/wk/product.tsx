@@ -241,12 +241,13 @@ const WkProductListPage: React.FC & {
             제품군 관리
           </div>
         </div>
-        <div className="w=full flex gap-30">
+        <div className="w-full flex gap-30">
 
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
             <CustomTreeView
               data={treeData}
               setSelect={setProductGroupId}
+              notCollapsed={true}
             />
           </div>
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
@@ -255,6 +256,7 @@ const WkProductListPage: React.FC & {
               checkedData={prdProcData}
               childCheck={true}
               onChange={handleCheck}
+              // notCollapsed={true}
             />
           </div>
         </div>

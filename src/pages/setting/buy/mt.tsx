@@ -407,6 +407,7 @@ const BuyMtListPage: React.FC & {
               setDelList={setDeleteList}
               isChild={false}
               isCheckUse={{checkId: groupCheck, setCheckId: treeCheck}}
+              //notCollapsed={true}
             />
           </div>
           <div>
@@ -503,7 +504,7 @@ const BuyMtListPage: React.FC & {
 
       <BaseInfoCUDModal
         title={{name: `원자재 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
-        open={newOpen} 
+        open={newOpen}
         setOpen={setNewOpen} 
         onClose={() => modalClose()}
         items={addModalInfoList} 

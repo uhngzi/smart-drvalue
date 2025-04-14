@@ -127,6 +127,7 @@ const WkLaminationListPage: React.FC & {
           setResultFunc('success', '적층 구조 수정 성공', '적층 구조 수정이 완료되었습니다.');
         } else {
           setNewOpen(false);
+          
           setResultFunc('error', '적층 구조 수정 실패', '적층 구조 수정을 실패하였습니다.');
         }
 
