@@ -73,14 +73,14 @@ const SalesArrayPage: React.FC & {
     {tabIndex:1,value:yielddata?.minYield, name:'minYield', label:'최저 수율', type:'input', widthType:'full'},
     {tabIndex:3,value:yielddata?.kitWidth, name:'kitWidth', label:'Kit긴쪽길이', type:'input', widthType:'full'},
     {tabIndex:5,value:yielddata?.kitGapX, name:'kitGapX', label:'Kit긴쪽간격', type:'input', widthType:'full'},
-    {tabIndex:7,value:yielddata?.kitArrangeX, name:'kitArrangeX', label:'Kit 배치 X', type:'input', widthType:'full'},
-    {tabIndex:9,value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
+    // {tabIndex:7,value:yielddata?.kitArrangeX, name:'kitArrangeX', label:'Kit 배치 X', type:'input', widthType:'full'},
+    {tabIndex:7,value:yielddata?.marginLongSide, name:'marginLongSide', label:'판넬긴쪽여분', type:'input', widthType:'full'},
 
     {tabIndex:2,value:yielddata?.minPanelLength, name:'minPanelLength', label:'판넬 최저 길이', type:'input', widthType:'full'},
     {tabIndex:4,value:yielddata?.kitHeight, name:'kitHeight', label:'Kit짧은쪽길이', type:'input', widthType:'full'},
     {tabIndex:6,value:yielddata?.kitGapY, name:'kitGapY', label:'Kit짧은쪽간격', type:'input', widthType:'full'},
-    {tabIndex:8,value:yielddata?.kitArrangeY, name:'kitArrangeY', label:'Kit 배치 Y', type:'input', widthType:'full'},
-    {tabIndex:10,value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
+    // {tabIndex:8,value:yielddata?.kitArrangeY, name:'kitArrangeY', label:'Kit 배치 Y', type:'input', widthType:'full'},
+    {tabIndex:8,value:yielddata?.marginShortSide, name:'marginShortSide', label:'판넬짧은쪽여분', type:'input', widthType:'full'},
   ]
 
   const handleCheckboxChange = (id:string, w: number, h: number) => {
@@ -101,7 +101,7 @@ const SalesArrayPage: React.FC & {
         return;
       } 
 
-      const jsonData = { ...yielddata, disks: disks };
+      const jsonData = { ...yielddata, kitArrangeX: 1, kitArrangeY: 1, disks: disks };
       console.log(JSON.stringify(jsonData));
 
       setCalLoading(true);
@@ -165,7 +165,7 @@ const SalesArrayPage: React.FC & {
               </div>
             ))}
           </div>
-          <div className="w-[800px] h-[210px] flex flex-wrap gap-x-15 gap-y-30">
+          <div className="w-[600px] h-[210px] flex flex-wrap gap-x-15 gap-y-30">
           {items.map((item, idx) => (
             <div key={idx} className="flex flex-col h-66">
               <p className='pb-8'>{item.label}</p>
