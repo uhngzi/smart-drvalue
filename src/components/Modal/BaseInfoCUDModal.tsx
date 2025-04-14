@@ -12,6 +12,7 @@ import AntdAlertModal from "./AntdAlertModal";
 import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 import { isValidEmail } from "@/utils/formatEmail";
 import { inputFax } from "@/utils/formatFax";
+import { isValidEnglish, formatEnglish } from "@/utils/formatEnglish";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
@@ -273,6 +274,12 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         이미 존재하는 식별코드입니다.
+                      </div> :
+                      // 영문 입력 체크
+                      formData[item?.name] && item.name === "mtEnm" && !isValidEnglish(formData[item?.name]?.toString()) ?
+                      <div className="h-center gap-3 text-[red]">
+                        <p className="w-15 h-15"><Hint/></p>
+                        영문만 입력 가능합니다.
                       </div> :
                       <></>
                     }

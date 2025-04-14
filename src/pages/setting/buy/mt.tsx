@@ -4,7 +4,7 @@ import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import AddContents from "@/contents/base/wk/lamination/AddContents";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
@@ -25,6 +25,7 @@ import useToast from "@/utils/useToast";
 import { useBase } from "@/data/context/BaseContext";
 import CustomTree from "@/components/Tree/CustomTree";
 import { getPrtBuyerAPI, getPrtCsAPI } from "@/api/cache/client";
+import { Spin } from "antd";
 const BuyMtListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -393,7 +394,7 @@ const BuyMtListPage: React.FC & {
    console.log(newData)
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && <Spin />}
       {!dataLoading &&
       <>
         <section className="flex gap-20">
@@ -488,7 +489,7 @@ const BuyMtListPage: React.FC & {
                 data={data}
               />
             <div className="w-full h-100 h-center justify-end">
-              <AntdPagination
+              <AntdSettingPagination
                 current={pagination.current}
                 total={totalData}
                 size={pagination.size}

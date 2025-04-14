@@ -13,7 +13,7 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
 import { generateFloorOptions, LayerEm } from "@/data/type/enum";
@@ -270,7 +270,7 @@ const WkProcessVendorPriceListPage: React.FC & {
         />
 
         <div className="w-full h-100 v-h-center">
-          <AntdPagination
+          <AntdSettingPagination
             current={pagination.current}
             total={totalData}
             size={pagination.size}

@@ -1,4 +1,3 @@
-
 const MOCK = {
     clientItems: {
         tableColumns: [],
@@ -48,7 +47,7 @@ const MOCK = {
         CUDPopItems: [
             { name:'materialGroup.id',label:'원자재그룹', widthType:'full', type:'select', option:[], },
             { name:'mtNm',label:'원자재명', widthType:'full', type:'input'},
-            { name:'mtEnm',label:'원자재영문명', widthType:'full', type:'input', inputType:'number', },
+            { name:'mtEnm',label:'원자재영문명', widthType:'full', type:'input', inputType:'text', },
             { name:'unitType',label:'단위', widthType:'full', type:'select', option: []},
             { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:'사용'},{value:false,label:'미사용'}] },
             { name:'materialSuppliers',label:'구매처 선택', widthType:'full', type:'mSelect', option:[] },

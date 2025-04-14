@@ -4,7 +4,7 @@ import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import AntdPagination from "@/components/Pagination/AntdPagination";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import AddContents from "@/contents/base/wk/lamination/AddContents";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { laminationCUType, laminationRType, newLaminationCUType, setLaminationCUType } from "@/data/type/base/lamination";
@@ -291,7 +291,7 @@ const WkLaminationListPage: React.FC & {
         />
 
         <div className="w-full h-100 h-center justify-end">
-          <AntdPagination
+          <AntdSettingPagination
             current={pagination.current}
             total={totalData}
             size={pagination.size}

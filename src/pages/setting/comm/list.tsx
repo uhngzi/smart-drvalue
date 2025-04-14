@@ -12,6 +12,7 @@ import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/tr
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
+import { Spin } from "antd";
 import { useEffect, useState } from "react";
 
 
@@ -264,7 +265,7 @@ const CommonListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && <Spin />}
       {!dataLoading &&
       <>
         <div className="h-[calc(100vh-120px)]">
