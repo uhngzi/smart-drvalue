@@ -13,6 +13,7 @@ import { NextRouter } from 'next/router';
 import { Tooltip } from 'antd';
 import { specModelType } from '../type/sayang/sample';
 import { modelsType } from '../type/sayang/models';
+import GlobalMemo from '@/contents/globalMemo/GlobalMemo';
 
 export const salesOrderStatusClmn = (
   totalData: number,
@@ -591,10 +592,14 @@ export const salesModelsClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
-    render: (_, record) => (
-      <div>
-
-      </div>
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizModelEntity"
+        entityRelation={{RnTenantCbizBizPartnerEntity: true}}
+        relationIdx=""
+      />
     )
   },
 ]

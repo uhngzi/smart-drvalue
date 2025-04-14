@@ -116,7 +116,7 @@ const ProjectDrawer: React.FC<Props> = ({
       type: 'core-d3', 
       utype: 'tenant/',
       jsx: 'default',
-      url: `global-memo/default/update-ancel/${id}/true`,
+      url: `global-memo/default/update-cancel/${id}/true`,
       etc: true,
     },"", {});
     console.log(result);

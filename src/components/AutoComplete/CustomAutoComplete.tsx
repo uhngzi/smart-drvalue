@@ -46,7 +46,7 @@ const CustomAutoComplete: React.FC<Props> = ({
     let foption = option
       ?.filter((item) => typeof item.label === "string" && item.label.includes(inputValue)) // label 기준으로 필터링
       .map((item) => ({
-        value: item.label, // 검색 리스트에는 label이 보이도록 설정
+        value: item.value, // 검색 리스트에는 label이 보이도록 설정
         label: item.label,
       })) ?? [];
 
@@ -71,11 +71,11 @@ const CustomAutoComplete: React.FC<Props> = ({
   }, [value, option]); // 값 추가 후 refetch 됐을 때도 확인하기 위해 option도 조건에 넣음
 
   // 선택했을 때 처리 (입력창에는 label이 표시되고, id(value)는 저장)
-  const handleSelect = (label: string) => {
-    if (label === "add_new_item") {
+  const handleSelect = (selectedValue: any) => {
+    if (selectedValue === "add_new_item") {
       handleAddData?.(); // "추가하기" 클릭 시 실행
     } else {
-      const foundItem = option?.find((item) => item.label === label);
+      const foundItem = option?.find((item) => item.value === selectedValue);
       if (foundItem) {
         setInputValue(foundItem.label); // 입력창에는 label 표시
         onChange?.(foundItem.value);

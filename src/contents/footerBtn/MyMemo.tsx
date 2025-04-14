@@ -216,6 +216,7 @@ const MyMemo:React.FC<Props> = ({
       </div>
 
       <div className="flex flex-col gap-10 overflow-y-auto h-[calc(100vh-350px)]">
+      {/* 메모 */}
       { fdata.map((item, idx) => (
         <div
           key={idx}
