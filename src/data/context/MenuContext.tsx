@@ -208,6 +208,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (selectMenu?.id) {
       cookie.set(SELECT_MENU_COOKIE_KEY, selectMenu.id);
+      console.log(selectMenu);
     }
   }, [selectMenu]);
 

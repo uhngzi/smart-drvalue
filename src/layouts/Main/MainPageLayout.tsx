@@ -269,13 +269,13 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
               <Close />
             </p>
           </div>
-          <div className="w-full overflow-auto pl-30 pb-20">
+          <div className="w-full max-h-[calc(100vh-80px)] h-[calc(100vh-80px)] overflow-auto pl-30 pb-20">
             {children}
           </div>
         </div>}
 
         { !head && modal && <>
-          <div className="w-full">
+          <div className="w-full max-h-[calc(100vh)] h-[calc(100vh)] overflow-auto ">
             {children}
           </div>
         </>}
