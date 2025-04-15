@@ -58,7 +58,7 @@ const AndtSelectStyled = styled.div<{
   width: fit-content;
   display: contents;
   height: ${({ $ht }) => $ht} !important;
-  font-size: 12px;
+  font-size: 14px;
 
   .ant-select {
     height: ${({ $ht }) => $ht} !important;

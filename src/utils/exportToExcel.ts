@@ -38,6 +38,7 @@ export const exportToExcelAndPrint = async (
         return {
           key: item.dataIndex,
           value: item.title,
+          width: item.width,
         };
       } else {
         const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
@@ -46,6 +47,7 @@ export const exportToExcelAndPrint = async (
         return keys.map((key:string, i:number) => ({
           key: key.trim(),
           value: values?.[i]?.trim() || "",
+          width: item.width,
         }));
       }
     });
@@ -88,10 +90,10 @@ export const exportToExcelAndPrint = async (
     return;
   }
 
-  // ✅ "id" 컬럼 제외한 새로운 컬럼 목록
+  // "id" 컬럼 제외한 새로운 컬럼 목록
   const filteredColumns = columns.filter(col => col.dataIndex !== "id");
 
-  // ✅ 데이터 변환 (id 제외)
+  // 데이터 변환 (id 제외)
   const formattedData = data.map((row, rowIndex) => {
     let newRow: Record<string, any> = {};
 
@@ -157,7 +159,7 @@ export const exportToExcelAndPrint = async (
     return newRow;
   });
 
-  // ✅ **엑셀 다운로드 처리**
+  // **엑셀 다운로드 처리**
   // if (actionType === "excel") {
   //   const worksheet = XLSX.utils.json_to_sheet(formattedData);
 
@@ -216,7 +218,7 @@ export const exportToExcelAndPrint = async (
   //   saveAs(excelData, `${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`);
   // }
 
-  // ✅ **프린트 기능**
+  // **프린트 기능**
   if (actionType === "print") {
     let printWindow = window.open("", "_blank")!;
     if (!printWindow) return;

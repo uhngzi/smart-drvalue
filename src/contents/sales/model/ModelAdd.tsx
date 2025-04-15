@@ -57,6 +57,7 @@ import ModelList from "@/contents/base/model/ModelList";
 import BoxHead from "@/layouts/Body/BoxHead";
 import LabelItem from "@/components/Text/LabelItem";
 import cookie from "cookiejs";
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 const ModelAddLayout = () => {
   const router = useRouter();
@@ -398,6 +399,15 @@ const ModelAddLayout = () => {
                         readonly={model?.usedYn}
                       />
                     </div>
+                    <div>
+                      <GlobalMemo
+                        key={model?.id}
+                        id={model?.id ?? ""}
+                        entityName="RnTenantCbizModelEntity"
+                        entityRelation={{RnTenantCbizBizPartnerEntity: true}}
+                        relationIdx=""
+                      />
+                    </div>
                   </div>
                   { cookie.get('company') === 'sy' &&
                   <div className="h-center gap-15">
@@ -549,7 +559,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.thk}
                           onChange={(e)=>handleModelDataChange('thk', e.target.value)}
-                          type="number"
+                          type="number" maxPoint={2}
                           readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
                         />
                       }
@@ -667,7 +677,7 @@ const ModelAddLayout = () => {
                           readonly={model?.usedYn} clear={false}
                         />
                       }
-                      label2="필름번호"
+                      label2="Tool No"
                       children2={
                         <AntdInput
                           value={model?.fpNo} disabled styles={{ht:'32px', bg:'#FFF'}}
@@ -749,7 +759,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.thk}
                           onChange={(e)=>handleModelDataChange('thk', e.target.value)}
-                          type="number"
+                          type="number" maxPoint={2}
                           readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
                         />
                       }
@@ -809,7 +819,7 @@ const ModelAddLayout = () => {
                   model?.usedYn ?? false,
                 )}
                 data={[model]}
-                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
+                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', td_bg:'#FFF', round:'0'}}
                 tableProps={{split:'none'}}
               />
             </BlueBox>

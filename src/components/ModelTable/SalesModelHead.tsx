@@ -24,6 +24,7 @@ import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 
 import BoxHead from "@/layouts/Body/BoxHead";
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 interface Props {
   read?: boolean;
@@ -93,6 +94,7 @@ const SalesModelHead:React.FC<Props> = ({
       if (result.resultCode === "OK_0000") {
         const arr = result.data?.data as modelsType[] ?? [];
         setModelList(arr);
+        console.log(arr);
         setModelSelectList(arr.map((item) => ({
           value: item.id,
           label: item.prdNm,
@@ -136,6 +138,23 @@ const SalesModelHead:React.FC<Props> = ({
               disabled={model.completed ?? read}
             />
           </div>
+          { !model.id?.includes("new") &&
+          <div>
+            <GlobalMemo
+              key={model.id}
+              id={model.id ?? ""}
+              entityName="RnTenantCbizSalesOrderProductEntity"
+              entityRelation={{
+                RnTenantCbizSalesOrderEntity: true,
+                RnTenantCbizModelEntity: true,
+                RnTenantCbizBizPartnerMngMatchEntity: {
+                    RnTenantCbizBizPartnerEntity: true
+                },
+                RnTenantCbizWorksheetEntity: true
+              }}
+              relationIdx={""}
+            />
+          </div>}
         </div>
         <div className="h-center gap-15">
           <Items2
@@ -269,7 +288,7 @@ const SalesModelHead:React.FC<Props> = ({
                 placeholder="관리번호 검색 (3글자 이상)"
               />
             }
-            label2="필름번호"
+            label2="Tool No"
             children2={
               <AntdInput
                 value={model.currPrdInfo?.fpNo}
@@ -346,7 +365,7 @@ const SalesModelHead:React.FC<Props> = ({
               <AntdInput
                 value={model.currPrdInfo?.thk}
                 onChange={(e)=>handleModelDataChange(model.id ?? "", 'currPrdInfo.thk', e.target.value)}
-                type="number"
+                type="number" maxPoint={2}
                 styles={{ht:'32px', bg:'#FFF'}}
                 disabled={model.completed ?? read}
               />

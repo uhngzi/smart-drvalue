@@ -444,7 +444,7 @@ function addPopWorkers(data: any) {
             <span>-</span>
             <span>{detailData.specModel?.prdNm}</span>
             <span>{"("}시작일 : {detailData.wsSchDt ? dayjs(detailData.wsSchDt).format("YYYY-MM-DD"): "-"}</span>
-            <span>납기일 : {detailData.wsExpDt ? dayjs(detailData.wsExpDt).format("YYYY-MM-DD"): "-"}{")"}</span>
+            <span>납기일 : {detailData?.orderProduct?.orderPrdDueDt ? dayjs(detailData.orderProduct?.orderPrdDueDt).format("YYYY-MM-DD"): "-"}{")"}</span>
           </p>
           <div className="flex gap-10 h-center">
             <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() - 1)))}>{"<< 달"}</Button>

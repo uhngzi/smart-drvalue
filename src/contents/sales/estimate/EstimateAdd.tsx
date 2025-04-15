@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
+import Category from "@/assets/svg/icons/category.svg";
 
 import { useEffect, useRef, useState } from "react";
 import { newSalesEstimateProductType, salesEstimateProductType, salesEstimateType } from "@/data/type/sales/order";
@@ -39,6 +40,11 @@ import EstimateModelHead from "./EstimateModelHead";
 import { baseSpecType } from "@/data/type/base/spec";
 import { patchAPI } from "@/api/patch";
 import { changeEstimateNewEdit } from "@/data/type/sales/changeData";
+import { RightTab } from "@/layouts/Body/RightTab";
+import { IconButton } from "@/components/Button/IconButton";
+import AntdDrawer from "@/components/Drawer/AntdDrawer";
+import ModelList from "@/contents/base/model/ModelList";
+import ModelDrawer from "@/contents/base/model/ModelDrawer";
 
 const EstimateAddLayout = () => {
   const router = useRouter();
@@ -194,9 +200,8 @@ const EstimateAddLayout = () => {
 
       if(result.resultCode === "OK_0000") {
         const entity = result.data.data as salesEstimateType;
-        const product = (entity.products ?? []).map((model, index) => ({
+        const product = (entity.products ?? []).sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((model, index) => ({
           ...model,
-          index: index,
         }))
         setFormData(entity);
         setProducts(product);
@@ -287,6 +292,7 @@ const EstimateAddLayout = () => {
         if(result.resultCode === 'OK_0000') {
           showToast("저장 완료", "success");
           const entity = result.data.entity;
+          setFormData(entity);
           if(cf) {
             handleSubmitConfirm(entity.id);
           }
@@ -352,7 +358,7 @@ const EstimateAddLayout = () => {
   }
   // ---------------- 확정 저장 --------------- 끝
 
-  //
+  // 총액 계산
   const [ totAll, setTotAll ] = useState<number>(0);
   useEffect(()=>{
     if(products.length > 0) {
@@ -373,6 +379,34 @@ const EstimateAddLayout = () => {
   }, [products.map((row) => row.cost).join(","),
     products.map((row) => row.selected).join(",")])
 
+  const [modelDrawerSelectedKey, setModelDrawerSelectedKey] = useState<string | null>(null);
+  const [modelDrawerOpen, setModelDrawerOpen] = useState<boolean>(false);
+
+  // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
+  const handleModelChange = (
+    model: modelsType,
+    productId: string,
+    type?: number | null,
+  ) => {
+    const newData = [...products];
+    const index = newData.findIndex(f => f.id === productId);
+    if(index > -1) {
+      newData[index] = {
+        ...newData[index],
+        currPrdInfo:
+          typeof newData[index].currPrdInfo === "string" ? newData[index].currPrdInfo :
+          { ...JSON.parse(newData[index].currPrdInfo ?? "{}"), ...model }.toString(),
+        estimateModelNm: model.prdNm,
+        model: { id : model.id },
+        modelStatus: 
+          type === 0 ? ModelStatus.REPEAT :
+          type === 1 ? ModelStatus.MODIFY :
+          newData[index].modelStatus,
+      };
+      setProducts(newData);
+    }
+  }
+
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<"del" | "cancel" | "discard" | "close" | "error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
@@ -390,7 +424,7 @@ const EstimateAddLayout = () => {
           <Close />
         </p>
       </div>
-      <div className="w-full overflow-auto px-30 pb-20 h-[calc(100vh-95px)]">
+      <div className="w-full overflow-auto pl-30 pb-20 h-[calc(100vh-95px)] v-between-h-center gap-20">
         <div className="w-full h-full">
           {/* 스탭 */}
           <div className="w-full h-80 p-30 v-between-h-center">
@@ -582,6 +616,7 @@ const EstimateAddLayout = () => {
                       model={model} inputRef={inputRef}
                       products={products} setProducts={setProducts}
                       handleModelDataChange={handleModelDataChange}
+                      handleModelChange={handleModelChange}
                       showToast={showToast}
                     />
                     ))}
@@ -653,6 +688,46 @@ const EstimateAddLayout = () => {
             }
           </div>
         </div>
+
+        {/* 우측 탭 */}
+        <RightTab>
+          <IconButton
+            icon={<Category />}
+            size="lg"
+            onClick={()=>{
+              setModelDrawerOpen(true);
+            }}
+          />
+        </RightTab>
+
+        {/* 모델 목록 드로워 */}
+        <AntdDrawer
+          open={modelDrawerOpen}
+          close={()=>{setModelDrawerOpen(false);}}
+          width={700}
+        >
+          <div className="w-full px-20 py-30 flex flex-col gap-20">
+            <div className="v-between-h-center">
+              <LabelMedium label="모델 목록" />
+              <div className="cursor-pointer" onClick={() => setModelDrawerOpen(false)}>
+                <Close/>
+              </div>
+            </div>
+            <ModelDrawer
+              key={formData?.id}
+              type="estimate"
+              setDrawerOpen={setModelDrawerOpen}
+              partnerId={prtId}
+              products={products}
+              selectId={modelDrawerSelectedKey}
+              setSelectId={setModelDrawerSelectedKey}
+              handleModelChange={(model, id, type)=>{
+                handleModelChange(model, id, type);
+                setModelDrawerOpen(false);
+              }}
+            />
+          </div>
+        </AntdDrawer>
       </div>
         
       {/* 거래처 등록 */}

@@ -6,15 +6,19 @@ import { apiAuthResponseType } from "@/data/type/apiResponse";
 import useToast from "@/utils/useToast";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Checkbox, Spin } from "antd";
+import { Button, Checkbox, Empty, Skeleton, Spin } from "antd";
 import { Dayjs } from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import Close from "@/assets/svg/icons/l_close.svg";
 import Back from "@/assets/svg/icons/back.svg";
+import Memo from "@/assets/svg/icons/memo.svg";
 
 import { patchAPI } from "@/api/patch";
+import { TabSmall } from "@/components/Tab/Tabs";
+import AntdSelect from "@/components/Select/AntdSelect";
+import { selectType } from "@/data/type/componentStyles";
 
 type Memo = {
   createdAt?: Date | Dayjs | null;
@@ -25,12 +29,19 @@ type Memo = {
     teamIdx?: string;
     shared?: boolean;
     cancel?: boolean;
-    cancle?: boolean;
     canceldAt?: Date | Dayjs | null;
     empIdx?: string;
     empName?: string;
     canceldEmpName?: string;
   }
+}
+
+enum Entity {
+  RnTenantCbizSalesOrderEntity = "고객발주",
+  RnTenantCbizModelEntity = "모델",
+  RnTenantCbizBizPartnerMngMatchEntity = "업체 담당자",
+  RnTenantCbizBizPartnerEntity = "업체",
+  RnTenantCbizWorksheetEntity = "생산",
 }
 
 interface Props {
@@ -48,11 +59,18 @@ const GlobalMemo:React.FC<Props> = ({
 }) => {
   const { showToast, ToastContainer } = useToast();
 
+  const [selectKey, setSelectKey] = useState<number>(0);
   const [open, setOpen] = useState<boolean>(false);
 
-  // --------------- 리스트 데이터 ------------ 끝
+  useEffect(()=>{
+    if(id && entityName && open)  handleList();
+  }, [open]);
+
+  // --------------- 리스트 데이터 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<Memo[]>([]);
+  const [relationOptions, setRelationOptions] = useState<selectType[]>([]);
+  const [selectedRelationKey, setSelectedRelationKey] = useState<string | null>(null);
   const [relationsData, setRelationsData] = useState<any[]>([]);
   const handleList = async () => {
     try {
@@ -73,13 +91,25 @@ const GlobalMemo:React.FC<Props> = ({
         
       if(result.resultCode === "OK_0000") {
         const memos = (result.data?.data?.memos ?? []);
-        const relations = (result.data?.data?.relations ?? []);
+        const relations = (result.data?.data?.relations as any[] ?? []);
+        setRelationsData(relations);
+
+        let keys:string[] = [];
+        relations.map((item) => {
+          keys.push(Object.keys(item).toString());
+        })
+
+        const relationOptions = keys.map((key) => ({
+          value: key,
+          label: Entity[key as keyof typeof Entity] ?? key, // 없으면 key 그대로 표시
+        }));
+        setRelationOptions(relationOptions);
+        if(keys.length > 0 )  setSelectedRelationKey(keys[0]);
 
         setData(memos);
         setRelationsData(relations);
         setDataLoading(false);
 
-        console.log(newInputRef);
         if(newInputRef && newInputRef.current) {
           newInputRef.current.focus();
         }
@@ -92,15 +122,10 @@ const GlobalMemo:React.FC<Props> = ({
       console.log("CATCH ERROR :: ", e);
     }
   }
-
-  useEffect(()=>{
-    if(id && entityName && open)
-      handleList();
-  }, [open])
-  // --------------- 리스트 데이터 ------------ 시작
+  // --------------- 리스트 데이터 ------------ 끝
 
   // ---------------- 메모 등록 -------------- 시작
-  const handleSubmit = async () => {
+  const handleSubmit = async (id:string) => {
     try {
       const result = await postAPI({
         type: 'core-d3',
@@ -128,7 +153,7 @@ const GlobalMemo:React.FC<Props> = ({
   }
   // ---------------- 메모 등록 -------------- 끝
   
-  // ---------------- 메모 등록 -------------- 시작
+  // ---------------- 메모 삭제 -------------- 시작
   const handleDelete = async (id:string, cancel:boolean) => {
     try {
       const result = await patchAPI({
@@ -154,10 +179,9 @@ const GlobalMemo:React.FC<Props> = ({
       console.log("CATCH ERROR :: ", e);
     }
   }
-  // ---------------- 메모 등록 -------------- 끝
+  // ---------------- 메모 삭제 -------------- 끝
 
   const anchorRef = useRef<HTMLButtonElement | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const handleClick = () => {
@@ -193,8 +217,8 @@ const GlobalMemo:React.FC<Props> = ({
       <Button
         ref={anchorRef}
         onClick={handleClick}
-        icon={<PlusOutlined />}
-        className="border-0"
+        icon={<p className="w-16 h-16"><Memo /></p>}
+        className="border-0 shadow-none w-32 h-32"
       />
 
       <AnimatePresence>
@@ -212,14 +236,21 @@ const GlobalMemo:React.FC<Props> = ({
             }}
           >
             <div className="v-between-h-center">
-              <LabelMedium label="메모 목록 및 등록"/>
+              <TabSmall
+                items={[{
+                  key:0, text: "메모 목록 및 등록"
+                }, {
+                  key:1, text: "관련 메모"
+                }]}
+                selectKey={selectKey} setSelectKey={setSelectKey}
+              />
               <CloseOutlined
                 className="w-16 h-16 cursor-pointer"
                 onClick={handleClick}
               />
             </div>
-            {dataLoading && <Spin />}
-            {!dataLoading && <>
+            {dataLoading && <Skeleton active />}
+            { selectKey === 0 && !dataLoading && <>
             <div className="h-center">
               <div className="relative flex-1 pr-10">
                 <input
@@ -236,7 +267,7 @@ const GlobalMemo:React.FC<Props> = ({
                   onKeyDown={(e) => {
                     if (e.nativeEvent.isComposing) return;
                     if(e.key === "Enter") {
-                      handleSubmit();
+                      handleSubmit(id);
                     }
                   }}
                 />
@@ -253,14 +284,14 @@ const GlobalMemo:React.FC<Props> = ({
                 />
               </div>
             </div>
-            { data.map((item, index) => (
+            { data.length < 1 && <Empty description="메모가 없습니다." /> }
+            { data.length > 0 && data.map((item, index) => (
             <div
               key={index}
-              className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${item.metaData?.cancle ? "line-through text-gray-400" : ""}`}
-              style={item.metaData?.cancel ? {} : {}}
+              className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${item.metaData?.cancel ? "line-through text-gray-400" : ""}`}
             >
               {item.memo}
-              { !item.metaData?.cancle ?
+              { !item.metaData?.cancel ?
               <p
                 className="w-12 h-12 text-[#00000040] cursor-pointer"
                 onClick={()=>{
@@ -281,6 +312,91 @@ const GlobalMemo:React.FC<Props> = ({
               }
             </div>
             ))}</>}
+            { selectKey === 1 && (() => {
+              if(!selectedRelationKey) return  <Empty description="관련 메모가 없습니다."/>;
+
+              const selectedMemos = relationsData.find(item => selectedRelationKey in item)?.[selectedRelationKey] ?? [];
+
+              return (
+                <>
+                  <AntdSelect
+                    options={relationOptions}
+                    value={selectedRelationKey}
+                    onChange={(value) => setSelectedRelationKey(value + "")}
+                  />
+
+                  {/* <div className="h-center">
+                    <div className="relative flex-1 pr-10">
+                      <input
+                        ref={newInputRef}
+                        className="w-full h-36 px-5 rounded-2 border-1 border-line focus:outline-none focus:ring-2 focus:ring-[#0593ff20]"
+                        value={value}
+                        onChange={(e)=>{
+                          setValue(e.target.value);
+                        }}
+                        onFocus={()=>{
+                          setFocus(true);
+                        }}
+                        onBlur={()=>setFocus(false)}
+                        onKeyDown={(e) => {
+                          if(e.nativeEvent.isComposing) return;
+                          if(e.key === "Enter" && selectedMemos[0].extraKey) {
+                            handleSubmit(selectedMemos[0].extraKey);
+                          }
+                        }}
+                      />
+                      {focus && value.length < 1 && (
+                        <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
+                          엔터 시 저장
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col v-h-center">
+                      <span className="text-12">공개</span>
+                      <Checkbox
+                        checked={shared} onChange={(e)=>setShared(e.target.checked)}
+                      />
+                    </div>
+                  </div> */}
+                  {selectedRelationKey && (
+                    <div className="flex flex-col gap-6 mt-10">
+                      {selectedMemos.length === 0 ? (
+                        <Empty description="메모가 없습니다." />
+                      ) : (
+                        selectedMemos.map((memoItem: Memo, index: number) => (
+                        <div key={memoItem.id+":"+index} className="w-full flex flex-col">
+                          <div
+                            key={index + ":" + memoItem.id}
+                            className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${
+                              memoItem.metaData?.cancel ? "line-through text-gray-400" : ""
+                            }`}
+                          >
+                            {memoItem.memo}
+                            {!memoItem.metaData?.cancel ? (
+                              <p
+                                className="w-12 h-12 text-[#00000040] cursor-pointer"
+                                onClick={() => handleDelete(memoItem.id ?? "", true)}
+                              >
+                                <Close />
+                              </p>
+                            ) : (
+                              <p
+                                className="w-12 h-12 text-[#FF000098] cursor-pointer"
+                                onClick={() => handleDelete(memoItem.id ?? "", false)}
+                              >
+                                <Back />
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+              })()
+            }
           </motion.div>
         )}
       </AnimatePresence>

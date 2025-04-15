@@ -672,7 +672,7 @@ const SayangSampleAddPage: React.FC & {
                 view,
               )}
               data={detailData.specModels}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px'}}
               tableProps={{split:'none'}}
               loading={detailDataLoading}
             />

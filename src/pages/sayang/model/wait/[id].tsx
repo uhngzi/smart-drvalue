@@ -453,7 +453,7 @@ const SayangModelAddPage: React.FC & {
         <div className="w-[calc(100%-100px)] flex flex-col gap-40">
           {/* 수주 탭 */}
           <Popup
-            className="overflow-auto !gap-0"
+            className="!gap-0"
           >
             <LabelMedium label="모델 등록 및 확정" className="mb-20"/>
             <DividerH />
@@ -504,7 +504,7 @@ const SayangModelAddPage: React.FC & {
                       selectId,
                     )}
                     data={[model]}
-                    styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px'}}
+                    styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px'}}
                     tableProps={{split:'none'}}
                   />
                 </div>
@@ -548,7 +548,7 @@ const SayangModelAddPage: React.FC & {
 
           {/* 고객 발주 목록 */}
           <Popup
-            className="overflow-auto !gap-0"
+            className="!gap-0"
           >
             <LabelMedium label="고객발주 모델" className="mb-20"/>
             <DividerH />
@@ -596,7 +596,7 @@ const SayangModelAddPage: React.FC & {
                         surfaceSelectList,
                       )}
                       data={[model]}
-                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
+                      styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', td_bg:'#FFF', round:'0'}}
                       tableProps={{split:'none'}}
                     />
                   </div>

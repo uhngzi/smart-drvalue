@@ -324,7 +324,7 @@ export const WKStatusProcClmn = (
     title: <div>
       <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds?.length === totalData}/>
     </div>,
-    width: 80,
+    width: 50,
     dataIndex: 'check',
     key: 'check',
     align: 'center',
@@ -357,7 +357,7 @@ export const WKStatusProcClmn = (
   },
   {
     title: '긴급',
-    width: 80,
+    width: 60,
     dataIndex: 'orderProduct.order.hotGrade',
     key: 'orderProduct.order.hotGrade',
     align: 'center',
@@ -374,14 +374,14 @@ export const WKStatusProcClmn = (
   },
   {
     title: '재투입',
-    width: 80,
+    width: 60,
     dataIndex: 'rein',
     key: 'rein',
     align: 'center',
   },
   {
     title: '반복',
-    width: 80,
+    width: 60,
     dataIndex: 'specModel.modelMatch.modelStatus',
     key: 'specModel.modelMatch.modelStatus',
     align: 'center',
@@ -430,7 +430,7 @@ export const WKStatusProcClmn = (
     tooltip: "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           if(cookie.get('company') !== 'sy') {
             setSelect?.(record);
@@ -801,7 +801,7 @@ export const WkStatusOutClmn = (
     title: <div>
       <Checkbox onChange={handleCheckedAllClick} checked={totalData > 0 && checkeds.length === totalData}/>
     </div>,
-    width: 80,
+    width: 50,
     dataIndex: 'check',
     key: 'check',
     align: 'center',

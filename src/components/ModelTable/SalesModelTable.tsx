@@ -158,7 +158,7 @@ const SalesModelTable:React.FC<Props> = ({
     if(index > -1) {
       newData[index] = {
         ...newData[index],
-        currPrdInfo: { ...newData[index].currPrdInfo, ...model },
+        currPrdInfo: { ...newData[index].currPrdInfo, ...model, modelId: model.id },
         orderTit: model.prdNm,
         modelId: model.id,
         prdMngNo: model.prdMngNo,
@@ -374,7 +374,7 @@ const SalesModelTable:React.FC<Props> = ({
                 selectId,
               )}
               data={[model]}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
+              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', td_bg:'#FFF', round:'0'}}
               tableProps={{split:'none'}}
             />
           </div>

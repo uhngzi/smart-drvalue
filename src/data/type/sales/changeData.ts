@@ -32,7 +32,7 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
       currPrdInfo: product.currPrdInfo,
       modelId: product.modelId,
       modelStatus: product.modelStatus,
-      orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+      orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs(),
       // orderNo: index.toString(),
       orderTit: product.orderTit,
       prtOrderNo: product.prtOrderNo,
@@ -51,6 +51,7 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
 
 // 영업 - 고객발주 내 수정 시 값 변환
 export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrderProcuctCUType[], me:User | null) => {
+  console.log(dayjs(formData.orderDt).format("YYYY-MM-DD"));
   const jsonData = {
     order: {
       id: formData.id,
@@ -58,7 +59,7 @@ export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrde
       partnerManagerId: formData.partnerManagerId,
       orderName: formData.orderName,
       totalOrderPrice: formData.totalOrderPrice,
-      orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+      orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs(),
       orderRepDt: formData.orderRepDt,
       orderTxt: formData.orderTxt,
       empId: me?.id ?? "1",
@@ -126,8 +127,9 @@ export const changeEstimateNewEdit = (
     empId: meId,
     hotGrade: formData?.hotGrade ? formData.hotGrade : HotGrade.NORMAL,
     files: fileIdList,
-    products: products.map((item) => ({
+    products: products.map((item, index) => ({
       id: item.id?.includes("new") ? undefined : item.id,
+      // ordNo: index,
       currPrdInfo: "",
       tempPrdInfo: "",
       selected: item.selected,

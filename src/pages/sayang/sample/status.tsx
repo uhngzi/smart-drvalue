@@ -140,7 +140,7 @@ const SayangSampleStatPage: React.FC & {
           <AntdTableEdit
             columns={specStatusClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)}
             data={data}
-            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
             loading={dataLoading}
           />
         </List>

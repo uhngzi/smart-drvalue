@@ -61,8 +61,7 @@ import { Popup } from "@/layouts/Body/Popup";
 import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import cookie from "cookiejs";
-import { changeModelAddNewModel, changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
-import { modelReq, orderModelType } from "@/data/type/sayang/models";
+import { changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
 import { useBase } from "@/data/context/BaseContext";
 
 const OrderAddLayout = () => {
@@ -208,7 +207,7 @@ const OrderAddLayout = () => {
         partnerManagerId: data.prtInfo?.mng?.id,
         orderName: data?.orderNm,
         orderDt: dayjs(data?.orderDt, 'YYYY-MM-DD'),
-        orderRepDt: data?.orderRepDt,
+        orderRepDt: data?.orderRepDt ? dayjs(data?.orderRepDt, 'YYYY-MM-DD') : null,
         orderTxt: data?.orderTxt,
         totalOrderPrice: data?.totalOrderPrice,
         empId: data?.emp?.id,

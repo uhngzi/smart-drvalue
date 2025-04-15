@@ -359,7 +359,7 @@ const SayangSampleListPage: React.FC & {
               router
             )}
             data={ingData}
-            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
             loading={ingDataLoading}
           />
         </List>
@@ -398,7 +398,7 @@ const SayangSampleListPage: React.FC & {
               sayangPopOpen,
             )}
             data={waitData}
-            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
             loading={waitDataLoading}
           />
         </List>

@@ -398,7 +398,7 @@ const WKStatusWIPPage: {
         <AntdTableEdit
           columns={WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)}
           data={data}
-          styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
           loading={dataLoading}
         />
       </List>
@@ -478,7 +478,6 @@ const WKStatusWIPPage: {
               td_ht: "50px",
               round: "0",
               th_fw: "bold",
-              fs: "12px",
               td_pd: "0",
               line: "n",
             }}

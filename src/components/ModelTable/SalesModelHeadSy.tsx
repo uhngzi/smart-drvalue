@@ -296,7 +296,7 @@ const SalesModelHeadSy:React.FC<Props> = ({
               <AntdInput
                 value={model.currPrdInfo?.thk}
                 onChange={(e)=>handleModelDataChange(model.id ?? "", 'currPrdInfo.thk', e.target.value)}
-                type="number"
+                type="number" maxPoint={2}
                 styles={{ht:'32px', bg:'#FFF'}}
                 disabled={model.completed ?? read}
               />

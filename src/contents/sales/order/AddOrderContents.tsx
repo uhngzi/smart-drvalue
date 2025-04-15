@@ -138,7 +138,7 @@ const AddOrderContents: React.FC<Props> = ({
                 onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
                 styles={{br:"2px",bc:"#D5D5D5"}}
                 className="w-full h-36"
-                suffixIcon={"cal"}
+                suffixIcon={"cal"} allowClear={false}
               />
             </div>
             <div className="flex flex-col gap-8">

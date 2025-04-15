@@ -61,7 +61,7 @@ export const BuyCostOutClmn = (
     tooltip: "모델명을 클릭하면 외주처 단가를 등록할 수 있어요",
     render: (_, record) => (
       <div
-        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           setSelect(record);
         }}
@@ -808,7 +808,7 @@ export const BuyOrderClmn = (
     tooltip: "발주명을 클릭하시면 상세 내용 및 수정을 할 수 있어요",
     render: (value:string, record:buyOrderType) => (
       <div
-        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           router.push(`/buy/order/${record.id ?? "new"}`);
         }}

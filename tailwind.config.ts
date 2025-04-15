@@ -18,6 +18,7 @@ export default {
         'point1': '#4880FF',
         'point2': '#1814F3',
         'point3': '#1677FF',
+        'point4' : '#E9EDF5',
 
         'orange': '#E99151',
         'rOrange': '#ffe6d2',

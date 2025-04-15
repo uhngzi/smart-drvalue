@@ -78,7 +78,7 @@ const SayangModelWaitPage: React.FC & {
           <AntdTableEdit
             columns={sayangModelWaitClmn(dataIng.length, router, setPartnerData, setPartnerMngData)}
             data={dataIng}
-            styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+            styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
             loading={dataLoading}
           />
         </List>
@@ -93,7 +93,7 @@ const SayangModelWaitPage: React.FC & {
           <AntdTableEdit
             columns={sayangModelWaitClmn(dataWait.length, router, setPartnerData, setPartnerMngData)}
             data={dataWait}
-            styles={{ th_bg: '#F2F2F2', td_bg: '#FFFFFF', round: '0px', line: 'n' }}
+            styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
             loading={dataLoading}
           />
         </List>

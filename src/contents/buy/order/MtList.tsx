@@ -251,7 +251,7 @@ const MtList:React.FC<Props> = ({
                 <AntdInput
                   value={item.mtOrderThk}
                   onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderThk", e.target.value)}
-                  type="number" placeholder="두께 입력" readonly={read}
+                  type="number" placeholder="두께 입력" readonly={read} maxPoint={2}
                 />
               }
             />
