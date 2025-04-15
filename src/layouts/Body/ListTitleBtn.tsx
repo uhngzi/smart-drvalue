@@ -27,4 +27,4 @@ const ListTitleBtn: React.FC<Props> = ({
   )
 }
 
-export default ListTitleBtn
+export default ListTitleBtn;
