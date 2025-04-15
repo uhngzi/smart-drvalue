@@ -99,6 +99,8 @@ const ClientCuListPage: React.FC & {
   const [resultText, setResultText] = useState<string>('');
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
+  const [addModalInfoList] = useState<any[]>(MOCK.clientItems.CUDPopItems);
+
     //등록 모달창 데이터
   const [ newData, setNewData ] = useState<partnerCUType>(newDataPartnerType);
   // 거래처 담당자 데이터
@@ -129,7 +131,24 @@ const ClientCuListPage: React.FC & {
    }
 
     //버튼 함수
-  const handleSubmitNewData = async (data: partnerCUType) => {
+  const handleSubmitNewData = async (data: any) => {
+    for(const key in data) {
+      const inputType = typeof(data[key]);
+      const label = addModalInfoList.find(v => v.name === key)?.label ?? key;
+  
+      if (inputType === 'object') {
+        if (data[key]?.id === '' || data[key]?.id === null) {
+          showToast(`${label}을(를) 입력해 주세요`, 'error');
+          return; 
+        }
+      } else {
+        if (data[key] === '' || data[key] === null || data[key] === undefined) {
+          showToast(`${label}을 입력해 주세요`, 'error');
+          return; 
+        }
+      }
+    }
+    
     try {
       if(data?.id){
         const id = data.id;
