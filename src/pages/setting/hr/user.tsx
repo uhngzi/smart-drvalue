@@ -252,6 +252,8 @@ const HrUserListPage: React.FC & {
             showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
           }
         }
+        if(result) refetch();
+
       } else {
         console.log(updatedAddList)
         const data = updatedAddList.map((item) => (
@@ -302,6 +304,7 @@ const HrUserListPage: React.FC & {
             }
           }
         }
+        if(result) metaRefetch();
       }
     }
     console.log(result);
@@ -310,8 +313,6 @@ const HrUserListPage: React.FC & {
       setEditList([]);
       setDeleteList([]);
       showToast('저장이 완료되었습니다.', 'success');
-      refetch();
-      metaRefetch();
     }
   }
 
@@ -450,7 +451,8 @@ const HrUserListPage: React.FC & {
       <BaseTreeCUDModal
         title={{name: `${newTitle != null && groupType[newTitle].name} 설정`}}
         open={newOpen} 
-        setOpen={setNewOpen} 
+        setOpen={setNewOpen}
+        isChild={newTitle == 'dept' ? true : false}
         data={newData}
         onClose={() => modalClose()}
         onSubmit={onTreeSubmit}
