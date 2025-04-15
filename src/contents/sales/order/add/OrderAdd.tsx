@@ -207,7 +207,7 @@ const OrderAddLayout = () => {
         partnerManagerId: data.prtInfo?.mng?.id,
         orderName: data?.orderNm,
         orderDt: dayjs(data?.orderDt, 'YYYY-MM-DD'),
-        orderRepDt: data?.orderRepDt,
+        orderRepDt: data?.orderRepDt ? dayjs(data?.orderRepDt, 'YYYY-MM-DD') : null,
         orderTxt: data?.orderTxt,
         totalOrderPrice: data?.totalOrderPrice,
         empId: data?.emp?.id,

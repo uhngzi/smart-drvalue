@@ -8,7 +8,7 @@ import koKR from "antd/locale/ko_KR";
 
 import AntdSelect from "../Select/AntdSelect";
 import AntdInput from "../Input/AntdInput";
-import AntdAlertModal, { AlertType } from "../Modal/AntdAlertModal";
+import AntdAlertModal from "../Modal/AntdAlertModal";
 
 // 셀 수정을 위한 Props (컴포넌트 내 onCell에서 적용됨)
 interface EditableCellProps {
