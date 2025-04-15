@@ -18,6 +18,7 @@ interface Props {
   childCheck?: boolean;
   isChild?: boolean;
   onChange?: (e: CheckboxChangeEvent, matchId: any) => void;
+  notCollapsed?: boolean;
 }
 
 const CustomTreeCheck:React.FC<Props> = ({
@@ -27,17 +28,41 @@ const CustomTreeCheck:React.FC<Props> = ({
   childCheck = false,
   isChild = false,
   onChange,
+  notCollapsed,
 }) => {
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
   const [ list, setList ] = useState<treeType[]>([]);
 
   const [hoverId, setHoverId] = useState<string | null>(null);
 
+  const [isSearch, setIsSearch] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
+
   useEffect(()=>{
     if(data.length > 0) {
       setList(data);
     }
   }, [data])
+
+  const treeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    if(value === '') {
+      setList(data);
+    } else {
+      // list와 list 안에 child를 flat하게 만들어서 검색
+      const flatTree = data.flatMap(node => [
+          { id: node.id, label: node.label, open: node.open }, // 현재 노드 포함
+          ...(node.children?.map(child => ({
+            id: child.id,
+            label: child.label,
+            open: node.open, // 부모의 `open` 상태를 유지할지 결정
+          })) ?? []) // children을 추가
+        ]);
+  
+      setList(flatTree.filter(item => item.label.includes(value)));
+    }
+  }
 
   const handleShowList = (id: string) => {
     setList(list.map((item) => 
@@ -56,13 +81,29 @@ const CustomTreeCheck:React.FC<Props> = ({
       <div className="v-between-h-center ">
         <p>전체 ({list.length})</p>
         <div className="h-center gap-8">
-          <p className="w-16 h-16 cursor-pointer" style={{color:'#00000073'}}>
-            <Search />
-          </p>
-          <p className="cursor-pointer flex h-center gap-3" onClick={handleCollapseAll}>
+          {!isSearch ? (
+            <p className="w-16 h-16 cursor-pointer" style={{color:'#00000073'}} onClick={() => setIsSearch(true)}>
+              <Search />
+            </p>
+          ) : (
+            <div className="w-full h-35 flex gap-10 px-5 items-center" style={{border:'1px solid #09BB1B'}}>
+              <p className="w-24 h-24"><Search /></p>
+              <input
+                className="h-full focus:outline-none"
+                style={{border:'0'}}
+                value={searchText}
+                onChange={(e) => treeSearch(e)}
+                onBlur={() => {setSearchText(''); setIsSearch(false); setList(data);}}
+                placeholder="검색"
+              />
+            </div>
+          )}
+
+          { !notCollapsed &&
+          <p className="cursor-pointer flex h-center gap-3" onClick={handleCollapseAll} >
             { collapsedAll ? <Button size="small" type="text" style={{color:'#00000073'}}><AllOpen /> 모두 펼치기</Button> : 
-            <Button size="small" type="text" style={{color:'#00000073'}}><AllClose /> 모두 접기</Button> }
-          </p>
+              <Button size="small" type="text" style={{color:'#00000073'}}><AllClose /> 모두 접기</Button> }
+          </p> }
         </div>
       </div>
       <div>

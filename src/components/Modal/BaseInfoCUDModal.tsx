@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
+import { set } from "lodash";
 
 interface Option {
   value: string | number | boolean ;
@@ -82,19 +83,27 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   const [ifChildList, setIfChildList] = useState<any>([]); // select의 child data
 
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
-  
+  const dataRef = useRef<{ [key: string]: any }>({})
+  const getData = () => ({...dataRef.current})
+
+  function setData (field:string, value:any) {
+    dataRef.current[field] = value
+  }
   useEffect(() => {
-    console.log(data)
+    dataRef.current = data
     items.forEach((item) => {
       if (item.type === "select" && item?.child) {
         const childData = item.option?.find((f) => f.value === data[item.name])?.children;
         setIfChildList(childData)
       }
     })
-    setFormData(data);
   },[data]);
 
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
+
+  useEffect(()=>{
+    setFormData(data);
+  }, [data])
   
   function handleInputChange(itemName: string, newValue: string) {
     let value = newValue;
@@ -104,6 +113,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
       value = inputFax(value);
     }
     setFormData(prev => ({ ...prev, [itemName]: value }));
+    setData(itemName, value);
   }
 
   const handleSearchAddress = (key: string) => {
@@ -115,7 +125,11 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
       if (inputElement) {
         inputElement.value = data.roadAddress;  // input의 value 속성을 변경해야 반영됨
       }
+      setData(key, data.roadAddress);
       setFormData(prev => ({ ...prev, [key]: data.roadAddress }));
+
+      setData("prtZip", data.zonecode);
+      setFormData(prev => ({ ...prev, prtZip: data.zonecode }));
       },
     }).open();
   };
@@ -172,8 +186,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           
                           <Input 
                             name={item.name}
-                            key={data.id}
-                            defaultValue={formData[item.name]}                            
+                            key={item.name}
+                            value={formData[item.name] || ''}                          
                             placeholder={item?.placeholder}
                             readOnly={true}
                           />
@@ -181,28 +195,30 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                       )}
                       {item.type === "input" && (
                         <Input 
-                          key={data?.id}
                           name={item.name}
                           value={formData[item.name] || ''}
                           onChange={(e) => {
                             handleInputChange(item.name, e.target.value)
                             if(item.name === "prtRegCd") {
                               const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
-                              if(csData)  setCdChk(true);
-                              else        setCdChk(false);
-                            } else {
+                              
+                              setCdChk(!!csData); // csData가 존재하면 true, 아니면 false
+
+                              /*if(csData)  setCdChk(true);
+                              else        setCdChk(false);*/
+                            }/* else {
                               setCdChk(false);
-                            }
+                            }*/
                           }}
                           placeholder={item.placeholder}
                         />
                       )}
                       {item.type === "password" && (
                         <Input.Password 
-                          key={data?.id}
                           name={item.name}
                           value={formData[item.name] || ''}
                           onChange={(e) => {
+                            setData(item.name, e.target.value);
                             setFormData(prev => ({ ...prev, [item.name]: e.target.value }));
                           }}
                           placeholder={item.placeholder}
@@ -215,6 +231,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           key={item?.isChild ? ifChildList?.[0]?.value : item.name.includes(".") ? formData[item.name.split(".")[0]]?.id : (formData[item.name] || null)}
                           defaultValue={item.name.includes(".") ? formData[item.name.split(".")[0]]?.id : (item?.isChild ? ifChildList?.find((c:any) => c.value === formData[item.name])?.label : formData[item.name] || null)}
                           onChange={(value) => {
+                            setData(item.name, value)
                             setFormData(prev => ({ ...prev, [item.name]: value }));
                             if(item.child) {
                               const childData = item.option?.find((f) => f.value === value)?.children;
@@ -231,7 +248,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           options={item.option}
                           key={formData[item.name]}
                           defaultValue={formData[item.name]}
-                          onChange={(value) => {setFormData(prev => ({ ...prev, [item.name]: value }))}}
+                          onChange={(value) => {setData(item.name, value)}}
                         />
                       )}
                       {}
@@ -241,7 +258,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           placeholder={item?.placeholder}
                           className="w-full !rounded-0 h-32"
                           onChange={(value) => {
-                            setFormData(prev => ({ ...prev, [item.name]: dayjs(value).format("YYYY-MM-DD") }));
+                            setData(item.name, dayjs(value).format("YYYY-MM-DD"));
+                            setFormData(prev => ({ ...prev, [item.name]: value }));
                           }}
                           defaultValue={formData[item.name] ? dayjs(formData[item.name]) : null}
                           suffixIcon={<Calendar/>}
@@ -272,7 +290,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         이미 존재하는 식별코드입니다.
                       </div> :
                       // 영문 입력 체크
-                      formData[item?.name] && item.name === "mtEnm" && !isValidEnglish(formData[item?.name]?.toString()) ?
+                      formData[item?.name] &&
+                      (["mtEnm", "prtEngNm", "prtEngSnm"].includes(item.name)) &&
+                      !isValidEnglish(formData[item?.name]?.toString())?
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         영문만 입력 가능합니다.
@@ -292,7 +312,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                     showToast("이미 존재하는 식별코드입니다.", "error");
                     return;
                   }
-                  onSubmit(formData);
+                  onSubmit(getData());
                 }}
                 className="w-full flex h-center gap-8 !h-[50px]" 
                 style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
@@ -312,7 +332,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                   showToast("이미 존재하는 식별코드입니다.", "error");
                   return;
                 }
-                onSubmit(formData)
+                onSubmit(getData())
               }}
               className="w-full flex h-center gap-8 !h-[50px]" 
               style={{background: 'linear-gradient(90deg, #008A1E 0%, #03C75A 100%)'}}>
@@ -328,7 +348,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
             contents="데이터를 삭제하시겠습니까?."
             okText="삭제"
             cancelText="취소"
-            onOk={()=> {setDeleteConfirm(false); onDelete(formData?.id)}}
+            onOk={()=> {setDeleteConfirm(false); onDelete(getData()?.id)}}
           />
         </StyledCardInputList>
       }

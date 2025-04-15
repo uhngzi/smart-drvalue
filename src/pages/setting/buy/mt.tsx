@@ -21,6 +21,7 @@ import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import { CUtreeType, selectType, treeType } from "@/data/type/componentStyles";
 import { materialCUType, materialGroupType, materialType, newMaterialCUType, setMaterialCUType } from "@/data/type/base/mt";
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import { isValidEnglish } from "@/utils/formatEnglish";
 import useToast from "@/utils/useToast";
 import { useBase } from "@/data/context/BaseContext";
 import CustomTree from "@/components/Tree/CustomTree";
@@ -150,21 +151,28 @@ const BuyMtListPage: React.FC & {
     }))
     // data의 value가 비어있는지 확인하는 유효성검사
     for(const key in data) {
-      console.log(data[key], typeof(data[key]))
-      const inputType = typeof(data[key])
+      const inputType = typeof(data[key]);
+
       if(inputType === 'object') {
         if(data[key].id === '' || data[key].id === null) {
-          showToast('원자재 그룹을 입력해주세요.', 'error');
-          return;
+          const label = addModalInfoList.find(v => v.name === key)?.label;
+          showToast(`${label}을(를) 입력해 주세요`, 'error');
+          return; 
         }
       }else{
         if(data[key] === '') {
-          const label = addModalInfoList.find(v => v.name === key).label
+          const label = addModalInfoList.find(v => v.name === key)?.label;
           showToast(`${label}을 입력해 주세요`, 'error');
-          return;
+          return; 
         }
       }
     }
+    
+    if (data.mtEnm && !isValidEnglish(data.mtEnm)) {
+      showToast('원자재 영문명은 영문만 입력 가능합니다.', 'error');
+      return; 
+    }
+    
     try {
       const supplierIdxs = data?.materialSuppliers
       const id = data.id;
@@ -407,6 +415,7 @@ const BuyMtListPage: React.FC & {
               setDelList={setDeleteList}
               isChild={false}
               isCheckUse={{checkId: groupCheck, setCheckId: treeCheck}}
+              //notCollapsed={true}
             />
           </div>
           <div>
@@ -503,7 +512,7 @@ const BuyMtListPage: React.FC & {
 
       <BaseInfoCUDModal
         title={{name: `원자재 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
-        open={newOpen} 
+        open={newOpen}
         setOpen={setNewOpen} 
         onClose={() => modalClose()}
         items={addModalInfoList} 

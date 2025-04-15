@@ -38,6 +38,7 @@ import Plus from "@/assets/svg/icons/s_plus.svg";
 
 import { MoreOutlined } from "@ant-design/icons";
 import useToast from "@/utils/useToast";
+import { isValidEnglish } from "@/utils/formatEnglish";
 import AntdInput from "@/components/Input/AntdInput";
 import _ from "lodash";
 
@@ -99,6 +100,8 @@ const ClientCuListPage: React.FC & {
   const [resultText, setResultText] = useState<string>('');
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
+  const [addModalInfoList] = useState<any[]>(MOCK.clientItems.CUDPopItems);
+
     //등록 모달창 데이터
   const [ newData, setNewData ] = useState<partnerCUType>(newDataPartnerType);
   // 거래처 담당자 데이터
@@ -129,7 +132,32 @@ const ClientCuListPage: React.FC & {
    }
 
     //버튼 함수
-  const handleSubmitNewData = async (data: partnerCUType) => {
+  const handleSubmitNewData = async (data: any) => {
+    for(const key in data) {
+      const inputType = typeof(data[key]);
+      const label = addModalInfoList.find(v => v.name === key)?.label ?? key;
+  
+      if (inputType === 'object') {
+        if (data[key]?.id === '' || data[key]?.id === null) {
+          showToast(`${label}을(를) 입력해 주세요`, 'error');
+          return; 
+        }
+      } else {
+        if (data[key] === '' || data[key] === null || data[key] === undefined) {
+          showToast(`${label}을 입력해 주세요`, 'error');
+          return; 
+        }
+      }
+      if (data.prtEngNm && !isValidEnglish(data.prtEngNm)) {
+        showToast('영문만 입력 가능합니다.', 'error');
+        return; 
+      }
+      if (data.prtEngSNm && !isValidEnglish(data.prtEngSNm)) {
+        showToast('영문만 입력 가능합니다.', 'error');
+        return; 
+      }
+    }
+    
     try {
       if(data?.id){
         const id = data.id;
@@ -329,7 +357,15 @@ const ClientCuListPage: React.FC & {
                   className="w-full h-full h-center cursor-pointer"
                   onClick={()=>{
                     setNewData(setDataPartnerType(record));
-                    setPrtData(record.managers);
+                    if(record.managers.length === 0) {
+                      setPrtData([
+                        {
+                          id: "default",
+                          prtMngNm: "기본1",
+                        },
+                      ]);             
+                    }
+                    else setPrtData(record.managers);
                     setNewOpen(true);
                   }}
                 >
@@ -340,8 +376,8 @@ const ClientCuListPage: React.FC & {
             {
               title: '식별코드',
               width: 130,
-              dataIndex: 'prtTypeEm',
-              key: 'prtTypeEm',
+              dataIndex: 'prtRegCd',
+              key: 'prtRegCd',
               align: 'center',
             },
             {
@@ -469,6 +505,8 @@ const ClientCuListPage: React.FC & {
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}
         addCustom = {
+          newData?.id
+          ? (            
           <>
             <div className="w-full flex justify-between items-center h-[50px]">
               <div className="flex items-center gap-10">
@@ -568,9 +606,11 @@ const ClientCuListPage: React.FC & {
                 </div>
               ))}
             </section>
-          </>
+          </> 
+          ) 
+          : <></>
         }
-        />
+      />
         
       {/* <AntdModal
         title={"거래처 등록"}

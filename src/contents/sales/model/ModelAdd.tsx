@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Tooltip } from "antd";
 import { patchAPI } from "@/api/patch";
@@ -87,6 +87,15 @@ const ModelAddLayout = () => {
   } = useBase();
 
   const [model, setModel] = useState<salesModelsType | null>(null);
+
+  const noreset = useRef({ orderPrtNo: "", remarks: "" });
+  useEffect(() => {
+    noreset.current = {
+      orderPrtNo: model?.orderPrtNo ?? "",
+      remarks: model?.remarks ?? ""
+    };
+
+}, [model?.orderPrtNo, model?.remarks]);
 
   const [updateChk, setUpdateChk] = useState<boolean>(false);
   useEffect(()=>{
@@ -385,7 +394,7 @@ const ModelAddLayout = () => {
                       <Label label="비고" className="!w-35"/>
                       <AntdInput
                         value={model?.remarks}
-                        onChange={(e)=>handleModelDataChange('orderPrtNo', e.target.value)}
+                        onChange={(e)=>handleModelDataChange('remarks', e.target.value)}
                         styles={{ht:'32px', bg:'#FFF'}}
                         readonly={model?.usedYn}
                       />
@@ -618,6 +627,8 @@ const ModelAddLayout = () => {
                                 ...m,
                                 id: model.id,
                                 usedYn: false,
+                                orderPrtNo: noreset.current.orderPrtNo,
+                                remarks: noreset.current.remarks,
                               });
                             }
                           }}

@@ -4,6 +4,7 @@ import Logo from "@/assets/logo/gpn-logo.png"
 import LogoSY from "@/assets/logo/sy-logo.png";
 
 import Setting from "@/assets/svg/icons/s_setting.svg"
+import HomeOutlined from "@/assets/svg/icons/home.svg"
 import Logout from "@/assets/svg/icons/logout.svg"
 import Login from "@/assets/svg/icons/s_login.svg"
 
@@ -241,7 +242,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
               key: 'main',
               title: '',
               label:'메인',
-              icon: <p className={iconClassNm}><Setting /></p>,
+              icon: <p className={iconClassNm}><HomeOutlined /></p>,
               onClick:() => {
                 router.push('/');
               }

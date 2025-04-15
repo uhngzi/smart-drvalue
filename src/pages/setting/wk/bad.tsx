@@ -336,6 +336,7 @@ const WkBadListPage: React.FC & {
             childCheck={true}
             childCheckId={processId}
             setChildCheckId={setProcessId}
+            //notCollapsed={true}
           />
         </div>
         <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
@@ -345,6 +346,7 @@ const WkBadListPage: React.FC & {
           isChild={true}
           childCheck={true}
           onChange={handleCheck}
+          //notCollapsed={true}
         />
           {/* <AntdTableEdit
             columns={[
