@@ -39,6 +39,8 @@ import Plus from "@/assets/svg/icons/s_plus.svg";
 import { MoreOutlined } from "@ant-design/icons";
 import useToast from "@/utils/useToast";
 import { isValidEnglish } from "@/utils/formatEnglish";
+import { isValidEmail } from "@/utils/formatEmail";
+import { isValidTel } from "@/utils/formatPhoneNumber";
 import AntdInput from "@/components/Input/AntdInput";
 import _ from "lodash";
 
@@ -154,6 +156,14 @@ const ClientCuListPage: React.FC & {
       }
       if (data.prtEngSNm && !isValidEnglish(data.prtEngSNm)) {
         showToast('영문만 입력 가능합니다.', 'error');
+        return; 
+      }
+      if (data.prtTel && !isValidTel(data.prtTel)) {
+        showToast('올바르지 않은 전화번호입니다.', 'error');
+        return; 
+      }
+      if (data.prtEmail && !isValidEmail(data.prtEmail)) {
+        showToast('올바르지 않은 이메일입니다.', 'error');
         return; 
       }
     }
