@@ -23,7 +23,7 @@ import { MOCK } from "@/utils/Mock";
 
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
-import { Button, Dropdown, Input, Radio } from "antd";
+import { Button, Dropdown, Input, Radio, Spin } from "antd";
 import { LabelIcon } from "@/components/Text/Label";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -335,7 +335,11 @@ const ClientCuListPage: React.FC & {
   console.log(prtData)
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading &&
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="h-center justify-between">

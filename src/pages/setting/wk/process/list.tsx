@@ -18,6 +18,7 @@ import { patchAPI } from "@/api/patch";
 import useToast from "@/utils/useToast";
 import { CUtreeType, treeType } from "@/data/type/componentStyles";
 import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import { Spin } from "antd";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -160,7 +161,11 @@ const WkProcessGroupListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="h-[900px] h-full">

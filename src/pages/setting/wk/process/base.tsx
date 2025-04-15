@@ -15,6 +15,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import AddContents from "@/contents/base/wk/process/base/AddContents";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
+import { Spin } from "antd";
 
 const WkProcessListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -143,7 +144,11 @@ const WkProcessListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="v-between-h-center">

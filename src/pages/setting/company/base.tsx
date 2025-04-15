@@ -1,7 +1,7 @@
 import CardInputList from "@/components/List/CardInputList";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import { MOCK } from "@/utils/Mock";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 
 
 import TrArrow from "@/assets/svg/icons/t-r-arrow.svg";
@@ -147,7 +147,11 @@ const CompanyBaseListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading && (
         <section className="flex flex-col gap-40">
           <div>

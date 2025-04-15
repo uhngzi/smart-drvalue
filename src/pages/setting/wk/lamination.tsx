@@ -18,7 +18,7 @@ import Bag from "@/assets/svg/icons/bag.svg";
 import { MOCK } from "@/utils/Mock";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
-import { Radio } from "antd";
+import { Radio, Spin } from "antd";
 
 const WkLaminationListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -187,7 +187,11 @@ const WkLaminationListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="v-between-h-center pb-20">

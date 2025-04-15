@@ -11,7 +11,7 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import { useEffect, useState } from "react";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -303,7 +303,11 @@ const WkBoardListPage: React.FC & {
   
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="h-center justify-between pb-10">

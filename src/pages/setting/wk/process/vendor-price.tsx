@@ -17,6 +17,7 @@ import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination
 import AddContents from "@/contents/base/wk/process/vendor/AddContents";
 import { partnerRType } from "@/data/type/base/partner";
 import { generateFloorOptions, LayerEm } from "@/data/type/enum";
+import { Spin } from "antd";
 
 const WkProcessVendorPriceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -196,7 +197,11 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   return (
     <>
-      {dataLoading && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!dataLoading &&
       <>
         <div className="v-between-h-center">

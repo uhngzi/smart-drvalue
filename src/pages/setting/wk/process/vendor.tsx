@@ -16,7 +16,7 @@ import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination
 import { partnerRType } from "@/data/type/base/partner";
 import { treeType } from "@/data/type/componentStyles";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { Button, Checkbox, CheckboxChangeEvent, Dropdown, Input } from "antd";
+import { Button, Checkbox, CheckboxChangeEvent, Dropdown, Input, Spin } from "antd";
 
 import dayjs from "dayjs";
 import useToast from "@/utils/useToast";
@@ -352,7 +352,11 @@ const WkProcessVendorListPage: React.FC & {
   }
   return (
     <>
-      {(vendorLoading) && <>Loading...</>}
+      {dataLoading && 
+        <div className="w-full h-[90vh] v-h-center">
+          <Spin tip="Loading..."/>
+        </div>
+      }
       {!vendorLoading &&
       <>
         <div className="w-full flex gap-30">
