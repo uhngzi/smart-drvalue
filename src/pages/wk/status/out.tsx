@@ -200,7 +200,7 @@ const WKStatusOutPage: {
             }}
             className="!text-point1 !border-point1"
           >
-            <p className="text-point1 h-16 w-16"><Back /></p> 출고취소
+            <p className="text-point1 h-16 w-16"><Back /></p> 선택한 모델 출고 취소
           </Button>
         }
         pagination={pagination}
@@ -215,7 +215,7 @@ const WKStatusOutPage: {
         <AntdTableEdit
           columns={WkStatusOutClmn(totalData, pagination, setPartnerData, checkeds, setCheckeds, handleCheckedAllClick)}
           data={data}
-          styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+          styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
           loading={dataLoading}
         />
       </List>

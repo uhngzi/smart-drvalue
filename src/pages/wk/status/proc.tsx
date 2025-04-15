@@ -335,7 +335,7 @@ const WKStatusProcPage: {
           }}
           className="!text-point1 !border-point1"
         >
-          <p className="text-point1"><ExportOutlined /></p> 출고
+          <p className="text-point1"><ExportOutlined /></p> 선택한 모델 출고
         </Button>
       }
       pagination={pagination}
@@ -360,7 +360,7 @@ const WKStatusProcPage: {
           WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick)
         }
         data={data}
-        styles={{th_bg:'#F2F2F2',td_bg:'#FFFFFF',round:'0px',line:'n'}}
+        styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
         loading={dataLoading}
       />
     </List>
@@ -474,7 +474,6 @@ const WKStatusProcPage: {
               td_ht: "50px",
               round: "0",
               th_fw: "bold",
-              fs: "12px",
               td_pd: "0",
               line: "n",
             }}

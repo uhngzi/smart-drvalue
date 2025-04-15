@@ -288,7 +288,7 @@ const SalesModelHead:React.FC<Props> = ({
                 placeholder="관리번호 검색 (3글자 이상)"
               />
             }
-            label2="필름번호"
+            label2="Tool No"
             children2={
               <AntdInput
                 value={model.currPrdInfo?.fpNo}

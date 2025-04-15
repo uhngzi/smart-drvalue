@@ -486,7 +486,7 @@ export const salesModelsClmn = (
     render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
   },
   {
-    title: '필름번호',
+    title: 'Tool No',
     width: 100,
     dataIndex: 'fpNo',
     key: 'fpNo',

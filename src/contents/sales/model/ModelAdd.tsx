@@ -666,7 +666,7 @@ const ModelAddLayout = () => {
                           readonly={model?.usedYn} clear={false}
                         />
                       }
-                      label2="필름번호"
+                      label2="Tool No"
                       children2={
                         <AntdInput
                           value={model?.fpNo} disabled styles={{ht:'32px', bg:'#FFF'}}
@@ -808,7 +808,7 @@ const ModelAddLayout = () => {
                   model?.usedYn ?? false,
                 )}
                 data={[model]}
-                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', th_fs:'12px', td_bg:'#FFF', round:'0'}}
+                styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', td_bg:'#FFF', round:'0'}}
                 tableProps={{split:'none'}}
               />
             </BlueBox>
