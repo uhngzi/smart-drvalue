@@ -126,8 +126,9 @@ export const changeEstimateNewEdit = (
     empId: meId,
     hotGrade: formData?.hotGrade ? formData.hotGrade : HotGrade.NORMAL,
     files: fileIdList,
-    products: products.map((item) => ({
+    products: products.map((item, index) => ({
       id: item.id?.includes("new") ? undefined : item.id,
+      // ordNo: index,
       currPrdInfo: "",
       tempPrdInfo: "",
       selected: item.selected,

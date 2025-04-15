@@ -496,21 +496,11 @@ export type salesEstimateProductType = {
   autoCalculatedCost?: number;
   remark?: string;
   specialSpecifications?: baseSpecType[];
-  // {
-  //   processIdx?: string;
-  //   remark?: string;
-  //   weight?: number;
-  //   addCost?: number;
-  //   minRange?: number;
-  //   maxRange?: number;
-  //   unitIdx?: string;
-  //   process?: processRType;
-  //   unit?: commonCodeRType;
-  // }[];
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   index?: number;
+  ordNo?:number;
   quantityUnit?: commonCodeRType;
   quantityUnitIdx?: string;
 }

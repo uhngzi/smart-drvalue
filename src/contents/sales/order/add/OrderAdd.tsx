@@ -61,8 +61,7 @@ import { Popup } from "@/layouts/Body/Popup";
 import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import cookie from "cookiejs";
-import { changeModelAddNewModel, changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
-import { modelReq, orderModelType } from "@/data/type/sayang/models";
+import { changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
 import { useBase } from "@/data/context/BaseContext";
 
 const OrderAddLayout = () => {

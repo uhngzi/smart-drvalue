@@ -19,37 +19,109 @@ import { getAPI } from "@/api/get";
 
 interface Props {
   type: 'order' | 'match' | 'model' | 'estimate';
-  selectId?: string | null;
-  setSelectId?: React.Dispatch<SetStateAction<string | null>>;
-  products?: orderModelType[] | salesOrderProcuctCUType[];
-  setProductsOrder?: React.Dispatch<SetStateAction<salesOrderProcuctCUType[]>>;
-  setProductsMatch?: React.Dispatch<SetStateAction<orderModelType[]>>;
-  setNewFlag?: React.Dispatch<SetStateAction<boolean>>;
   setDrawerOpen?: React.Dispatch<SetStateAction<boolean>>;
   partnerId?: string;
-  model?: salesModelsType | null;
-  setModel?: React.Dispatch<SetStateAction<salesModelsType | null>>;
-  estimate?: salesEstimateProductType[];
-  setEstimate?: React.Dispatch<SetStateAction<salesEstimateProductType[]>>;
+  products?: salesModelsType | orderModelType[] | salesOrderProcuctCUType[] | salesEstimateProductType[];
+  handleModelChange?: (model:modelsType, id:string, type:number | null) => void;
+
+  selectId?: string | null;
+  setSelectId?: React.Dispatch<SetStateAction<string | null>>;
+  setNewFlag?: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const ModelList:React.FC<Props> = ({
+const ModelDrawer:React.FC<Props> = ({
   type,
-  selectId,
-  setSelectId,
-  products,
-  setProductsOrder,
-  setProductsMatch,
-  setNewFlag,
   setDrawerOpen,
   partnerId,
-  model,
-  setModel,
-  estimate,
-  setEstimate,
+  products,
+  handleModelChange,
+
+  selectId,
+  setSelectId,
+  setNewFlag,
 }) => {
+  const [models, setModels] = useState<{
+    id: string,
+    index: number,
+    status: string,
+    completed: boolean,
+    currPrdInfo: any,
+    modelStatus: ModelStatus,
+  }[]>([]);
+
+  // 등록할 모델 모달창 띄우는 값 저장
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  // 복사하여 등록인지 새로 등록인지 선택 값 저장
+  const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
+  // 선택한 모델 값 저장
+  const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
+
+  // 거래처명 검색 값 저장
+  const [searchCs, setSearchCs] = useState<string>("");
+  // 모델명 검색 값 저장
+  const [searchModel, setSearchModel] = useState<string>('');
+
+  // --------------- 모델 세팅 -------------- 시작
+  useEffect(()=>{
+    /**
+     * 각 호출되는 곳마다 타입이 다르므로 사용되는 변수들만 추출
+     */
+    switch(type) {
+      // 영업 내 모델
+      case "model" : 
+        const model = products as salesModelsType;
+        setModels([{
+          id : model.id ?? "",
+          index: 1,
+          completed: false,
+          status: "",
+          currPrdInfo: null,
+          modelStatus: ModelStatus.NEW,
+        }]);
+        break;
+      // 영업 내 고객 발주 모델
+      case "order" : 
+        const order = products as salesOrderProcuctCUType[];
+        setModels(order.map((item) => ({
+          id : item.id ?? "",
+          index: item.index ?? 1,
+          completed: false,
+          status: item.glbStatus?.salesOrderStatus?.toString() ?? "",
+          currPrdInfo: item.currPrdInfo,
+          modelStatus: item.modelStatus ?? ModelStatus.NEW,
+        })));
+        break;
+      // 사양 내 모델 확정
+      case "match" : 
+        const match = products as orderModelType[];
+        setModels(match.map((item) => ({
+          id : item.id ?? "",
+          index: item.index ?? 1,
+          completed: false,
+          status: "",
+          currPrdInfo: item.editModel,
+          modelStatus: item.modelStatus ?? ModelStatus.NEW,
+        })));
+        break;
+      case "estimate" :
+        const estimate = products as salesEstimateProductType[];
+        setModels(estimate.map((item) => ({
+          id : item.id ?? "",
+          index: item.ordNo ?? 1,
+          completed: false,
+          status: "",
+          currPrdInfo: item.currPrdInfo,
+          modelStatus: item.modelStatus ?? ModelStatus.NEW,
+        })));
+        break;
+      default: break;
+    }
+    setSelectMenuKey(null);
+  }, [products]);
+  // --------------- 모델 세팅 -------------- 끝
+
   // ----------- 거래처 데이터 세팅 ----------- 시작
-    // 거래처를 가져와 SELECT에 세팅 (type이 다름)
+    // 거래처를 가져와 SELECT에 세팅
   const [ csList, setCsList ] = useState<Array<{value:any,label:string}>>([]);
   const { data:cs, refetch:csRefetch } = useQuery({
     queryKey: ["getClientCs"],
@@ -64,20 +136,15 @@ const ModelList:React.FC<Props> = ({
     }
   }, [cs?.data?.data]);
 
-  const [searchCs, setSearchCs] = useState<string>("");
   useEffect(()=>{
     if(partnerId)
       setSearchCs(partnerId);
   }, [partnerId]);
   // ----------- 거래처 데이터 세팅 ----------- 끝
 
-  const [searchModel, setSearchModel] = useState<string>('');
-
-  // ------------ 모델 데이터 세팅 ------------ 시작
+  // ------------ 모델 리스트 세팅 ------------ 시작
   const [totalData, setTotalData] = useState<number>(0);
   const [data, setData] = useState<modelsType[]>([]);
-  const [dataLoading, setDataLoading] = useState<boolean>(true);
-
   const pageSizeOptions = ["10", "20", "50", "100"];
   if (totalData > 100) {
     pageSizeOptions.push(totalData.toString()); // "전체 보기" 옵션 추가
@@ -93,7 +160,6 @@ const ModelList:React.FC<Props> = ({
   const { refetch } = useQuery<apiAuthResponseType, Error>({
     queryKey: ["models", searchModel, searchCs, pagination],
     queryFn: async () => {
-      setDataLoading(true);
       const result = await getAPI({
         type: "core-d1",
         utype: "tenant/",
@@ -116,32 +182,16 @@ const ModelList:React.FC<Props> = ({
       if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
-        setDataLoading(false);
       } else {
         console.log("MODELS ERROR:", result.response);
       }
       return result;
     },
   });
-  // ------------ 모델 데이터 세팅 ------------ 끝
+  // ------------ 모델 리스트 세팅 ------------ 끝
 
   
-  const items = (record: any): MenuProps['items'] => type === "model" ? 
-  [
-    {
-      label: <>복사하여 새로 등록</>,
-      key: 0,
-      onClick:()=>{
-        setModel?.({
-          ...record,
-          id: model?.id,
-          usedYn: false,
-        });
-        setDrawerOpen?.(false);
-      },
-    },
-  ]:
-  [
+  const items = (record: any): MenuProps['items'] => [
     {
       label: <>복사하여 새로 등록</>,
       key: 0,
@@ -162,58 +212,15 @@ const ModelList:React.FC<Props> = ({
     },
   ]
 
-  const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [selectMenuKey, setSelectMenuKey] = useState<number | null>(null);
-  const [selectRecord, setSelectRecord] = useState<modelsType | null>(null);
-
   const handleSelectMenu = () => {
     if(selectMenuKey===0)   setNewFlag?.(true);   // 복사하여 등록
     if(selectMenuKey===1)   setNewFlag?.(false);  // 그대로 등록
-
-    if(selectRecord !== null && products) {
-      if(type === 'order') {
-        const newData = [...products] as salesOrderProcuctCUType[];
-        const index = newData.findIndex((item) => selectId === item.id);
-        if (index > -1) {
-          newData[index] = {
-            ...newData[index],
-            currPrdInfo: { ...selectRecord },
-            orderTit: selectRecord.prdNm,
-            // 복사일 경우 수정, 그대로일 경우 반복
-            modelStatus: selectMenuKey === 1 ? ModelStatus.REPEAT : ModelStatus.MODIFY,
-            modelId: selectRecord.id,
-          };
-          setProductsOrder?.(newData);
-        }
-      } else {
-        const newData = [...products] as orderModelType[];
-        const index = newData.findIndex((item) => selectId === item.id);
-        if (index > -1) {
-          newData[index] = { 
-            ...newData[index],
-            // 저장 될 모델 값
-            model:{ ...selectRecord },
-            // 입력한 모델 값
-            editModel: { ...selectRecord },
-            // 임시저장 될 값
-            tempPrdInfo: { ...selectRecord },
-            // 복사일 경우 수정, 그대로일 경우 반복
-            modelStatus: selectMenuKey === 1 ? ModelStatus.REPEAT : ModelStatus.MODIFY,
-          };
-          setProductsMatch?.(newData);
-        }
-      }
-      setAlertOpen(false);
-      setSelectMenuKey(null);
-
-      if(!productChk)
-        setDrawerOpen?.(false);
-    }
   }
   
   // 입력하려는 모델에 값이 있는지 체크
   const [productChk, setProductChk] = useState<boolean>(false);
   const [alertProductOpen, setAlertProductOpen] = useState<boolean>(false);
+
   const [alertType, setAlertType] = useState<"in" | "miss" | "">("");
 
   return (
@@ -352,20 +359,18 @@ const ModelList:React.FC<Props> = ({
         title={"등록할 모델 선택"}
         contents={<div>
           <CustomRadioGroup size="large" className="flex gap-20" value={selectId}>
-          { products &&
-            products
+          { models &&
+            models
             .filter(f=>!f.completed)
-            .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
+            .filter(f=>f.status !== SalesOrderStatus.MODEL_REG_DISCARDED.toString())
             .map((p) => (
               <Radio.Button
                 key={p.id}
                 value={p.id}
                 onClick={(e)=>{
                   setSelectId?.(p.id ?? "");
-                  // 모델 매칭에서 해당 모델에 입력된 값이 있을 경우
-                  if(type === 'match' && (p as orderModelType).editModel) setProductChk(true);
-                  // 고객 발주에서 해당 모델에 입력된 값이 있을 경우
-                  else if(type === 'order' && p.currPrdInfo)              setProductChk(true);
+                  // 해당 모델에 이미 입력된 값이 있을 경우
+                  if(p.currPrdInfo)   setProductChk(true);
                 }}
                 className="!rounded-20 [border-inline-start-width:1px]"
               >{p.index}</Radio.Button>
@@ -378,29 +383,32 @@ const ModelList:React.FC<Props> = ({
           setAlertOpen(false);
         }}
         onOk={()=>{
-          const selectP = products?.find(f=>f.id === selectId);
-          if(selectP) {
-            if(selectP.modelStatus === ModelStatus.REPEAT && selectMenuKey === 0) {
-            // 반복인데 복사하여 새로 등록을 선택한 경우 실패
+          const selectProduct = models.find(f => f.id === selectId);
+          console.log(selectId);
+
+          if(selectProduct && selectRecord) {
+            if(selectProduct.modelStatus === ModelStatus.REPEAT && selectMenuKey === 0) {
+            // 모델의 상태는 "반복"인데 "복사 등록" 메뉴를 클릭한 경우 실패
               setAlertOpen(false);
               setAlertType("miss");
               setAlertProductOpen(true);
               return;
-            } else if(selectP.modelStatus === ModelStatus.MODIFY && selectMenuKey === 1) {
-            // 수정인데 그대로 등록을 선택한 경우 실패
+            } else if(selectProduct.modelStatus === ModelStatus.MODIFY && selectMenuKey === 1) {
+              // 모델의 상태는 "수정"인데 "그대로 등록" 메뉴를 클릭한 경우 실패
               setAlertOpen(false);
               setAlertType("miss");
               setAlertProductOpen(true);
               return;
             }
-            // 해당 모델에 입력된 값이 있을 경우
+            // 선택한 모델에 이미 입력된 값이 있을 경우 alert
             if(productChk) {
-              setAlertOpen(false);
               setAlertProductOpen(true);
               setAlertType("in");
             } else {
-              handleSelectMenu();
+              handleModelChange?.(selectRecord, selectProduct.id, selectMenuKey);
             }
+
+            setAlertOpen(false);
           }
         }}
         okText={'완료'}
@@ -432,7 +440,7 @@ const ModelList:React.FC<Props> = ({
           setProductChk(false);
           setAlertProductOpen(false);
           if(alertType !== "miss") {
-            handleSelectMenu();
+            if(selectRecord)  handleModelChange?.(selectRecord, selectId ?? "", selectMenuKey);
             setDrawerOpen?.(false);
           }
         }}
@@ -469,4 +477,4 @@ const CustomRadioGroup = styled(Radio.Group)`
   }
 `;
 
-export default ModelList;
+export default ModelDrawer;

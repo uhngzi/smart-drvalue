@@ -31,6 +31,11 @@ interface Props {
     name: string,
     value: any
   ) => void;
+  handleModelChange: (
+    model: modelsType,
+    productId: string,
+    type?: number | null,
+  ) => void;
   inputRef?: RefObject<InputRef[]>;
   showToast: (message: string, type?: "success" | "error" | "info", duration?: number) => void;
   products: salesEstimateProductType[];
@@ -45,6 +50,7 @@ const EstimateModelHead:React.FC<Props> = ({
   showToast,
   products,
   setProducts,
+  handleModelChange,
 }) => {
   // 베이스 값 가져오기
   const { 
@@ -98,24 +104,6 @@ const EstimateModelHead:React.FC<Props> = ({
     },
     enabled: searchFlag && (model.estimateModelNm ?? "").length > 2
   });
-
-  // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
-  const handleModelChange = (
-    model: modelsType,
-    productId: string,
-  ) => {
-    const newData = [...products];
-    const index = newData.findIndex(f => f.id === productId);
-    if(index > -1) {
-      newData[index] = {
-        ...newData[index],
-        currPrdInfo: { ...JSON.parse(newData[index].currPrdInfo ?? "{}"), ...model }.toString(),
-        estimateModelNm: model.prdNm,
-        model: { id : model.id },
-      };
-      setProducts(newData);
-    }
-  }
 
   // 특수사양을 선택했을 때 값 변경
   const handleSpecChange = (
@@ -246,8 +234,8 @@ const EstimateModelHead:React.FC<Props> = ({
                 <CustomAutoCompleteLabel
                   ref={el => {
                     // 자동 스크롤 & 포커싱을 위해 Ref 추가
-                    if(el && inputRef && inputRef.current && model.index) {
-                      inputRef.current[model.index] = el;
+                    if(el && inputRef && inputRef.current && model.ordNo) {
+                      inputRef.current[model.ordNo] = el;
                     }
                   }}
                   option={modelSelectList}
