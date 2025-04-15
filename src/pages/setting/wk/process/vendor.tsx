@@ -352,7 +352,7 @@ const WkProcessVendorListPage: React.FC & {
   }
   return (
     <>
-      {dataLoading && 
+      {vendorLoading && 
         <div className="w-full h-[90vh] v-h-center">
           <Spin tip="Loading..."/>
         </div>
