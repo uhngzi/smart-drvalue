@@ -384,7 +384,7 @@ const ModelAddLayout = () => {
                       <Label label="비고" className="!w-35"/>
                       <AntdInput
                         value={model?.remarks}
-                        onChange={(e)=>handleModelDataChange('orderPrtNo', e.target.value)}
+                        onChange={(e)=>handleModelDataChange('remarks', e.target.value)}
                         styles={{ht:'32px', bg:'#FFF'}}
                         readonly={model?.usedYn}
                       />
