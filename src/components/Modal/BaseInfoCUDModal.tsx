@@ -99,6 +99,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   },[data]);
 
   const [formData, setFormData] = useState<{ [key: string]: any }>(data);
+
+  useEffect(()=>{
+    setFormData(data);
+  }, [data])
   
   function handleInputChange(itemName: string, newValue: string) {
     let value = newValue;
@@ -278,7 +282,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                         이미 존재하는 식별코드입니다.
                       </div> :
                       // 영문 입력 체크
-                      formData[item?.name] && item.name === "mtEnm" && !isValidEnglish(formData[item?.name]?.toString()) ?
+                      formData[item?.name] &&
+                      (["mtEnm", "prtEngNm", "prtEngSnm"].includes(item.name)) &&
+                      !isValidEnglish(formData[item?.name]?.toString())?
                       <div className="h-center gap-3 text-[red]">
                         <p className="w-15 h-15"><Hint/></p>
                         영문만 입력 가능합니다.

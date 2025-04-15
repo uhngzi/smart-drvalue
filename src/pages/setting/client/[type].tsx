@@ -38,6 +38,7 @@ import Plus from "@/assets/svg/icons/s_plus.svg";
 
 import { MoreOutlined } from "@ant-design/icons";
 import useToast from "@/utils/useToast";
+import { isValidEnglish } from "@/utils/formatEnglish";
 import AntdInput from "@/components/Input/AntdInput";
 import _ from "lodash";
 
@@ -146,6 +147,14 @@ const ClientCuListPage: React.FC & {
           showToast(`${label}을 입력해 주세요`, 'error');
           return; 
         }
+      }
+      if (data.mtEnm && !isValidEnglish(data.prtEngNm)) {
+        showToast('원자재 영문명은 영문만 입력 가능합니다.', 'error');
+        return; 
+      }
+      if (data.mtEnm && !isValidEnglish(data.prtEngSNm)) {
+        showToast('원자재 영문명은 영문만 입력 가능합니다.', 'error');
+        return; 
       }
     }
     
@@ -367,8 +376,8 @@ const ClientCuListPage: React.FC & {
             {
               title: '식별코드',
               width: 130,
-              dataIndex: 'prtTypeEm',
-              key: 'prtTypeEm',
+              dataIndex: 'prtRegCd',
+              key: 'prtRegCd',
               align: 'center',
             },
             {

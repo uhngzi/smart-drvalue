@@ -146,15 +146,16 @@ const SalesModelPage: React.FC & {
 
   return (
     <>
-      <div className="w-full h-50 pointer-events-none">
+      <div className="w-full h-50">
         <ListTitleBtn
           label="신규"
-          onClick={()=>{
-            router.push("/sales/model/new");
+          onClick={() => {
+          router.push("/sales/model/new");
           }}
-          icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
+        icon={<SplusIcon stroke="#FFF" className="w-16 h-16" />}
         />
       </div>
+
 
       <DividerH />
 
