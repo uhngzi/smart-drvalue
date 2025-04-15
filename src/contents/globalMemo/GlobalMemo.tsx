@@ -364,7 +364,7 @@ const GlobalMemo:React.FC<Props> = ({
                         <Empty description="메모가 없습니다." />
                       ) : (
                         selectedMemos.map((memoItem: Memo, index: number) => (
-                        <div className="w-full flex flex-col">
+                        <div key={memoItem.id+":"+index} className="w-full flex flex-col">
                           <div
                             key={index + ":" + memoItem.id}
                             className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${
