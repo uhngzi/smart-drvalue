@@ -125,10 +125,11 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
       if (inputElement) {
         inputElement.value = data.roadAddress;  // input의 value 속성을 변경해야 반영됨
       }
-        setData(key, data.roadAddress);
-        console.log(data.roadAddress);
-        console.log(key);
+      setData(key, data.roadAddress);
+      setFormData(prev => ({ ...prev, [key]: data.roadAddress }));
 
+      setData("prtZip", data.zonecode);
+      setFormData(prev => ({ ...prev, prtZip: data.zonecode }));
       },
     }).open();
   };
@@ -185,8 +186,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           
                           <Input 
                             name={item.name}
-                            key={data.id}
-                            defaultValue={formData[item.name]}                            
+                            key={item.name}
+                            value={formData[item.name] || ''}                          
                             placeholder={item?.placeholder}
                             readOnly={true}
                           />

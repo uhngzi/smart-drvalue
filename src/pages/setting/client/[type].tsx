@@ -148,12 +148,12 @@ const ClientCuListPage: React.FC & {
           return; 
         }
       }
-      if (data.mtEnm && !isValidEnglish(data.prtEngNm)) {
-        showToast('원자재 영문명은 영문만 입력 가능합니다.', 'error');
+      if (data.prtEngNm && !isValidEnglish(data.prtEngNm)) {
+        showToast('영문만 입력 가능합니다.', 'error');
         return; 
       }
-      if (data.mtEnm && !isValidEnglish(data.prtEngSNm)) {
-        showToast('원자재 영문명은 영문만 입력 가능합니다.', 'error');
+      if (data.prtEngSNm && !isValidEnglish(data.prtEngSNm)) {
+        showToast('영문만 입력 가능합니다.', 'error');
         return; 
       }
     }
