@@ -6,7 +6,6 @@ interface Props {
   icon?: React.ReactNode;
 }
 
-
 const ListTitleBtn: React.FC<Props> = ({
   label,
   onClick,
