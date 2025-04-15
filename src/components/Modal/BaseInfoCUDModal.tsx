@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
+import { set } from "lodash";
 
 interface Option {
   value: string | number | boolean ;
@@ -196,11 +197,14 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                             handleInputChange(item.name, e.target.value)
                             if(item.name === "prtRegCd") {
                               const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
-                              if(csData)  setCdChk(true);
-                              else        setCdChk(false);
-                            } else {
+                              
+                              setCdChk(!!csData); // csData가 존재하면 true, 아니면 false
+                              
+                              /*if(csData)  setCdChk(true);
+                              else        setCdChk(false);*/
+                            }/* else {
                               setCdChk(false);
-                            }
+                            }*/
                           }}
                           placeholder={item.placeholder}
                         />
