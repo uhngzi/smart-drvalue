@@ -248,6 +248,7 @@ const WkProductListPage: React.FC & {
               data={treeData}
               setSelect={setProductGroupId}
               notCollapsed={true}
+              isChild={false}
             />
           </div>
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>

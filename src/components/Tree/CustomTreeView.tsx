@@ -23,6 +23,7 @@ interface Props {
   data: treeType[];
   setSelect? : Dispatch<SetStateAction<string | null>>;
   notCollapsed?: boolean;
+  isChild?: boolean;
 }
 
 
@@ -32,6 +33,7 @@ const CustomTreeView:React.FC<Props> = ({
   data,
   setSelect,
   notCollapsed,
+  isChild = true,
 }) => {
   const [ treeName, setTreeName ] = useState<string>('');
 
@@ -150,7 +152,8 @@ const CustomTreeView:React.FC<Props> = ({
               <div key={item.id}>
                 <Button type="text" className={`w-full h-40 h-center pl-5 gap-10 ${selectId === item.id ? '!bg-[#f3faff]' : ''}`} key={item.id} 
                   onClick={() => handleSelect(item.id)}>
-                  { item.open ? (
+                  {isChild ? <>
+                    { item.open ? (
                     <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
                       <CaretDownFilled />
                     </Button>
@@ -159,6 +162,10 @@ const CustomTreeView:React.FC<Props> = ({
                         <CaretUpFilled />
                       </Button>
                     )}
+                  </>
+                  : (
+                    <div className="w-5 h-5 bg-[#000000] rounded-50" />
+                  )}
                   <span className="flex-1 text-left">{item.label}</span>
                   {selectId === item.id && (<BlueCheck/>)}
                 </Button>
