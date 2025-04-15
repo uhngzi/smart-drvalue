@@ -257,7 +257,7 @@ export const specIngClmn = (
     cellAlign: 'left',
     tooltip: "모델명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+      <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           router?.push(`/sayang/sample/detail/${record.id}`);
         }}
@@ -503,7 +503,7 @@ export const sayangSampleWaitClmn = (
     tooltip: "모델명을 클릭하면 조합하거나 신규 등록을 할 수 있어요",
     render: (value, record) => (
       <div
-        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{sayangPopOpen?.(record.id, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
       >
         {record?.tempModel?.prdNm}
@@ -1508,7 +1508,7 @@ export const sayangModelWaitClmn = (
     cellAlign: 'left',
     tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value, record) => (
-      <div className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+      <div className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{router.push(`/sayang/model/wait/${record?.id}`)}}
       >
         {value}

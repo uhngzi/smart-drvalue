@@ -12,7 +12,7 @@ const BlueBox: React.FC<{
   return (
     <div
       key={key} style={style}
-      className={`flex flex-col w-full border-1 bg-[#E9EDF5] border-line rounded-14 p-15 gap-10 ${className}`}
+      className={`flex flex-col w-full border-1 bg-point4 border-line rounded-14 p-15 gap-10 ${className}`}
     >
       {children}
     </div>

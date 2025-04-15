@@ -250,7 +250,7 @@ export const salesUserOrderClmn = (
     tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value:string, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=> {
           if(!record.isDiscard && (record.finalGlbStatus === FinalGlbStatus.REGISTERING || record.finalGlbStatus === FinalGlbStatus.WAITING)) {
             // 완료 및 폐기가 아닐 경우에는 페이지 이동
@@ -521,7 +521,7 @@ export const salesModelsClmn = (
     cellAlign: 'left',
     render: (value:string, record:modelsType) => (
       <div
-        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           router.push(`/sales/model/${record.id}`);
         }}
@@ -650,7 +650,7 @@ export const salesEstimateClmn = (
     cellAlign: 'left',
     render: (value:string, record:salesEstimateType) => (
       <div
-        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center justify-left cursor-pointer transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           router.push(`/sales/estimate/${record.id}`);
         }}

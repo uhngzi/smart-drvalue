@@ -430,7 +430,7 @@ export const WKStatusProcClmn = (
     tooltip: "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+        className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
           if(cookie.get('company') !== 'sy') {
             setSelect?.(record);

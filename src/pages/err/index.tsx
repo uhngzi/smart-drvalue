@@ -387,7 +387,7 @@ const ErrBoardPage: React.FC & {
               tooltip: "내용을 클릭하시면 세부 내용 확인 및 상태 변경, 댓글 작성을 할 수 있습니다",
               render: (value, record) => (
                 <div
-                  className="w-full h-center cursor-pointer justify-left transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500"
+                  className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
                   onClick={()=>{
                     setSelect(record);
                     setFileIdList((record as errBoardType).attachmentFiles ?? []);

@@ -158,7 +158,7 @@ const SalesModelTable:React.FC<Props> = ({
     if(index > -1) {
       newData[index] = {
         ...newData[index],
-        currPrdInfo: { ...newData[index].currPrdInfo, ...model },
+        currPrdInfo: { ...newData[index].currPrdInfo, ...model, modelId: model.id },
         orderTit: model.prdNm,
         modelId: model.id,
         prdMngNo: model.prdMngNo,

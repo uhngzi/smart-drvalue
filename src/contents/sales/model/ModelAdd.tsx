@@ -57,6 +57,7 @@ import ModelList from "@/contents/base/model/ModelList";
 import BoxHead from "@/layouts/Body/BoxHead";
 import LabelItem from "@/components/Text/LabelItem";
 import cookie from "cookiejs";
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 const ModelAddLayout = () => {
   const router = useRouter();
@@ -387,6 +388,15 @@ const ModelAddLayout = () => {
                         onChange={(e)=>handleModelDataChange('orderPrtNo', e.target.value)}
                         styles={{ht:'32px', bg:'#FFF'}}
                         readonly={model?.usedYn}
+                      />
+                    </div>
+                    <div>
+                      <GlobalMemo
+                        key={model?.id}
+                        id={model?.id ?? ""}
+                        entityName="RnTenantCbizModelEntity"
+                        entityRelation={{RnTenantCbizBizPartnerEntity: true}}
+                        relationIdx=""
                       />
                     </div>
                   </div>
