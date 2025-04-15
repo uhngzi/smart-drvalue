@@ -348,7 +348,15 @@ const ClientCuListPage: React.FC & {
                   className="w-full h-full h-center cursor-pointer"
                   onClick={()=>{
                     setNewData(setDataPartnerType(record));
-                    setPrtData(record.managers);
+                    if(record.managers.length === 0) {
+                      setPrtData([
+                        {
+                          id: "default",
+                          prtMngNm: "기본1",
+                        },
+                      ]);             
+                    }
+                    else setPrtData(record.managers);
                     setNewOpen(true);
                   }}
                 >
