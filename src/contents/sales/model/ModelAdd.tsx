@@ -550,7 +550,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.thk}
                           onChange={(e)=>handleModelDataChange('thk', e.target.value)}
-                          type="number"
+                          type="number" maxPoint={2}
                           readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
                         />
                       }
@@ -748,7 +748,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.thk}
                           onChange={(e)=>handleModelDataChange('thk', e.target.value)}
-                          type="number"
+                          type="number" maxPoint={2}
                           readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF', br: '2px'}}
                         />
                       }

@@ -349,7 +349,7 @@ const ModelHead:React.FC<Props> = ({
           <AntdInput
             value={model.editModel?.thk ?? model.tempPrdInfo?.thk ?? model.currPrdInfo?.thk}
             onChange={(e)=>handleModelDataChange(model.id, 'editModel.thk', e.target.value)}
-            type="number"
+            type="number" maxPoint={2}
             readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.completed}
           />
