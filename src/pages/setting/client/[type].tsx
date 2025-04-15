@@ -488,6 +488,8 @@ const ClientCuListPage: React.FC & {
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}
         addCustom = {
+          newData?.id
+          ? (            
           <>
             <div className="w-full flex justify-between items-center h-[50px]">
               <div className="flex items-center gap-10">
@@ -587,9 +589,11 @@ const ClientCuListPage: React.FC & {
                 </div>
               ))}
             </section>
-          </>
+          </> 
+          ) 
+          : <></>
         }
-        />
+      />
         
       {/* <AntdModal
         title={"거래처 등록"}
