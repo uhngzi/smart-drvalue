@@ -19,7 +19,7 @@ export const changeOrderMainNew = (formData:salesOrderCUType, me:User | null):sa
 }
 
 // 영업 - 고객발주 내 신규 발주 값 변환
-export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrderProcuctCUType[], me:User | null):salesOrderCUType => {
+export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrderProcuctCUType[], me:User | null) => {
   const jsonData = {
     ...formData,
     hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
@@ -32,7 +32,7 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
       currPrdInfo: product.currPrdInfo,
       modelId: product.modelId,
       modelStatus: product.modelStatus,
-      orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs(),
+      orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
       // orderNo: index.toString(),
       orderTit: product.orderTit,
       prtOrderNo: product.prtOrderNo,
@@ -44,7 +44,7 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
       orderPrdDueDt: product.orderPrdDueDt,
       orderPrdHotGrade: formData.hotGrade ?? HotGrade.NORMAL,
     }))
-  } as salesOrderCUType;
+  }
 
   return jsonData;
 }

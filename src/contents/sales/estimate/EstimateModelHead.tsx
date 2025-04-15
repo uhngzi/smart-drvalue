@@ -333,7 +333,7 @@ const EstimateModelHead:React.FC<Props> = ({
                     setPriceFlag(true);
                     handleModelDataChange(model.id ?? "", 'thickness', e.target.value)
                   }}
-                  styles={{ht:'32px', bg:'#FFF'}} type="number" maxPoint={2}
+                  styles={{ht:'32px', bg:'#FFF'}} type="number"
                 />
               }
             />

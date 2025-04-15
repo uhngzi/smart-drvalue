@@ -151,7 +151,20 @@ const AntdInput = forwardRef<InputRef, Props>((
         disabled={disabled}
         onClick={onClick}
         tabIndex={tabIndex}
-        onFocus={onFocus}
+        onFocus={onFocus? onFocus:
+          type === "number" ? (e)=>{
+            if(!value || value === 0 || value === "0") {
+              const newEvent = Object.assign({}, e, {
+                target: {
+                  ...e.target,
+                  value: "",
+                },
+              });
+              onChange?.(newEvent);
+            }
+          }
+          : undefined
+        }
         autoFocus={autoFocus}
       />
     </AntdInputStyled>

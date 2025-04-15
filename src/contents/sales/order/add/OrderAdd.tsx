@@ -61,7 +61,8 @@ import { Popup } from "@/layouts/Body/Popup";
 import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import cookie from "cookiejs";
-import { changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
+import { changeModelAddNewModel, changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
+import { modelReq, orderModelType } from "@/data/type/sayang/models";
 import { useBase } from "@/data/context/BaseContext";
 
 const OrderAddLayout = () => {
@@ -207,7 +208,7 @@ const OrderAddLayout = () => {
         partnerManagerId: data.prtInfo?.mng?.id,
         orderName: data?.orderNm,
         orderDt: dayjs(data?.orderDt, 'YYYY-MM-DD'),
-        orderRepDt: data?.orderRepDt ? dayjs(data?.orderRepDt, 'YYYY-MM-DD') : null,
+        orderRepDt: data?.orderRepDt,
         orderTxt: data?.orderTxt,
         totalOrderPrice: data?.totalOrderPrice,
         empId: data?.emp?.id,
@@ -551,7 +552,14 @@ const OrderAddLayout = () => {
 
   // ------------ 발주 수정 함수 ------------- 시작
   const handleEditOrderMain = async (auto?:boolean) => {
-    console.log(orderId, JSON.stringify(formData));
+    const jsonData = {
+      ...formData,
+      id: undefined,
+      products: undefined, 
+      partnerManagerId: formData.partnerManagerId === "" ? null : formData.partnerManagerId,
+      orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
+    }
+    console.log(orderId, JSON.stringify(jsonData));
     
     const result = await patchAPI({
       type: 'core-d1',
@@ -559,12 +567,7 @@ const OrderAddLayout = () => {
       url: `sales-order/default/update/${orderId}`,
       jsx: 'default',
       etc: true,
-    }, orderId, {
-      ...formData,
-      id: undefined,
-      products: undefined, 
-      partnerManagerId: formData.partnerManagerId === "" ? null : formData.partnerManagerId
-    });
+    }, orderId, jsonData);
 
     if(result.resultCode === "OK_0000") {
       if(!auto)  showToast("발주 수정 완료", "success");

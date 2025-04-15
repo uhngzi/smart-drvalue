@@ -670,7 +670,8 @@ const OrderAddLayout = () => {
                         }
                       })
                     }}
-                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]" suffixIcon={"cal"}
+                    className="!w-full !rounded-2 !h-32 !border-[#D9D9D9]"
+                    suffixIcon={"cal"}
                   />
                 </LabelItem>
                 <LabelItem label="납품요구일">

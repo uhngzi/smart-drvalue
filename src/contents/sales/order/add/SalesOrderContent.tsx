@@ -74,7 +74,11 @@ const SalesOrderContent: React.FC<Props> = ({
             <LabelThin label="발주일"/>
             <AntdDatePicker
               value={formData.orderDt ?? dayjs()}
-              onChange={(value)=>setFormData((prev => ({ ...prev, orderDt:value })))}
+              onChange={(value)=>setFormData((prev => ({
+                ...prev,
+                orderDt: value,
+                // orderDt:dayjs(value).format("YYYY-MM-DD"),
+              })))}
               styles={{br:"2px",bc:"#D5D5D5"}}
               className="w-full h-36"
               suffixIcon={"cal"} allowClear={false}

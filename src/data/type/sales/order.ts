@@ -500,7 +500,7 @@ export type salesEstimateProductType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   index?: number;
-  ordNo?:number;
+  ordNo?: number;
   quantityUnit?: commonCodeRType;
   quantityUnitIdx?: string;
 }

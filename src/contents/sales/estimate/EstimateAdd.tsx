@@ -43,7 +43,6 @@ import { changeEstimateNewEdit } from "@/data/type/sales/changeData";
 import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
-import ModelList from "@/contents/base/model/ModelList";
 import ModelDrawer from "@/contents/base/model/ModelDrawer";
 
 const EstimateAddLayout = () => {
@@ -202,6 +201,7 @@ const EstimateAddLayout = () => {
         const entity = result.data.data as salesEstimateType;
         const product = (entity.products ?? []).sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((model, index) => ({
           ...model,
+          ordNo: model.ordNo ? model.ordNo : index,
         }))
         setFormData(entity);
         setProducts(product);
