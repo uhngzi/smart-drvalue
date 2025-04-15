@@ -126,6 +126,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
         inputElement.value = data.roadAddress;  // input의 value 속성을 변경해야 반영됨
       }
         setData(key, data.roadAddress);
+        console.log(data.roadAddress);
+        console.log(key);
+
       },
     }).open();
   };
@@ -199,7 +202,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                               const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
                               
                               setCdChk(!!csData); // csData가 존재하면 true, 아니면 false
-                              
+
                               /*if(csData)  setCdChk(true);
                               else        setCdChk(false);*/
                             }/* else {
