@@ -10,7 +10,7 @@ import ArrowDown from "@/assets/svg/icons/s_arrow_down.svg";
 import Arrowright from "@/assets/svg/icons/s_arrow_right.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
 
-import { SetStateAction, useRef, useState } from "react";
+import { Fragment, SetStateAction, useRef, useState } from "react";
 import CardInputList from "@/components/List/CardInputList";
 import AntdInput from "@/components/Input/AntdInput";
 import AntdDragger from "@/components/Upload/AntdDragger";
@@ -168,38 +168,55 @@ const ProjectDrawer: React.FC<Props> = ({
   // -------------------품질관리 변수, 함수들--------------------
   const qualityData = useRef<any>({});
   const qualControlData = useRef<any>([]);
-  const [qualityList, setQualityList] = useState<any[]>([]);
+  const qualModiConData = useRef<any>([]);
+  const [qualityList, setQualityList] = useState<any>({});
+  const [procBadList, setProcBadList] = useState<any[]>([]);
   const [qualDoDate, setQualDoDate] = useState<string | Date | null>(new Date());
-  const { isLoading: qualChkLoading, refetch: qualChkRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['pms', 'proc', 'QualityChk', selectId, qualDoDate],
+  const { isLoading: badListLoading, refetch: badListkRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'badlist', selectId],
     queryFn: async () => {
 
       const result = await getAPI({
-        type: 'core-d3',
+        type: 'core-d2',
         utype: 'tenant/',
-        url: `pms/daily-quality-check/default/one/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`
+        url: `worksheet/proc-default/origin-process/${selectId}`
       });
 
       if (result.resultCode === 'OK_0000') {
-        console.log(result.data.data)
-        const QualData = result.data.data.map((data:any) =>({
-          procBadIdx: data.id,
-          badNm: data?.badNm,
-          badDesc: data?.badDesc || "",
-          check: {
-            id: data?.check?.id || null,
-            wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
-            wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
-            wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
-          }
-        }));
-        setQualityList(QualData);
-        qualControlData.current = result.data.data.map((data:any) =>({
-          procBadIdx: data.id,
+        const badRes = await getAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: `process/bad-mapping/jsxcrud/many`
+        },{
+          anykeys: {processId: result.data.data}
+        });
+        if(badRes.resultCode === 'OK_0000') {
+          console.log(badRes.data.data)
+          const badData = badRes.data.data.map((data:any) =>({
+            procBadIdx: data.processBad?.id || null,
+            badNm: data.processBad?.badNm || '',
+            badDesc: data.processBad?.badDesc || "",
+          }));
+          setProcBadList(badData);
+        }
+        // const QualData = result.data.data.map((data:any) =>({
+        //   procBadIdx: data.id,
+        //   badNm: data?.badNm,
+        //   badDesc: data?.badDesc || "",
+        //   check: {
+        //     id: data?.check?.id || null,
+        //     wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
+        //     wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
+        //     wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+        //   }
+        // }));
+        // setQualityList(QualData);
+        qualControlData.current = badRes.data.data.map((data:any) =>({
+          procBadIdx: data.processBad?.id,
           id: data?.check?.id || null,
-          wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
-          wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
-          wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+          wkProcDailyBadCnt: 0,
+          wkProcDailyBadDesc: "",
+          wkProcDailyBadYn: false,
         }));
       } else {
         console.log('error:', result.response);
@@ -207,10 +224,70 @@ const ProjectDrawer: React.FC<Props> = ({
       return result.data;
 
     },
-    enabled: !!qualDoDate
+  });
+  const { isLoading: qualChkLoading, refetch: qualChkRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'qualityList', selectId],
+    queryFn: async () => {
+
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: `pms/daily-quality-check/default/many/${selectId}`
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        console.log(result.data.data)
+        let qualData:any = [];
+        Object.keys(result.data.data).forEach((key) => {
+          const data = result.data.data[key];
+          qualData.push({
+            qualDate: key,
+            open: false,
+            badList: data.map((bad:any) => ({
+              procBadIdx: bad.id,
+              badNm: bad.badNm,
+              badDesc: bad.badDesc || "",
+              check: {
+                id: bad.check?.id || null,
+                wkProcDailyBadCnt: bad.check?.wkProcDailyBadCnt || 0,
+                wkProcDailyBadDesc: bad.check?.wkProcDailyBadDesc || "",
+                wkProcDailyBadYn: bad.check?.wkProcDailyBadYn || false,
+              }
+            }))
+          })
+        });
+        console.log(qualData)
+        setQualityList(qualData);
+        // const QualData = result.data.data.map((data:any) =>({
+        //   procBadIdx: data.id,
+        //   badNm: data?.badNm,
+        //   badDesc: data?.badDesc || "",
+        //   check: {
+        //     id: data?.check?.id || null,
+        //     wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
+        //     wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
+        //     wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+        //   }
+        // }));
+        // setQualityList(QualData);
+        qualModiConData.current = qualData[0]?.badList.map((data:any) =>({
+          qualDate: qualData[0].qualDate,
+          procBadIdx: data.procBadIdx,
+          id: data?.check?.id || null,
+          wkProcDailyBadCnt: data?.check?.wkProcDailyBadCnt || 0,
+          wkProcDailyBadDesc: data?.check?.wkProcDailyBadDesc || "",
+          wkProcDailyBadYn: data?.check?.wkProcDailyBadYn || false,
+        }));
+        console.log(qualModiConData.current)
+      } else {
+        console.log('error:', result.response);
+      }
+      return result.data;
+
+    },
   });
 
-  function onQualCheck(e: any, record: any) {
+  function onCreateQualCheck(e: any, record: any) {
     const checked = e.target.checked;
     console.log(checked, record)
 
@@ -225,7 +302,7 @@ const ProjectDrawer: React.FC<Props> = ({
     console.log(qualControlData.current)
   }
 
-  function onQualChange(e: any, record: any) {
+  function onCreateQualChange(e: any, record: any) {
     const value = e.target.value;
     qualControlData.current = qualControlData.current.some((item:any) => item.procBadIdx === record.procBadIdx)
     ? qualControlData.current.map((item:any) =>
@@ -234,6 +311,31 @@ const ProjectDrawer: React.FC<Props> = ({
           : item
       )
     : [...qualControlData.current, { procBadIdx: record.procBadIdx, [e.target.name]: value }];
+  }
+  function onModiQualCheck(e: any, record: any) {
+    const checked = e.target.checked;
+    console.log(checked, record)
+
+    qualModiConData.current = qualModiConData.current.some((item:any) => item.procBadIdx === record.procBadIdx)
+    ? qualModiConData.current.map((item:any) =>
+        item.procBadIdx === record.procBadIdx 
+          ? {...item, id: record.check?.id, wkProcDailyBadYn: checked }  // 기존 객체 수정
+          : item
+      )
+    : [...qualModiConData.current, { id: record?.id, procBadIdx: record.procBadIdx, wkProcDailyBadYn: checked }];
+
+    console.log(qualModiConData.current)
+  }
+
+  function onModiQualChange(e: any, record: any) {
+    const value = e.target.value;
+    qualModiConData.current = qualModiConData.current.some((item:any) => item.procBadIdx === record.procBadIdx)
+    ? qualModiConData.current.map((item:any) =>
+        item.procBadIdx === record.procBadIdx 
+          ? {...item, [e.target.name]: value }  // 기존 객체 수정
+          : item
+      )
+    : [...qualModiConData.current, { procBadIdx: record.procBadIdx, [e.target.name]: value }];
   }
   // -----------------------------------------------------
 
@@ -335,7 +437,7 @@ const ProjectDrawer: React.FC<Props> = ({
 
   // -----------------------------------------------------
 
-  async function processSubmit() {
+  async function processSubmit(type: string = "create") {
     console.log(processData.current)
     if(selectKey === 1) {
       if(!processData.current.wkProcDailyDt || !processData.current.wkProcDailyPer) {
@@ -389,58 +491,64 @@ const ProjectDrawer: React.FC<Props> = ({
 
     } else if(selectKey === 2) {
       console.log('품질관리 저장');
-      console.log(qualControlData.current)
-      for(const item of qualControlData.current){
-        if(item.wkProcDailyBadYn &&  item.wkProcDailyBadCnt === 0) {
-          showToast('불량 수량을 입력해주세요.', 'error');
-          return;
+      if(type === "create"){
+        console.log(qualControlData.current)
+        for(const item of qualControlData.current){
+          if(item.wkProcDailyBadYn &&  item.wkProcDailyBadCnt === 0) {
+            showToast('불량 수량을 입력해주세요.', 'error');
+            return;
+          }
         }
-      }
-      const createData = qualControlData.current.filter((item:any) => !!item?.id === false).map((v:any) => ({
-        procBadIdx: v.procBadIdx,
-        wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
-        wkProcDailyBadYn: v.wkProcDailyBadYn,
-        wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
-      }));
-      const updateData = qualControlData.current.filter((item:any) => !!item?.id === true).map((v:any) => ({
-        procBadIdx: v.procBadIdx,
-        wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
-        wkProcDailyBadYn: v.wkProcDailyBadYn,
-        wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
-      }));
-      console.log(createData, updateData)
-      if(createData.length > 0) {
-        const result = await postAPI({
-          type: 'core-d3', 
-          utype: 'tenant/',
-          jsx: 'default',
-          url: `pms/daily-quality-check/default/create/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`,
-          etc: true,
-        }, {badList: createData});
-
-        if(result.resultCode === 'OK_0000') {
-          showToast("저장되었습니다.", "success");
-          qualChkRefetch();
-        } else {
-          showToast("품질관리 등록중 문제가 발생했습니다..", "error");
-          return;
+        const createData = qualControlData.current.filter((item:any) => !!item?.id === false).map((v:any) => ({
+          procBadIdx: v.procBadIdx,
+          wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
+          wkProcDailyBadYn: v.wkProcDailyBadYn,
+          wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
+        }));
+        console.log(createData)
+        if(createData.length > 0) {
+          const result = await postAPI({
+            type: 'core-d3', 
+            utype: 'tenant/',
+            jsx: 'default',
+            url: `pms/daily-quality-check/default/create/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`,
+            etc: true,
+          }, {badList: createData});
+  
+          if(result.resultCode === 'OK_0000') {
+            showToast("저장되었습니다.", "success");
+            qualChkRefetch();
+          } else {
+            showToast("품질관리 등록중 문제가 발생했습니다..", "error");
+            return;
+          }
         }
-      }
-
-      if(updateData.length > 0) {
-        const result = await patchAPI({
-          type: 'core-d3',
-          utype: 'tenant/',
-          jsx: 'default',
-          url: `pms/daily-quality-check/default/update/${selectId}/${dayjs(qualDoDate).format("YYYY-MM-DD")}`,
-          etc: true,
-        },"", {badList: updateData});
-        if(result.resultCode === 'OK_0000') {
-          showToast("저장되었습니다.", "success");
-          qualChkRefetch();
-        } else {
-          showToast("품질관리 수정중 문제가 발생했습니다..", "error");
-          return;
+        
+      } else if(type === "update") {
+        console.log(qualModiConData.current)
+        const updateData = qualModiConData.current.map((v:any) => ({
+          procBadIdx: v.procBadIdx,
+          wkProcDailyBadDesc: v.wkProcDailyBadDesc || null,
+          wkProcDailyBadYn: v.wkProcDailyBadYn,
+          wkProcDailyBadCnt: Number(v.wkProcDailyBadCnt)
+        }));
+        console.log(updateData)
+  
+        if(updateData.length > 0) {
+          const result = await patchAPI({
+            type: 'core-d3',
+            utype: 'tenant/',
+            jsx: 'default',
+            url: `pms/daily-quality-check/default/update/${selectId}/${dayjs(qualModiConData.current[0].qualDate).format("YYYY-MM-DD")}`,
+            etc: true,
+          },"", {badList: updateData});
+          if(result.resultCode === 'OK_0000') {
+            showToast("저장되었습니다.", "success");
+            qualChkRefetch();
+          } else {
+            showToast("품질관리 수정중 문제가 발생했습니다..", "error");
+            return;
+          }
         }
       }
 
@@ -491,7 +599,7 @@ const ProjectDrawer: React.FC<Props> = ({
       }
     }
   }
-  
+  console.log((qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)), "602")
   function drawerClose(){
     setSelectKey(1);
     setFileList([]);
@@ -529,7 +637,7 @@ const ProjectDrawer: React.FC<Props> = ({
             <>
               <div className="flex flex-col">
                 <div className="flex py-20 v-between-h-center">
-                  <p className="flex gap-5 font-medium text-16"><PencilFill/> 진행 등록</p>
+                  <p className="flex gap-5 font-medium text-16 items-center"><PencilFill/> 진행 등록</p>
                   <span className="text-[#00000073]">접기</span>
                 </div>
                 <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
@@ -601,15 +709,16 @@ const ProjectDrawer: React.FC<Props> = ({
                               <p className={`text-bold text-12 text-[${progColor.text}]`}>{data.wkProcDailyPer*100}%</p>
                             </div>
                             <p>|</p>
-                            <Button size="small" type="text" onClick={(e)=>{e.stopPropagation();}} className="!p-0 !w-24">
-                                <Dropdown trigger={['click']} dropdownRender={() => false}>
-                                  <a onClick={(e) => e.preventDefault()}>
-                                    <div className="w-full h-full v-h-center cursor-pointer" onClick={()=>{}}>
-                                      <p className="w-16 h-16 v-h-center"><Edit /></p>
-                                    </div>
-                                  </a>
-                                </Dropdown>
-                              </Button>
+                            <Button size="small" type="text" onClick={(e) => e.stopPropagation()} className="!p-0 !w-24">
+                              <Dropdown
+                                trigger={['click']}
+                                dropdownRender={() => <div>커스텀 드롭다운</div>} // 또는 아예 제거
+                              >
+                                <div className="w-full h-full v-h-center cursor-pointer">
+                                  <p className="w-16 h-16 v-h-center"><Edit /></p>
+                                </div>
+                              </Dropdown>
+                            </Button>
                           </div>
                           {data.open && (
                             <>
@@ -634,73 +743,176 @@ const ProjectDrawer: React.FC<Props> = ({
             </>
           )}
           {selectKey === 2 && (
-            <div className="flex flex-col gap-20">
-              <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
-                <section className="flex flex-col gap-20">
-                  <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
-                    <div className="col-span-2">
-                      <p className="pb-8">품질관리일</p>
-                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={dayjs(qualDoDate)} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
+            <>
+              <div className="flex flex-col gap-20">
+                <div className="flex pt-20 v-between-h-center">
+                  <p className="flex gap-5 font-medium text-16 items-center"><PencilFill/>품질관리 등록</p>
+                </div>
+                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
+                  <section className="flex flex-col gap-20">
+                    <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
+                      <div className="col-span-2">
+                        <p className="pb-8">품질관리일</p>
+                        <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={dayjs(qualDoDate)} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
+                      </div>
                     </div>
+                    <AntdTableEdit
+                      key={JSON.stringify(qualityList)}
+                      columns={[
+                        {
+                          title: '불량여부',
+                          width:84,
+                          dataIndex: 'wkProcDailyBadYn',
+                          key: 'wkProcDailyBadYn',
+                          align: 'center',
+                          render:(_, record) => (
+                            <Checkbox key={String(qualDoDate)} defaultChecked={record.check?.wkProcDailyBadYn} onChange={(e) => onCreateQualCheck(e, record)} disabled={(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) ? false : true}/>
+                          )
+                        },
+                        {
+                          title: '불량 항목',
+                          width:87,
+                          dataIndex: 'badNm',
+                          key: 'badNm',
+                          align: 'center',
+                        },
+                        {
+                          title: '불량 내용',
+                          width:200,
+                          dataIndex: 'badDesc',
+                          key: 'badDesc',
+                          align: 'center',
+                        },
+                        {
+                          title: '수량',
+                          width:82,
+                          dataIndex: 'wkProcDailyBadCnt',
+                          key: 'wkProcDailyBadCnt',
+                          align: 'center',
+                          render: (value, record) => (
+                            <div className="w-full h-full v-h-center">
+                              <Input key={String(qualDoDate)} type="number" name="wkProcDailyBadCnt" defaultValue={record.check?.wkProcDailyBadCnt} onChange={(e) => onCreateQualChange(e, record)} placeholder="수량" disabled={(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) ? false : true}/>
+                            </div>
+                          )
+                        },
+                        {
+                          title: '불량 상태',
+                          width:248,
+                          dataIndex: 'wkProcDailyBadDesc',
+                          key: 'wkProcDailyBadDesc',
+                          align: 'center',
+                          render: (value, record) => (
+                            <div className="w-full h-full v-h-center">
+                              <Input key={String(qualDoDate)} defaultValue={record.check?.wkProcDailyBadDesc} name="wkProcDailyBadDesc" onChange={(e) => onCreateQualChange(e, record)} placeholder="example" disabled={(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) ? false : true}/>
+                            </div>
+                          )
+                        },
+                      ]}
+                      data={procBadList}
+                      styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+                    />
+                  </section>
+                </CardInputList>
+                {(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) && <div className="flex justify-end"><Button type="primary" onClick={() => processSubmit()}>저장</Button></div>}
+                <Divider style={{margin:0}}/>
+              </div>
+              <div className="flex flex-col gap-20">
+                <div className="flex pt-20 v-between-h-center">
+                  <p className="flex gap-5 font-medium text-16 items-center"><TimeFill/>이전 품질관리</p>
+                </div>
+                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
+                  <div className="flex justify-end" onClick={() => setQualityList((prev:any) => prev.map((d:any) => ({...d, open: false})))}>
+                    <span className="text-[#00000073] cursor-pointer">전체 접기</span>
                   </div>
-                  <AntdTableEdit
-                    columns={[
-                      {
-                        title: '불량여부',
-                        width:84,
-                        dataIndex: 'wkProcDailyBadYn',
-                        key: 'wkProcDailyBadYn',
-                        align: 'center',
-                        render:(_, record) => (
-                          <Checkbox key={String(qualDoDate)} defaultChecked={record.check?.wkProcDailyBadYn} onChange={(e) => onQualCheck(e, record)} disabled={qualDoDate ? false : true}/>
-                        )
-                      },
-                      {
-                        title: '불량 항목',
-                        width:87,
-                        dataIndex: 'badNm',
-                        key: 'badNm',
-                        align: 'center',
-                      },
-                      {
-                        title: '불량 내용',
-                        width:200,
-                        dataIndex: 'badDesc',
-                        key: 'badDesc',
-                        align: 'center',
-                      },
-                      {
-                        title: '수량',
-                        width:82,
-                        dataIndex: 'wkProcDailyBadCnt',
-                        key: 'wkProcDailyBadCnt',
-                        align: 'center',
-                        render: (value, record) => (
-                          <div className="w-full h-full v-h-center">
-                            <Input key={String(qualDoDate)} type="number" name="wkProcDailyBadCnt" defaultValue={record.check?.wkProcDailyBadCnt} onChange={(e) => onQualChange(e, record)} placeholder="수량" disabled={qualDoDate ? false : true}/>
+                  <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
+                    {qualityList.map((data:any, idx:any) => {
+                      return(
+                        <Fragment key={data.qualDate}>
+                          <div className="flex py-12 px-16 gap-12 items-center" key={idx}>
+                            <p className="w-24 h-24 flex justify-center pt-3 cursor-pointer" onClick={()=>setQualityList((prev:any) => prev.map((prevData:any) => prevData.qualDate === data.qualDate ? {...prevData, open: !prevData.open} : prevData))}>
+                              {data.open ? <ArrowDown/> : <Arrowright/>}
+                            </p>
+                            <p>{me?.userName}</p><p>|</p><p>{dayjs(data.qualDate).format("YYYY-MM-DD")}</p>
+                            
                           </div>
-                        )
-                      },
-                      {
-                        title: '불량 상태',
-                        width:248,
-                        dataIndex: 'wkProcDailyBadDesc',
-                        key: 'wkProcDailyBadDesc',
-                        align: 'center',
-                        render: (value, record) => (
-                          <div className="w-full h-full v-h-center">
-                            <Input key={String(qualDoDate)} defaultValue={record.check?.wkProcDailyBadDesc} name="wkProcDailyBadDesc" onChange={(e) => onQualChange(e, record)} placeholder="example" disabled={qualDoDate ? false : true}/>
-                          </div>
-                        )
-                      },
-                    ]}
-                    data={qualityList}
-                    styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
-                  />
-                </section>
-              </CardInputList>
-              <div className="flex justify-end"><Button type="primary" onClick={() => processSubmit()}>저장</Button></div>
-            </div>
+                          {data.open && (
+                            <>
+                              <AntdTableEdit
+                                columns={[
+                                  {
+                                    title: '불량여부',
+                                    width:84,
+                                    dataIndex: 'wkProcDailyBadYn',
+                                    key: 'wkProcDailyBadYn',
+                                    align: 'center',
+                                    render:(_, record) => (
+                                      <Checkbox defaultChecked={record.check?.wkProcDailyBadYn} onChange={(e) => onModiQualCheck(e, record)} disabled={!idx ? false : true}/>
+                                    )
+                                  },
+                                  {
+                                    title: '불량 항목',
+                                    width:87,
+                                    dataIndex: 'badNm',
+                                    key: 'badNm',
+                                    align: 'center',
+                                  },
+                                  {
+                                    title: '불량 내용',
+                                    width:200,
+                                    dataIndex: 'badDesc',
+                                    key: 'badDesc',
+                                    align: 'center',
+                                  },
+                                  {
+                                    title: '수량',
+                                    width:82,
+                                    dataIndex: 'wkProcDailyBadCnt',
+                                    key: 'wkProcDailyBadCnt',
+                                    align: 'center',
+                                    render: (value, record) => (
+                                      <div className="w-full h-full v-h-center">
+                                        <Input type="number" name="wkProcDailyBadCnt" defaultValue={record.check?.wkProcDailyBadCnt} onChange={(e) => onModiQualChange(e, record)} placeholder="수량" disabled={!idx ? false : true}/>
+                                      </div>
+                                    )
+                                  },
+                                  {
+                                    title: '불량 상태',
+                                    width:248,
+                                    dataIndex: 'wkProcDailyBadDesc',
+                                    key: 'wkProcDailyBadDesc',
+                                    align: 'center',
+                                    render: (value, record) => (
+                                      <div className="w-full h-full v-h-center">
+                                        <Input defaultValue={record.check?.wkProcDailyBadDesc} name="wkProcDailyBadDesc" onChange={(e) => onModiQualChange(e, record)} placeholder="example" disabled={!idx ? false : true}/>
+                                      </div>
+                                    )
+                                  },
+                                ]}
+                                data={data.badList}
+                                styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+                              />
+                            {idx === 0 && <div className="flex justify-end p-5"><Button type="primary" onClick={() => processSubmit("update")}>저장</Button></div>}
+                            </>
+                            // <>
+                            //   <Divider style={{margin:0}}/>
+                            //   <div className="flex flex-col py-12 px-16 gap-5">
+                            //     <div className="w-[480px] flex gap-10 items-center">
+                            //       {data.files.map((file:any, idx:number) => (
+                            //         <Image key={idx} alt="진행관리" src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75}/>
+                            //       ))}
+                            //     </div>
+                            //     <p className="text-14 text-[#00000073]"><span style={{color:'black'}}>비고: </span>{data.remarks}</p>
+                            //   </div>
+                            // </>
+                          )}
+                          {procDailyData.length != idx+1 &&<Divider style={{margin:0}}/>}
+                        </Fragment>
+                      )
+                    })}
+                  </section>
+                </CardInputList>
+              </div>
+            </>
           )}
           {selectKey === 3 && (
             <div className="flex flex-col gap-20">
