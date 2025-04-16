@@ -247,28 +247,34 @@ const GlobalMemo:React.FC<Props> = ({
     if (anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect();
       const popupWidth = 400;
-      const popupHeight = 500; // 예상 팝업 높이
+      const popupHeight = 500;
       const padding = 10;
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
   
-      let top = rect.bottom + window.scrollY + 8;
-      let left = rect.left + rect.width / 2 - popupWidth / 2 + window.scrollX;
+      const scrollTop = window.scrollY;
+      const scrollLeft = window.scrollX;
   
-      // 수평 위치 조정: 좌우 넘침 방지
-      if (left + popupWidth + padding > viewportWidth) {
-        left = viewportWidth - popupWidth - padding;
-      } else if (left < padding) {
-        left = padding;
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+  
+      // 기본 위치: 아래 중앙
+      let top = rect.bottom + scrollTop + 8;
+      let left = rect.left + scrollLeft + rect.width / 2 - popupWidth / 2;
+  
+      // 수평 넘침 방지
+      if (left + popupWidth > viewportWidth + scrollLeft - padding) {
+        left = viewportWidth + scrollLeft - popupWidth - padding;
+      }
+      if (left < scrollLeft + padding) {
+        left = scrollLeft + padding;
       }
   
-      // 수직 위치 조정: 아래로 넘치면 위에 띄움
-      if (top + popupHeight + padding > viewportHeight + window.scrollY) {
-        top = rect.top + window.scrollY - popupHeight - 8;
+      // 수직 넘침 방지 (하단 공간 부족하면 위에 뜨게)
+      if (top + popupHeight > viewportHeight + scrollTop - padding) {
+        top = rect.top + scrollTop - popupHeight - 8;
       }
   
       setPos({ top, left });
-      setOpen((prev) => !prev);
+      setOpen(prev => !prev);
     }
   };
 
