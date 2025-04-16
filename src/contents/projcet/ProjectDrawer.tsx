@@ -9,6 +9,8 @@ import PencilFill from "@/assets/svg/icons/pencilFill.svg";
 import ArrowDown from "@/assets/svg/icons/s_arrow_down.svg";
 import Arrowright from "@/assets/svg/icons/s_arrow_right.svg";
 import Edit from "@/assets/svg/icons/edit.svg";
+import PlusRg from "@/assets/svg/icons/plus_readGlass.svg";
+import WhiteTrash from "@/assets/svg/icons/white_trash.svg";
 
 import { Fragment, SetStateAction, useRef, useState } from "react";
 import CardInputList from "@/components/List/CardInputList";
@@ -771,9 +773,20 @@ const ProjectDrawer: React.FC<Props> = ({
                               <div className="flex flex-col py-12 px-16 gap-5">
                                 <div className="w-[480px] flex gap-10 items-center">
                                   {data.files.map((file:any, idx:number) => (
-                                    <Image className="cursor-pointer" key={idx} alt="진행관리" 
-                                      src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75} 
-                                      onClick={() =>{setImgOpen(true); setImgSrc(`${baseURL}file-mng/v1/every/file-manager/download/${file}`)}}/>
+                                    <div className="w-100 h-75 relative group" style={{border:"1px solid #D9D9D9"}}>
+                                      <Image key={idx} alt="진행관리" 
+                                        src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} fill style={{ objectFit: 'contain' }}
+                                        />
+                                        <div className="absolute inset-0 bg-[#00000073] opacity-0 group-hover:opacity-80 transition-opacity flex items-center justify-center gap-5">
+                                          <Button type="text" className="!w-24 !h-24 !p-0 bg-[#DDDDDD73] flex justify-center h-center"
+                                            onClick={() =>{setImgOpen(true); setImgSrc(`${baseURL}file-mng/v1/every/file-manager/download/${file}`)}}>
+                                            <p className="w-16 h-16 flex justify-center h-center"><PlusRg/></p>
+                                          </Button>
+                                          <Button type="text" className="!w-24 !h-24 !p-0 bg-[#DDDDDD73] flex justify-center h-center">
+                                            <p className="w-16 h-16 flex justify-center h-center"><WhiteTrash/></p>
+                                          </Button>
+                                        </div>
+                                    </div>
                                   ))}
                                 </div>
                                 <p className="text-14 text-[#00000073]"><span style={{color:'black'}}>비고: </span>{data.remarks}</p>
