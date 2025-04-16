@@ -12,7 +12,7 @@ interface Item {
 }
 
 interface CardListProps {
-  title: string;
+  title: any;
   btnLabel?: React.ReactNode;
   items: Item[];
   btnClick?: () => void;
@@ -28,7 +28,7 @@ const CardList: React.FC<CardListProps> = ({ items, btnClick, title, btnLabel, c
         <div className="w-full flex justify-between items-center h-[50px]">
           <div className="flex items-center gap-10">
             <Bag />
-            <p className="text-16 font-medium">{title}</p>
+            <div className="text-16 font-medium">{title}</div>
           </div>
           {btnLabel && <Button onClick={btnClick} className={btnClassName}>
             {btnLabel}

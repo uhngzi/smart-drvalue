@@ -24,6 +24,7 @@ import Memo from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 
 import BoxHead from "@/layouts/Body/BoxHead";
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 interface Props {
   read?: boolean;
@@ -40,6 +41,8 @@ interface Props {
   handleDelete?: (model:salesOrderProcuctCUType) => void;
   handleEdit?: (model:salesOrderProcuctCUType) => void;
   handleModelChange?: (model:modelsType, id:string) => void;
+  partnerId?: string;
+  partnerMngId?: string;
 }
 
 const SalesModelHeadSy:React.FC<Props> = ({
@@ -57,6 +60,8 @@ const SalesModelHeadSy:React.FC<Props> = ({
   handleEdit,
   handleModelChange,
   index,
+  partnerId,
+  partnerMngId,
 }) => {
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
@@ -134,6 +139,25 @@ const SalesModelHeadSy:React.FC<Props> = ({
               onChange={(e)=>handleModelDataChange(model.id ?? "", 'remarks', e.target.value)}
               styles={{ht:'32px', bg:'#FFF'}}
               disabled={model.completed ?? read}
+            />
+          </div>
+          <div>
+            <GlobalMemo
+              key={model.id}
+              id={model.id ?? ""}
+              entityName="RnTenantCbizSalesOrderProductEntity"
+              entityRelation={{
+                RnTenantCbizSalesOrderEntity: true,
+                RnTenantCbizModelEntity: true,
+                RnTenantCbizBizPartnerMngMatchEntity: {
+                    RnTenantCbizBizPartnerEntity: true,
+                    RnTenantCbizBizPartnerManagerEntity: true
+                },
+                RnTenantCbizWorksheetEntity: true
+              }}
+              modelId={model.modelId}
+              partnerId={partnerId}
+              partnerMngId={partnerMngId}
             />
           </div>
         </div>

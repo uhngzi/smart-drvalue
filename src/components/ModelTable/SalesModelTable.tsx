@@ -43,6 +43,8 @@ interface Props {
   inputRef: RefObject<InputRef[]>;
   handleSubmitOrderModel: (model:salesOrderProcuctCUType) => void;
   showToast: (message: string, type?: "success" | "error" | "info", duration?: number) => void;
+  partnerId?: string;
+  partnerMngId?: string;
 }
 
 const SalesModelTable:React.FC<Props> = ({
@@ -54,6 +56,8 @@ const SalesModelTable:React.FC<Props> = ({
   inputRef,
   handleSubmitOrderModel,
   showToast,
+  partnerId,
+  partnerMngId,
 }) => {
   const router = useRouter();
   // 베이스 값 가져오기
@@ -306,6 +310,8 @@ const SalesModelTable:React.FC<Props> = ({
             handleDelete={handleDelete}
             handleEdit={handleEdit}
             handleModelChange={handleModelChange}
+            partnerId={partnerId}
+            partnerMngId={partnerMngId}
           />
           }
           {cookie.get('company') !== 'sy' &&
@@ -322,6 +328,8 @@ const SalesModelTable:React.FC<Props> = ({
             handleDelete={handleDelete}
             handleEdit={handleEdit}
             handleModelChange={handleModelChange}
+            partnerId={partnerId}
+            partnerMngId={partnerMngId}
           />}
           <div className="flex flex-col ">
             <AntdTable

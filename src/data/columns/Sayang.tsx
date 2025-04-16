@@ -22,6 +22,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import AutoHideTooltip from '@/components/Tooltip/AntdHideTooltip';
 import CustomAutoCompleteLabel from '@/components/AutoComplete/CustomAutoCompleteLabel';
 import cookie from 'cookiejs';
+import GlobalMemo from '@/contents/globalMemo/GlobalMemo';
 
 export const specStatusClmn = (
   totalData: number,
@@ -206,6 +207,20 @@ export const specStatusClmn = (
   //     </div>
   //   )
   // },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSpecEntity"
+      />
+    )
+  },
 ]
 export const specIngClmn = (
   totalData: number,
@@ -395,6 +410,20 @@ export const specIngClmn = (
   //     </div>
   //   )
   // },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSpecEntity"
+      />
+    )
+  },
 ]
 
 export const sayangSampleWaitClmn = (
@@ -593,6 +622,20 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'orderModel.order.orderDt',
     key: 'orderModel.order.orderDt',
     align: 'center',
+  },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSpecEntity"
+      />
+    )
   },
 ];
 
@@ -2607,4 +2650,21 @@ export const sayangModelStatusClmn = (
   //     </div>
   //   ),
   // },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizModelEntity"
+        entityRelation={{
+          RnTenantCbizBizPartnerEntity: true
+        }}
+      />
+    )
+  },
 ]

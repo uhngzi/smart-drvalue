@@ -22,6 +22,7 @@ import { partnerCUType, partnerMngCUType, partnerMngRType, partnerRType } from "
 import useToast from "@/utils/useToast";
 import PrtMngAddModal from "./PrtMngAddModal";
 import { isValidEmail } from "@/utils/formatEmail";
+import GlobalMemo from "../globalMemo/GlobalMemo";
 
 
 interface Props {
@@ -234,11 +235,29 @@ const PrtDrawer: React.FC<Props> = ({
       >
         <div className="flex flex-col gap-15 p-20 !pr-5">
           <div className="flex w-full justify-end cursor-pointer" onClick={() => setOpen(false)}><Close/></div>
-          <CardList title="고객정보" 
+          <CardList
+            title={
+              <div className="h-center">
+                고객정보
+                <GlobalMemo
+                  id={partnerId}
+                  entityName="RnTenantCbizBizPartnerEntity"
+                />
+              </div>
+            }
             btnLabel={<span className="w-14 h-14"><Edit/></span>} 
             btnClassName="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             items={drawerPrtItems} btnClick={() => setNewPrtOpen(true)}/>
-          {partnerMngData && <CardList title="담당자정보" 
+          {partnerMngData && <CardList
+            title={
+              <div className="h-center">
+                담당자 정보
+                <GlobalMemo
+                  id={partnerMngData.id}
+                  entityName="RnTenantCbizBizPartnerManagerEntity"
+                />
+              </div>
+            }
             btnLabel={<span className="w-16 h-16"><Plus/></span>} 
             btnClassName="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             items={drawerMngItems} btnClick={() => setNewPrtMngOpen(true)}/>}

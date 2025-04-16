@@ -41,6 +41,8 @@ interface Props {
   handleDelete?: (model:salesOrderProcuctCUType) => void;
   handleEdit?: (model:salesOrderProcuctCUType) => void;
   handleModelChange?: (model:modelsType, id:string) => void;
+  partnerId?: string;
+  partnerMngId?: string;
 }
 
 const SalesModelHead:React.FC<Props> = ({
@@ -58,6 +60,8 @@ const SalesModelHead:React.FC<Props> = ({
   handleEdit,
   handleModelChange,
   index,
+  partnerId,
+  partnerMngId,
 }) => {
   const [matchFlag, setMatchFlag] = useState<boolean>(false);
   const [flag, setFlag] = useState<boolean>(true);
@@ -148,11 +152,14 @@ const SalesModelHead:React.FC<Props> = ({
                 RnTenantCbizSalesOrderEntity: true,
                 RnTenantCbizModelEntity: true,
                 RnTenantCbizBizPartnerMngMatchEntity: {
-                    RnTenantCbizBizPartnerEntity: true
+                    RnTenantCbizBizPartnerEntity: true,
+                    RnTenantCbizBizPartnerManagerEntity: true
                 },
                 RnTenantCbizWorksheetEntity: true
               }}
-              relationIdx={""}
+              modelId={model.currPrdInfo?.modelId}
+              partnerId={partnerId}
+              partnerMngId={partnerMngId}
             />
           </div>}
         </div>

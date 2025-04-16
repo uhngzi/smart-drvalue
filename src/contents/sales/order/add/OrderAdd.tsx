@@ -833,6 +833,8 @@ const OrderAddLayout = () => {
                       }
                     }}
                     showToast={showToast}
+                    partnerId={formData.partnerId}
+                    partnerMngId={formData.partnerManagerId}
                   />
                   <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
                     onClick={() => {

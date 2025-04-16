@@ -1,23 +1,20 @@
-import { getAPI } from "@/api/get";
-import { postAPI } from "@/api/post";
-import AntdInput from "@/components/Input/AntdInput";
-import { LabelMedium } from "@/components/Text/Label";
-import { apiAuthResponseType } from "@/data/type/apiResponse";
-import useToast from "@/utils/useToast";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Checkbox, Empty, Skeleton, Spin } from "antd";
 import { Dayjs } from "dayjs";
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Button, Checkbox, Empty, Skeleton } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+
+import useToast from "@/utils/useToast";
 
 import Close from "@/assets/svg/icons/l_close.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Memo from "@/assets/svg/icons/memo.svg";
 
-import { patchAPI } from "@/api/patch";
 import { TabSmall } from "@/components/Tab/Tabs";
 import AntdSelect from "@/components/Select/AntdSelect";
+
 import { selectType } from "@/data/type/componentStyles";
 
 type Memo = {
@@ -37,18 +34,24 @@ type Memo = {
 }
 
 enum Entity {
+  RnTenantCbizSalesOrderProductEntity = "고객발주 모델",
   RnTenantCbizSalesOrderEntity = "고객발주",
   RnTenantCbizModelEntity = "모델",
-  RnTenantCbizBizPartnerMngMatchEntity = "업체 담당자",
+  // RnTenantCbizBizPartnerMngMatchEntity = "업체 담당자",
   RnTenantCbizBizPartnerEntity = "업체",
   RnTenantCbizWorksheetEntity = "생산",
+  RnTenantCbizBizPartnerManagerEntity = "업체 담당자",
 }
 
 interface Props {
   id: string;
-  entityName: string;
-  entityRelation: any;
-  relationIdx: string;
+  entityName?: string;
+  entityRelation?: any;
+  relationIdx?: string;
+
+  modelId?: string;
+  partnerId?: string;
+  partnerMngId?: string;
 }
 
 const GlobalMemo:React.FC<Props> = ({
@@ -56,6 +59,10 @@ const GlobalMemo:React.FC<Props> = ({
   entityName,
   entityRelation,
   relationIdx,
+
+  modelId,
+  partnerId,
+  partnerMngId,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -63,13 +70,29 @@ const GlobalMemo:React.FC<Props> = ({
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(()=>{
-    if(id && entityName && open)  handleList();
+    // 메모 리스트 가져오기
+    if(id && open)
+      handleList();
   }, [open]);
+
+  const [relationOptions, setRelationOptions] = useState<selectType[]>([]);
+  useEffect(()=>{
+    // 관계에 모델이 포함되어 있을 경우
+    if(JSON.stringify(relationOptions).includes("RnTenantCbizModelEntity") && modelId)
+      handleListRelation("RnTenantCbizModelEntity", modelId);
+
+    // 관계에 업체가 포함되어 있을 경우
+    if(JSON.stringify(relationOptions).includes("RnTenantCbizBizPartnerEntity") && partnerId)
+      handleListRelation("RnTenantCbizBizPartnerEntity", partnerId);
+
+    // 관계에 업체 담당자가 포함되어 있을 경우
+    if(JSON.stringify(relationOptions).includes("RnTenantCbizBizPartnerManagerEntity") && partnerMngId)
+      handleListRelation("RnTenantCbizBizPartnerManagerEntity", partnerMngId);
+  }, [relationOptions, modelId, partnerId, partnerMngId])
 
   // --------------- 리스트 데이터 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<Memo[]>([]);
-  const [relationOptions, setRelationOptions] = useState<selectType[]>([]);
   const [selectedRelationKey, setSelectedRelationKey] = useState<string | null>(null);
   const [relationsData, setRelationsData] = useState<any[]>([]);
   const handleList = async () => {
@@ -97,7 +120,8 @@ const GlobalMemo:React.FC<Props> = ({
         let keys:string[] = [];
         relations.map((item) => {
           keys.push(Object.keys(item).toString());
-        })
+        });
+        keys = keys.filter(f=>!f.includes("RnTenantCbizBizPartnerMngMatchEntity"));
 
         const relationOptions = keys.map((key) => ({
           value: key,
@@ -123,6 +147,41 @@ const GlobalMemo:React.FC<Props> = ({
     }
   }
   // --------------- 리스트 데이터 ------------ 끝
+
+  // ------------- 관계 리스트 데이터 ---------- 시작
+  const [dataModel, setDataModel] = useState<Memo[]>([]);
+  const [dataPrt, setDataPrt] = useState<Memo[]>([]);
+  const [dataPrtMng, setDataPrtMng] = useState<Memo[]>([]);
+  const handleListRelation = async (entity:string, id:string) => {
+    try {
+      const result = await postAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        jsx: 'default',
+        url: 'global-memo/default/find-relation-memo',
+        etc: true,
+      }, {
+        startIdx: id,
+        startEntityName: entity,
+      });
+        
+      if(result.resultCode === "OK_0000") {
+        const memos = (result.data?.data?.memos ?? []);
+        if(entity === "RnTenantCbizModelEntity")
+          setDataModel(memos);
+        else if(entity === "RnTenantCbizBizPartnerEntity")
+          setDataPrt(memos);
+        else if(entity === "RnTenantCbizBizPartnerManagerEntity")
+          setDataPrtMng(memos);
+      } else {
+        const msg = result?.response?.data?.message;
+        console.log(msg);
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ------------- 관계 리스트 데이터 ---------- 끝
 
   // ---------------- 메모 등록 -------------- 시작
   const handleSubmit = async (id:string) => {
@@ -188,18 +247,24 @@ const GlobalMemo:React.FC<Props> = ({
     if (anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect();
       const popupWidth = 400;
+      const popupHeight = 500; // 예상 팝업 높이
       const padding = 10;
       const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
   
       let top = rect.bottom + window.scrollY + 8;
-      let left = rect.left + window.scrollX;
-      let alignRight = false;
+      let left = rect.left + rect.width / 2 - popupWidth / 2 + window.scrollX;
   
-      // 우측 넘침 시 오른쪽 정렬
-      if (rect.left + popupWidth + padding > viewportWidth) {
-        alignRight = true;
-        left = rect.right - popupWidth + window.scrollX;
-        if (left < padding) left = padding; // 왼쪽도 넘침 방지
+      // 수평 위치 조정: 좌우 넘침 방지
+      if (left + popupWidth + padding > viewportWidth) {
+        left = viewportWidth - popupWidth - padding;
+      } else if (left < padding) {
+        left = padding;
+      }
+  
+      // 수직 위치 조정: 아래로 넘치면 위에 띄움
+      if (top + popupHeight + padding > viewportHeight + window.scrollY) {
+        top = rect.top + window.scrollY - popupHeight - 8;
       }
   
       setPos({ top, left });
@@ -228,11 +293,13 @@ const GlobalMemo:React.FC<Props> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed z-50 p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
+            className="fixed z-[9999999] p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
             style={{
               top: pos.top,
               left: pos.left,
               width: "400px",
+              maxHeight: "500px",
+              overflow: "auto",
             }}
           >
             <div className="v-between-h-center">
@@ -315,7 +382,19 @@ const GlobalMemo:React.FC<Props> = ({
             { selectKey === 1 && (() => {
               if(!selectedRelationKey) return  <Empty description="관련 메모가 없습니다."/>;
 
-              const selectedMemos = relationsData.find(item => selectedRelationKey in item)?.[selectedRelationKey] ?? [];
+              // entity에 따른 데이터 선택
+              let selectedMemos: Memo[] = [];
+              if ((entityName || relationIdx) && modelId && selectedRelationKey === "RnTenantCbizModelEntity") {
+                selectedMemos = dataModel;
+              } else if ((entityName || relationIdx) && modelId && selectedRelationKey === "RnTenantCbizBizPartnerEntity") {
+                selectedMemos = dataPrt;
+              } else if ((entityName || relationIdx) && partnerMngId && selectedRelationKey === "RnTenantCbizBizPartnerManagerEntity") {
+                selectedMemos = dataPrtMng;
+              } else {
+                // fallback (relationsData 기반)
+                selectedMemos = relationsData.find(item => selectedRelationKey in item)?.[selectedRelationKey] ?? [];
+              }
+              // const selectedMemos = relationsData.find(item => selectedRelationKey in item)?.[selectedRelationKey] ?? [];
 
               return (
                 <>
@@ -324,40 +403,6 @@ const GlobalMemo:React.FC<Props> = ({
                     value={selectedRelationKey}
                     onChange={(value) => setSelectedRelationKey(value + "")}
                   />
-
-                  {/* <div className="h-center">
-                    <div className="relative flex-1 pr-10">
-                      <input
-                        ref={newInputRef}
-                        className="w-full h-36 px-5 rounded-2 border-1 border-line focus:outline-none focus:ring-2 focus:ring-[#0593ff20]"
-                        value={value}
-                        onChange={(e)=>{
-                          setValue(e.target.value);
-                        }}
-                        onFocus={()=>{
-                          setFocus(true);
-                        }}
-                        onBlur={()=>setFocus(false)}
-                        onKeyDown={(e) => {
-                          if(e.nativeEvent.isComposing) return;
-                          if(e.key === "Enter" && selectedMemos[0].extraKey) {
-                            handleSubmit(selectedMemos[0].extraKey);
-                          }
-                        }}
-                      />
-                      {focus && value.length < 1 && (
-                        <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
-                          엔터 시 저장
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-col v-h-center">
-                      <span className="text-12">공개</span>
-                      <Checkbox
-                        checked={shared} onChange={(e)=>setShared(e.target.checked)}
-                      />
-                    </div>
-                  </div> */}
                   {selectedRelationKey && (
                     <div className="flex flex-col gap-6 mt-10">
                       {selectedMemos.length === 0 ? (

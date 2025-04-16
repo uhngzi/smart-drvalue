@@ -200,6 +200,29 @@ export const salesOrderStatusClmn = (
       </div>
     )
   },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSalesOrderProductEntity"
+        entityRelation={{
+          RnTenantCbizSalesOrderEntity: true,
+          RnTenantCbizModelEntity: true,
+          RnTenantCbizBizPartnerMngMatchEntity: {
+            RnTenantCbizBizPartnerEntity: true,
+            RnTenantCbizBizPartnerManagerEntity: true
+          },
+          RnTenantCbizWorksheetEntity: true
+        }}
+      />
+    )
+  },
 ]
 
 export const salesUserOrderClmn = (
@@ -353,6 +376,26 @@ export const salesUserOrderClmn = (
           <FullChip label="폐기" />
         )}
       </div>
+    )
+  },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSalesOrderEntity"
+        entityRelation={{
+          RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true
+          }
+        }}
+      />
     )
   },
 ];
@@ -739,6 +782,26 @@ export const salesEstimateClmn = (
           <></>
         )}
       </div>
+    )
+  },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizSalesEstimateEntity"
+        entityRelation={{
+          RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true
+          }
+        }}
+      />
     )
   },
 ]

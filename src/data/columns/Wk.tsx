@@ -10,6 +10,7 @@ import { processVendorRType } from "../type/base/process";
 import dayjs, { Dayjs } from "dayjs";
 import cookie from "cookiejs";
 import { NextRouter } from "next/router";
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 
 export const WkPalnWaitClmn = (
@@ -307,6 +308,31 @@ export const WkPalnWaitClmn = (
     key: 'wsRemark',
     align: 'center',
     editable: false,
+  },
+  {
+    title: '메모',
+    width: 80,
+    dataIndex: 'memo',
+    key: 'memo',
+    align: 'center',
+    editable: false,
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizWorksheetEntity"
+        entityRelation={{
+          RnTenantCbizSalesOrderProductEntity: {
+            RnTenantCbizSalesOrderEntity: true,
+            RnTenantCbizModelEntity: true,
+            RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true
+            }
+          }
+        }}
+      />
+    )
   },
 ]
 
