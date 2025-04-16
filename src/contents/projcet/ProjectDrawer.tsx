@@ -27,6 +27,7 @@ import { patchAPI } from "@/api/patch";
 import { useUser } from "@/data/context/UserContext";
 import Image from "next/image";
 import { baseURL } from "@/api/lib/config";
+import AntdModal from "@/components/Modal/AntdModal";
 
 const tabList = [
   { key: 1, text: '진행 관리', width: 600},
@@ -132,11 +133,13 @@ const ProjectDrawer: React.FC<Props> = ({
   // -------------------진행관리 변수, 함수들--------------------
   const [fileList, setFileList] = useState<any[]>([]);
   const [fileIdList, setFileIdList] = useState<string[]>([]);
-  
+  const [imgOpen, setImgOpen] = useState<boolean>(false);
+  const [imgSrc, setImgSrc] = useState<string>('');
   const processData = useRef<any>({});
   const task = schedules.map(process => process.task).flat().find(task => task.id === selectId);
 
   const [procDailyData, setProcDailyData] = useState<any[]>([]);
+  const [lastProg, setLastProg] = useState<{wkProcDailyPer?:string|number, files?:string[], remarks?:string, wkProcDailyDt?:string}>({});
   const { isLoading: procDailyLoading, refetch: procDailyRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['pms', 'proc', 'daily', selectId],
     queryFn: async () => {
@@ -150,6 +153,12 @@ const ProjectDrawer: React.FC<Props> = ({
         console.log(result.data.data)
         const dailyData = result.data.data.map((data:any) =>({...data, files: JSON.parse(data.files), open: false}));
         setProcDailyData(dailyData);
+        setLastProg({
+          wkProcDailyDt: dailyData[0]?.wkProcDailyDt || "",
+          wkProcDailyPer: Number(dailyData[0]?.wkProcDailyPer)*100,
+          files: dailyData[0]?.files,
+          remarks: dailyData[0]?.remarks
+        });
       } else {
         console.log('error:', result.response);
       }
@@ -163,13 +172,35 @@ const ProjectDrawer: React.FC<Props> = ({
   function onProcessDataChange(name:string, data: any) {
     processData.current = {...processData.current, [name]: data};
   }
+
+  async function onProgressUpdate() {
+    console.log(lastProg)
+    const date = dayjs(lastProg.wkProcDailyDt).format("YYYY-MM-DD");
+    delete lastProg.wkProcDailyDt;
+    const result = await patchAPI({
+      type: 'core-d3',
+      utype: 'tenant/',
+      url: `pms/daily/default/update/${selectId}/${date}`,
+      jsx: 'default',
+      etc: true,
+    }, "", {...lastProg, wkProcDailyPer: Number(lastProg?.wkProcDailyPer)/100});
+
+    if(result.resultCode === 'OK_0000') {
+      showToast("진행률이 수정되었습니다.", "success");
+      procDailyRefetch();
+      refetch();
+    }else{
+      showToast("진행률 수정중 문제가 발생했습니다.", "error");
+      return;
+    }
+  }
   
   // -----------------------------------------------------
   // -------------------품질관리 변수, 함수들--------------------
   const qualityData = useRef<any>({});
   const qualControlData = useRef<any>([]);
   const qualModiConData = useRef<any>([]);
-  const [qualityList, setQualityList] = useState<any>({});
+  const [qualityList, setQualityList] = useState<any[]>([]);
   const [procBadList, setProcBadList] = useState<any[]>([]);
   const [qualDoDate, setQualDoDate] = useState<string | Date | null>(new Date());
   const { isLoading: badListLoading, refetch: badListkRefetch } = useQuery<apiGetResponseType, Error>({
@@ -484,6 +515,10 @@ const ProjectDrawer: React.FC<Props> = ({
       if(result.resultCode === 'OK_0000') {
         showToast("저장되었습니다.", "success");
         procDailyRefetch();
+        refetch();
+        setFileList([]);
+        setFileIdList([]);
+        processData.current = {};
       } else {
         showToast("진행관리 등록중 문제가 발생했습니다..", "error");
         return;
@@ -599,7 +634,7 @@ const ProjectDrawer: React.FC<Props> = ({
       }
     }
   }
-  console.log((qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)), "602")
+  
   function drawerClose(){
     setSelectKey(1);
     setFileList([]);
@@ -640,7 +675,7 @@ const ProjectDrawer: React.FC<Props> = ({
                   <p className="flex gap-5 font-medium text-16 items-center"><PencilFill/> 진행 등록</p>
                   <span className="text-[#00000073]">접기</span>
                 </div>
-                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
+                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}} key={procDailyData.length}>
                   <section className="flex flex-col gap-20">
                     <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                       <div className="col-span-3">
@@ -708,17 +743,27 @@ const ProjectDrawer: React.FC<Props> = ({
                             <div className={`h-24 w-35 text-center rounded-4 flex justify-center items-center`} style={{backgroundColor:progColor.bg}}>
                               <p className={`text-bold text-12 text-[${progColor.text}]`}>{data.wkProcDailyPer*100}%</p>
                             </div>
-                            <p>|</p>
-                            <Button size="small" type="text" onClick={(e) => e.stopPropagation()} className="!p-0 !w-24">
-                              <Dropdown
-                                trigger={['click']}
-                                dropdownRender={() => <div>커스텀 드롭다운</div>} // 또는 아예 제거
-                              >
-                                <div className="w-full h-full v-h-center cursor-pointer">
-                                  <p className="w-16 h-16 v-h-center"><Edit /></p>
-                                </div>
-                              </Dropdown>
-                            </Button>
+                            {!idx && (
+                              <>
+                                <p>|</p>
+                                <Button size="small" type="text" onClick={(e) => e.stopPropagation()} className="!p-0 !w-24">
+                                  <Dropdown
+                                    trigger={['click']}
+                                    dropdownRender={() => (
+                                    <div className="w-[215px] h-[75px] bg-white rounded-4 p-10 gap-5 flex flex-col" style={{boxShadow: "0px 2px 10px 0px #0000004D"}}>
+                                      <div className="flex gap-5"><Input className="w-[50px]" value={lastProg.wkProcDailyPer || 0} onChange={({target}) => setLastProg(prev => ({...prev, wkProcDailyPer: target.value})) }/>
+                                        <Button onClick={onProgressUpdate}>수정</Button>
+                                      </div>
+                                      <span className="text-12 text-[#666666]">수정할 진행율을 숫자만 입력해 주세요.</span>
+                                    </div>)}
+                                  >
+                                    <div className="w-full h-full v-h-center cursor-pointer">
+                                      <p className="w-16 h-16 v-h-center"><Edit /></p>
+                                    </div>
+                                  </Dropdown>
+                                </Button>
+                              </>
+                            )}
                           </div>
                           {data.open && (
                             <>
@@ -726,7 +771,9 @@ const ProjectDrawer: React.FC<Props> = ({
                               <div className="flex flex-col py-12 px-16 gap-5">
                                 <div className="w-[480px] flex gap-10 items-center">
                                   {data.files.map((file:any, idx:number) => (
-                                    <Image key={idx} alt="진행관리" src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75}/>
+                                    <Image className="cursor-pointer" key={idx} alt="진행관리" 
+                                      src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75} 
+                                      onClick={() =>{setImgOpen(true); setImgSrc(`${baseURL}file-mng/v1/every/file-manager/download/${file}`)}}/>
                                   ))}
                                 </div>
                                 <p className="text-14 text-[#00000073]"><span style={{color:'black'}}>비고: </span>{data.remarks}</p>
@@ -757,7 +804,7 @@ const ProjectDrawer: React.FC<Props> = ({
                       </div>
                     </div>
                     <AntdTableEdit
-                      key={JSON.stringify(qualityList)}
+                      key={qualityList.length}
                       columns={[
                         {
                           title: '불량여부',
@@ -1016,6 +1063,8 @@ const ProjectDrawer: React.FC<Props> = ({
         
       </section>
       <ToastContainer/>
+      <AntdModal width={480} open={imgOpen} contents={<Image src={imgSrc} alt="" width={480} height={320}/>}
+        setOpen={setImgOpen} onClose={() => {setImgOpen(false); setImgSrc("")}}/>
     </AntdDrawerStyled>
   )
 }
