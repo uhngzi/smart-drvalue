@@ -773,7 +773,7 @@ const ProjectDrawer: React.FC<Props> = ({
                               <div className="flex flex-col py-12 px-16 gap-5">
                                 <div className="w-[480px] flex gap-10 items-center">
                                   {data.files.map((file:any, idx:number) => (
-                                    <div className="w-100 h-75 relative group" style={{border:"1px solid #D9D9D9"}}>
+                                    <div key={idx} className="w-100 h-75 relative group" style={{border:"1px solid #D9D9D9"}}>
                                       <Image key={idx} alt="진행관리" 
                                         src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} fill style={{ objectFit: 'contain' }}
                                         />
