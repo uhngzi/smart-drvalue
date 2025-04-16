@@ -648,6 +648,7 @@ const ProjectDrawer: React.FC<Props> = ({
     setWorkerData({});
     workControlData.current = [];
     procDailyRefetch();
+    setQualDoDate(null)
     close();
   }
   return (
@@ -813,7 +814,7 @@ const ProjectDrawer: React.FC<Props> = ({
                     <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                       <div className="col-span-2">
                         <p className="pb-8">품질관리일</p>
-                        <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={qualDoDate ? dayjs(qualDoDate) : null} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
+                        <DatePicker key={selectKey} className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={qualDoDate ? dayjs(qualDoDate) : null} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
                       </div>
                     </div>
                     <AntdTableEdit
