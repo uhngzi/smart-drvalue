@@ -240,54 +240,60 @@ const GlobalMemo:React.FC<Props> = ({
   }
   // ---------------- 메모 삭제 -------------- 끝
 
-  const anchorRef = useRef<HTMLButtonElement | null>(null);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-
-  const handleClick = () => {
-    if (anchorRef.current) {
-      const rect = anchorRef.current.getBoundingClientRect();
-      const popupWidth = 400;
-      const popupHeight = 500;
-      const padding = 10;
-  
-      const scrollTop = window.scrollY;
-      const scrollLeft = window.scrollX;
-  
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = document.documentElement.clientHeight;
-  
-      // 기본 위치: 아래 중앙
-      let top = rect.bottom + scrollTop + 8;
-      let left = rect.left + scrollLeft + rect.width / 2 - popupWidth / 2;
-  
-      // 수평 넘침 방지
-      if (left + popupWidth > viewportWidth + scrollLeft - padding) {
-        left = viewportWidth + scrollLeft - popupWidth - padding;
-      }
-      if (left < scrollLeft + padding) {
-        left = scrollLeft + padding;
-      }
-  
-      // 수직 넘침 방지 (하단 공간 부족하면 위에 뜨게)
-      if (top + popupHeight > viewportHeight + scrollTop - padding) {
-        top = rect.top + scrollTop - popupHeight - 8;
-      }
-  
-      setPos({ top, left });
-      setOpen(prev => !prev);
-    }
-  };
-
   const [shared, setShared] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
   const [focus, setFocus] = useState<boolean>(false);
   const newInputRef = useRef<HTMLInputElement>(null);
+  
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    if (typeof window !== "undefined" && open) {
+      const initialX = window.innerWidth - 420; // 모달 너비(400px) + 여유 20px
+      setPos({ x: initialX, y: 20 }); // 상단에서 20px
+    }
+  }, [open]);
+
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const offset = useRef({ x: 0, y: 0 });
+  
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!modalRef.current) return;
+    setDragging(true);
+    offset.current = {
+      x: e.clientX - pos.x,
+      y: e.clientY - pos.y,
+    };
+  };
+  
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!dragging) return;
+      setPos({
+        x: e.clientX - offset.current.x,
+        y: e.clientY - offset.current.y,
+      });
+    };
+  
+    const onMouseUp = () => {
+      setDragging(false);
+    };
+  
+    if (dragging) {
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    }
+  
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [dragging]);
 
   return (
     <div className="relative inline-block">
       <Button
-        ref={anchorRef}
-        onClick={handleClick}
+        onClick={()=>setOpen(true)}
         icon={<p className="w-16 h-16"><Memo /></p>}
         className="border-0 shadow-none w-32 h-32"
       />
@@ -295,20 +301,30 @@ const GlobalMemo:React.FC<Props> = ({
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed z-[9999999] p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
+            className="fixed z-50 p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
             style={{
-              top: pos.top,
-              left: pos.left,
-              width: "400px",
-              maxHeight: "500px",
+              position: "fixed",
+              left: pos.x,
+              top: pos.y,
+              width: 400,
+              maxHeight: 500,
               overflow: "auto",
+              background: "white",
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              fontSize: "12px",
             }}
           >
-            <div className="v-between-h-center">
+            <div
+              className="v-between-h-center cursor-move"
+              onMouseDown={onMouseDown}
+            >
               <TabSmall
                 items={[{
                   key:0, text: "메모 목록 및 등록"
@@ -319,7 +335,7 @@ const GlobalMemo:React.FC<Props> = ({
               />
               <CloseOutlined
                 className="w-16 h-16 cursor-pointer"
-                onClick={handleClick}
+                onClick={()=>setOpen(false)}
               />
             </div>
             {dataLoading && <Skeleton active />}

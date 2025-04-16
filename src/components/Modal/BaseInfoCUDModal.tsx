@@ -143,6 +143,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
   return (
     <>
     <AntdEditModal
+      draggable={true}
       open={open}
       width={popWidth || 600}
       setOpen={setOpen}
