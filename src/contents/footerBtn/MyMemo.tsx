@@ -251,7 +251,6 @@ const MyMemo:React.FC<Props> = ({
   }
   // -------------- 메모 순서 변경 ------------ 끝
 
-  ///api/serv/core-d3/v1/tenant/personal-memo/default/update-order-no/{id}
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
@@ -262,6 +261,50 @@ const MyMemo:React.FC<Props> = ({
       
       console.log(active.id, oldIndex, newIndex);
       handleOrderNoUpdate(active.id.toString(), newIndex)
+    }
+  };
+  
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+  
+    // 화면에 보이지 않도록 설정
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = "0";
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+  
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+  
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
+      } else {
+        showToast("복사 실패", "error");
+      }
+    } catch (err) {
+      showToast("복사 실패", "error");
+    }
+  
+    document.body.removeChild(textArea);
+  };
+
+  const copyToClipboard = (text: string) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success"))
+        .catch(() => fallbackCopyTextToClipboard(text));
+    } else {
+      fallbackCopyTextToClipboard(text);
     }
   };
 
@@ -304,13 +347,14 @@ const MyMemo:React.FC<Props> = ({
                 setAlertOpen(true);
               }}
               handlePaste={()=>{
-                navigator.clipboard.writeText(item.memo)
-                  .then(() => {
-                    showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
-                  })
-                  .catch((err) => {
-                    showToast("복사 완료", "error");
-                  });
+                copyToClipboard(item.memo);
+                // navigator.clipboard.writeText(item.memo)
+                //   .then(() => {
+                //     showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
+                //   })
+                //   .catch((err) => {
+                //     showToast("복사 완료", "error");
+                //   });
               }}
               handleDelete={()=>{
                 handleDelete(item.id);
