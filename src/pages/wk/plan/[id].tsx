@@ -459,10 +459,10 @@ function addPopWorkers(data: any) {
           <div>
             <ProjectTable>
               <colgroup>
-                <col width="50%" />
-                <col width="20%" />
-                <col width="20%" />
-                <col width="10%" />
+                <col width="57.2%" />
+                <col width="18%" />
+                <col width="18%" />
+                <col width="6.8%" />
               </colgroup>
               <thead>
                 <tr className="!h-55">
@@ -487,12 +487,12 @@ function addPopWorkers(data: any) {
                       <Fragment key={task.id}>
                         <tr>
                           <td className="flex flex-row justify-between items-center h-40 px-10">
-                            <div className="flex items-center gap-20">
+                            <div className="flex items-center gap-20 cursor-pointer" onClick={() => setBasicDate(new Date(task.from))}>
                               <div className="w-18 h-18 rounded-4" style={{backgroundColor: "#E9EDF5"}}>{index+1}</div>
-                              <span>{task.name}</span>
+                              <span className="text-left">{task.name}</span>
                             </div>
                             <div className="flex items-center gap-5">
-                              <div className="w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
+                              <div className="w-36 h-20 rounded-4 text-center text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
                               <div className="flex items-center w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}><WorkerFill/>{task?.workers?.length || 0}</div>
                               <Dropdown trigger={["click"]} menu={{ items:[
                                 ( detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? {
@@ -537,7 +537,7 @@ function addPopWorkers(data: any) {
                                 onChange={(date) => changeDate(date, task.id, "from", task.to)} 
                                 disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                               <p className="w-32 flex justify-center"><RightArrow/></p>
-                              <CustomDatePicker size="small" suffixIcon={<Calendar/>} allowClear={false} 
+                              <CustomDatePicker size="small" suffixIcon={null} allowClear={false} //<Calendar/>
                                 value={dayjs(task.to).isValid() ? dayjs(task.to) : null} 
                                 onChange={(date) => changeDate(date, task.id, "to", task.from)} 
                                 disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
@@ -561,7 +561,7 @@ function addPopWorkers(data: any) {
                                   value={dayjs(worker.workPlanStart).isValid() ? dayjs(worker.workPlanStart) : null} 
                                   open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                                 <p className="w-32 flex justify-center"><RightArrow/></p>
-                                <CustomDatePicker size="small" suffixIcon={<Calendar/>} allowClear={false} 
+                                <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                                   value={dayjs(worker.workPlanEnd).isValid() ? dayjs(worker.workPlanEnd) : null} 
                                 open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                               </div>
@@ -775,8 +775,8 @@ ProjcetPage.layout = (page: React.ReactNode) => (
 export default ProjcetPage;
 
 const ProjectTable = styled.table`
-  min-width: 530px;
-  width: 640px;
+  min-width: 500px;
+  width: 540px;
   border-right: 1px solid #D9D9D9;
   box-sizing: content-box;
   background-color: #fff;
