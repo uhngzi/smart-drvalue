@@ -204,7 +204,7 @@ const ProjectDrawer: React.FC<Props> = ({
   const qualModiConData = useRef<any>([]);
   const [qualityList, setQualityList] = useState<any[]>([]);
   const [procBadList, setProcBadList] = useState<any[]>([]);
-  const [qualDoDate, setQualDoDate] = useState<string | Date | null>(new Date());
+  const [qualDoDate, setQualDoDate] = useState<string | Date | null>(null);
   const { isLoading: badListLoading, refetch: badListkRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['pms', 'proc', 'badlist', selectId],
     queryFn: async () => {
@@ -648,6 +648,7 @@ const ProjectDrawer: React.FC<Props> = ({
     setWorkerData({});
     workControlData.current = [];
     procDailyRefetch();
+    setQualDoDate(null)
     close();
   }
   return (
@@ -813,7 +814,7 @@ const ProjectDrawer: React.FC<Props> = ({
                     <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
                       <div className="col-span-2">
                         <p className="pb-8">품질관리일</p>
-                        <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={dayjs(qualDoDate)} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
+                        <DatePicker key={selectKey} className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={qualDoDate ? dayjs(qualDoDate) : null} onChange={(date) => {setQualDoDate(dayjs(date).format("YYYY-MM-DD"));}}/>
                       </div>
                     </div>
                     <AntdTableEdit
@@ -863,7 +864,10 @@ const ProjectDrawer: React.FC<Props> = ({
                           align: 'center',
                           render: (value, record) => (
                             <div className="w-full h-full v-h-center">
-                              <Input key={String(qualDoDate)} defaultValue={record.check?.wkProcDailyBadDesc} name="wkProcDailyBadDesc" onChange={(e) => onCreateQualChange(e, record)} placeholder="example" disabled={(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) ? false : true}/>
+                              <Input key={String(qualDoDate)} defaultValue={record.check?.wkProcDailyBadDesc} 
+                                name="wkProcDailyBadDesc" onChange={(e) => onCreateQualChange(e, record)} placeholder="example" 
+                                disabled={(qualDoDate && !qualityList.some((v:any)=> v.qualDate == qualDoDate)) ? false : true}
+                              />
                             </div>
                           )
                         },
@@ -893,6 +897,12 @@ const ProjectDrawer: React.FC<Props> = ({
                               {data.open ? <ArrowDown/> : <Arrowright/>}
                             </p>
                             <p>{me?.userName}</p><p>|</p><p>{dayjs(data.qualDate).format("YYYY-MM-DD")}</p>
+                            {(data?.badList.filter((v:any) => v?.check?.wkProcDailyBadYn).length -1) > 0 && (
+                              <>
+                                <p>|</p>
+                                <p>{`${data?.badList[0].badNm} 불량 외 ${(data?.badList.filter((v:any) => v?.check?.wkProcDailyBadYn).length -1)}`}</p>
+                              </>
+                            )}
                             
                           </div>
                           {data.open && (
