@@ -443,7 +443,7 @@ function addPopWorkers(data: any) {
             <span>{detailData.specModel?.partner?.prtNm}</span>
             <span>-</span>
             <span>{detailData.specModel?.prdNm}</span>
-            <span>{"("}시작일 : {detailData.wsSchDt ? dayjs(detailData.wsSchDt).format("YYYY-MM-DD"): "-"}</span>
+            <span>{"("}시작일 : {detailData?.orderProduct?.orderDt ? dayjs(detailData?.orderProduct?.orderDt).format("YYYY-MM-DD"): "-"}</span>
             <span>납기일 : {detailData?.orderProduct?.orderPrdDueDt ? dayjs(detailData.orderProduct?.orderPrdDueDt).format("YYYY-MM-DD"): "-"}{")"}</span>
           </p>
           <div className="flex gap-10 h-center">
