@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import FilmDocumentForm from "@/contents/documentForm/FilmDocumentForm";
 import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
+import EstimateDocumentForm from "@/contents/documentForm/EstimateDocumentForm";
 
 const HomeDocumentPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -25,9 +26,7 @@ const HomeDocumentPage: React.FC & {
         setOpen={setOpen}
         title={"미리보기"}
         contents={
-          //<>여기에 컴포넌트 선언하시면 됩니다</>
-          //<FilmDocumentForm />
-          <FilmDocumentForm />
+          <EstimateDocumentForm />
         }
         width={635}
       />
