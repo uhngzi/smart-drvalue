@@ -67,14 +67,15 @@ const AntdEditModal: React.FC<Props> = ({
     },
   };
 
-  const [settingFlag, setSettingFlag] = useState<boolean>(false);
+  const [dragFlag, setDragFlag] = useState<boolean>(false);
+
   const modalRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const offset = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (open && draggable && !settingFlag) {
+    if (open && draggable && !dragFlag) {
       const timer = setTimeout(() => {
         const el = modalRef.current;
         if (el) {
@@ -83,18 +84,12 @@ const AntdEditModal: React.FC<Props> = ({
   
           const centerX = window.innerWidth / 2 - modalW / 2;
           const centerY = window.innerHeight / 2 - modalH / 2;
-          console.log(centerX, centerY);
   
           setPosition({ x: centerX, y: centerY });
-          setTimeout(()=>setSettingFlag(true), 330);
         }
       }, 0); // 0ms라도 timeout으로 렌더 이후 실행 보장
   
       return () => clearTimeout(timer);
-    }
-
-    if(!open) {
-      setTimeout(()=>setSettingFlag(false), 350);
     }
   }, [open, draggable]);
 
@@ -123,6 +118,7 @@ const AntdEditModal: React.FC<Props> = ({
       nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
     
       setPosition({ x: nextX, y: nextY });
+      setDragFlag(true);
     };
 
     const handleMouseUp = () => setDragging(false);
@@ -152,18 +148,21 @@ const AntdEditModal: React.FC<Props> = ({
         <div
           ref={modalRef}
           onMouseDown={handleMouseDown}
-          style={{
+          style={dragFlag ? {
             position: "fixed",
             top: `${position.y}px`,
             left: `${position.x}px`,
             width: full ? '100%' : width || 600,
             minWidth: 320,
             maxWidth: "100vw",
-            transform: "none", 
-            visibility: !settingFlag ? "hidden" : "visible",
-            pointerEvents: !settingFlag ? "none" : "auto",
-            opacity: settingFlag ? 1 : 0,
-            transition: settingFlag ? "opacity 0.1s ease" : "",
+            transform: "none",
+          } : {
+            position: "fixed",
+            margin: "0 auto",
+            width: full ? '100%' : width || 600,
+            minWidth: 320,
+            maxWidth: "100vw",
+            transform: "none",
           }}
         >
           {modal}
@@ -175,12 +174,12 @@ const AntdEditModal: React.FC<Props> = ({
           className="w-24 h-24 cursor-pointer absolute"
           style={{right: 30, top: 20}}
           onClick={onClose ? () => {
-            setSettingFlag(false);
+            setDragFlag(false);
             onClose();
           } :
           (()=>{
-            setSettingFlag(false);
-            setTimeout(() => setOpen(false), 200);
+            setDragFlag(false);
+            setOpen(false);
           })}
         >
           <DeleteCircle />

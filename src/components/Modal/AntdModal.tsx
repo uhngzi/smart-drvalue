@@ -68,14 +68,15 @@ const AntdModal: React.FC<Props> = ({
     },
   };
 
-  const [settingFlag, setSettingFlag] = useState<boolean>(false);
+  const [dragFlag, setDragFlag] = useState<boolean>(false);
+
   const modalRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const offset = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (open && draggable && !settingFlag) {
+    if (open && draggable && !dragFlag) {
       const timer = setTimeout(() => {
         const el = modalRef.current;
         if (el) {
@@ -86,15 +87,10 @@ const AntdModal: React.FC<Props> = ({
           const centerY = window.innerHeight / 2 - modalH / 2;
   
           setPosition({ x: centerX, y: centerY });
-          setTimeout(()=>setSettingFlag(true), 315);
         }
-      }, 0); // 0ms라도 timeout으로 렌더 이후 실행 보장
+      }, 0);
   
       return () => clearTimeout(timer);
-    }
-
-    if(!open) {
-      setTimeout(()=>setSettingFlag(false), 350);
     }
   }, [open, draggable]);
 
@@ -123,6 +119,7 @@ const AntdModal: React.FC<Props> = ({
       nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
     
       setPosition({ x: nextX, y: nextY });
+      setDragFlag(true);
     };
 
     const handleMouseUp = () => setDragging(false);
@@ -151,18 +148,21 @@ const AntdModal: React.FC<Props> = ({
       modalRender={draggable ? (modal) => (
         <div
           ref={modalRef}
-          style={{
+          style={dragFlag ? {
             position: "fixed",
             top: `${position.y}px`,
             left: `${position.x}px`,
             width: full ? '100%' : width || 600,
             minWidth: 320,
             maxWidth: "100vw",
-            transform: "none", 
-            visibility: !settingFlag ? "hidden" : "visible",
-            pointerEvents: !settingFlag ? "none" : "auto",
-            opacity: settingFlag ? 1 : 0,
-            transition: settingFlag ? "opacity 0.05s ease" : "",
+            transform: "none",
+          } : {
+            position: "fixed",
+            margin: "0 auto",
+            width: full ? '100%' : width || 600,
+            minWidth: 320,
+            maxWidth: "100vw",
+            transform: "none",
           }}
         >
           {modal}
@@ -177,13 +177,12 @@ const AntdModal: React.FC<Props> = ({
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={onClose ? () => {
-            setSettingFlag(false);
+            setDragFlag(false);
             onClose();
-          } :
-          (()=>{
-            setSettingFlag(false);
-            setTimeout(() => setOpen(false), 200);
-          })}
+          } : ()=>{
+            setDragFlag(false);
+            setOpen(false);
+          }}
         >
           <Close />
         </p>
