@@ -216,6 +216,7 @@ const ArrayContents: React.FC<Props> = ({
         open={yieldPopOpen}
         setOpen={setYieldPopOpen}
         width={960}
+        draggable={true} mask={false}
         title="배열 도면 계산 및 선택"
         contents={
         <SayangYieldCalculate
@@ -242,6 +243,7 @@ const ArrayContents: React.FC<Props> = ({
       <AntdModal
         open={lgOpen}
         setOpen={setLgOpen}
+        draggable={true} mask={false}
         title={"확대 이미지"}
         width={1000}
         contents={

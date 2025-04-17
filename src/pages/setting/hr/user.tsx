@@ -468,6 +468,7 @@ const HrUserListPage: React.FC & {
       <AntdModal
         width={1300}
         title={"조직 구성원 설정"}
+        draggable={true} mask={false}
         open={addUserOpen}
         setOpen={setAddUserOpen}
         contents={

@@ -319,6 +319,7 @@ const BuyCostWaitPage: React.FC & {
         open={open}
         setOpen={setOpen}
         width={1300}
+        draggable={true} mask={false}
         title={"외주처 단가 등록"}
         contents={<>
           <div className="w-full h-full p-30 bg-white rounded-14 flex flex-col gap-20">

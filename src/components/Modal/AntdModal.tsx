@@ -68,25 +68,33 @@ const AntdModal: React.FC<Props> = ({
     },
   };
 
+  const [settingFlag, setSettingFlag] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const offset = useRef({ x: 0, y: 0 });
-  
+
   useEffect(() => {
-    if (open && draggable && modalRef.current) {
-      const element = modalRef.current;
+    if (open && draggable && !settingFlag) {
+      const timer = setTimeout(() => {
+        const el = modalRef.current;
+        if (el) {
+          const modalW = el.offsetWidth;
+          const modalH = el.offsetHeight;
   
-      const observer = new ResizeObserver(() => {
-        const { width: modalW, height: modalH } = element.getBoundingClientRect();
-        const centerX = (window.innerWidth - modalW) / 2;
-        const centerY = (window.innerHeight - modalH) / 2;
-        setPosition({ x: centerX, y: centerY });
-      });
+          const centerX = window.innerWidth / 2 - modalW / 2;
+          const centerY = window.innerHeight / 2 - modalH / 2;
   
-      observer.observe(element);
+          setPosition({ x: centerX, y: centerY });
+          setTimeout(()=>setSettingFlag(true), 315);
+        }
+      }, 0); // 0ms라도 timeout으로 렌더 이후 실행 보장
   
-      return () => observer.disconnect();
+      return () => clearTimeout(timer);
+    }
+
+    if(!open) {
+      setTimeout(()=>setSettingFlag(false), 350);
     }
   }, [open, draggable]);
 
@@ -101,11 +109,20 @@ const AntdModal: React.FC<Props> = ({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!dragging) return;
-      setPosition({
-        x: e.clientX - offset.current.x,
-        y: e.clientY - offset.current.y,
-      });
+      if (!dragging || !modalRef.current) return;
+    
+      const el = modalRef.current;
+      const modalW = el.offsetWidth;
+      const modalH = el.offsetHeight;
+    
+      let nextX = e.clientX - offset.current.x;
+      let nextY = e.clientY - offset.current.y;
+    
+      // 화면 바깥으로 안 나가게 clamp
+      nextX = Math.max(0, Math.min(nextX, window.innerWidth - modalW));
+      nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
+    
+      setPosition({ x: nextX, y: nextY });
     };
 
     const handleMouseUp = () => setDragging(false);
@@ -128,35 +145,45 @@ const AntdModal: React.FC<Props> = ({
       destroyOnClose={false}
       width={full ? '100%' : width}
       footer={footer||null}
-      centered
+      centered={!draggable}
       mask={mask}
-      // maskClosable={maskClosable}
-      // modalRender={draggable ? (modal) => (
-      //   <div
-      //     ref={modalRef}
-      //     style={{
-      //       position: "absolute",
-      //       top: position.y,
-      //       left: position.x,
-      //       width: full ? '100%' : width || 600,
-      //       minWidth: 320,
-      //       maxWidth: "100vw",
-      //       cursor: dragging ? "grabbing" : "grab",
-      //       transform: "none", 
-      //     }}
-      //   >
-      //     {modal}
-      //   </div>
-      // ) : (modal) => (<div>{modal}</div>)}
+      maskClosable={maskClosable}
+      modalRender={draggable ? (modal) => (
+        <div
+          ref={modalRef}
+          style={{
+            position: "fixed",
+            top: `${position.y}px`,
+            left: `${position.x}px`,
+            width: full ? '100%' : width || 600,
+            minWidth: 320,
+            maxWidth: "100vw",
+            transform: "none", 
+            visibility: !settingFlag ? "hidden" : "visible",
+            pointerEvents: !settingFlag ? "none" : "auto",
+            opacity: settingFlag ? 1 : 0,
+            transition: settingFlag ? "opacity 0.05s ease" : "",
+          }}
+        >
+          {modal}
+        </div>
+      ) : (modal) => (<div>{modal}</div>)}
     >
       <div
-        className="w-full h-80 shrink-0 px-30 v-between-h-center"
+        className={`w-full h-80 shrink-0 px-30 v-between-h-center ${draggable ? "cursor-grab" : ""}`}
         onMouseDown={handleMouseDown}
       >
         <p className="text-20 font-medium ">{title}</p>
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
-          onClick={onClose || (()=>setOpen(false))}
+          onClick={onClose ? () => {
+            setSettingFlag(false);
+            onClose();
+          } :
+          (()=>{
+            setSettingFlag(false);
+            setTimeout(() => setOpen(false), 200);
+          })}
         >
           <Close />
         </p>

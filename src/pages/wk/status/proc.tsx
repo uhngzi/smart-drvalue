@@ -378,6 +378,7 @@ const WKStatusProcPage: {
       open={open}
       setOpen={setOpen}
       width={1300}
+      draggable={true} mask={false}
       title={"공정 현황"}
       contents={
       <div className="w-full h-full flex flex-col gap-20">

@@ -289,6 +289,7 @@ const WkProcessVendorPriceListPage: React.FC & {
         open={newOpen}
         setOpen={setNewOpen}
         width={800}
+        draggable={true} mask={false}
         contents={
           <AddContents
             handleDataChange={handleDataChange}

@@ -67,10 +67,36 @@ const AntdEditModal: React.FC<Props> = ({
     },
   };
 
+  const [settingFlag, setSettingFlag] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const offset = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (open && draggable && !settingFlag) {
+      const timer = setTimeout(() => {
+        const el = modalRef.current;
+        if (el) {
+          const modalW = el.offsetWidth;
+          const modalH = el.offsetHeight;
+  
+          const centerX = window.innerWidth / 2 - modalW / 2;
+          const centerY = window.innerHeight / 2 - modalH / 2;
+          console.log(centerX, centerY);
+  
+          setPosition({ x: centerX, y: centerY });
+          setTimeout(()=>setSettingFlag(true), 330);
+        }
+      }, 0); // 0ms라도 timeout으로 렌더 이후 실행 보장
+  
+      return () => clearTimeout(timer);
+    }
+
+    if(!open) {
+      setTimeout(()=>setSettingFlag(false), 350);
+    }
+  }, [open, draggable]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!modalRef.current) return;
@@ -83,11 +109,20 @@ const AntdEditModal: React.FC<Props> = ({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!dragging) return;
-      setPosition({
-        x: e.clientX - offset.current.x,
-        y: e.clientY - offset.current.y,
-      });
+      if (!dragging || !modalRef.current) return;
+    
+      const el = modalRef.current;
+      const modalW = el.offsetWidth;
+      const modalH = el.offsetHeight;
+    
+      let nextX = e.clientX - offset.current.x;
+      let nextY = e.clientY - offset.current.y;
+    
+      // 화면 바깥으로 안 나가게 clamp
+      nextX = Math.max(0, Math.min(nextX, window.innerWidth - modalW));
+      nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
+    
+      setPosition({ x: nextX, y: nextY });
     };
 
     const handleMouseUp = () => setDragging(false);
@@ -101,7 +136,6 @@ const AntdEditModal: React.FC<Props> = ({
     };
   }, [dragging]);
 
-  console.log(draggable);
   return (
     <Modal 
       classNames={classNames}
@@ -119,13 +153,17 @@ const AntdEditModal: React.FC<Props> = ({
           ref={modalRef}
           onMouseDown={handleMouseDown}
           style={{
-            position: "absolute",
-            top: position.y,
-            left: position.x,
+            position: "fixed",
+            top: `${position.y}px`,
+            left: `${position.x}px`,
             width: full ? '100%' : width || 600,
             minWidth: 320,
             maxWidth: "100vw",
-            cursor: dragging ? "grabbing" : "grab",
+            transform: "none", 
+            visibility: !settingFlag ? "hidden" : "visible",
+            pointerEvents: !settingFlag ? "none" : "auto",
+            opacity: settingFlag ? 1 : 0,
+            transition: settingFlag ? "opacity 0.1s ease" : "",
           }}
         >
           {modal}
@@ -133,7 +171,18 @@ const AntdEditModal: React.FC<Props> = ({
       ) : (modal) => (<div>{modal}</div>)}
     >
       <div className="w-full flex-1 px-20 pb-20 overflow-y-auto relative">
-        <div className="w-24 h-24 cursor-pointer absolute" style={{right: 30, top: 20}} onClick={onClose||(()=>setOpen(false))}>
+        <div
+          className="w-24 h-24 cursor-pointer absolute"
+          style={{right: 30, top: 20}}
+          onClick={onClose ? () => {
+            setSettingFlag(false);
+            onClose();
+          } :
+          (()=>{
+            setSettingFlag(false);
+            setTimeout(() => setOpen(false), 200);
+          })}
+        >
           <DeleteCircle />
         </div>
         {contents}

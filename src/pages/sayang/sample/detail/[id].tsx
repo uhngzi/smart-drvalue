@@ -826,6 +826,7 @@ const SayangSampleAddPage: React.FC & {
           open={open}
           setOpen={setOpen}
           title={"공정 지정"}
+          draggable={true} mask={false}
           contents={
           <ProcessSelection
             open={open}

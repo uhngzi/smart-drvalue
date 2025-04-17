@@ -268,6 +268,7 @@ const PrtDrawer: React.FC<Props> = ({
         open={newPrtOpen}
         setOpen={setNewPrtOpen}
         width={760}
+        draggable={true} mask={false}
         contents={<>
           <CardInputList title="고객정보 수정" 
             titleIcon={<Bag/>}

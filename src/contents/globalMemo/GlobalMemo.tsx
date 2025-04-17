@@ -268,10 +268,22 @@ const GlobalMemo:React.FC<Props> = ({
   
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
-      if (!dragging) return;
+      if (!dragging || !modalRef.current) return;
+    
+      const el = modalRef.current;
+      const modalW = el.offsetWidth;
+      const modalH = el.offsetHeight;
+    
+      let nextX = e.clientX - offset.current.x;
+      let nextY = e.clientY - offset.current.y;
+    
+      // 화면 바깥으로 안 나가게 clamp
+      nextX = Math.max(0, Math.min(nextX, window.innerWidth - modalW));
+      nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
+    
       setPos({
-        x: e.clientX - offset.current.x,
-        y: e.clientY - offset.current.y,
+        x: nextX,
+        y: nextY,
       });
     };
   
