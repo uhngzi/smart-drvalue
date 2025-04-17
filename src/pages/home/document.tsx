@@ -5,6 +5,9 @@ import { Button, Empty } from "antd";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+import FilmDocumentForm from "@/contents/documentForm/FilmDocumentForm";
+import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
+
 const HomeDocumentPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -22,7 +25,9 @@ const HomeDocumentPage: React.FC & {
         setOpen={setOpen}
         title={"미리보기"}
         contents={
-          <>여기에 컴포넌트 선언하시면 됩니다</>
+          //<>여기에 컴포넌트 선언하시면 됩니다</>
+          //<FilmDocumentForm />
+          <FilmDocumentForm />
         }
         width={635}
       />
