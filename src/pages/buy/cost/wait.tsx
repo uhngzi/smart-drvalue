@@ -148,6 +148,8 @@ const BuyCostWaitPage: React.FC & {
         type: 'core-d2',
         utype: 'tenant/',
         url: `worksheet/vender-price/jsxcrud/one/${select?.id}`
+      },{
+        anykeys: {excludeInternalProc: true}
       });
 
       if(result.resultCode === "OK_0000") {
