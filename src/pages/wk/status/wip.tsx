@@ -363,7 +363,7 @@ const WKStatusWIPPage: {
                 setProcTypeIdx(item.id);
               }}
             >
-              {item.prcNm}
+              {item.wipPrcNm}
             </div>
           ))
         }
@@ -383,7 +383,7 @@ const WKStatusWIPPage: {
             }}
             className="!text-point1 !border-point1"
           >
-            <p className="text-point1"><ExportOutlined /></p> 출고
+            <p className="text-point1"><ExportOutlined /></p> 선택한 모델 출고
           </Button>
         }
         pagination={pagination}
