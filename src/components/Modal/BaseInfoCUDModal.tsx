@@ -36,6 +36,8 @@ interface Item {
   widthType: string; // full: 한 줄 차지, half: 2개씩 나열 third: 3개씩 나열
   placeholder?: string; // input의 placeholder
   customhtml?: React.ReactNode;
+  key?: string,
+  disabled?: boolean;
 }
 
 interface CardInputListProps {
@@ -54,6 +56,12 @@ interface CardInputListProps {
     pd?: string;
   }
   addCustom?: JSX.Element;
+  handleDataChange?:(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: "input" | "select" | "date" | "other",
+    key?: string
+  ) => void
 }
 
 /**
@@ -76,7 +84,7 @@ interface CardInputListProps {
  */
 
 const BaseInfoCUDModal: React.FC<CardInputListProps> = (
-  {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles, addCustom}: CardInputListProps
+  {open, setOpen, onClose, popWidth, title, items, data={}, onSubmit, onDelete, styles, addCustom, handleDataChange}: CardInputListProps
 ): JSX.Element => {
   const {showToast, ToastContainer} = useToast();
 
@@ -139,7 +147,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
     queryFn: () => getPrtCsAPI(),
   });
   const [cdChk, setCdChk] = useState<boolean>(false);
-  
+
   return (
     <>
     <AntdEditModal
@@ -198,7 +206,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           name={item.name}
                           value={formData[item.name] || ''}
                           onChange={(e) => {
-                            handleInputChange(item.name, e.target.value)
+                            // ....
+
+                            handleDataChange?.(e, item.name, "input", item?.key);
+                            handleInputChange(item.name, e.target.value);
                             if(item.name === "prtRegCd") {
                               const csData = (cs?.data?.data as partnerRType[]).find(f=> f.prtRegCd === Number(e.target.value))
                               
@@ -210,7 +221,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                               setCdChk(false);
                             }*/
                           }}
-                          placeholder={item.placeholder}
+                          placeholder={item.placeholder} type={item.inputType ?? "string"}
+                          disabled={item.disabled}
                         />
                       )}
                       {item.type === "password" && (
@@ -220,8 +232,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           onChange={(e) => {
                             setData(item.name, e.target.value);
                             setFormData(prev => ({ ...prev, [item.name]: e.target.value }));
+                            handleDataChange?.(e, item.name, "input");
                           }}
                           placeholder={item.placeholder}
+                          disabled={item.disabled}
                         />
                       )}
                       {item.type === "select" && (
@@ -233,12 +247,15 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           onChange={(value) => {
                             setData(item.name, value)
                             setFormData(prev => ({ ...prev, [item.name]: value }));
+                            console.log("🔄 select changed:", item.name, value);
+                            handleDataChange?.(value, item.name, "select");
                             if(item.child) {
                               const childData = item.option?.find((f) => f.value === value)?.children;
                               setIfChildList(childData)
                               console.log(childData)
                             }
                           }}
+                          disabled={item.disabled}
                         />
                       )}
                       {item.type === "mSelect" && (
@@ -248,7 +265,11 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           options={item.option}
                           key={formData[item.name]}
                           defaultValue={formData[item.name]}
-                          onChange={(value) => {setData(item.name, value)}}
+                          onChange={(value) => {
+                            setData(item.name, value);
+                            handleDataChange?.(value, item.name, "select");
+                          }}
+                          disabled={item.disabled}
                         />
                       )}
                       {}
@@ -260,9 +281,11 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                           onChange={(value) => {
                             setData(item.name, dayjs(value).format("YYYY-MM-DD"));
                             setFormData(prev => ({ ...prev, [item.name]: value }));
+                            handleDataChange?.(value+"", item.name, "date");
                           }}
                           defaultValue={formData[item.name] ? dayjs(formData[item.name]) : null}
                           suffixIcon={<Calendar/>}
+                          disabled={item.disabled}
                         />
                       )}
                       {item.type === "custom" && (
