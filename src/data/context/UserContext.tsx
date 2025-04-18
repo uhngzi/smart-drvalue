@@ -3,6 +3,7 @@ import { getAPI } from "@/api/get";
 import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
 import { loginCheck } from "@/utils/signUtil";
+import { MyMemoType } from "@/contents/footerBtn/MyMemo";
 
 export interface User {
   id: string;
@@ -15,6 +16,9 @@ interface UserContextType {
   me: User | null;
   meLoading: boolean;
   refetchUser: () => void;
+  myMemo: MyMemoType[];
+  myMemoLoading: boolean;
+  refetchMyMemo: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,11 +35,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-
   const [me, setMe] = useState<User | null>(null);
   const [meLoading, setMeLoading] = useState<boolean>(true);
 
-  const { refetch } = useQuery<apiAuthResponseType, Error>({
+  const { refetch:refetchUser } = useQuery<apiAuthResponseType, Error>({
     queryKey: ["me", login],
     queryFn: async () => {
       setMeLoading(true);
@@ -51,8 +54,35 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     enabled: login
   });
 
+  const [myMemo, setMyMemo] = useState<MyMemoType[]>([]);
+  const [myMemoLoading, setMyMemoLoading] = useState<boolean>(true);
+  const { refetch:refetchMyMemo } = useQuery<apiAuthResponseType, Error>({
+    queryKey: ["myMemo", login],
+    queryFn: async () => {
+      setMyMemoLoading(true);
+      const result = await getAPI({
+        type: "core-d3",
+        utype: "tenant/",
+        url: "personal-memo/jsxcrud/me",
+      });
+      if (result.resultCode === "OK_0000") {
+        setMyMemo(result.data.data);
+        setMyMemoLoading(false);
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+    enabled: login
+  });
+
   return (
-    <UserContext.Provider value={{ me, refetchUser: refetch, meLoading }}>
+    <UserContext.Provider
+      value={{
+        me, refetchUser, meLoading,
+        myMemo, refetchMyMemo, myMemoLoading,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

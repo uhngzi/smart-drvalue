@@ -40,9 +40,10 @@ import AntdPagination from "@/components/Pagination/AntdPagination";
 import { deleteAPI } from "@/api/delete";
 import { patchAPI } from "@/api/patch";
 import SortableMemoItem from "./SortableMemoItem";
+import { useUser } from "@/data/context/UserContext";
 
 
-type Memo = {
+export type MyMemoType = {
   createdAt: Date | Dayjs | null;
   updatedAt: Date | Dayjs | null;
   deletedAt: Date | Dayjs | null;
@@ -62,43 +63,21 @@ const MyMemo:React.FC<Props> = ({
   open,
   setOpen,
 }) => {
+  const { myMemo, refetchMyMemo:refetch } = useUser();
   const { showToast, ToastContainer } = useToast();
 
   // --------------- 리스트 데이터 ------------ 끝
   const [searchs, setSearchs] = useState<string>("");
   useEffect(()=>{
-    setFData(data.filter((item) =>
+    setFData(myMemo.filter((item) =>
       item.memo.toLowerCase().includes(searchs.toLowerCase())
     ));
-  }, [searchs]);
-  const [fdata, setFData] = useState<Memo[]>([]);
-  const [data, setData] = useState<Memo[]>([]);
-  const { refetch } = useQuery<apiAuthResponseType, Error>({
-    queryKey: ["myMemo", login],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: "core-d3",
-        utype: "tenant/",
-        url: "personal-memo/jsxcrud/me"
-      },{
-        // s_query: searchs.length > 2 ? [{key: "memo", oper: "startsL", value: searchs}] : undefined,
-        sort: "orderNo,ASC",
-      });
-
-      if (result.resultCode === "OK_0000") {
-        setData(result.data?.data ?? []);
-        setFData(result.data?.data ?? []);
-      } else {
-        console.log("GET ERROR:", result.response);
-      }
-      return result;
-    },
-    enabled: login
-  });
+  }, [searchs, myMemo]);
+  const [fdata, setFData] = useState<MyMemoType[]>([]);
   // --------------- 리스트 데이터 ------------ 시작
   
   // -------------- 메모 등록/수정 ------------ 시작
-  const [editMemo, setEditMemo] = useState<Memo>();
+  const [editMemo, setEditMemo] = useState<MyMemoType>();
   const [newMemo, setNewMemo] = useState<string>("");
   const handleSubmit = async () => {
     try {
@@ -132,7 +111,7 @@ const MyMemo:React.FC<Props> = ({
           url: 'personal-memo',
         }, {
           memo: newMemo,
-          orderNo: data.length,
+          orderNo: myMemo.length,
         });
         
         if(result.resultCode === "OK_0000") {
@@ -205,7 +184,7 @@ const MyMemo:React.FC<Props> = ({
       return el.scrollHeight > maxHeight + 1;
     });
     setClampedList(newClamped);
-    setExpandedList(new Array(data.length).fill(false));
+    setExpandedList(new Array(myMemo.length).fill(false));
   }, [fdata]);
 
   const toggleExpanded = (idx: number) => {
@@ -310,7 +289,7 @@ const MyMemo:React.FC<Props> = ({
 
   return (
     <div className="flex flex-col gap-10">
-      <LabelBold label={"나의 메모 ("+data.length.toLocaleString()+")"} className="text-18"/>
+      <LabelBold label={"나의 메모 ("+myMemo.length.toLocaleString()+")"} className="text-18"/>
       <div className="h-center w-full mb-10">
         <AntdInput
           value={searchs}

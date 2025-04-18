@@ -23,6 +23,7 @@ import Err from "@/assets/svg/icons/s_excalm.svg";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { Dayjs } from "dayjs";
 import cookie from "cookiejs";
+import { useRouter } from "next/router";
 
 interface MenuFlat {
   createdAt?: Date | Dayjs | null;
@@ -106,11 +107,13 @@ const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
 export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [login, setLogin] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(()=>{
     // 로그인 안 했을 경우 로그인 페이지로 이동
     if(typeof window !== 'undefined' && !loginCheck()) {
       setLogin(false);
+      router.push("/sign/in");
     } else {
       setLogin(true);
     }

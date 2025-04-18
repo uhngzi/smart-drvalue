@@ -331,6 +331,7 @@ const HomeBoard: React.FC<{
                     const { value } = e.target;
                     setSelect({...select, title: value});
                   }}
+                  memoView
                   // readonly={select?.id ? true : false}
                 />
               </div>
