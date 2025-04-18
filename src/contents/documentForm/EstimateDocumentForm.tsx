@@ -1,6 +1,6 @@
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
 import { salesEstimateProductType } from "@/data/type/sales/order";
-import Dojang from '@assets/svg/icons/dojang.svg';
+// import Dojang from '@assets/svg/icons/dojang.svg';
 
 const EstimateDocumentForm: React.FC = () => {
     const sample:any[] = [
@@ -181,7 +181,8 @@ const EstimateDocumentForm: React.FC = () => {
                 <tr className="h-[25px]">
                     <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">대표명</td>
                     <td colSpan={3} className="flex max-w-[75px] w-[90px]  pl-[8px] pt-[5px]">21290890 
-                        <div className="absolute top-[20%] left-[39%]"><Dojang/></div></td>
+                        {/* <div className="absolute top-[20%] left-[39%]"><Dojang/></div> */}
+										</td>
                 </tr>
 
             </tbody>
