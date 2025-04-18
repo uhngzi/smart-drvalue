@@ -1,6 +1,6 @@
 // 기초정보 - 공정그룹, 공정, 공정 외주처, 공정 외주처 가격
 
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
 import { partnerRType } from "./partner";
 
@@ -126,6 +126,7 @@ export type processVendorPriceRType = {
 }
 
 export type processVendorPriceCUType = {
+  id?: string;
   process: { id: string; };
   processGroup: { id: string; };
   vendor: { id: string; };
@@ -146,8 +147,12 @@ export type processVendorPriceCUType = {
   wgtMax?: number;
   cntMin?: number;
   cntMax?: number;
-  appDt: Date;
+  appDt: Date | Dayjs | null;
   useYn: boolean;
+  processIdx?: string;
+  processGroupIdx?: string;
+  vendorIdx?: string;
+  appOriginDt?: Date | Dayjs | null;
 }
 
 export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
@@ -172,7 +177,7 @@ export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
     wgtMax: 0,
     cntMin: 0,
     cntMax: 0,
-    appDt: new Date(),
+    appDt: dayjs(),
     useYn: true,
   }
 }
@@ -188,4 +193,30 @@ export type processVendorPriceHistoryRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
+}
+
+
+export const processVendorPriceReq = () => {
+  return [
+    { field: 'processGroupIdx', label: '공정그룹' },
+    { field: 'processIdx', label: '공정' },
+    { field: 'vendorIdx', label: '공급처' },
+    { field: 'priceNm', label: '가격명' },
+    { field: 'priceUnit', label: '가격' },
+    { field: 'modelTypeEm', label: '제품유형' },
+    { field: 'layerEm', label: '층' },
+    { field: 'thk', label: '두께' },
+    { field: 'pnlcntMin', label: 'PNL최소수량' },
+    { field: 'pnlcntMax', label: 'PNL최대수량' },
+    { field: 'holecntMin', label: '최소홀수' },
+    { field: 'holecntMax', label: '최대홀수' },
+    { field: 'm2Min', label: '최저면적' },
+    { field: 'm2Max', label: '최대면적' },
+    { field: 'wgtMin', label: '최소무게' },
+    { field: 'wgtMax', label: '최대무게' },
+    { field: 'cntMin', label: '최소수량' },
+    { field: 'cntMax', label: '최대수량' },
+    { field: 'useYn', label: '사용여부' },
+    { field: 'appDt', label: '적용일' },
+  ]
 }

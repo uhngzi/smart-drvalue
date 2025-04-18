@@ -73,11 +73,44 @@ const MOCK = {
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
         ]
-    }
-    
-}
+    },
 
+    
+    vendorItems: {
+        tableColumns: [],
+        CUDPopItems: [
+          { name: 'processGroupIdx', key: 'id', label: '공정그룹', widthType: 'third', type: 'select', option: [] },
+          { name: 'processIdx', key: 'id', label: '공정', widthType: 'third', type: 'select', option: [] },
+          { name: 'vendorIdx', key: 'id', label: '공급처', widthType: 'third', type: 'select', option: [] },
+          { name: 'priceNm', label: '가격명', widthType: 'third', type: 'input' },
+          { name: 'priceUnit', label: '가격', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'layerEm', label: '층', widthType: 'third', type: 'select', option: [] },
+          { name: 'modelTypeEm', label: '제품유형', widthType: 'third', type: 'select', option: [
+            { value: 'sample', label: '샘플' },
+            { value: 'mass', label: '양산' },
+          ] },
+          { name: 'thk', label: '두께', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'pnlcntMin', label: 'PNL최소수량', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'pnlcntMax', label: 'PNL최대수량', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'holecntMin', label: '최소홀수', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'holecntMax', label: '최대홀수', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'm2Min', label: '최저면적', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'm2Max', label: '최대면적', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'wgtMin', label: '최소무게', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'wgtMax', label: '최대무게', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'cntMin', label: '최소수량', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'cntMax', label: '최대수량', widthType: 'third', type: 'input', inputType: 'number' },
+          { name: 'useYn', label: '사용여부', widthType: 'third', type: 'select', option: [
+            { value: true, label: '사용' },
+            { value: false, label: '미사용' },
+          ] },
+          { name: 'appDt', label: '적용일', widthType: 'third', type: 'date' },
+        ]
+      }
+      
+      
+}
 
 export { 
     MOCK
- };
+};
