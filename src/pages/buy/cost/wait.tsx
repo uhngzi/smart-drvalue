@@ -111,6 +111,7 @@ const BuyCostWaitPage: React.FC & {
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   // ------------- 필요 데이터 세팅 ------------- 시작
+  // 공정 외주처 단가
   const [prices, setPrices] = useState<processVendorPriceRType[]>([]);
   const { data:queryPriceData } = useQuery({
     queryKey: ['process-vendor-price/jsxcrud/many'],
@@ -150,8 +151,9 @@ const BuyCostWaitPage: React.FC & {
       });
 
       if(result.resultCode === "OK_0000") {
-        console.log(result?.data?.data);
-        setDetailData(result?.data?.data);
+        const entity = result.data.data as buyCostOutDetailType;
+        setDetailData(entity);
+        
         setOpen(true);
       }
 
@@ -159,17 +161,6 @@ const BuyCostWaitPage: React.FC & {
     },
     enabled: !!select?.id
   });
-
-  useEffect(() => {
-    if (detailData && detailData.procs) {
-      const newExpanded: { [key: string]: boolean } = {};
-      detailData.procs.forEach((proc, index) => {
-        const procId = proc.id || index.toString();
-        newExpanded[procId] = true;
-      });
-      setExpandedProcs(newExpanded);
-    }
-  }, [detailData]);
 
   // 값 초기화
   useEffect(()=>{
@@ -232,6 +223,17 @@ const BuyCostWaitPage: React.FC & {
 
   // 버튼 레이블 결정
   const toggleButtonLabel = Object.keys(expandedProcs).length > 0 ? "전체 접기" : "전체 펼치기";
+
+  useEffect(() => {
+    if (detailData && detailData.procs) {
+      const newExpanded: { [key: string]: boolean } = {};
+      detailData.procs.forEach((proc, index) => {
+        const procId = proc.id || index.toString();
+        newExpanded[procId] = true;
+      });
+      setExpandedProcs(newExpanded);
+    }
+  }, [detailData]);
   // ------------ 모달창 내 펼침/접힘 ----------- 끝
   
   // ---------------- 비용 저장 --------------- 시작
@@ -319,7 +321,7 @@ const BuyCostWaitPage: React.FC & {
         open={open}
         setOpen={setOpen}
         width={1300}
-        draggable={true} mask={false}
+        draggable={true}
         title={"외주처 단가 등록"}
         contents={<>
           <div className="w-full h-full p-30 bg-white rounded-14 flex flex-col gap-20">

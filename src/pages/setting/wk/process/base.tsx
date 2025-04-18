@@ -209,7 +209,7 @@ const WkProcessListPage: React.FC & {
         open={newOpen}
         setOpen={setNewOpen}
         width={800}
-        draggable={true} mask={false}
+        draggable={true}
         contents={
           <AddContents
             handleDataChange={handleDataChange}
@@ -248,8 +248,8 @@ WkProcessListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
       { text: '공정', link: '/setting/wk/process/list' },
-      { text: '공정 공급처', link: '/setting/wk/process/vendor' },
-      { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
+      { text: '공정 외주처', link: '/setting/wk/process/vendor' },
+      { text: '공정 외주처 가격', link: '/setting/wk/process/vendor-price' },
     ]}
   >{page}</SettingPageLayout>
 )

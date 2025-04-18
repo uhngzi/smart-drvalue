@@ -1,4 +1,4 @@
-// 기초정보 - 공정그룹, 공정, 공정 공급처, 공정 공급처 가격
+// 기초정보 - 공정그룹, 공정, 공정 외주처, 공정 외주처 가격
 
 import { Dayjs } from "dayjs";
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";

@@ -405,7 +405,7 @@ const SayangSampleListPage: React.FC & {
       </div>
       
       <AntdModal width={584} open={sayangRegOpen} setOpen={setSayangRegOpen} title={'사양등록'}
-        draggable={true} mask={false}
+        draggable={true}
         contents={
           <div className="p-30 gap-20 rounded-14 bg-white border-1 border-line flex flex-col h-center">
             <CustomRadioGroup

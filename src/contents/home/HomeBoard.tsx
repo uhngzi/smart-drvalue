@@ -318,7 +318,7 @@ const HomeBoard: React.FC<{
         open={open}
         setOpen={setOpen}
         width={1000}
-        draggable={true} mask={false}
+        draggable={true}
         title={select?.id ? "공지사항 상세" : "공지사항 등록"}
         contents={<div className="flex flex-col gap-20">
           <div className="w-full h-full min-h-100 bg-white rounded-14 p-20 flex flex-col gap-20">

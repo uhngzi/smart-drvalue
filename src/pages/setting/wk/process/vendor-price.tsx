@@ -289,7 +289,7 @@ const WkProcessVendorPriceListPage: React.FC & {
         open={newOpen}
         setOpen={setNewOpen}
         width={800}
-        draggable={true} mask={false}
+        draggable={true}
         contents={
           <AddContents
             handleDataChange={handleDataChange}
@@ -458,8 +458,8 @@ const WkProcessVendorPriceListPage: React.FC & {
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "success" ? "공정 공급처 가격 등록 성공" : "공정 공급처 가격 등록 실패"}
-        contents={resultType === "success" ? <div>공정 공급처 가격 등록이 완료되었습니다.</div> : <div>공정 공급처 가격 등록이 실패하였습니다.</div>}
+        title={resultType === "success" ? "공정 외주처 가격 등록 성공" : "공정 외주처 가격 등록 실패"}
+        contents={resultType === "success" ? <div>공정 외주처 가격 등록이 완료되었습니다.</div> : <div>공정 외주처 가격 등록이 실패하였습니다.</div>}
         type={resultType} 
         onOk={()=>{
           refetch();
@@ -476,8 +476,8 @@ WkProcessVendorPriceListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout styles={{pd:'70px'}}
     menu={[
       { text: '공정', link: '/setting/wk/process/list' },
-      { text: '공정 공급처', link: '/setting/wk/process/vendor' },
-      { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
+      { text: '공정 외주처', link: '/setting/wk/process/vendor' },
+      { text: '공정 외주처 가격', link: '/setting/wk/process/vendor-price' },
     ]}
   >{page}</SettingPageLayout>
 )

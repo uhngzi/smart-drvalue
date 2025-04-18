@@ -242,7 +242,7 @@ const CompanyOffdayListPage: React.FC & {
       <AntdModal
         title="쉬는 날 추가"
         width={600}
-        draggable={true} mask={false}
+        draggable={true}
         open={addOffOpen}
         setOpen={setAddOffOpen}
         onClose={offPopClose}

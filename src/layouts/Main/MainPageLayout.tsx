@@ -158,7 +158,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
             key={idx}
             open={activePopup === item.key}
             setOpen={()=>{}}
-            draggable={true} mask={false}
+            draggable={true}
             title={
               item.key === "news" ?
               <>회사 소식</>

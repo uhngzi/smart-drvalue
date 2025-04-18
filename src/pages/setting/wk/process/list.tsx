@@ -259,8 +259,8 @@ WkProcessGroupListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout styles={{pd:'70px'}}
     menu={[
       { text: '공정', link: '/setting/wk/process/list' },
-      { text: '공정 공급처', link: '/setting/wk/process/vendor' },
-      { text: '공정 공급처 가격', link: '/setting/wk/process/vendor-price' },
+      { text: '공정 외주처', link: '/setting/wk/process/vendor' },
+      { text: '공정 외주처 가격', link: '/setting/wk/process/vendor-price' },
     ]}
   >{page}</SettingPageLayout>
 )
