@@ -81,7 +81,7 @@ const MOCK = {
         CUDPopItems: [
           { name: 'processGroupIdx', key: 'id', label: '공정그룹', widthType: 'third', type: 'select', option: [] },
           { name: 'processIdx', key: 'id', label: '공정', widthType: 'third', type: 'select', option: [] },
-          { name: 'vendorIdx', key: 'id', label: '공급처', widthType: 'third', type: 'select', option: [] },
+          { name: 'vendorIdx', key: 'id', label: '외주처', widthType: 'third', type: 'select', option: [] },
           { name: 'priceNm', label: '가격명', widthType: 'third', type: 'input' },
           { name: 'priceUnit', label: '가격', widthType: 'third', type: 'input', inputType: 'number' },
           { name: 'layerEm', label: '층', widthType: 'third', type: 'select', option: [] },

@@ -68,7 +68,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // --------- 필요 데이터 시작 ----------
 
-  // 공정 공급처 데이터
+  // 공정 외주처 데이터
   const [dataVendor, setDataVendor] = useState<Array<processVendorRType>>([]);
   const { data: queryDataVendor } = useQuery<
     apiGetResponseType, Error
@@ -206,7 +206,7 @@ const WkProcessVendorPriceListPage: React.FC & {
             vendorIdx: undefined,
           });
         } else if (name === "processIdx") {
-          // 공정이 바뀌면 공급처 초기화
+          // 공정이 바뀌면 외주처 초기화
           setNewData({
             ...newData,
             vendorIdx: undefined,
@@ -554,7 +554,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 
 
       <BaseInfoCUDModal
-        title={{ name: `공정 공급처 가격 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
+        title={{ name: `공정 외주처 가격 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
         data={newData}
         onSubmit={handleSubmitNewData}
         setOpen={setNewOpen}

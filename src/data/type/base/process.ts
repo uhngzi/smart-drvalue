@@ -200,7 +200,7 @@ export const processVendorPriceReq = () => {
   return [
     { field: 'processGroupIdx', label: '공정그룹' },
     { field: 'processIdx', label: '공정' },
-    { field: 'vendorIdx', label: '공급처' },
+    { field: 'vendorIdx', label: '외주처' },
     { field: 'priceNm', label: '가격명' },
     { field: 'priceUnit', label: '가격' },
     { field: 'modelTypeEm', label: '제품유형' },

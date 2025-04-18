@@ -387,7 +387,7 @@ const SayangSampleAddPage: React.FC & {
   const [ selectPrc, setSelectPrc ] = useState<processRType[]>([]);
   // 체크 박스 값 (프로세스)
   const [ selectedKeys, setSelectedKeys ] = useState<string[]>([]);
-  // 라디오 박스 값 (공급처)
+  // 라디오 박스 값 (외주처)
   const [selectedVendors, setSelectedVendors] = useState<{pid:string, vid:string, vname:string}[]>([]);
 
   // 디플트 값 세팅

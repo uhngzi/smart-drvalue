@@ -265,7 +265,7 @@ const WkProcessVendorListPage: React.FC & {
   
   function addVendor(record: partnerRType) {
       if(data.find(item => item.vendor.id === record.id)) {
-        showToast('이미 등록된 공급처입니다.', 'error');
+        showToast('이미 등록된 외주처입니다.', 'error');
         return;
       }
       const newId = `new${Math.random()}`;
@@ -394,7 +394,7 @@ const WkProcessVendorListPage: React.FC & {
                     
                   },
                   {
-                    title: '공급처명',
+                    title: '외주처명',
                     dataIndex: 'vendor.prtNm',
                     key: 'vendor.prtNm',
                     align: 'center',
@@ -563,7 +563,7 @@ const WkProcessVendorListPage: React.FC & {
               render: (item:processRType) => item?.prcNm,
             },
             {
-              title: '공급처명',
+              title: '외주처명',
               dataIndex: 'vendor',
               key: 'vendor',
               align: 'center',
@@ -622,7 +622,7 @@ const WkProcessVendorListPage: React.FC & {
               { 
                 name: 'vendor',
                 key: 'id',
-                label: '공급처',
+                label: '외주처',
                 type: 'select',
                 value: newData.vendor.id,
                 option: dataVendor?.map((item)=>({value:item.id,label:(item?.prtNm ?? "")})) ?? []

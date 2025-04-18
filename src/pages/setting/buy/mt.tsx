@@ -207,7 +207,7 @@ const BuyMtListPage: React.FC & {
             setResultFunc('success', '원자재 수정 성공', '원자재 수정이 완료되었습니다.');
           }else{
             setNewOpen(false);
-            setResultFunc('error', '원자재 수정 오류', '원자재 수정은 성공하였지만 공급처 저장에 실패하였습니다.');
+            setResultFunc('error', '원자재 수정 오류', '원자재 수정은 성공하였지만 외주처 저장에 실패하였습니다.');
           }
         } else {
           setNewOpen(false);
@@ -243,7 +243,7 @@ const BuyMtListPage: React.FC & {
             setResultFunc('success', '원자재 등록 성공', '원자재 등록이 완료되었습니다.');
           }else{
             setNewOpen(false);
-            setResultFunc('error', '원자재 등록 오류', '원자재 등록은 성공하였지만 공급처 저장에 실패하였습니다.');
+            setResultFunc('error', '원자재 등록 오류', '원자재 등록은 성공하였지만 외주처 저장에 실패하였습니다.');
           }
         } else {
           setNewOpen(false);
