@@ -1,6 +1,6 @@
 import { memo, SetStateAction, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Dropdown, Space } from "antd";
+import { Button, Checkbox, Dropdown, Space } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { getAPI } from "@/api/get";
 
@@ -15,6 +15,7 @@ import More from "@/assets/svg/icons/edit.svg";
 import Paste from "@/assets/svg/icons/paste.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 
 import {
   DndContext,
@@ -41,12 +42,14 @@ import { deleteAPI } from "@/api/delete";
 import { patchAPI } from "@/api/patch";
 import SortableMemoItem from "./SortableMemoItem";
 import { useUser } from "@/data/context/UserContext";
+import { CloseOutlined } from "@ant-design/icons";
 
 
 export type MyMemoType = {
   createdAt: Date | Dayjs | null;
   updatedAt: Date | Dayjs | null;
   deletedAt: Date | Dayjs | null;
+  type: "NORMAL" | "USUALLY";
   id: string;
   memo: string;
   orderNo: number;
@@ -67,16 +70,20 @@ const MyMemo:React.FC<Props> = ({
   const { showToast, ToastContainer } = useToast();
 
   // --------------- 리스트 데이터 ------------ 끝
+  const [selectType, setSelectType] = useState<"ALL" | "USUALLY" | "NORMAL">("ALL");
   const [searchs, setSearchs] = useState<string>("");
   useEffect(()=>{
-    setFData(myMemo.filter((item) =>
-      item.memo.toLowerCase().includes(searchs.toLowerCase())
+    setFData(
+      myMemo
+        .filter((item) => selectType === "ALL" ? item : item.type === selectType)
+        .filter((item) => item.memo.toLowerCase().includes(searchs.toLowerCase())
     ));
-  }, [searchs, myMemo]);
+  }, [searchs, myMemo, selectType]);
   const [fdata, setFData] = useState<MyMemoType[]>([]);
   // --------------- 리스트 데이터 ------------ 시작
   
   // -------------- 메모 등록/수정 ------------ 시작
+  const [newUsuallyChk, setNewUsuallyChk] = useState<boolean>(true);
   const [editMemo, setEditMemo] = useState<MyMemoType>();
   const [newMemo, setNewMemo] = useState<string>("");
   const handleSubmit = async () => {
@@ -88,13 +95,16 @@ const MyMemo:React.FC<Props> = ({
           jsx: 'jsxcrud',
           url: 'personal-memo',
         }, editMemo.id, {
-          memo: newMemo,
+          memo: editMemo.memo,
+          type: editMemo.type,
           orderNo: editMemo.orderNo,
         });
         
         if(result.resultCode === "OK_0000") {
           showToast("수정 완료", "success");
           refetch();
+          setOpen(false);
+          setNewUsuallyChk(true);
           setNewMemo("");
           setEditMemo(undefined);
         } else {
@@ -111,12 +121,15 @@ const MyMemo:React.FC<Props> = ({
           url: 'personal-memo',
         }, {
           memo: newMemo,
+          type: newUsuallyChk ? "USUALLY" : "NORMAL",
           orderNo: myMemo.length,
         });
         
         if(result.resultCode === "OK_0000") {
           showToast("등록 완료", "success");
           refetch();
+          setOpen(false);
+          setNewUsuallyChk(true);
           setNewMemo("");
           setEditMemo(undefined);
         } else {
@@ -145,6 +158,8 @@ const MyMemo:React.FC<Props> = ({
       if(result.resultCode === "OK_0000") {
         showToast("삭제 완료", "success");
         refetch();
+        setOpen(false);
+        setNewUsuallyChk(true);
         setNewMemo("");
         setEditMemo(undefined);
       } else {
@@ -160,15 +175,8 @@ const MyMemo:React.FC<Props> = ({
   // ---------------- 메모 삭제 -------------- 끝
 
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [alertType, setAlertType] = useState<"error" | "new" | "edit" | "">("");
+  const [alertType, setAlertType] = useState<"error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
-
-  useEffect(()=>{
-    if(open) {
-      setAlertType("new");
-      setAlertOpen(true);
-    }
-  }, [open])
 
   // ------------- 메모 더보기/접기 ------------ 시작
   const [expandedList, setExpandedList] = useState<boolean[]>([]);
@@ -216,6 +224,8 @@ const MyMemo:React.FC<Props> = ({
       if(result.resultCode === "OK_0000") {
         showToast("변경 완료", "success");
         refetch();
+        setOpen(false);
+        setNewUsuallyChk(true);
         setNewMemo("");
         setEditMemo(undefined);
       } else {
@@ -289,7 +299,44 @@ const MyMemo:React.FC<Props> = ({
 
   return (
     <div className="flex flex-col gap-10">
-      <LabelBold label={"나의 메모 ("+myMemo.length.toLocaleString()+")"} className="text-18"/>
+      <div className="v-between-h-center w-full">
+        <LabelBold label={"나의 메모 ("+myMemo.length.toLocaleString()+")"} className="text-18"/>
+        <div className="h-24 flex v-h-center text-10">
+          <div
+            className="v-h-center cursor-pointer px-2"
+            onClick={()=>{setSelectType('ALL')}}
+            style={selectType==='ALL'?
+              {border:'1.6px solid #4880FF',color:'#4880FF'}
+              :
+              {border:'1px solid #D5D5D5',color:'#22222285'}
+            }
+          >
+            모두 보기
+          </div>
+          <div
+            className="v-h-center cursor-pointer px-2"
+            onClick={()=>{setSelectType('NORMAL')}}
+            style={selectType==='NORMAL'?
+              {border:'1.6px solid #4880FF',color:'#4880FF'}
+              :
+              {border:'1px solid #D5D5D5',color:'#22222285'}
+            }
+          >
+            메모만 보기
+          </div>
+          <div
+            className="v-h-center cursor-pointer px-2"
+            onClick={()=>{setSelectType('USUALLY')}}
+            style={selectType==='USUALLY'?
+              {border:'1.6px solid #4880FF',color:'#4880FF'}
+              :
+              {border:'1px solid #D5D5D5',color:'#22222285'}
+            }
+          >
+            자주 쓰는 문구만 보기
+          </div>
+        </div>
+      </div>
       <div className="h-center w-full mb-10">
         <AntdInput
           value={searchs}
@@ -314,34 +361,78 @@ const MyMemo:React.FC<Props> = ({
           items={fdata.map((item) => item.id)}
           strategy={verticalListSortingStrategy}
         >
+          { open &&
+            <div className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative gap-5">
+              <TextArea
+                value={newMemo}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setNewMemo(value);
+                }}
+                className="rounded-2"
+                style={{height:100,minHeight:100,background:"none",color:"#222222",border:0,resize:"none"}}
+                placeholder="새 메모를 추가하세요."
+              />
+              <div className="v-between-h-center p-5">
+                <div className="h-center gap-5">
+                  <Checkbox
+                    checked={newUsuallyChk}
+                    onChange={(e)=>{
+                      setNewUsuallyChk(e.target.checked);
+                    }}
+                  />
+                  자주 쓰는 문구로 사용
+                </div>
+                <div className="h-center gap-5">
+                  <Button
+                    className="p-5"
+                    onClick={()=>{
+                      setOpen(false);
+                      setNewUsuallyChk(true);
+                      setNewMemo("");
+                      setEditMemo(undefined);
+                    }}
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    className="text-[#ffffffE0] bg-point1 p-5"
+                    onClick={()=>{
+                      handleSubmit();
+                    }}
+                  >
+                    저장
+                  </Button>
+                </div>
+              </div>
+              {/* 메모 접히는 부분 */}
+              <div
+                className="w-20 h-20 absolute bottom-0 right-0"
+                style={{backgroundImage: 'linear-gradient(to top left, #FFF 50%, #00000020 50%)'}}
+              />
+            </div>
+          }
           {fdata.map((item, idx) => (
             <SortableMemoItem
               key={item.id}
               item={item}
               idx={idx}
-              handleEdit={()=>{
-                setEditMemo(item);
-                setNewMemo(item.memo);
-                setAlertType("edit");
-                setAlertOpen(true);
-              }}
-              handlePaste={()=>{
-                copyToClipboard(item.memo);
-                // navigator.clipboard.writeText(item.memo)
-                //   .then(() => {
-                //     showToast("메모가 복사되었습니다. 원하는 곳에 붙여넣어 사용하세요!", "success");
-                //   })
-                //   .catch((err) => {
-                //     showToast("복사 완료", "error");
-                //   });
-              }}
-              handleDelete={()=>{
-                handleDelete(item.id);
-              }}
+              handleEdit={()=>setEditMemo(item)}
+              handlePaste={()=>copyToClipboard(item.memo)}
+              handleDelete={()=>handleDelete(item.id)}
               refs={refs}
               expandedList={expandedList}
               clampedList={clampedList}
               toggleExpanded={toggleExpanded}
+              editMemo={editMemo}
+              setEditMemo={setEditMemo}
+              handleSubmit={handleSubmit}
+              handleCancel={()=>{
+                setOpen(false);
+                setNewUsuallyChk(true);
+                setNewMemo("");
+                setEditMemo(undefined);
+              }}
             />
           ))}
         </SortableContext>
@@ -353,70 +444,35 @@ const MyMemo:React.FC<Props> = ({
         setOpen={setAlertOpen}
         title={
           alertType === "error" ? "오류 발생" :
-          alertType === "new" ? "새 메모 등록" :
-          alertType === "edit" ? "메모 수정" :
           ""
         }
         contents={
           alertType === "error" ? <div>{errMsg}</div> :
-          alertType === "new" ?
-            <div>
-              <TextArea
-                value={newMemo}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setNewMemo(value);
-                }}
-                className="rounded-2"
-                style={{height:100,minHeight:100,background:"#FFF",color:"#222222"}}
-              />
-            </div> :
-          alertType === "edit" ?
-            <div>
-              <TextArea
-                value={newMemo}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setNewMemo(value);
-                }}
-                className="rounded-2"
-                style={{height:100,minHeight:100,background:"#FFF",color:"#222222"}}
-              />
-            </div> :
           <></>
         }
         onOk={()=>{
-          if(alertType === "new") {
-            handleSubmit();
-          } else if(alertType === "edit") {
-            handleSubmit();
-          }
           setAlertOpen(false);
           setOpen(false);
+          setNewUsuallyChk(true);
+          setNewMemo("");
+          setEditMemo(undefined);
         }}
         okText={
           alertType === "error" ? "확인" :
-          alertType === "new" ? "등록" :
-          alertType === "edit" ? "수정" :
           ""
         }
         onCancel={()=>{
           setAlertOpen(false);
           setOpen(false);
+          setNewUsuallyChk(true);
           setNewMemo("");
+          setEditMemo(undefined);
         }}
-        cancelText={
-          alertType === "new"
-          || alertType === "edit" ? "취소" :
-          ""
-        }
         hideCancel={
           alertType === "error"
         }
         type={
           alertType === "error" ? "error" :
-          alertType === "new"
-          || alertType === "edit" ? "info" :
           "success"
         }
       />

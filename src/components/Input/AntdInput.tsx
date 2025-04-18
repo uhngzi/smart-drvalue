@@ -53,6 +53,7 @@ const AntdInput = forwardRef<InputRef, Props>((
   const memoBoxRef = useRef<HTMLDivElement | null>(null);
 
   const [enterFlag, setEnterFlag] = useState<boolean>(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -193,23 +194,13 @@ const AntdInput = forwardRef<InputRef, Props>((
             disabled={disabled}
             onClick={onClick}
             tabIndex={tabIndex}
-            onFocus={onFocus? onFocus:
-              type === "number" ? (e)=>{
-                if(!value || value === 0 || value === "0") {
-                  const newEvent = Object.assign({}, e, {
-                    target: {
-                      ...e.target,
-                      value: "",
-                    },
-                  });
-                  onChange?.(newEvent);
-                }
-              }
-              : undefined
-            }
+            onFocus={(e) => {
+              setIsFocused(true);
+              if (onFocus) return onFocus(e);
+            }}
             autoFocus={autoFocus}
           />
-          {memoView && !enterFlag && (
+          {!readonly && !disabled && isFocused && memoView && !enterFlag && (
             <span className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 text-9 pointer-events-none">
               엔터시 검색
             </span>
@@ -231,7 +222,7 @@ const AntdInput = forwardRef<InputRef, Props>((
             zIndex: 9999,
           }}
         >
-          { myMemo.map((item, index) => (
+          { myMemo.filter((item)=>item.type==="USUALLY").map((item, index) => (
             item.memo.includes(value) &&
             <div
               key={index+":"+item.id}

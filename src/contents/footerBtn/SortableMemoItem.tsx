@@ -12,7 +12,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Dropdown, Space } from "antd";
+import { Button, Checkbox, Dropdown, Space } from "antd";
 import dayjs from "dayjs";
 
 import Ordering from "@/assets/svg/icons/ordering.svg";
@@ -20,6 +20,7 @@ import More from "@/assets/svg/icons/edit.svg";
 import Paste from "@/assets/svg/icons/paste.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
+import TextArea from "antd/es/input/TextArea";
 
 const SortableMemoItem = ({
   item,
@@ -31,6 +32,10 @@ const SortableMemoItem = ({
   expandedList,
   clampedList,
   toggleExpanded,
+  editMemo,
+  setEditMemo,
+  handleCancel,
+  handleSubmit,
 }: any) => {
   const {
     attributes,
@@ -46,6 +51,53 @@ const SortableMemoItem = ({
   };
 
   return (
+    editMemo && editMemo.id === item.id ?
+    <div className="w-full p-10 pb-20 flex flex-col bg-[#b0cdeb25] relative gap-5">
+      <TextArea
+        value={editMemo.memo}
+        onChange={(e) => {
+          const { value } = e.target;
+          setEditMemo?.({ ...editMemo, memo:value });
+        }}
+        className="rounded-2"
+        style={{height:100,minHeight:100,background:"none",color:"#222222",border:0,resize:"none"}}
+      />
+      <div className="v-between-h-center p-5">
+        <div className="h-center gap-5">
+          <Checkbox
+            checked={editMemo.type === "USUALLY" ? true : false}
+            onChange={(e)=>{
+              setEditMemo?.({ ...editMemo, type: e.target.checked ? "USUALLY" : "NORMAL"});
+            }}
+          />
+          자주 쓰는 문구로 사용
+        </div>
+        <div className="h-center gap-5">
+          <Button
+            className="p-5"
+            onClick={()=>{
+              handleCancel?.();
+            }}
+          >
+            취소
+          </Button>
+          <Button
+            className="text-[#ffffffE0] bg-point1 p-5"
+            onClick={()=>{
+              handleSubmit?.();
+            }}
+          >
+            저장
+          </Button>
+        </div>
+      </div>
+      {/* 메모 접히는 부분 */}
+      <div
+        className="w-20 h-20 absolute bottom-0 right-0"
+        style={{backgroundImage: 'linear-gradient(to top left, #FFF 50%, #00000020 50%)'}}
+      />
+    </div>
+    :
     <div
       ref={setNodeRef}
       style={style}
