@@ -142,7 +142,7 @@ const AntdModal: React.FC<Props> = ({
       destroyOnClose={false}
       width={full ? '100%' : width}
       footer={footer||null}
-      centered={!draggable}
+      centered={!draggable ? dragFlag : true}
       mask={mask}
       maskClosable={maskClosable}
       modalRender={draggable ? (modal) => (
@@ -157,12 +157,9 @@ const AntdModal: React.FC<Props> = ({
             maxWidth: "100vw",
             transform: "none",
           } : {
-            position: "fixed",
-            margin: "0 auto",
             width: full ? '100%' : width || 600,
             minWidth: 320,
             maxWidth: "100vw",
-            transform: "none",
           }}
         >
           {modal}

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Button, List } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import cookie from "cookiejs";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
@@ -15,6 +16,7 @@ import { BuyCostOutClmn, BuyCostOutPriceClmn } from "@/data/columns/Buy";
 import { useUser } from "@/data/context/UserContext";
 import { processVendorPriceRType } from "@/data/type/base/process";
 import { buyCostOutDetailType, buyCostOutType } from "@/data/type/buy/cost";
+import { useMenu } from "@/data/context/MenuContext";
 
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -23,8 +25,7 @@ import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import { useMenu } from "@/data/context/MenuContext";
-import cookie from "cookiejs";
+import Edit from "@/assets/svg/icons/memo.svg";
 
 const BuyCostWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -340,12 +341,21 @@ const BuyCostWaitPage: React.FC & {
                 return (
                   <div key={procId}>
                     <div className="v-between-h-center gap-30 mb-10 px-10">
-                      <LabelMedium
-                        label={
-                          (proc.specPrdGrp?.process?.prcNm ?? "") +
-                          " (" + (proc?.vendor?.prtNm ?? "") + ")"
-                        }
-                      />
+                      <div className="h-center gap-5">
+                        <LabelMedium
+                          label={
+                            (proc.specPrdGrp?.process?.prcNm ?? "") +
+                            " (" + (proc?.vendor?.prtNm ?? "") + ")"
+                          }
+                        />
+                        <Button
+                          className="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
+                          onClick={()=>{
+                          }}
+                        >
+                          <p className="w-16 h-16"><Edit/></p>
+                        </Button>
+                      </div>
                       <DownOutlined
                         className="cursor-pointer"
                         onClick={() => toggleProc(procId)}

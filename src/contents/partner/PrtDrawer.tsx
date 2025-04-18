@@ -245,7 +245,7 @@ const PrtDrawer: React.FC<Props> = ({
                 />
               </div>
             }
-            btnLabel={<span className="w-14 h-14"><Edit/></span>} 
+            btnLabel={<p className="w-14 h-14"><Edit/></p>} 
             btnClassName="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
             items={drawerPrtItems} btnClick={() => setNewPrtOpen(true)}/>
           {partnerMngData && <CardList

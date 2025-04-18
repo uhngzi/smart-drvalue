@@ -142,7 +142,7 @@ const AntdEditModal: React.FC<Props> = ({
       width={full ? '100%' : width}
       footer={footer||null}
       zIndex={1999}
-      centered
+      centered={!draggable ? dragFlag : true}
       maskClosable={maskClosable} mask={mask}
       modalRender={draggable ? (modal) => (
         <div
@@ -156,13 +156,12 @@ const AntdEditModal: React.FC<Props> = ({
             minWidth: 320,
             maxWidth: "100vw",
             transform: "none",
+            cursor: "grab",
           } : {
-            position: "fixed",
-            margin: "0 auto",
             width: full ? '100%' : width || 600,
             minWidth: 320,
             maxWidth: "100vw",
-            transform: "none",
+            cursor: "grab",
           }}
         >
           {modal}
