@@ -1,7 +1,7 @@
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
 import { salesEstimateProductType } from "@/data/type/sales/order";
 import Dojang from '@assets/svg/icons/dojang.svg';
-import Logo from "@/assets/svg/icons/logo.svg";
+
 const EstimateDocumentForm: React.FC = () => {
     const sample:any[] = [
         {
@@ -169,7 +169,8 @@ const EstimateDocumentForm: React.FC = () => {
                     <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">회사명</td>
                     <td colSpan={3} className="flex max-w-[75px] w-[90px] pl-[8px] pt-[5px]">12312312</td>
                     <td rowSpan={3} className="h-[75px] w-[168px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]">
-                        <div className="flex items-center justify-center"><Logo/></div></td>
+                        {/* <div className="flex items-center justify-center"><Logo/></div> */}
+										</td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
