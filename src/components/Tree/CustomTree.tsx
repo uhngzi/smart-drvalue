@@ -23,6 +23,7 @@ import AntdInput from "../Input/AntdInput"
 import dayjs from "dayjs"
 import AntdDatePicker from "../DatePicker/AntdDatePicker"
 import AntdSelect from "../Select/AntdSelect"
+import FullChip from "../Chip/FullChip"
 
 interface Props {
   open?: boolean;
@@ -113,7 +114,7 @@ const CustomTree:React.FC<Props> = ({
         </div>
       ))}
       {type === "child" && (addEdits.addChildEditList ?? []).map((edit, index) => (
-        <div key={`addEditsChild-${index}`}>
+        <div key={`addEditsChild-${index}`} className={`${edit.type === "switch" ? "v-between-h-center" : ""} `}>
           <label className="text-12">{edit.name}</label>
           {(edit.type === "input" || edit.type === "number") && (
             <div className="relative h-center">
@@ -139,7 +140,17 @@ const CustomTree:React.FC<Props> = ({
                 /> 
             </div>
           )}
-          
+          {edit.type === "switch" && (
+            <div key={`addEdits-${index}`} className="">
+              <Switch
+                size="small"
+                value={(addEdits.childInfo ?? []).find((v) => v.id === id)?.[edit.key] || false}
+                onChange={(value) => {
+                  handleDataUpdate(type, id, treeName, parentId, {[edit.key]: value});
+                }}
+              />
+            </div>
+          )}
         </div>
       ))}
       <div>
@@ -635,7 +646,11 @@ const CustomTree:React.FC<Props> = ({
                           onClick={() => handleSelect(child)}
                           onMouseEnter={() => setHoverId(child.id)} onMouseLeave={() => setHoverId(null)}>
                           <div className="w-5 h-5 bg-[#ddd] rounded-50" />
-                          <span className="flex-1 text-left">{child.label}</span>
+                          <div className="h-center flex-1 text-left gap-8">
+                            {child.isInternal === false ? <FullChip label="외주" state="mint"/>: <></>}
+                            <span className="">{child.label}</span>
+                            {child.wipPrcNm && <span className="h-center gap-8">- <FullChip label="WIP"/> {child.wipPrcNm}</span>}
+                          </div>
                           {/* {!selectId.some(v => v.id.includes(child.id)) ? ( */}
                             <div className={`${child.id === hoverId ? 'visible' : 'invisible'}`}>
                               <Button size="small" type="text" onClick={(e)=>{e.stopPropagation()}}>

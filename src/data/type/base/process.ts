@@ -24,6 +24,7 @@ export type processRType = {
   prcNm?: string;
   useYn?: boolean;
   ordNo?: number;
+  wipPrcNm?: string;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;

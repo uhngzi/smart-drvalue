@@ -58,19 +58,28 @@ const WkProcessGroupListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
+        let childArr:processRType[] = [];
 
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
           ordNo: group.ordNo,
-          children: group.processes.map((process:processRType) => ({
-            id: process.id,
-            label: process.prcNm,
-            ordNo: process.ordNo,
-          })),
+          children: group.processes.map((process:processRType) => {
+            const child = {
+              id: process.id,
+              label: process.prcNm,
+              wipPrcNm: process.wipPrcNm,
+              isInternal: process.isInternal,
+              ordNo: process.ordNo,
+            }
+            childArr.push(child);
+            return child;
+          }),
           open: true,
         }));
         setTreeData(arr);
+        setAddParentEditsInfo(arr);
+        setAddChildEditsInfo(childArr);
       } else {
         console.log('error:', result.response);
       }
@@ -88,9 +97,22 @@ const WkProcessGroupListPage: React.FC & {
   const [ resultType, setResultType ] = useState<AlertType>('info');
 
   // ---------- 신규 tree 데이터 시작 ----------
-  const [ addList, setAddList ] = useState<CUtreeType[]>([]);
-  const [ editList, setEditList ] = useState<CUtreeType[]>([]);
+  const [ addList, setAddList ] = useState<any[]>([]);
+  const [ editList, setEditList ] = useState<any[]>([]);
   const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
+  const [ addParentEditsInfo, setAddParentEditsInfo ] = useState<any[]>([]);
+  const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
+
+  const addEdits = {
+    info: addParentEditsInfo, 
+    setInfo: setAddParentEditsInfo,
+    childInfo: addChildEditsInfo,
+    setChildInfo: setAddChildEditsInfo,
+    addChildEditList:[
+      {type:"input", key:"wipPrcNm", name:"WIP 공정명"},
+      {type:"switch", key:"isInternal", name:"내부 여부"},
+    ]
+  }
 
   // 트리데이터 submit 함수
   async function onTreeSubmit(){
@@ -128,6 +150,8 @@ const WkProcessGroupListPage: React.FC & {
           jsonData.processGroup = {id: item.parentId};
           jsonData.prcNm = item.label;
           jsonData.ordNo = Number(item.ordNo);
+          jsonData.wipPrcNm = item.wipPrcNm;
+          jsonData.isInternal = item.isInternal;
         }else{
           jsonData.prcGrpNm = item.label;
           jsonData.ordNo = Number(item.ordNo);
@@ -176,6 +200,7 @@ const WkProcessGroupListPage: React.FC & {
             setAddList={setAddList}
             setEditList={setEditList}
             setDelList={setDeleteList}
+            addEdits={addEdits}
           />
         </div>
 
