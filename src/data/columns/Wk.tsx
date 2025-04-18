@@ -11,6 +11,7 @@ import dayjs, { Dayjs } from "dayjs";
 import cookie from "cookiejs";
 import { NextRouter } from "next/router";
 import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
+import AntdSelect from "@/components/Select/AntdSelect";
 
 
 export const WkPalnWaitClmn = (
@@ -316,6 +317,7 @@ export const WkPalnWaitClmn = (
     key: 'memo',
     align: 'center',
     editable: false,
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -583,10 +585,12 @@ export const WKStatusProcClmn = (
 
 export const WkStatusProcPopClmn = (
   dataVendor: processVendorRType[],
+  setProcs: React.Dispatch<SetStateAction<wkProcsType[]>>,
+  handleVenderChange: (procId: string, venderId: string) => void,
 ): CustomColumn[] => [
   {
     title: '공정명',
-    width: 100,
+    minWidth: 120,
     dataIndex: 'specPrdGrp.process.prcNm',
     key: 'specPrdGrp.process.prcNm',
     align: 'center',
@@ -605,15 +609,38 @@ export const WkStatusProcPopClmn = (
     key: 'vendor.prtNm',
     align: 'center',
     cellAlign: 'left',
-    editable: true,
-    editType: 'select',
-    selectOptions: (record:any) => dataVendor
-    .filter(f=>f.process.id === record.specPrdGrp?.process?.id)
-    .map(f=>({
-      value:f.vendor.id,
-      label:f.vendor.prtNm
-    })),
-    selectValue:'vendor.id',
+    editable: false,
+    render: (value, record) => (
+      <div>
+        <AntdSelect
+          options={dataVendor
+            .filter(f=>f.process.id === record.specPrdGrp?.process?.id)
+            .map(f=>({
+              value:f.vendor.id,
+              label:f.vendor.prtNm ?? ""
+            }))
+          }
+          value={record.vendor.id}
+          onChange={(e)=>{
+            handleVenderChange(record.id, e+"");
+
+            setProcs((prev) => 
+              prev.map((item) => {
+                if(item.id === record.id) {
+                  console.log(e);
+                  return {
+                    ...item,
+                    vendor: {
+                      id: e+"",
+                    }
+                  }
+                } else  return  item;
+              })
+            )
+          }}
+        />
+      </div>
+    )
   },
   {
     title: '공정 지정 시 메모',

@@ -46,7 +46,7 @@ const AntdSelect : React.FC<Props> = ({
       $readOnly={readonly ?? false}
     >
       <Select
-        value={value}
+        value={value && JSON.stringify(options).includes(value) ? value : null}
         onChange={onChange}
         className={`w-full ${className}`}
         options={options}

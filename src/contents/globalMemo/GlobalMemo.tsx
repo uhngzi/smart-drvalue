@@ -16,6 +16,7 @@ import { TabSmall } from "@/components/Tab/Tabs";
 import AntdSelect from "@/components/Select/AntdSelect";
 
 import { selectType } from "@/data/type/componentStyles";
+import PopupPortal from "./PopupPortal";
 
 type Memo = {
   createdAt?: Date | Dayjs | null;
@@ -312,13 +313,14 @@ const GlobalMemo:React.FC<Props> = ({
 
       <AnimatePresence>
         {open && (
+          <PopupPortal>
           <motion.div
             ref={modalRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed z-50 p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
+            className="fixed z-[9999999] p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
             style={{
               position: "fixed",
               left: pos.x,
@@ -477,6 +479,7 @@ const GlobalMemo:React.FC<Props> = ({
               })()
             }
           </motion.div>
+          </PopupPortal>
         )}
       </AnimatePresence>
 

@@ -213,6 +213,7 @@ export const specStatusClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -366,7 +367,7 @@ export const specIngClmn = (
     key: 'specModels.pcsW',
     align: 'center',
     render: (_, record:specType) => {
-      return record.specModels?.[0]?.pcsL+'/'+record.specModels?.[0]?.pcsW;
+      return (record.specModels?.[0]?.pcsL ?? "")+'/'+(record.specModels?.[0]?.pcsW ?? "");
     }
   },
   {
@@ -416,6 +417,7 @@ export const specIngClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -629,6 +631,7 @@ export const sayangSampleWaitClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -2656,6 +2659,7 @@ export const sayangModelStatusClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}

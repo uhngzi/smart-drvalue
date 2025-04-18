@@ -206,6 +206,7 @@ export const salesOrderStatusClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -384,6 +385,7 @@ export const salesUserOrderClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -635,6 +637,7 @@ export const salesModelsClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
@@ -790,6 +793,7 @@ export const salesEstimateClmn = (
     dataIndex: 'memo',
     key: 'memo',
     align: 'center',
+    rightPin: true,
     render: (_, record, index) => (
       <GlobalMemo
         key={index}
