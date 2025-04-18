@@ -686,7 +686,7 @@ export const sayangSampleWaitAddClmn = (
               setDeleted(record);
             }}
           >
-            <CloseOutlined style={{color:"#222222"}}/>
+            <Trash />
           </p>
           {/* <Checkbox id={value}/> */}
         </div>
