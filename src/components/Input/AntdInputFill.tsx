@@ -220,13 +220,13 @@ const AntdInputFill: React.FC<Props> = ({
           <div
             key={index+":"+item.id}
             className={`
-              px-12 py-6 mb-6 rounded-md cursor-pointer
+              px-5 py-5 mb-3 rounded-sm cursor-pointer
               text-12 text-gray-700
-              bg-white hover:bg-[#f0fdf4]
-              border border-[#e0e0e0] hover:border-[#09BB1B]
+              bg-white hover:bg-point4
+              border border-point4 hover:border-[#FFF]
               shadow-sm hover:shadow-md
-              transition-all duration-200
-              hover:text-[#09BB1B]
+              transition-all duration-150 ease-in-out
+              hover:text-point1
             `}
             onClick={()=>{
               const newValue = item.memo;
