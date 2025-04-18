@@ -23,8 +23,14 @@ type GanttChartProps = {
 };
 
 const GanttChart: React.FC<GanttChartProps> = ({ schedules, basicDate }) => {
-  
-  return <JseoGantt schedules={schedules} chartStart={new Date("2025-03-01")} chartEnd={new Date("2025-05-31")} basicDate={basicDate}/>;
+  //startDate는 basicDate보다 두달 전
+  const startDate = new Date(basicDate);
+  startDate.setMonth(startDate.getMonth() - 2);
+
+  //endDate는 basicDate보다 두달 후
+  const endDate = new Date(basicDate);
+  endDate.setMonth(endDate.getMonth() + 2);
+  return <JseoGantt schedules={schedules} chartStart={startDate} chartEnd={endDate} basicDate={basicDate}/>;
 };
 
 export default GanttChart;
