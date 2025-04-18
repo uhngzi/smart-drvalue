@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Button, List } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, PlusOutlined } from "@ant-design/icons";
 import cookie from "cookiejs";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
@@ -11,10 +11,11 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import AntdModal from "@/components/Modal/AntdModal";
 import { LabelMedium } from "@/components/Text/Label";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 
 import { BuyCostOutClmn, BuyCostOutPriceClmn } from "@/data/columns/Buy";
 import { useUser } from "@/data/context/UserContext";
-import { processVendorPriceRType } from "@/data/type/base/process";
+import { newDataProcessVendorPriceCUType, processGroupRType, processRType, processVendorPriceCUType, processVendorPriceReq, processVendorPriceRType, processVendorRType } from "@/data/type/base/process";
 import { buyCostOutDetailType, buyCostOutType } from "@/data/type/buy/cost";
 import { useMenu } from "@/data/context/MenuContext";
 
@@ -26,6 +27,13 @@ import useToast from "@/utils/useToast";
 
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Edit from "@/assets/svg/icons/memo.svg";
+import Plus from "@/assets/svg/icons/s_plus_gray.svg"
+import Bag from "@/assets/svg/icons/bag.svg";
+import { MOCK } from "@/utils/Mock";
+import dayjs from "dayjs";
+import { generateFloorOptions } from "@/data/type/enum";
+import { validReq } from "@/utils/valid";
+import { selectType } from "@/data/type/componentStyles";
 
 const BuyCostWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -114,7 +122,7 @@ const BuyCostWaitPage: React.FC & {
   // ------------- 필요 데이터 세팅 ------------- 시작
   // 공정 외주처 단가
   const [prices, setPrices] = useState<processVendorPriceRType[]>([]);
-  const { data:queryPriceData } = useQuery({
+  const { data:queryPriceData, refetch:priceRefetch } = useQuery({
     queryKey: ['process-vendor-price/jsxcrud/many'],
     queryFn: async () => {
       const result = await getAPI({
@@ -133,6 +141,78 @@ const BuyCostWaitPage: React.FC & {
       }
       return result;
     }
+  });
+
+  // 공정 외주처 데이터
+  const [dataVendorSelectList, setDataVendorSelectList] = useState<selectType[]>([]);
+  const { data: queryDataVendor } = useQuery({
+    queryKey: ['process-vendor/jsxcrud/many'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-vendor/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data as processVendorRType[] ?? []).map((item) => ({
+          value: item.vendor.id,
+          label: item.vendor.prtNm ?? "",
+        }))
+        setDataVendorSelectList(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
+  });
+
+  // 공정 그룹 데이터
+  const [dataGroupSelectList, setDataGroupSelectList] = useState<selectType[]>([]);
+  const { data: queryDataGroup } = useQuery({
+    queryKey: ['process-group/jsxcrud/many'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-group/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data as processGroupRType[] ?? []).map((item) => ({
+          value: item.id,
+          label: item.prcGrpNm ?? "",
+        }))
+        setDataGroupSelectList(arr);
+      } else {
+        console.log('error:', result.response);
+      };
+      return result;
+    },
+  });
+
+  // 공정 데이터
+  const [dataProcessSelectList, setDataProcessSelectList] = useState<selectType[]>([]);
+  const { data: queryDataProcess } = useQuery({
+    queryKey: ['process/jsxcrud/many'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process/jsxcrud/many'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        const arr = (result.data?.data as processRType[] ?? []).map((item) => ({
+          value: item.id,
+          label: item.prcNm ?? "",
+        }))
+        setDataProcessSelectList(arr);
+      } else {
+        console.log('error:', result.response);
+      }
+      return result;
+    },
   });
   // ------------- 필요 데이터 세팅 ------------- 끝
 
@@ -280,6 +360,78 @@ const BuyCostWaitPage: React.FC & {
   }
   // ---------------- 비용 저장 --------------- 끝
 
+  // 신규 등록 모달 입력값 상태
+  const [newData, setNewData] = useState<processVendorPriceCUType>(newDataProcessVendorPriceCUType);
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>([]);
+
+
+  const handleSubmitNewData = async () => {
+    try {
+      const val = validReq(newData, processVendorPriceReq());
+      if (!val.isValid) {
+        showToast(val.missingLabels + '은(는) 필수 입력입니다.', "error");
+        return;
+      }
+
+      const result = await postAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'process-vendor-price',
+        jsx: 'jsxcrud'
+      }, {
+        ...newData,
+        process: { id: newData.processIdx },
+        processGroup: { id: newData.processGroupIdx },
+        vendor: { id: newData.vendorIdx },
+        processIdx: undefined,
+        processGroupIdx: undefined,
+        vendorIdx: undefined,
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        setSettingOpen(false);
+        showToast("등록 완료", "success");
+        setNewData(newDataProcessVendorPriceCUType);
+        priceRefetch();
+      } else {
+        const msg = result?.response?.data?.message;
+        setSettingOpen(false);
+        setResultType('error');
+        setErrMsg(msg);
+        setResultOpen(true);
+      }
+    } catch (e) {
+      setSettingOpen(false);
+      showToast("등록 실패", "error");
+    }
+  }
+  
+  const [settingOpen, setSettingOpen] = useState<boolean>(false);
+
+  // 모달 입력 필드 값 변경 핸들러
+  const handleDataChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    name: string,
+    type: 'input' | 'select' | 'date' | 'other',
+    key?: string,
+  ) => {
+    if (type === "input" && typeof e !== "string") {
+      const { value } = e.target;
+      setNewData({ ...newData, [name]: value });
+    } else if (type === "select") {
+      if (key) {
+        setNewData({
+          ...newData, [name]: {
+            ...((newData as any)[name] || {}), // 기존 객체 값 유지
+            [key]: e?.toString(), // 새로운 key 값 업데이트
+          }
+        });
+      } else {
+        setNewData({ ...newData, [name]: e });
+      }
+    }
+  }
+
   return (
     <>
       <ListPagination
@@ -351,9 +503,38 @@ const BuyCostWaitPage: React.FC & {
                         <Button
                           className="v-h-center !p-4 !rounded-50 !borer-1 !border-[#008A1E] !w-23 !h-23"
                           onClick={()=>{
+                            setAddModalInfoList(MOCK.vendorItems.CUDPopItems.map((item) => {
+                              if(item.name === "processGroupIdx") {
+                                return {
+                                  ...item,
+                                  option: dataGroupSelectList,
+                                  disabled: true,
+                                }
+                              } else if(item.name === "processIdx") {
+                                return {
+                                  ...item,
+                                  option: dataProcessSelectList,
+                                  disabled: true,
+                                }
+                              } else if(item.name === "vendorIdx"){
+                                return {
+                                  ...item,
+                                  option: dataVendorSelectList,
+                                  disabled: true,
+                                }
+                              }
+                              return item
+                            }));
+                            setNewData({
+                              ...newData,
+                              processIdx: proc.specPrdGrp?.process?.id,
+                              processGroupIdx: proc.specPrdGrp?.process?.processGroup?.id,
+                              vendorIdx: proc.vendor?.id,
+                            });
+                            setSettingOpen(true);
                           }}
                         >
-                          <p className="w-16 h-16"><Edit/></p>
+                          <p className="w-16 h-16"><Plus /></p>
                         </Button>
                       </div>
                       <DownOutlined
@@ -421,6 +602,19 @@ const BuyCostWaitPage: React.FC & {
             </div>
           </div>
         </>}
+      />
+
+      <BaseInfoCUDModal
+        title={{ name: `공정 외주처 가격 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
+        data={newData}
+        onSubmit={handleSubmitNewData}
+        open={settingOpen} setOpen={setSettingOpen}
+        onClose={() => {
+          setSettingOpen(false);
+        }}
+        onDelete={() => {}}
+        items={addModalInfoList}
+        handleDataChange={handleDataChange}
       />
 
       <AntdAlertModal

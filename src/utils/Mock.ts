@@ -1,3 +1,5 @@
+import { generateFloorOptions } from "@/data/type/enum";
+
 const MOCK = {
     clientItems: {
         tableColumns: [],
@@ -84,7 +86,7 @@ const MOCK = {
           { name: 'vendorIdx', key: 'id', label: '외주처', widthType: 'third', type: 'select', option: [] },
           { name: 'priceNm', label: '가격명', widthType: 'third', type: 'input' },
           { name: 'priceUnit', label: '가격', widthType: 'third', type: 'input', inputType: 'number' },
-          { name: 'layerEm', label: '층', widthType: 'third', type: 'select', option: [] },
+          { name: 'layerEm', label: '층', widthType: 'third', type: 'select', option: generateFloorOptions() },
           { name: 'modelTypeEm', label: '제품유형', widthType: 'third', type: 'select', option: [
             { value: 'sample', label: '샘플' },
             { value: 'mass', label: '양산' },
