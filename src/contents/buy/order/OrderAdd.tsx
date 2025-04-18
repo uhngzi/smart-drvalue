@@ -701,7 +701,7 @@ const OrderAddLayout = () => {
                         }
                       })
                     }}
-                    placeholder="결제조건 입력"
+                    placeholder="결제조건 입력" memoView
                   />
                 </LabelItem>
               </div>
@@ -721,7 +721,7 @@ const OrderAddLayout = () => {
                         }
                       })
                     }}
-                    placeholder="발주명 입력"
+                    placeholder="발주명 입력" memoView
                   />
                 </LabelItem>
                 <LabelItem label="발주 내용">

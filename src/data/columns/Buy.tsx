@@ -1256,7 +1256,7 @@ export const BuyOrderMtClmn = (
             <AntdInput
               value={record.mtNm}
               onChange={(e)=>handleDataChange(record.id ?? '', "mtNm", e.target.value)}
-              placeholder="원자재명 입력"
+              placeholder="원자재명 입력" memoView
             />
             :
             <AntdSelect
@@ -1292,7 +1292,7 @@ export const BuyOrderMtClmn = (
           <AntdInput
             value={record.mtOrderUnit}
             onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderUnit", e.target.value)}
-            placeholder="단위 입력"
+            placeholder="단위 입력" memoView
           />
         </div>
       )
@@ -1310,7 +1310,7 @@ export const BuyOrderMtClmn = (
           <AntdInput
             value={record.mtOrderTxtur}
             onChange={(e)=>handleDataChange(record.id ?? '', "mtOrderTxtur", e.target.value)}
-            placeholder="재질 입력"
+            placeholder="재질 입력" memoView
           />
         </div>
       )

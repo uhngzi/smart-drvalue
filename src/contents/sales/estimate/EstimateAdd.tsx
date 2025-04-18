@@ -525,7 +525,7 @@ const EstimateAddLayout = () => {
                       const value = e.target.value;
                       setFormData({...formData, estimateNm:value});
                     }}
-                    styles={{ht:'36px'}}
+                    styles={{ht:'36px'}} memoView
                   />
                   </LabelItem>
                   <LabelItem label="견적내용">

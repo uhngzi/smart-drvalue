@@ -138,7 +138,7 @@ const SalesModelHead:React.FC<Props> = ({
             <AntdInput
               value={model.remarks}
               onChange={(e)=>handleModelDataChange(model.id ?? "", 'remarks', e.target.value)}
-              styles={{ht:'32px', bg:'#FFF'}}
+              styles={{ht:'32px', bg:'#FFF'}} memoView
               disabled={model.completed ?? read}
             />
           </div>
@@ -255,7 +255,7 @@ const SalesModelHead:React.FC<Props> = ({
                 value={model.currPrdInfo?.prdRevNo}
                 onChange={(e)=>handleModelDataChange(model.id ?? "", 'currPrdInfo.prdRevNo', e.target.value)}
                 readonly={selectId === model.id ? !newFlag : undefined}
-                styles={{ht:'32px', bg:'#FFF'}}
+                styles={{ht:'32px', bg:'#FFF'}} memoView
                 disabled={model.completed ?? read}
               />
             }
@@ -313,7 +313,7 @@ const SalesModelHead:React.FC<Props> = ({
               <AntdInput
                 value={model.currPrdInfo?.drgNo}
                 onChange={(e)=>handleModelDataChange(model.id ?? "", 'currPrdInfo.drgNo', e.target.value)}
-                styles={{ht:'32px', bg:'#FFF'}}
+                styles={{ht:'32px', bg:'#FFF'}} memoView
                 disabled={model.completed ?? read}
               />
             }

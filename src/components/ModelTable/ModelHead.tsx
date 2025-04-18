@@ -221,7 +221,7 @@ const ModelHead:React.FC<Props> = ({
             value={model.editModel?.prdRevNo ?? model.tempPrdInfo?.prdRevNo ?? model.currPrdInfo?.prdRevNo}
             onChange={(e)=>handleModelDataChange(model.id, 'editModel.prdRevNo', e.target.value)}
             readonly={selectId === model.id ? !newFlag : undefined} styles={{ht:'32px'}}
-            disabled={model.completed}
+            disabled={model.completed} memoView
           />
         }
       />
@@ -274,7 +274,7 @@ const ModelHead:React.FC<Props> = ({
             value={model.editModel?.drgNo ?? model.tempPrdInfo?.drgNo ?? model.currPrdInfo?.drgNo}
             onChange={(e)=>handleModelDataChange(model.id, 'editModel.drgNo', e.target.value)}
             readonly={selectId === model.id ? !newFlag : undefined}
-            disabled={model.completed}
+            disabled={model.completed} memoView
           />
         }
         label2="재질"
@@ -316,7 +316,7 @@ const ModelHead:React.FC<Props> = ({
               handleModelDataChange(model.id ?? '', 'editModel.mnfNm', e.target.value)
               handleModelDataChange(model.id ?? '', 'tempPrdInfo.mnfNm', e.target.value)
             }}
-            styles={{ht:'32px'}}
+            styles={{ht:'32px'}} memoView
             readonly={selectId === model.id ? !newFlag : undefined}
             disabled={model.completed ? true : selectId === model.id ? !newFlag : undefined}
           />

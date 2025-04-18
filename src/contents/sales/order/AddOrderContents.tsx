@@ -168,7 +168,7 @@ const AddOrderContents: React.FC<Props> = ({
                   const value = e.target.value;
                   setFormData({...formData, orderName:value});
                 }}
-                styles={{ht:'36px'}}
+                styles={{ht:'36px'}} memoView
               />
             </div>
             <div className="flex flex-col gap-8">

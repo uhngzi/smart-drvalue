@@ -179,7 +179,7 @@ const MtList:React.FC<Props> = ({
                 <AntdInput
                   value={item.mtNm}
                   onChange={(e)=>handleDataChange(item.id ?? '', "mtNm", e.target.value)}
-                  placeholder="원자재명 입력" readonly={read}
+                  placeholder="원자재명 입력" readonly={read} memoView
                 />
                 :
                 <AntdSelect
@@ -207,7 +207,7 @@ const MtList:React.FC<Props> = ({
                 <AntdInput
                   value={item.mtOrderUnit}
                   onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderUnit", e.target.value)}
-                  placeholder="단위 입력" readonly={read}
+                  placeholder="단위 입력" readonly={read} memoView
                 />
               }
             />
@@ -218,7 +218,7 @@ const MtList:React.FC<Props> = ({
                 <AntdInput
                   value={item.mtOrderTxtur}
                   onChange={(e)=>handleDataChange(item.id ?? '', "mtOrderTxtur", e.target.value)}
-                  placeholder="재질 입력" readonly={read}
+                  placeholder="재질 입력" readonly={read} memoView
                 />
               }
             />

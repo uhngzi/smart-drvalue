@@ -1093,7 +1093,7 @@ export const sayangSampleWaitAddClmn = (
                 value={record?.vcutText}
                 onChange={(e)=>handleModelDataChange('vcutText', e.target.value)}
                 disabled={view?true:false} tabIndex={(record?.index ?? 1)*40+19}
-                placeholder={"브이컷형태 입력"}
+                placeholder={"브이컷형태 입력"} memoView
               />
             </div>
           </div>
@@ -1114,7 +1114,7 @@ export const sayangSampleWaitAddClmn = (
             value={record.ulTxt1}
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt1', e.target.value)}
             tabIndex={(record?.index ?? 1)*40+20} placeholder="UL"
-            disabled={view?true:false}
+            disabled={view?true:false} memoView
           />
         </div>
         <div className={divClass+"mb-3"}>
@@ -1122,7 +1122,7 @@ export const sayangSampleWaitAddClmn = (
             value={record.ulTxt2}
             onChange={(e)=>handleModelDataChange(record.id, 'ulTxt2', e.target.value)}
             tabIndex={(record?.index ?? 1)*40+21} placeholder="주기"
-            disabled={view?true:false}
+            disabled={view?true:false} memoView
           />
         </div>
         <div className={divClass+"mb-3"}>

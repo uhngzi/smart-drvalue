@@ -395,7 +395,7 @@ const ModelAddLayout = () => {
                       <AntdInput
                         value={model?.remarks}
                         onChange={(e)=>handleModelDataChange('remarks', e.target.value)}
-                        styles={{ht:'32px', bg:'#FFF'}}
+                        styles={{ht:'32px', bg:'#FFF'}} memoView
                         readonly={model?.usedYn}
                       />
                     </div>
@@ -501,7 +501,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.prdRevNo}
                           onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
-                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}} memoView
                         />
                       }
                     />
@@ -512,7 +512,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.drgNo}
                           onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
-                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}} memoView
                         />
                       }
                     />
@@ -642,7 +642,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.prdRevNo}
                           onChange={(e)=>handleModelDataChange('prdRevNo', e.target.value)}
-                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}} memoView
                         />
                       }
                     />
@@ -691,7 +691,7 @@ const ModelAddLayout = () => {
                         <AntdInput
                           value={model?.drgNo}
                           onChange={(e)=>handleModelDataChange('drgNo', e.target.value)}
-                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}}
+                          readonly={model?.usedYn} styles={{ht:'32px', bg:'#FFF'}} memoView
                         />
                       }
                       label2="재질"

@@ -407,7 +407,7 @@ export const salesOrderModelClmn = (
                 value={record.currPrdInfo?.vcutText}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.vcutText', e.target.value)}
                 placeholder={"브이컷형태 입력"} tabIndex={record.index*40+16}
-                readonly={selectId === record.id ? !newFlag : undefined}
+                readonly={selectId === record.id ? !newFlag : undefined} memoView
                 disabled={record.completed || record.modelStatus === ModelStatus.REPEAT}
               />
             </div>
@@ -1588,7 +1588,7 @@ export const salesOrderModelAddClmn = (
                 value={record?.vcutText}
                 onChange={(e)=>handleModelDataChange('vcutText', e.target.value)}
                 readonly={readonly} tabIndex={40+17}
-                placeholder={"브이컷형태 입력"}
+                placeholder={"브이컷형태 입력"} memoView
               />
             </div>
           </div>

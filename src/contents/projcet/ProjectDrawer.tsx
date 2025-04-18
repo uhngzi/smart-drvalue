@@ -710,7 +710,7 @@ const ProjectDrawer: React.FC<Props> = ({
                     </div>
                     <div className="flex flex-col gap-10">
                       <p className="text-14">비고</p>
-                      <AntdInput placeholder="비고를 작성해주세요" onChange={(e) => onProcessDataChange("remarks", e.target.value)}/>
+                      <AntdInput placeholder="비고를 작성해주세요" onChange={(e) => onProcessDataChange("remarks", e.target.value)} memoView/>
                     </div>
                     
                   <div className="flex justify-end"><Button type="primary" onClick={() => processSubmit()}>저장</Button></div>
@@ -1060,7 +1060,7 @@ const ProjectDrawer: React.FC<Props> = ({
               <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
                 <div>
                   <div className="flex gap-10 v-between-h-center">
-                    <AntdInput value={memoText} placeholder="메모를 작성해주세요" onChange={(e) => setMemoText(e.target.value)}/>
+                    <AntdInput value={memoText} placeholder="메모를 작성해주세요" onChange={(e) => setMemoText(e.target.value)} memoView/>
                     <Button type="text" className="!w-24 !h-24 !p-0" onClick={addMemo}><Plus/></Button>
                   </div>
                   

@@ -1,5 +1,8 @@
+import { useUser } from "@/data/context/UserContext";
 import { componentsStylesType } from "@/data/type/componentStyles";
 import { Input } from "antd";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
 
 interface Props {
@@ -14,6 +17,12 @@ interface Props {
   disabled?: boolean;
   tabIndex?: number;
   maxPoint?: number;
+  memoView?: boolean;
+  onPressEnter?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLInputElement>;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  autoFocus?: boolean;
 }
 
 const AntdInputFill: React.FC<Props> = ({
@@ -28,7 +37,42 @@ const AntdInputFill: React.FC<Props> = ({
   disabled,
   tabIndex,
   maxPoint,
+  memoView,
+  autoFocus,
+  onClick,
+  onFocus,
+  onKeyDown,
+  onPressEnter,
 }) => {
+  const { myMemo } = useUser();
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const memoBoxRef = useRef<HTMLDivElement | null>(null);
+
+  const [enterFlag, setEnterFlag] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+  
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(target) &&
+        memoBoxRef.current &&
+        !memoBoxRef.current.contains(target)
+      ) {
+        setEnterFlag(false);
+      }
+    };
+  
+    if (enterFlag) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [enterFlag]);
+  
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let { value } = e.target;
     
@@ -105,7 +149,9 @@ const AntdInputFill: React.FC<Props> = ({
   };
 
   return (
+  <>
     <AntdInputStyled
+      ref={wrapperRef}
       $ht={styles?.ht ? styles.ht : '30px'}
       $bg={styles?.bg ? styles.bg : '#F9F9FB'}
       $bw={styles?.bw ? styles.bw : '1px'}
@@ -113,28 +159,131 @@ const AntdInputFill: React.FC<Props> = ({
       $type={type ?? "string"}
       className={`${className}`}
     >
-      <Input
-        // 숫자 타입이면 내부 값은 숫자 그대로 저장되지만 화면에는 콤마 포맷팅 적용
-        value={
-          type === "number" && value !== undefined && value !== ""
-          // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
-          && value?.toString()[value?.toString().length - 1] !== "."
-          ?
-          // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
-          value?.toString().slice(-2) === ".0" ? value :
-          Number(value).toLocaleString()
-            : value
-        }
-        onChange={handleInputChange}
-        className={`${className}`}
-        placeholder={placeholder}
-        // type={type}
-        defaultValue={defaultValue}
-        readOnly={readonly}
-        disabled={disabled}
-        tabIndex={tabIndex}
-      />
+      <div className="relative w-full h-full">
+        <Input
+          // 숫자 타입이면 내부 값은 숫자 그대로 저장되지만 화면에는 콤마 포맷팅 적용
+          value={
+            type === "number" && value !== undefined && value !== ""
+            // 마지막에 소수점이 올 경우 허용하기 위함 (위와 동일)
+            && value?.toString()[value?.toString().length - 1] !== "."
+            ?
+            // 소수점 첫째 자리까지 허용하기 위함 (0도 입력 가능)
+            value?.toString().slice(-2) === ".0" ? value :
+            Number(value).toLocaleString()
+              : value
+          }
+          onChange={handleInputChange}
+          className={`${className}`}
+          placeholder={placeholder}
+          // type={type}
+          defaultValue={defaultValue}
+          readOnly={readonly}
+          disabled={disabled}
+          tabIndex={tabIndex}
+          onKeyDown={(e)=>{
+            if(e.key === "Enter") {
+              setEnterFlag(true);
+            }
+            onKeyDown?.(e);
+          }}
+          onFocus={onFocus? onFocus:
+            type === "number" ? (e)=>{
+              if(!value || value === 0 || value === "0") {
+                const newEvent = Object.assign({}, e, {
+                  target: {
+                    ...e.target,
+                    value: "",
+                  },
+                });
+                onChange?.(newEvent);
+              }
+            }
+            : undefined
+          }
+          autoFocus={autoFocus}
+        />
+        {memoView && !enterFlag && (
+          <span className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 text-9 pointer-events-none">
+            엔터시 검색
+          </span>
+        )}
+      </div>
     </AntdInputStyled>
+    { enterFlag && memoView && wrapperRef.current && typeof value === "string" &&
+    createPortal(
+      <div
+        ref={memoBoxRef}
+        style={{
+          position: "absolute",
+          top: wrapperRef.current.getBoundingClientRect().bottom + window.scrollY,
+          left: wrapperRef.current.getBoundingClientRect().left + window.scrollX,
+          width: wrapperRef.current.offsetWidth,
+          background: "white",
+          boxShadow: "0 0 6px rgba(0,0,0,0.2)",
+          padding: "8px",
+          zIndex: 9999,
+        }}
+      >
+        { myMemo.map((item, index) => (
+          item.memo.includes(value) &&
+          <div
+            key={index+":"+item.id}
+            className={`
+              px-12 py-6 mb-6 rounded-md cursor-pointer
+              text-12 text-gray-700
+              bg-white hover:bg-[#f0fdf4]
+              border border-[#e0e0e0] hover:border-[#09BB1B]
+              shadow-sm hover:shadow-md
+              transition-all duration-200
+              hover:text-[#09BB1B]
+            `}
+            onClick={()=>{
+              const newValue = item.memo;
+
+              // 값이 바뀐 경우에만 처리
+              if (newValue !== value) {
+                // input에 직접 값 전달
+                const input = wrapperRef.current?.querySelector("input") as HTMLInputElement | null;
+                if (input) {
+                  const nativeSetter = Object.getOwnPropertyDescriptor(
+                    window.HTMLInputElement.prototype,
+                    "value"
+                  )?.set;
+                  nativeSetter?.call(input, newValue);
+
+                  // 이벤트 트리거 (React state sync 위해)
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+
+                  // focus 다시 주기
+                  setTimeout(() => {
+                    input.focus();
+                    // 맨 끝으로 커서 이동 (선택적으로)
+                    const length = input.value.length;
+                    input.setSelectionRange(length, length);
+                  }, 0);
+                }
+
+                // React용 onChange 호출
+                const syntheticEvent = {
+                  target: {
+                    value: newValue,
+                  },
+                } as React.ChangeEvent<HTMLInputElement>;
+
+                onChange?.(syntheticEvent);
+              }
+
+              setEnterFlag(false);
+            }}
+          >
+            {item.memo}
+          </div>
+        ))}
+      </div>,
+      document.body
+    )
+  }
+  </>
   );
 };
 

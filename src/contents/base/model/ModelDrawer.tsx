@@ -230,7 +230,7 @@ const ModelDrawer:React.FC<Props> = ({
           <AntdInput 
             value={searchModel}
             onChange={(e)=>setSearchModel(e.target.value)}
-            placeholder="모델명 검색"
+            placeholder="모델명 검색" memoView
             styles={{ht:"36px",br:"0"}}
           />
           <div

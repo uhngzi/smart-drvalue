@@ -295,7 +295,7 @@ const MyMemo:React.FC<Props> = ({
           value={searchs}
           onChange={(e)=>setSearchs(e.target.value)}
           placeholder="검색..."
-          styles={{ht:"36px", br:"0"}}
+          styles={{ht:"36px", br:"0"}} memoView
         />
         <div
           className="min-w-32 w-32 h-36 border-1 border-line v-h-center border-l-0 cursor-pointer"

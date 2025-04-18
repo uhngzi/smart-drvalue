@@ -536,7 +536,7 @@ const ProcessSelection: React.FC<Props> = ({
                             newSelectPrc[index] = { ...newSelectPrc[index], remark: newRemark };
                             setSelectPrc(newSelectPrc);
                           }}
-                          disabled={view?true:false}
+                          disabled={view?true:false} memoView
                         />
                       </div>
                       { !view &&

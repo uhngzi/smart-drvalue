@@ -483,7 +483,7 @@ const AddModal: React.FC<Props> = ({
             :
             <div className="flex flex-col gap-20">
               <div className="flex h-70 py-20 border-b-1 border-line">
-                <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)}/>
+                <AntdInput value={searchModel} onChange={(e)=>setSearchModel(e.target.value)} memoView/>
                 <div
                   className="w-38 h-32 border-1 border-line v-h-center border-l-0 cursor-pointer"
                   onClick={()=>{}}

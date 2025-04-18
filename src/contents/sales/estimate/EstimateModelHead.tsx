@@ -283,7 +283,7 @@ const EstimateModelHead:React.FC<Props> = ({
                 <AntdInput
                   value={model.array}
                   onChange={(e)=>handleModelDataChange(model.id ?? "", 'array', e.target.value)}
-                  styles={{ht:'32px', bg:'#FFF'}}
+                  styles={{ht:'32px', bg:'#FFF'}} memoView
                 />
               }
             />

@@ -71,19 +71,19 @@ const ModelContents: React.FC<Props> = ({
         <div className="min-w-[306px] border-r-1 border-line flex flex-col gap-24 pr-20">
           <div className="h-36 h-center gap-5">
             <p className="ml-10 min-w-95 h-center justify-end">업체명 : </p>
-            <AntdInput className="w-[176px!important]" styles={{ht:'36px'}} value={item?.cuNm||''} onChange={(e)=>handleInputChange(e, 'cuNm', type)}/>
+            <AntdInput className="w-[176px!important]" memoView styles={{ht:'36px'}} value={item?.cuNm||''} onChange={(e)=>handleInputChange(e, 'cuNm', type)}/>
           </div>
           <div className="h-36 h-center gap-5">
             <p className="ml-10 min-w-95 h-center justify-end">관리번호 : </p>
-            <AntdInput className="w-[176px!important]" styles={{ht:'36px'}} value={item?.no||''} onChange={(e)=>handleInputChange(e, 'no', type)}/>
+            <AntdInput className="w-[176px!important]" memoView styles={{ht:'36px'}} value={item?.no||''} onChange={(e)=>handleInputChange(e, 'no', type)}/>
           </div>
           <div className="h-36 h-center gap-5">
             <p className="ml-10 min-w-95 h-center justify-end">모델명 : </p>
-            <AntdInput className="w-[176px!important]" styles={{ht:'36px'}} value={item?.modelNm||''} onChange={(e)=>handleInputChange(e, 'modelNm', type)}/>
+            <AntdInput className="w-[176px!important]" memoView styles={{ht:'36px'}} value={item?.modelNm||''} onChange={(e)=>handleInputChange(e, 'modelNm', type)}/>
           </div>
           <div className="h-36 h-center gap-5">
             <p className="ml-10 min-w-95 h-center justify-end">Rev_No : </p>
-            <AntdInput className="w-[176px!important]" styles={{ht:'36px'}} value={item?.rev||''} onChange={(e)=>handleInputChange(e, 'rev', type)}/>
+            <AntdInput className="w-[176px!important]" memoView styles={{ht:'36px'}} value={item?.rev||''} onChange={(e)=>handleInputChange(e, 'rev', type)}/>
           </div>
           <div className="h-36 h-center gap-5">
             <p className="ml-10 min-w-95 h-center justify-end">고객관리코드 : </p>
