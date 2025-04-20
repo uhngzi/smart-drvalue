@@ -67,6 +67,9 @@ const HrUserListPage: React.FC & {
   const [newTitle, setNewTitle] = useState<keyof typeof groupType | null>(null);
   const [newData, setNewData] = useState<any>([]);
 
+  const [baseJobData, setBaseJobData] = useState<{value:string, label:string}[]>([]);
+  const [baseWorkData, setBaseWorkData] = useState<{value:string, label:string}[]>([]);
+
   // 트리를 사용하는 메뉴인 경우, 추가, 수정, 삭제를 하기위한 리스트, 한번에 submit을 하기때문에 각각의 리스트를 만들어서 한번에 처리
   const [addList, setAddList] = useState<CUtreeType[]>([]);
   const [editList, setEditList] = useState<CUtreeType[]>([]);
@@ -89,9 +92,8 @@ const HrUserListPage: React.FC & {
       });
 
       if (result.resultCode === 'OK_0000') {
-        console.log(result.data?.data)
+        // 구성원 모달 좌측에 부서, 팀을 트리로 보여주기위한 소스
         let arr = [];
-        console.log(newTitle)
         arr = (result.data?.data ?? []).map((group:any) => ({
           id: group.id,
           label: group.deptNm,
@@ -105,18 +107,54 @@ const HrUserListPage: React.FC & {
         }));
         console.log(arr)
         setNewData(arr);
+
+        // 구성원 등록시에 부서, 팀을 선택하기위한 select option을 생성하면서 동시에, 업무구분, 근무형태를 가져와서 selectOption을 생성하기 위한소스
+        let baseJobData = []; // 업무구분
+        let baseWorkData = []; // 근무형태
+        const baseJob = await getAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: `default-metadata/jsxcrud/many`,
+        },{
+          anykeys:{type: "JOB_TYPE"}
+        });
+        if(baseJob.resultCode === 'OK_0000') {
+          baseJobData = baseJob.data?.data.map((item:any) => ({value: item.id, label: item.data}));
+        }
+
+        const baseWork = await getAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: `default-metadata/jsxcrud/many`,
+        },{
+          anykeys:{type: "WORK_TYPE"}
+        });
+        if(baseWork.resultCode === 'OK_0000') {
+          baseWorkData = baseWork.data?.data.map((item:any) => ({value: item.id, label: item.data}));
+        }
+        console.log(baseWorkData, baseJobData)
         setAddModalInfoList(MOCK.userItem.CUDPopItems.map((item) => {
-          if(item.name === 'deptId'){
+          if(item.name === 'deptId'){ // 부서 option
             return {
               ...item,
               option: arr.map((group:any) => ({
                 value: group.id,
                 label: group.label,
-                children: group.children.map((team:any) => ({
+                children: group.children.map((team:any) => ({ // 팀 option
                   value: team.id,
                   label: team.label,
                 }))
               })),
+            };
+          }else if(item.name === "defMetaDataWorkType"){ // 근무형태 option
+            return {
+              ...item,
+              option: baseWorkData,
+            };
+          }else if(item.name === "defMetaDataJobType"){ // 업무구분 option
+            return {
+              ...item,
+              option: baseJobData,
             };
           }else{
             return item;
@@ -172,7 +210,7 @@ const HrUserListPage: React.FC & {
   const [userDetailOpen, setUserDetailOpen] = useState<boolean>(false);
   
   const { isLoading: usersLoading, refetch: userRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['auth', 'tenant', 'user', selectedTeam],
+    queryKey: ['auth', 'tenant', 'user', selectedTeam, pagination.current],
     enabled: newTitle === "user",
     queryFn: async () => {
       const result = await getAPI({
@@ -188,6 +226,7 @@ const HrUserListPage: React.FC & {
       if (result.resultCode === 'OK_0000') {
         setUserList(result.data?.data)
         setTotalData(result.data?.total ?? 0);
+
       } else {
         console.log('error:', result.response);
       }
@@ -372,15 +411,16 @@ const HrUserListPage: React.FC & {
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
-        setResultFunc('success', '삭제 성공', '구성원 삭제가 완료되었습니다.');
+        showToast('삭제가 완료되었습니다.', 'success');
+        userRefetch();
       } else {
         setNewOpen(false);
-        setResultFunc('error', '삭제 실패', '구성원 삭제를 실패하였습니다.');
+        showToast('삭제중 오류가 발생했습니다.', 'error');
       }
     }
     catch(e) {
       setNewOpen(false);
-      setResultFunc('error', '삭제 실패', '구성원 삭제를 실패하였습니다.');
+      showToast('삭제중 오류가 발생했습니다.', 'error');
     }
   }
 
@@ -429,21 +469,21 @@ const HrUserListPage: React.FC & {
           <UserSetting/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>근무형태</span>
-            <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
+            <span style={{color:'#00000073'}}>회사의 근무 형태를를 설정하세요. {"예) 정규직, 비정구직, 계약직"}</span>
           </div>
         </div>
         <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => modalOpen("JOB_TYPE")}>
           <UserFollow/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>업무구분</span>
-            <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
+            <span style={{color:'#00000073'}}>회사의 업무 구분을 설정하세요. {"예) 사무직, 연구직, 생산직"}</span>
           </div>
         </div>
         <div className="flex p-20 gap-10 rounded-8 h-center cursor-pointer" style={{border: '1px solid #D9D9D9'}} onClick={() => userAddOpen("user")}>
           <UserAdd/>
           <div className="flex flex-col gap-3">
             <span className="text-16 fw-500" style={{color:'#000000D9'}}>조직 구성원</span>
-            <span style={{color:'#00000073'}}>회사 조직 구조를 한눈에 파악할 수 있도록 조직도를 설정하세요.</span>
+            <span style={{color:'#00000073'}}>회사 조직 구조에 속한 구성원을 관리하세요.</span>
           </div>
         </div>
       </div>
@@ -539,7 +579,10 @@ const HrUserListPage: React.FC & {
                               empSts: record.detail?.empSts,
                               deptId: record.detail?.dept.id,
                               teamId: record.detail?.team.id,
+                              defMetaDataWorkType: record.detail?.defMetaDataWorkType,
+                              defMetaDataJobType: record.detail?.defMetaDataJobType,
                             }
+                            console.log(recordData)
                             setUserData(recordData);
                             setUserDetailOpen(true);
                           }}
@@ -613,7 +656,7 @@ const HrUserListPage: React.FC & {
         }
       />
       <BaseInfoCUDModal 
-        popWidth={810}
+        popWidth={610}
         title={{name: `구성원 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={userDetailOpen} 
         setOpen={setUserDetailOpen} 
