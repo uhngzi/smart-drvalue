@@ -1,12 +1,12 @@
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import GanttChart from "@/utils/third-party/GanttChart";
-import { Button, Checkbox, DatePicker, Dropdown } from "antd";
+import { Button, Checkbox, DatePicker, Dropdown, Input, Tooltip } from "antd";
 import dayjs from "dayjs";
 //@ts-ignore
 import styled from "styled-components";
 
 import { getDaysBetween } from "@/utils/formatDate";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 
 import Edit from "@/assets/svg/icons/edit.svg";
@@ -57,6 +57,10 @@ const ProjcetPage: React.FC & {
   const [basicDate, setBasicDate] = useState<Date>(new Date());
   const [detailDataLoading, setDetailDataLoading] = useState<boolean>(false);
   const [detailData, setDetailData] = useState<wkPlanWaitType>({});
+
+  const [progDateHint, setProgDateHint] = useState<{[key: string]: boolean}>({});
+  const progDateRefObj = useRef<{[key: string]: any}>({});
+
   const { data:queryDetailData, isLoading, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -294,7 +298,73 @@ function addPopWorkers(data: any) {
   }
 }
 
+  async function changeProgDate(task: any, e: React.FocusEvent<HTMLInputElement>) {
+    if(e.target.value == ""){
+      progDateRefObj.current[task.id].input.value = "1"
+      return;
+    }
+    console.log(e.target.value)
+    console.log(schedules.flatMap(process => process.task));
 
+    if(!task?.from){
+      showToast("시작일을 먼저 입력해야 합니다.", "error");
+      pmsRefetch();
+      return;
+    }
+    const keys = Object.keys(progDateRefObj.current);
+    const currentIndex = keys.indexOf(task.id);
+    const nextIndex = currentIndex + 1;
+    const nextId = keys[nextIndex];
+    const nextTask = schedules.flatMap(process => process.task).find(task => task.id === nextId);
+
+    const dayCnt = e.target.value;
+    const day = Number(dayCnt);
+    const startDate = task.from;
+    const id = task.id;
+
+    const endDate = dayjs(startDate).add(day-1, 'day').format('YYYY-MM-DD');
+    console.log(day, startDate, endDate);
+
+    const data = {startDate, endDate}
+    const result = await patchAPI({
+      type: 'core-d3', 
+      utype: 'tenant/',
+      jsx: 'default',
+      url: `pms/proc/default/update-date/${id}`,
+      etc: true,
+    },id, data);
+    console.log(result);
+
+    if(result.resultCode === 'OK_0000') {
+      if(!!nextId && !nextTask?.progFrom){
+        const nextStartDate = dayjs(endDate).add(1, 'day').format('YYYY-MM-DD');
+        const nextData = {startDate: nextStartDate, endDate: nextStartDate}
+        const nextResult = await patchAPI({
+          type: 'core-d3', 
+          utype: 'tenant/',
+          jsx: 'default',
+          url: `pms/proc/default/update-date/${nextId}`,
+          etc: true,
+        },nextId, nextData);
+        
+        if(nextResult.resultCode != 'OK_0000') {
+          pmsRefetch();
+          showToast("현재 일정은 저장했지만, 다음 일정 자동 업데이트에 실패했습니다.", "error");
+          return;
+        }else{
+        }
+      }
+      progDateRefObj.current[nextId]?.input.focus();
+      pmsRefetch();
+      showToast("저장완료", "success");
+    } else {
+      const msg = result?.response?.data?.message;
+      setResultType("error");
+      setResultMsg(msg);
+      setResultOpen(true);
+    }
+
+  }
   async function changeDate(date: any, id: string, type: string, otherDate: any) {
     const newDate = dayjs(date).format('YYYY-MM-DD')
     otherDate = otherDate ? dayjs(otherDate).format('YYYY-MM-DD') : newDate;
@@ -302,7 +372,7 @@ function addPopWorkers(data: any) {
     if(type === "from") {
       data = {startDate: newDate, endDate: otherDate}
       const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
-      if (to && dayjs(newDate).isAfter(dayjs(to))) {
+      if (to && dayjs(newDate).startOf('day').isAfter(dayjs(to).startOf('day'))) {
         showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
         return;
       }
@@ -310,25 +380,12 @@ function addPopWorkers(data: any) {
       data = {startDate: otherDate, endDate: newDate}
       console.log(data);
       const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
-      if (from && dayjs(newDate).isBefore(dayjs(from))) {
+      if (from && dayjs(newDate).startOf('day').isBefore(dayjs(from).startOf('day'))) {
         showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
         return;
       }
     }
 
-    // const newSchedules = schedules.map(process => {
-    //   return {
-    //     ...process,
-    //     task: process.task.map(task => {
-    //       if (task.id === id) {
-    //         return { ...task, [type]: newDate }; 
-    //       }
-    //       return task;
-    //     }),
-    //   };
-    // });
-    
-    // setSchedules(newSchedules);
     const result = await patchAPI({
       type: 'core-d3', 
       utype: 'tenant/',
@@ -460,13 +517,14 @@ function addPopWorkers(data: any) {
             <ProjectTable>
               <colgroup>
                 <col width="57.2%" />
-                <col width="18%" />
-                <col width="18%" />
                 <col width="6.8%" />
+                <col width="18%" />
+                <col width="18%" />
               </colgroup>
               <thead>
                 <tr className="!h-55">
                   <th>공정</th>
+                  <th>진행일수</th>
                   <th colSpan={2}>
                     <div className="flex items-center justify-center gap-30">
                       <span>시작일</span>
@@ -474,7 +532,6 @@ function addPopWorkers(data: any) {
                       <span>종료일</span>
                     </div>
                   </th>
-                  <th>진행일수</th>
                 </tr>
               </thead>
               <tbody>
@@ -486,8 +543,8 @@ function addPopWorkers(data: any) {
                     {schedule.task.map((task: Task, index) => (
                       <Fragment key={task.id}>
                         <tr>
-                          <td className="flex flex-row justify-between items-center h-40 px-10">
-                            <div className="flex items-center gap-20 cursor-pointer" onClick={() => setBasicDate(new Date(task.from))}>
+                          <td className="flex flex-row justify-between items-center h-40 px-10 cursor-pointer hover:bg-[#0000000a]" onClick={() => task.from ? setBasicDate(new Date(task.from)) : false}>
+                            <div className="flex items-center gap-20 " >
                               <div className="w-18 h-18 rounded-4" style={{backgroundColor: "#E9EDF5"}}>{index+1}</div>
                               <span className="text-left">{task.name}</span>
                             </div>
@@ -530,6 +587,19 @@ function addPopWorkers(data: any) {
                               </Dropdown>
                             </div>
                           </td>
+                          <td>
+                            <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top">
+                              <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
+                                ref={(el) => { progDateRefObj.current[task.id] = el; }}
+                                onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
+                            </Tooltip>
+                          </td>
                           <td colSpan={2}>
                             <div className="flex items-center gap-5">
                               <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
@@ -544,7 +614,6 @@ function addPopWorkers(data: any) {
                             </div>
                           </td>
                           
-                          <td>{task.from && task.to ?getDaysBetween(task.from, task.to) : ""}</td>
                         </tr>
                         {task.workers && task.workers.length > 0 && task.workers.map((worker, index) => (
                           <tr key={`${task.id}-worker-${index}`}>

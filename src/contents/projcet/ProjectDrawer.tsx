@@ -374,6 +374,7 @@ const ProjectDrawer: React.FC<Props> = ({
 
   // -------------------인력투입 변수, 함수들--------------------
   const workControlData = useRef<any>([]);
+  
   const [workerData, setWorkerData] = useState<any>({});
   const [workDoDate, setWorkDoDate] = useState<string | Date | null>(null);
   const [workers, setWorkers] = useState<any[]>([]);
@@ -427,6 +428,53 @@ const ProjectDrawer: React.FC<Props> = ({
     },
     enabled: !!workDoDate
   });
+  
+  const [prevWorkList, setPrevWorkList] = useState<any>([]);
+  const prevWorkControlRef = useRef<{empProcAm?:boolean, empProcPm?:boolean, empProcNt?:boolean, empProcAnt?:boolean, wkProcEmployeeId?:string}[]>([]);
+  const { isLoading: prevWork, refetch: prevWorkRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ['pms', 'proc', 'employee', selectId],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d3',
+        utype: 'tenant/',
+        url: `pms/proc/employee/default/many/${selectId}`
+      });
+      if (result.resultCode === 'OK_0000') {
+        let prevWorkData:any = {};
+        result.data.data.forEach((v:any) => {
+          v.emp.workDetail.forEach((element:any) => {
+            if (!prevWorkData[element.wkEmpProcDt]) {
+              prevWorkData[element.wkEmpProcDt] = [];
+            }
+            prevWorkData[element.wkEmpProcDt].push({...element, name: v.emp.name});
+          });
+        })
+        const workListData = Object.keys(prevWorkData).map((key) => {
+          const item = prevWorkData[key];
+          return{
+            workDate: key,
+            workList: item,
+            open: false
+          }
+        });
+        prevWorkControlRef.current = workListData.reverse()[0]?.workList.map((v:any) => (
+          {
+            empProcAm: v.wkEmpProcAm,
+            empProcPm: v.wkEmpProcPm,
+            empProcNt: v.wkEmpProcNt,
+            empProcAnt: v.wkEmpProcAnt,
+            wkProcEmployeeId: v.id
+          }))
+        
+        setPrevWorkList(workListData);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      return result.data;
+    },
+    enabled: !!selectId
+  });
 
   function workCheck(e: any, key: string, record: any) {
     
@@ -435,30 +483,20 @@ const ProjectDrawer: React.FC<Props> = ({
       e.preventDefault();
       return;
     }
-
+    console.log(record)
     const prevWorkData = {
       empProcAm: record.empProcAm,
       empProcPm: record.empProcPm,
       empProcNt: record.empProcNt,
       empProcAnt: record.empProcAnt
     }
-    if(record.wkProcEmployeeId) {
-      workControlData.current = workControlData.current.some((item:any) => item.wkProcEmployeeId === record.wkProcEmployeeId)
-      ? workControlData.current.map((item:any) => 
-          item.wkProcEmployeeId === record.wkProcEmployeeId 
-            ? {...prevWorkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
-            : item
-        )
-      : [...workControlData.current, { wkProcEmployeeId: record.wkProcEmployeeId, ...prevWorkData, [key]: e.target.checked }];
-    }else {
-      workControlData.current = workControlData.current.some((item:any) => item.wkProcScheduleId === record.wkProcScheduleId)
-      ? workControlData.current.map((item:any) => 
-          item.wkProcScheduleId === record.wkProcScheduleId 
-            ? {...prevWorkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
-            : item
-        )
-      : [...workControlData.current, { wkProcScheduleId: record.wkProcScheduleId, ...prevWorkData, [key]: e.target.checked }];
-    }
+    workControlData.current = workControlData.current.some((item:any) => item.wkProcScheduleId === record.wkProcScheduleId)
+    ? workControlData.current.map((item:any) => 
+        item.wkProcScheduleId === record.wkProcScheduleId 
+          ? {...prevWorkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
+          : item
+      )
+    : [...workControlData.current, { wkProcScheduleId: record.wkProcScheduleId, ...prevWorkData, [key]: e.target.checked }];
     setWorkerData((prev:any) => ({
       ...prev,
       [record.empId]: {
@@ -467,23 +505,44 @@ const ProjectDrawer: React.FC<Props> = ({
       }
     }))
   }
+  function prevWorkCheck(e: any, key: string, record: any) {
+    console.log(record)
+    const checkData = {
+      empProcAm: record.wkEmpProcAm,
+      empProcPm: record.wkEmpProcPm,
+      empProcNt: record.wkEmpProcNt,
+      empProcAnt: record.wkEmpProcAnt
+    }
+    prevWorkControlRef.current = prevWorkControlRef.current.some((item:any) => item.wkProcEmployeeId === record.id)
+    ? prevWorkControlRef.current.map((item:any) => 
+        item.wkProcEmployeeId === record.id 
+          ? {...checkData, ...item, [key]: e.target.checked }  // 기존 객체 수정
+          : item
+      )
+    : [...prevWorkControlRef.current, { wkProcEmployeeId: record.id, ...checkData, [key]: e.target.checked }];
+    console.log(prevWorkControlRef.current)
+
+  }
 
   // -----------------------------------------------------
 
   async function processSubmit(type: string = "create") {
     console.log(processData.current)
+    console.log(task)
     if(selectKey === 1) {
-      if(!processData.current.wkProcDailyDt || !processData.current.wkProcDailyPer) {
+      if(!processData.current.wkProcDailyDt || processData.current?.wkProcDailyPer === undefined) {
         showToast('진행률과 진행일을 입력해주세요.', 'error');
         return;
       }
-      if(task && dayjs(processData.current.wkProcDailyDt).isBefore(dayjs(task.from))) {
-        showToast('진행일은 시작일 이후로 입력해주세요.', 'error');
+      if(!task?.progTo && processData.current.wkProcDailyPer>0){
+        showToast('첫 진행 등록의 진행률은 0이어야 합니다.', 'error');
         return;
       }
-      if(task && (Number(task.progress) || 0) > processData.current.wkProcDailyPer) {
-        showToast('진행률은 이전 진행률보다 커야합니다.', 'error');
-        return;
+      if(task?.progTo){
+        if(task && (Number(task.progress) || 0) > processData.current.wkProcDailyPer) {
+          showToast('진행률은 이전 진행률보다 커야합니다.', 'error');
+          return;
+        }
       }
       // const newSchedules = schedules.map(process => {
       //   return {
@@ -520,6 +579,8 @@ const ProjectDrawer: React.FC<Props> = ({
         refetch();
         setFileList([]);
         setFileIdList([]);
+        setWorkDoDate(dayjs(processData.current.wkProcDailyDt).format("YYYY-MM-DD"))
+        setQualDoDate(dayjs(processData.current.wkProcDailyDt).format("YYYY-MM-DD"))
         processData.current = {};
       } else {
         showToast("진행관리 등록중 문제가 발생했습니다..", "error");
@@ -592,43 +653,40 @@ const ProjectDrawer: React.FC<Props> = ({
     } else if(selectKey === 3) {
       console.log('인력투입 저장');
       
-      let createData = [];
-      let updateData = [];
-      for(const worker of workControlData.current) {
-        if(worker?.wkProcEmployeeId) {
-          updateData.push(worker);
-        } else {
+      if(type === "create"){
+        let createData = [];
+        for(const worker of workControlData.current) {
           createData.push(worker);
         }
-      }
-      console.log(updateData, createData)
-      if(createData.length>0){
-        const result = await postAPI({
-          type: 'core-d3', 
-          utype: 'tenant/',
-          jsx: 'default',
-          url: `pms/proc/employee/default/create/${selectId}/${dayjs(workDoDate).format("YYYY-MM-DD")}`,
-          etc: true,
-        }, {empDatas: createData});
-        if(result.resultCode === 'OK_0000') {
-          showToast("저장되었습니다.", "success");
-          workDoRefetch();
-        } else {
-          showToast("인력투입 등록중 문제가 발생했습니다..", "error");
-          return;
+        if(createData.length>0){
+          const result = await postAPI({
+            type: 'core-d3', 
+            utype: 'tenant/',
+            jsx: 'default',
+            url: `pms/proc/employee/default/create/${selectId}/${dayjs(workDoDate).format("YYYY-MM-DD")}`,
+            etc: true,
+          }, {empDatas: createData});
+          if(result.resultCode === 'OK_0000') {
+            showToast("저장되었습니다.", "success");
+            workDoRefetch();
+          } else {
+            showToast("인력투입 등록중 문제가 발생했습니다..", "error");
+            return;
+          }
         }
-      }
-      if(updateData.length>0){
+      } else if(type === "update") {
+        console.log(prevWorkControlRef.current)
         const result = await patchAPI({
-          type: 'core-d3',
+          type: 'core-d3', 
           utype: 'tenant/',
           jsx: 'default',
           url: `pms/proc/employee/default/update/${selectId}`,
           etc: true,
-        },"", {empDatas: updateData});
+        },"", {empDatas: prevWorkControlRef.current});
+
         if(result.resultCode === 'OK_0000') {
           showToast("저장되었습니다.", "success");
-          workDoRefetch();
+          prevWorkRefetch();
         } else {
           showToast("인력투입 수정중 문제가 발생했습니다..", "error");
           return;
@@ -693,7 +751,28 @@ const ProjectDrawer: React.FC<Props> = ({
                         <p className="pb-8">진행률</p>
                         <Input 
                           type="number" min={0} max={100} className="!rounded-0 py-5" 
-                          onChange={({target})=> onProcessDataChange("wkProcDailyPer", target.value)}/>
+                          onBlur={(e) => {
+                            const target = e.target as HTMLInputElement;
+                            if(target.value === "") {
+                              target.value = "0"; // 직접 DOM 조작
+                            }
+                          }}
+                          onInput={(e) => {
+                            const target = e.target as HTMLInputElement;
+                            let value = Number(target.value);
+                            if(target.value === "") {
+                              value = 0;
+                              target.value = ""; // 직접 DOM 조작
+                            }
+                            if (value > 100) {
+                              target.value = "100"; // 직접 DOM 조작
+                              value = 100;
+                            } else if (value < 0) {
+                              target.value = "0";
+                              value = 0;
+                            }
+                            onProcessDataChange("wkProcDailyPer", value);
+                          }}/>
                       </div>
                     </div>
                     <div className="flex flex-col gap-10">
@@ -985,75 +1064,175 @@ const ProjectDrawer: React.FC<Props> = ({
             </>
           )}
           {selectKey === 3 && (
-            <div className="flex flex-col gap-20">
-              <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
-                <section className="flex flex-col gap-20">
-                  <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
-                    <div className="col-span-3">
-                      <p className="pb-8">인력 투입일</p>
-                      <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={workDoDate} onChange={(date) => {setWorkDoDate(date); workControlData.current=[];}}/>
+            <>
+              <div className="flex flex-col gap-20">
+                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
+                  <section className="flex flex-col gap-20">
+                    <div className={`grid grid-cols-1 md:grid-cols-6 gap-10`}>
+                      <div className="col-span-3">
+                        <p className="pb-8">인력 투입일</p>
+                        <DatePicker className="!w-full !rounded-0" suffixIcon={<Calendar/>} value={workDoDate ? dayjs(workDoDate) : null} onChange={(date) => {setWorkDoDate(dayjs(date).format("YYYY-MM-DD")); workControlData.current=[];}}/>
+                      </div>
                     </div>
+                    <AntdTableEdit
+                      columns={[
+                        {
+                          title: '근로자',
+                          width:84,
+                          dataIndex: 'name',
+                          key: 'name',
+                          align: 'center',
+                          
+                        },
+                        {
+                          title: '오전',
+                          width:58,
+                          dataIndex: 'empProcAm',
+                          key: 'empProcAm',
+                          align: 'center',
+                          render:(value, record) => (
+                            
+                            <Checkbox checked={!!workerData[record.empId]?.empProcAm} onChange={(e) => workCheck(e, "empProcAm", record)} disabled={(workDoDate && !prevWorkList.some((v:any)=> v.workDate == workDoDate)) ? false : true}/>
+                          )
+                        },
+                        {
+                          title: '오후',
+                          width:58,
+                          dataIndex: 'empProcPm',
+                          key: 'empProcPm',
+                          align: 'center',
+                          render:(value, record) => (
+                            <Checkbox checked={!!workerData[record.empId]?.empProcPm} onChange={(e) => workCheck(e, "empProcPm", record)} disabled={(workDoDate && !prevWorkList.some((v:any)=> v.workDate == workDoDate)) ? false : true}/>
+                          )
+                        },
+                        {
+                          title: '야간',
+                          width:58,
+                          dataIndex: 'empProcNt',
+                          key: 'empProcNt',
+                          align: 'center',
+                          render:(value, record) => (
+                            <Checkbox checked={!!workerData[record.empId]?.empProcNt} onChange={(e) => workCheck(e, "empProcNt", record)} disabled={(workDoDate && !prevWorkList.some((v:any)=> v.workDate == workDoDate)) ? false : true}/>
+                          )
+                        },
+                        {
+                          title: '철야',
+                          width:58,
+                          dataIndex: 'empProcAnt',
+                          key: 'empProcAnt',
+                          align: 'center',
+                          render:(value, record) => (
+                            
+                            <Checkbox checked={!!workerData[record.empId]?.empProcAnt} onChange={(e) => workCheck(e, "empProcAnt", record)} disabled={(workDoDate && !prevWorkList.some((v:any)=> v.workDate == workDoDate)) ? false : true}/>
+                          )
+                        },
+                      ]}
+                      data={workers.length ? workers : task?.workers}
+                      styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+                    />
+                  </section>
+                </CardInputList>
+                {(workDoDate && !prevWorkList.some((v:any)=> v.workDate == workDoDate)) && <div className="flex justify-end"><Button type="primary" onClick={() => processSubmit()}>저장</Button></div>}
+              </div>
+              <div className="flex flex-col gap-20">
+                <div className="flex pt-20 v-between-h-center">
+                  <p className="flex gap-5 font-medium text-16 items-center"><TimeFill/>이전 인력투입</p>
+                </div>
+                <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
+                  <div className="flex justify-end" onClick={() => setPrevWorkList((prev:any) => prev.map((d:any) => ({...d, open: false})))}>
+                    <span className="text-[#00000073] cursor-pointer">전체 접기</span>
                   </div>
-                  <AntdTableEdit
-                    columns={[
-                      {
-                        title: '근로자',
-                        width:84,
-                        dataIndex: 'name',
-                        key: 'name',
-                        align: 'center',
-                        
-                      },
-                      {
-                        title: '오전',
-                        width:58,
-                        dataIndex: 'empProcAm',
-                        key: 'empProcAm',
-                        align: 'center',
-                        render:(value, record) => (
-                          
-                          <Checkbox checked={!!workerData[record.empId]?.empProcAm} onChange={(e) => workCheck(e, "empProcAm", record)} disabled={workDoDate ? false : true}/>
-                        )
-                      },
-                      {
-                        title: '오후',
-                        width:58,
-                        dataIndex: 'empProcPm',
-                        key: 'empProcPm',
-                        align: 'center',
-                        render:(value, record) => (
-                          <Checkbox checked={!!workerData[record.empId]?.empProcPm} onChange={(e) => workCheck(e, "empProcPm", record)} disabled={workDoDate ? false : true}/>
-                        )
-                      },
-                      {
-                        title: '야간',
-                        width:58,
-                        dataIndex: 'empProcNt',
-                        key: 'empProcNt',
-                        align: 'center',
-                        render:(value, record) => (
-                          <Checkbox checked={!!workerData[record.empId]?.empProcNt} onChange={(e) => workCheck(e, "empProcNt", record)} disabled={workDoDate ? false : true}/>
-                        )
-                      },
-                      {
-                        title: '철야',
-                        width:58,
-                        dataIndex: 'empProcAnt',
-                        key: 'empProcAnt',
-                        align: 'center',
-                        render:(value, record) => (
-                          
-                          <Checkbox checked={!!workerData[record.empId]?.empProcAnt} onChange={(e) => workCheck(e, "empProcAnt", record)} disabled={workDoDate ? false : true}/>
-                        )
-                      },
-                    ]}
-                    data={workers.length ? workers : task?.workers}
-                    styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
-                  />
-                </section>
-              </CardInputList>
-              <div className="flex justify-end"><Button type="primary" onClick={() => processSubmit()}>저장</Button></div>
-            </div>
+                  <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
+                    {prevWorkList.map((data:any, idx:any) => {
+                      return(
+                        <Fragment key={data.workDate}>
+                          <div className="flex py-12 px-16 gap-12 items-center" key={idx}>
+                            <p className="w-24 h-24 flex justify-center pt-3 cursor-pointer" onClick={()=>setPrevWorkList((prev:any) => prev.map((prevData:any) => prevData.workDate === data.workDate ? {...prevData, open: !prevData.open} : prevData))}>
+                              {data.open ? <ArrowDown/> : <Arrowright/>}
+                            </p>
+                            <p>{dayjs(data.workDate).format("YYYY-MM-DD")}</p>
+                          </div>
+                          {data.open && (
+                            <>
+                              <AntdTableEdit
+                                columns={[
+                                  {
+                                    title: '근로자',
+                                    width:84,
+                                    dataIndex: 'name',
+                                    key: 'name',
+                                    align: 'center',
+                                    
+                                  },
+                                  {
+                                    title: '오전',
+                                    width:58,
+                                    dataIndex: 'wkEmpProcAm',
+                                    key: 'wkEmpProcAm',
+                                    align: 'center',
+                                    render:(value, record) => (
+                                      <>
+                                        <Checkbox defaultChecked={!!record?.wkEmpProcAm} onChange={(e) => prevWorkCheck(e, "empProcAm", record)} disabled={!idx ? false : true}/>
+                                      </>
+                                    )
+                                  },
+                                  {
+                                    title: '오후',
+                                    width:58,
+                                    dataIndex: 'wkEmpProcPm',
+                                    key: 'wkEmpProcPm',
+                                    align: 'center',
+                                    render:(value, record) => (
+                                      <Checkbox defaultChecked={!!record?.wkEmpProcPm} onChange={(e) => prevWorkCheck(e, "empProcPm", record)} disabled={!idx ? false : true}/>
+                                    )
+                                  },
+                                  {
+                                    title: '야간',
+                                    width:58,
+                                    dataIndex: 'wkEmpProcNt',
+                                    key: 'wkEmpProcNt',
+                                    align: 'center',
+                                    render:(value, record) => (
+                                      <Checkbox defaultChecked={!!record?.wkEmpProcNt} onChange={(e) => prevWorkCheck(e, "empProcNt", record)} disabled={!idx ? false : true}/>
+                                    )
+                                  },
+                                  {
+                                    title: '철야',
+                                    width:58,
+                                    dataIndex: 'wkEmpProcAnt',
+                                    key: 'wkEmpProcAnt',
+                                    align: 'center',
+                                    render:(value, record) => (
+                                      
+                                      <Checkbox defaultChecked={!!record?.wkEmpProcAnt} onChange={(e) => prevWorkCheck(e, "empProcAnt", record)} disabled={!idx ? false : true}/>
+                                    )
+                                  },
+                                ]}
+                                data={data?.workList.length ? data?.workList : []}
+                                styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px',}}
+                              />
+                            {idx === 0 && <div className="flex justify-end p-5"><Button type="primary" onClick={() => processSubmit("update")}>저장</Button></div>}
+                            </>
+                            // <>
+                            //   <Divider style={{margin:0}}/>
+                            //   <div className="flex flex-col py-12 px-16 gap-5">
+                            //     <div className="w-[480px] flex gap-10 items-center">
+                            //       {data.files.map((file:any, idx:number) => (
+                            //         <Image key={idx} alt="진행관리" src={`${baseURL}file-mng/v1/every/file-manager/download/${file}`} width={100} height={75}/>
+                            //       ))}
+                            //     </div>
+                            //     <p className="text-14 text-[#00000073]"><span style={{color:'black'}}>비고: </span>{data.remarks}</p>
+                            //   </div>
+                            // </>
+                          )}
+                          {procDailyData.length != idx+1 &&<Divider style={{margin:0}}/>}
+                        </Fragment>
+                      )
+                    })}
+                  </section>
+                </CardInputList>
+              </div>
+            </>
           )}
           {selectKey === 4 && (
             <div className="flex flex-col gap-20">
