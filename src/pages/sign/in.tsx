@@ -52,7 +52,6 @@ const SignInPage: React.FC & {
         userId: id,
         password: pw,
       });
-      console.log(response);
 
       const { data, resultCode } = response.data;
       
@@ -60,9 +59,9 @@ const SignInPage: React.FC & {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
 
         if(port === '90') {
-          cookie.set('companySY', 'sy');
-        } else {
           cookie.set('company', 'gpn');
+        } else {
+          cookie.set('companySY', 'sy');
         }
         router.push('/');
       } else {

@@ -524,7 +524,11 @@ function addPopWorkers(data: any) {
               <thead>
                 <tr className="!h-55">
                   <th>공정</th>
-                  <th>진행일수</th>
+                  <th>
+                    <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다.">
+                      <span>진행일수</span>
+                    </Tooltip>
+                  </th>
                   <th colSpan={2}>
                     <div className="flex items-center justify-center gap-30">
                       <span>시작일</span>
@@ -588,7 +592,7 @@ function addPopWorkers(data: any) {
                             </div>
                           </td>
                           <td>
-                            <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top">
+                            {/* <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top"> */}
                               <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
                                 ref={(el) => { progDateRefObj.current[task.id] = el; }}
                                 onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
@@ -598,7 +602,7 @@ function addPopWorkers(data: any) {
                                   }
                                 }}
                                 onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
-                            </Tooltip>
+                            {/* </Tooltip> */}
                           </td>
                           <td colSpan={2}>
                             <div className="flex items-center gap-5">
