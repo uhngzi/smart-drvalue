@@ -6,6 +6,8 @@ import cookie from "cookiejs";
 // 브라우저 환경인지 체크
 const isBrowser = typeof window !== 'undefined';
 
+const port = isBrowser ? window.location.port : ''; // 현재 포트
+
 export const instanceRoot = axios.create({
   baseURL,
   headers: {},
@@ -14,6 +16,17 @@ instanceRoot.interceptors.request.use(
   (config) => {
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
 
+    // 포트가 90이면 shinyang-test, 아니면 기존 로직
+    const tenantCode = isBrowser
+      ? port === '90'
+        ? 'shinyang-test'
+        : cookie.get('company') === 'sy'
+          ? 'shinyang-test'
+          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+      : 'gpntest-sebuk-ver';
+
+    config.headers["x-tenant-code"] = tenantCode;
+    
     return config;
   },
   (error) => {
@@ -33,10 +46,13 @@ export const instance = axios.create({
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    'x-tenant-code': isBrowser ? `${
-      cookie.get('company') === 'sy' ? 'shinyang-test' :
-      cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
-    }` : 'gpntest-sebuk-ver',
+    'x-tenant-code': isBrowser
+      ? port === '90'
+        ? 'shinyang-test'
+        : cookie.get('company') === 'sy'
+          ? 'shinyang-test'
+          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+      : 'gpntest-sebuk-ver',
   },
 });
 instance.interceptors.request.use(
@@ -45,10 +61,13 @@ instance.interceptors.request.use(
     /**
      * @TODO 추후에 프로덕션 환경에서 해당 코드를 삭제하고, 각 사용자별 테넌트 코드를 가져오는 별도의 로직이 필요
      */
-    config.headers["x-tenant-code"] = isBrowser ? `${
-      cookie.get('company') === 'sy' ? 'shinyang-test' :
-      cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
-    }` : 'gpntest-sebuk-ver';
+    config.headers["x-tenant-code"] = isBrowser
+      ? port === '90'
+        ? 'shinyang-test'
+        : cookie.get('company') === 'sy'
+          ? 'shinyang-test'
+          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+      : 'gpntest-sebuk-ver';
 
     return config;
   },

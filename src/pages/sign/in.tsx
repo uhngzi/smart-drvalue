@@ -20,6 +20,10 @@ const gradientStyle = {
   fontWeight: 'bold',
 };
 
+// 브라우저 환경인지 체크
+const isBrowser = typeof window !== 'undefined';
+const port = isBrowser ? window.location.port : '';
+
 const SignInPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -51,8 +55,14 @@ const SignInPage: React.FC & {
       
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
-        cookie.set('company', 'gpn');
+        // cookie.set('company', 'gpn');
         // cookie.set('company', 'sy');
+
+        if(port === '90') {
+          cookie.set('company', 'sy');
+        } else {
+          cookie.set('company', 'gpn');
+        }
         router.push('/');
       } else {
         setOpen(true);
