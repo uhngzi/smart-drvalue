@@ -64,6 +64,7 @@ const HomeBoard: React.FC<{
     setPagination({ current: page, size: size });
   };
   const [data, setData] = useState<CompanyBoardType[]>([]);
+  //공지사항 리스트 조회
   const { refetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ["notice-board/jsxcrud/many", pagination],
     queryFn: async () => {
@@ -110,11 +111,14 @@ const HomeBoard: React.FC<{
   // 높이 변경을 감지하기 위한 변수
   const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
 
+
+  //select.files가 바뀌면 fetchFileInfo()가 호출되는 함수
   useEffect(()=>{
     if(select?.files && select.files.length > 0)
       fetchFileInfo();
   }, [select?.files])
 
+  //파일 정보 조회 함수
   const fetchFileInfo = async () => {
     if(select?.files && select.files.length > 0) {
       let fileArr:any[] = [];
@@ -261,6 +265,7 @@ const HomeBoard: React.FC<{
                 <div
                   className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
                   onClick={()=>{
+                    //사용자가 리스트에서 제목이나 내용을 클릭하면, select에 해당 게시글을 설정하고, fileIdList를 게시글의 files로 설정합니다.
                     setSelect(record);
                     setFileIdList(record.files ?? []);
                     setOpen(true);

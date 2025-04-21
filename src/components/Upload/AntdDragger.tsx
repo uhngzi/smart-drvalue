@@ -27,6 +27,7 @@ interface Props {
   disabled?: boolean;
   mult?: boolean;
   max?: number;
+  beforeUpload?: (file: File) => boolean; //
 }
 
 const CustomDragger = styled(Dragger)`
