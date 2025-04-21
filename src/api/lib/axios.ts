@@ -5,8 +5,8 @@ import cookie from "cookiejs";
 
 // 브라우저 환경인지 체크
 const isBrowser = typeof window !== 'undefined';
-
 const port = isBrowser ? window.location.port : ''; // 현재 포트
+console.log(port);
 
 export const instanceRoot = axios.create({
   baseURL,
@@ -15,15 +15,6 @@ export const instanceRoot = axios.create({
 instanceRoot.interceptors.request.use(
   (config) => {
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';
-
-    // 포트가 90이면 shinyang-test, 아니면 기존 로직
-    const tenantCode = isBrowser
-      ? port === '90'
-        ? 'shinyang-test'
-        : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
-      : 'gpntest-sebuk-ver';
-
-    config.headers["x-tenant-code"] = tenantCode;
     
     return config;
   },
@@ -51,6 +42,7 @@ export const instance = axios.create({
       : 'gpntest-sebuk-ver',
   },
 });
+
 instance.interceptors.request.use(
   (config) => {
     config.headers["Authorization"] = isBrowser ? `bearer ${cookie.get(cookieName)}` : '';

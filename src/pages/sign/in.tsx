@@ -47,7 +47,6 @@ const SignInPage: React.FC & {
       cookie.remove('companySY');
       cookie.remove('company');
       cookie.remove(cookieName);
-      console.log(id, pw);
 
       const response = await instance.post('auth/v1/login/tenant/basic', {
         userId: id,
@@ -57,7 +56,6 @@ const SignInPage: React.FC & {
       const { data, resultCode } = response.data;
       
       if (resultCode === 'OK_0000') {
-        console.log(id, pw);
         cookie.set(cookieName, data.accessToken, { expires: 7 });
 
         if(port === '90') {
