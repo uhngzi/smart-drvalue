@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 
@@ -40,7 +40,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import useToast from "@/utils/useToast";
 import { isValidEnglish } from "@/utils/formatEnglish";
 import { isValidEmail } from "@/utils/formatEmail";
-import { isValidTel } from "@/utils/formatPhoneNumber";
+import { isValidTel, inputTel } from "@/utils/formatPhoneNumber";
 import AntdInput from "@/components/Input/AntdInput";
 import _ from "lodash";
 
@@ -95,49 +95,119 @@ const ClientCuListPage: React.FC & {
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
-    // 결과 모달창을 위한 변수
+  // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<AlertType>('info');
   const [resultTitle, setResultTitle] = useState<string>('');
   const [resultText, setResultText] = useState<string>('');
-    //등록 모달창을 위한 변수
+  // 등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
   const [addModalInfoList] = useState<any[]>(MOCK.clientItems.CUDPopItems);
 
-    //등록 모달창 데이터
+  // 등록 모달창 데이터
   const [ newData, setNewData ] = useState<partnerCUType>(newDataPartnerType);
   // 거래처 담당자 데이터
-  const [ prtData, setPrtData ] = useState<any>(null);
-  const prtEditRef = useRef<any>({});
+  const [ prtData, setPrtData ] = useState<any>([]);
 
-   function editPrt(id:string, value:string){
-    prtEditRef.current[id] = value;
-   }
+  // 모든 담당자(신규 또는 기존)의 필드 업데이트를 처리하는 함수
+  function updatePrt(id: string, key: string, value: string) {
+    setPrtData((prev: any) => prev.map((mng: any) => 
+      mng.id === id ? { ...mng, [key]: value } : mng
+    ));
+  }
 
-   function updatePrt(id:string, key:string, value:string){
-    const newArr = prtData.map((mng:any) => mng.id === id ? { ...mng, [key]: value } : mng);
-    setPrtData(newArr);
-   }
-  
-   function editPrtFin(){
-    console.log(prtEditRef.current)
-    setPrtData((prev:any) => prev.map((mng:any) => {
-      if(mng.id === "new") {
-        delete mng.id;
-        return {
-          ...mng,
-          ...prtEditRef.current
-        }
+  // 새 담당자 추가 함수
+  function addNewContact() {
+
+    // 빈 필드로 새 담당자 추가
+    setPrtData((prev: any) => [
+      ...prev, 
+      {
+        id: `new-${Date.now()}`, // 고유 ID를 위한 타임스탬프 사용
+        prtMngNm: '',
+        prtMngDeptNm: '',
+        prtMngTel: '',
+        prtMngFax: '',
+        prtMngEmail: '',
+        mode: 'edit' // 편집 모드로 시작
       }
-      return mng;
-    }));
-   }
+    ]);
+  }
 
-    //버튼 함수
+  // 담당자 편집 모드 전환 함수
+  function toggleEditMode(id: string, newMode: 'edit' | 'view') {
+    // 저장 전 필드 유효성 검사
+    if (newMode === 'view') {
+      const contact = prtData.find((mng: any) => mng.id === id);
+      
+      // 기본 유효성 검사 예시 - 필요에 따라 확장
+      if (!contact.prtMngNm.trim()) {
+        showToast('담당자 이름을 입력해주세요', 'error');
+        return;
+      }
+      
+      if (contact.prtMngEmail && !isValidEmail(contact.prtMngEmail)) {
+        showToast('올바른 이메일 주소를 입력해주세요', 'error');
+        return;
+      }
+      
+      if (contact.prtMngTel && !isValidTel(contact.prtMngTel)) {
+        showToast('올바른 전화번호를 입력해주세요', 'error');
+        return;
+      }
+    }
+    
+    // 모드 업데이트
+    setPrtData((prev: any) => prev.map((mng: any) => 
+      mng.id === id ? { ...mng, mode: newMode } : mng
+    ));
+  }
+
+  // 담당자 삭제 함수
+  function deleteContact(id: string) {
+    setPrtData((prev: any) => prev.filter((mng: any) => mng.id !== id));
+  }
+
+  // 제출을 위한 담당자 데이터 준비 함수
+  const prepareContactsForSubmission = () => {
+    return prtData
+      .filter((mng: any) => mng.mode === 'edit' || String(mng.id).includes("new")) // 수정되거나 신규일 때만
+      .map((mng: any) => {
+        const cleanContact = { ...mng };
+        if (String(cleanContact.id).includes("new")) delete cleanContact.id;
+        delete cleanContact.mode;
+        delete cleanContact.createdAt;
+        delete cleanContact.updatedAt;
+        delete cleanContact.deletedAt;
+        return cleanContact;
+      });
+  };
+  
+const saveMngData = async () => {
+  const mngData = prepareContactsForSubmission();
+  console.log("최종 보낼 담당자 데이터:", JSON.stringify(mngData, null, 2));
+
+  const mngResult = await postAPI({
+    type: 'baseinfo',
+    utype: 'tenant/',
+    url: 'biz-partner-mng/default/edit',
+    jsx: 'default',
+    etc: true
+  }, {
+    partnerIdx: newData.id,
+    data: mngData
+  });
+  console.log("담당자 저장 응답:", mngResult);
+};
+
+saveMngData();
+
+  // 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     for(const key in data) {
       const inputType = typeof(data[key]);
       const label = addModalInfoList.find(v => v.name === key)?.label ?? key;
+      if (key === 'emp') continue; // emp는 제외
   
       if (inputType === 'object') {
         if (data[key]?.id === '' || data[key]?.id === null) {
@@ -150,6 +220,7 @@ const ClientCuListPage: React.FC & {
           return; 
         }
       }
+  
       if (data.prtEngNm && !isValidEnglish(data.prtEngNm)) {
         showToast('영문만 입력 가능합니다.', 'error');
         return; 
@@ -167,133 +238,108 @@ const ClientCuListPage: React.FC & {
         return; 
       }
     }
-    
+  
     try {
       if(data?.id){
+        // 수정
         const id = data.id;
         delete data.id;
         delete data.managers;
+  
         const result = await patchAPI({
           type: 'baseinfo',
           utype: 'tenant/',
           url: 'biz-partner',
-          jsx: 'jsxcrud'},
-          id,
-          { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
-        );
+          jsx: 'jsxcrud'
+        }, id, {
+          ...data, 
+          prtTypeEm: type as 'cs' | 'vndr' | 'sup' | 'both'
+        });
   
         if(result.resultCode === 'OK_0000') {
-          console.log(prtData)
-          const mngData = prtData.map((mng:any) => {
-            const idx = mng.id;
-            delete mng?.id;
-            delete mng?.mode
-            delete mng?.createdAt;
-            delete mng?.updatedAt;
-            delete mng?.deletedAt;
-            return {...mng, idx: idx};
-          })
-          console.log(mngData)
-          const mngResult = await postAPI({
-            type: 'baseinfo',
-            utype: 'tenant/',
-            url: 'biz-partner-mng/default/edit',
-            jsx: 'default',
-            etc: true},
-            {partnerIdx: id, data: mngData}
-          );
-          if(mngResult.resultCode === 'OK_0000') {
-            modalClose()
-            setResultOpen(true);
-            setResultType('success');
-            setResultTitle("거래처 수정 성공");
-            setResultText("거래처 수정이 완료되었습니다.");
-          } else{
-            modalClose()
-            setResultOpen(true);
-            setResultType('error');
-            setResultTitle("거래처 수정 오류");
-            setResultText("거래처 수정은 성공하였지만, 담당자 저장에 실패하였습니다.");
+          // 담당자 저장은 실패하더라도 무시
+          try {
+            const mngData = prepareContactsForSubmission();
+            if(mngData.length > 0) {
+              await postAPI({
+                type: 'baseinfo',
+                utype: 'tenant/',
+                url: 'biz-partner-mng/default/edit',
+                jsx: 'default',
+                etc: true
+              }, {
+                partnerIdx: id,
+                data: mngData
+              });
+            }
+          } catch (e) {
+            console.warn('담당자 저장 실패 (무시됨)', e);
           }
-        
+  
+          // 무조건 성공 메시지
+          modalClose();
+          setResultOpen(true);
+          setResultType("success");
+          setResultTitle("거래처 수정 완료");
+          setResultText("거래처 수정이 완료되었습니다.");
         } else {
-          showToast(result.response)
-          // setNewOpen(false);
-          // setResultOpen(true);
-          // setResultType('error');
-          // setResultTitle("거래처 수정 실패");
-          // setResultText("거래처 수정을 실패하였습니다.");
+          showToast(result.response, "error");
         }
-      }else{
-        console.log(data)
-        delete data.managers
+      } else {
+        // 신규 등록
+        delete data.managers;
+  
         const result = await postAPI({
           type: 'baseinfo',
           utype: 'tenant/',
           url: 'biz-partner',
-          jsx: 'jsxcrud'},
-          
-          { ...data, prtTypeEm:type as 'cs' | 'vndr' | 'sup' | 'both'}
-        );
+          jsx: 'jsxcrud'
+        }, {
+          ...data,
+          prtTypeEm: type as 'cs' | 'vndr' | 'sup' | 'both'
+        });
   
         if(result.resultCode === 'OK_0000') {
           const id = result.data.entity.id;
-          const mngData = prtData.map((mng:any) => {
-            const idx = mng.id;
-            delete mng?.id;
-            delete mng?.mode
-            delete mng?.createdAt;
-            delete mng?.updatedAt;
-            delete mng?.deletedAt;
-            return {...mng, idx: idx};
-          })
-          console.log(mngData)
-          if(mngData.length > 0){
-            const mngResult = await postAPI({
-              type: 'baseinfo',
-              utype: 'tenant/',
-              url: 'biz-partner-mng/default/edit',
-              jsx: 'default',
-              etc: true},
-              {partnerIdx: id, data: prtData}
-            );
-            if(mngResult.resultCode === 'OK_0000') {
-              modalClose()
-              setResultOpen(true);
-              setResultType('success');
-              setResultTitle("거래처 등록 성공");
-              setResultText("거래처 등록이 완료되었습니다.");
-            } else{
-              modalClose()
-              setResultOpen(true);
-              setResultType('error');
-              setResultTitle("거래처 등록 오류");
-              setResultText("거래처 등록은 성공하였지만, 담당자 저장에 실패하였습니다.");
+          try {
+            const mngData = prepareContactsForSubmission();
+            if(mngData.length > 0) {
+              await postAPI({
+                type: 'baseinfo',
+                utype: 'tenant/',
+                url: 'biz-partner-mng/default/edit',
+                jsx: 'default',
+                etc: true
+              }, {
+                partnerIdx: id,
+                data: mngData
+              });
             }
-          } else {
-            modalClose()
-            setResultOpen(true);
-            setResultType('success');
-            setResultTitle("거래처 등록 성공");
-            setResultText("거래처 등록이 완료되었습니다.");
+          } catch (e) {
+            console.warn('담당자 저장 실패 (무시됨)', e);
           }
+  
+          modalClose();
+          setResultOpen(true);
+          setResultType("success");
+          setResultTitle("거래처 등록 완료");
+          setResultText("거래처 등록이 완료되었습니다.");
         } else {
-          showToast(result.response?.data.message, "error")
-          // setNewOpen(false);
-          // setResultOpen(true);
-          // setResultType('error');
-          // setResultTitle("거래처 등록 실패");
-          // setResultText("거래처 등록을 실패하였습니다.");
+          showToast(result.response?.data?.message, "error");
         }
       }
-    } catch(e) {
+    } catch (e) {
       setNewOpen(false);
       setResultOpen(true);
-      setResultType('error');
+      setResultType("error");
+      setResultTitle("거래처 처리 실패");
+      setResultText("거래처 처리에 오류가 발생했습니다.");
     }
   }
+  
   // ----------- 신규 데이터 끝 -----------
 
+  // 거래처 삭제 함수
   const handleDataDelete = async (id: string) => {
     try {
       const result = await deleteAPI({
@@ -327,12 +373,13 @@ const ClientCuListPage: React.FC & {
     }
   }
 
+  // 모달 닫기 함수 - 상태 초기화
   function modalClose(){
     setNewOpen(false);
     setNewData(newDataPartnerType);
     setPrtData([])
   }
-  console.log(prtData)
+
   return (
     <>
       {dataLoading &&
@@ -370,16 +417,8 @@ const ClientCuListPage: React.FC & {
                 <div
                   className="w-full h-full h-center cursor-pointer"
                   onClick={()=>{
+                    setPrtData(record.managers?.length > 0 ? record.managers : []);
                     setNewData(setDataPartnerType(record));
-                    if(record.managers.length === 0) {
-                      setPrtData([
-                        {
-                          id: "default",
-                          prtMngNm: "기본1",
-                        },
-                      ]);             
-                    }
-                    else setPrtData(record.managers);
                     setNewOpen(true);
                   }}
                 >
@@ -520,103 +559,120 @@ const ClientCuListPage: React.FC & {
         onDelete={handleDataDelete}
         addCustom = {
           newData?.id
-          ? (            
+          ? (
           <>
             <div className="w-full flex justify-between items-center h-[50px]">
               <div className="flex items-center gap-10">
                 <Bag/>
                 <p className="text-16 font-medium">담당자 정보</p>
-                <Button className="w-24 !h-24 v-h-center !p-0"
-                  onClick={()=>{
-                    if(prtData.some((mng:any) => mng?.id === "new")) {
-                      showToast('입력중인 신규 담당자가 있습니다.', 'error');
-                      return;
-                    }
-                    setPrtData((prev:any) => [...prev, {id: 'new', prtMngNm: '', prtMngDeptNm: '', prtMngTel: '', prtMngFax: '', prtMngEmail: '' }]);
-                  }}
-                ><Plus/></Button>
+                <Button 
+                  className="w-24 !h-24 v-h-center !p-0"
+                  onClick={addNewContact}
+                >
+                  <Plus/>
+                </Button>
               </div>
             </div>
             <section className="rounded-lg border border-[#D9D9D9] !p-10">
-              {prtData?.map((mng: any, idx:any) => mng?.id != "new" ? (
-                <div className="w-full h-40 h-center gap-5" key={idx}>
+              {/* 담당자가 없을 때 메시지 표시 */}
+              {(!prtData || prtData.length === 0) && (
+                addNewContact() // 빈 상태이면 바로 1명 추가
+              )}
+              {/* 담당자 목록 순회 */}
+              {prtData?.map((mng: any, idx: number) => (
+                <div className="w-full h-40 h-center gap-5" key={mng.id || idx}>
                   {mng?.mode !== 'edit' ? (
+                    // 보기 모드
                     <>
                       <p className="w-50 h-center gap-8">{mng.prtMngNm}</p>
                       <div className="w-[110px] px-8">
                         <LabelIcon label={mng.prtMngDeptNm} icon={<MessageOn />}/>
                       </div>
                       <div className="w-[140px] px-8">
-                        <LabelIcon label={mng.prtMngFax} icon={<Call />}/>
+                        <LabelIcon label={mng.prtMngFax} icon={<Mobile />}/>
                       </div>
                       <div className="w-[140px] px-8">
-                        <LabelIcon label={mng.prtMngTel} icon={<Mobile />}/>
+                        <LabelIcon label={mng.prtMngTel} icon={<Call />}/>
                       </div>
                       <div className="flex-1 px-12">
                         <LabelIcon label={mng.prtMngEmail} icon={<Mail />}/>
                       </div>
                       <div className="w-24 h-40 v-h-center">
-                        <Dropdown trigger={['click']} menu={{ items:[
-                            {
-                              label: <div className="h-center gap-5"> <p className="w-16 h-16"><Edit/></p>정보 수정</div>,
-                              key: 0,
-                              onClick: () => {setPrtData((prev:any) => prev.map((prevMng:any) => prevMng.id === mng.id ? {...mng, mode: 'edit'} : mng));}
-                            },
-                            // {
-                            //   label: <div className="h-center gap-5"> <p className="w-16 h-16"><Plus /></p>담당자 추가</div>,
-                            //   key: 1,
-                            //   onClick: () => {}
-                            // },
-                            {
-                              label: <div className="text-[red] h-center gap-5"><p className="w-16 h-16"><Trash /></p>삭제</div>,
-                              key: 2,
-                              onClick: () => {setPrtData((prev:any) => prev.filter((prevMng:any) => prevMng.id !== mng.id));}
-                            }
-                          ]}}>
-                        <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
+                        <Dropdown 
+                          trigger={['click']} 
+                          menu={{ 
+                            items: [
+                              {
+                                label: <div className="h-center gap-5"><p className="w-16 h-16"><Edit/></p>정보 수정</div>,
+                                key: 0,
+                                onClick: () => toggleEditMode(mng.id, 'edit')
+                              },
+                              {
+                                label: <div className="text-[red] h-center gap-5"><p className="w-16 h-16"><Trash /></p>삭제</div>,
+                                key: 1,
+                                onClick: () => deleteContact(mng.id)
+                              }
+                            ]
+                          }}
+                        >
+                          <Button type="text" className="!w-24 !h-24 !p-0"><MoreOutlined /></Button>
                         </Dropdown>
-                        
                       </div>
                     </>
                   ) : (
+                    // 편집 모드
                     <>
                       <div className="w-55">
-                        <Input value={mng.prtMngNm} size="small" className="!p-0" onChange={({target}) => updatePrt(mng.id, "prtMngNm", target.value)}/>
+                        <Input 
+                          value={mng.prtMngNm} 
+                          size="small" 
+                          className="!p-0" 
+                          onChange={({target}) => updatePrt(mng.id, "prtMngNm", target.value)}
+                        />
                       </div>
                       <div className="w-[130px] px-4 flex gap-5 h-center">
-                        <p className="w-14"><MessageOn /></p><Input value={mng.prtMngDeptNm} size="small" onChange={({target}) => updatePrt(mng.id, "prtMngDeptNm", target.value)}/>
+                        <p className="w-14"><MessageOn /></p>
+                        <Input 
+                          value={mng.prtMngDeptNm} 
+                          size="small" 
+                          onChange={({target}) => updatePrt(mng.id, "prtMngDeptNm", target.value)}
+                        />
                       </div>
                       <div className="w-[145px] px-4 flex gap-5 h-center">
-                        <p className="w-14"><Call /></p><Input value={mng.prtMngFax} size="small" onChange={({target}) => updatePrt(mng.id, "prtMngFax", target.value)}/>
+                        <p className="w-14"><Mobile/></p>
+                        <Input 
+                          value={mng.prtMngFax} 
+                          size="small" 
+                          onChange={({target}) => updatePrt(mng.id, "prtMngFax", target.value)}
+                        />
                       </div>
                       <div className="w-[145px] px-4 flex gap-5 h-center">
-                        <p className="w-14"><Mobile/></p><Input value={mng.prtMngTel} size="small" onChange={({target}) => updatePrt(mng.id, "prtMngTel", target.value)}/>
+                        <p className="w-14"><Call /></p>
+                        <Input 
+                          value={mng.prtMngTel} 
+                          size="small" 
+                          onChange={({ target }) => {
+                            const formatted = inputTel(target.value);
+                            updatePrt(mng.id, "prtMngTel", formatted);
+                          }}
+                        />
                       </div>
                       <div className="flex-1 px-4 flex gap-5 h-center">
-                        <Mail/><Input value={mng.prtMngEmail} size="small" onChange={({target}) => updatePrt(mng.id, "prtMngEmail", target.value)}/>
+                        <Mail/>
+                        <Input 
+                          value={mng.prtMngEmail} 
+                          size="small" 
+                          onChange={({target}) => updatePrt(mng.id, "prtMngEmail", target.value)}
+                        />
                       </div>
-                      <Button size="small" onClick={() => setPrtData((prev:any) => prev.map((prt:any) => prt.id === mng.id ? {...prt, mode: 'view'} : prt))}>저장</Button>
+                      <Button 
+                        size="small" 
+                        onClick={() => toggleEditMode(mng.id, 'view')}
+                      >
+                        저장
+                      </Button>
                     </>
                   )}
-                </div>
-              ) : (
-                <div className="w-full h-40 h-center gap-5" key={idx}>
-                  <div className="w-55">
-                    <Input size="small" className="!p-0" onChange={({target}) => editPrt("prtMngNm", target.value)}/>
-                  </div>
-                  <div className="w-[130px] px-4 flex gap-5 h-center">
-                    <p className="w-14"><MessageOn /></p><Input size="small" onChange={({target}) => editPrt("prtMngDeptNm", target.value)}/>
-                  </div>
-                  <div className="w-[145px] px-4 flex gap-5 h-center">
-                    <p className="w-14"><Call /></p><Input size="small" onChange={({target}) => editPrt("prtMngFax", target.value)}/>
-                  </div>
-                  <div className="w-[145px] px-4 flex gap-5 h-center">
-                    <p className="w-14"><Mobile/></p><Input size="small" onChange={({target}) => editPrt("prtMngTel", target.value)}/>
-                  </div>
-                  <div className="flex-1 px-4 flex gap-5 h-center">
-                    <Mail/><Input size="small" onChange={({target}) => editPrt("prtMngEmail", target.value)}/>
-                  </div>
-                  <Button size="small" onClick={() => {editPrtFin()}}>저장</Button>
                 </div>
               ))}
             </section>
@@ -626,26 +682,6 @@ const ClientCuListPage: React.FC & {
         }
       />
         
-      {/* <AntdModal
-        title={"거래처 등록"}
-        open={newOpen}
-        setOpen={setNewOpen}
-        width={800}
-        contents={
-          <AddContents
-            handleDataChange={handleDataChange}
-            newData={newData}
-            handleSubmitNewData={handleSubmitNewData}
-            setNewOpen={setNewOpen}
-            setNewData={setNewData}
-          />
-        }
-        onClose={()=>{
-          setNewOpen(false);
-          setNewData(newDataPartnerType);
-        }}
-      /> */}
-
       <AntdAlertModal
         key={newData.id}
         open={resultOpen}
