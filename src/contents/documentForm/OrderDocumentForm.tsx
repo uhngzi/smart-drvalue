@@ -1,28 +1,175 @@
-// 완제 발주서: 강재혁
-
+// 완제 발주서
+import dayjs from 'dayjs';
 import React from 'react';
+import { LayerEm, ModelTypeEm } from "@/data/type/enum";
 
+//현재 날짜 구하는 함수
+  const now = dayjs();
+  const year = now.format("YYYY");
+  const month = now.format("MM");
+  const day = now.format("DD");
+  const sample:any[] = [
+    {
+        modelTypeEm: ModelTypeEm.SAMPLE,
+        layerEm: LayerEm.L1,
+        estimateModelNm: "1",
+        quantity: "1",
+        unitPrice: "1000",
+        cost: "1000",
+        index: "",       
+    },
+
+    
+  ]
 const OrderDocumentForm = () => {
 
   return (
-    <div className="flex flex-col gap-15 px-20 py-30">
+    <div className="flex w-[595px] h-[842px] px-[20px] py-[30px] gap-[15px] items-center justify-center flex-col bg-[white]  ">
       
-      {/* 타이틀 영역 */}
-      <div className="v-between-h-center">
-        <div className="v-h-center w-75 h-40 bg-[#000] text-[#fff]">임시 로고</div>
-
-        <div>
-          <p className="text-20 text-[#000] font-medium">발주서</p>
+      <div className="flex items-center gap-[77px] w-full justify-start">
+        <div className="w-[75px] h-[40px] bg-[#000] text-[#fff] flex items-center justify-center text-[12px]">
+          임시 로고
+        </div>     
+        <div className="text-20 text-[#000] font-medium whitespace-nowrap">
+          발주서
         </div>
 
-        <div>
-          <table>
-            <tr></tr>
-            <tr></tr>
-          </table>
-        </div>
+        {/* 결재란 테이블 */}
+        <table className="table-fixed border border-[#D9D9D9] text-center text-[9px] font-[Spoqa Han Sans Neo] w-[270px]">
+          <tbody>
+            <tr className="bg-[rgba(238,238,238,0.5)]">
+              <td rowSpan={2} className="w-[20px] border border-[#D9D9D9] align-middle">
+                결<br />재<br />란
+              </td>
+              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">담당</td>
+              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">검토</td>
+              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">팀장</td>
+              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">임원</td>
+              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">승인</td>
+              </tr>
+              <tr>
+              <td className="h-[36px] border border-[#D9D9D9]"></td>
+              <td className="border border-[#D9D9D9]"></td>
+              <td className="border border-[#D9D9D9]"></td>
+              <td className="border border-[#D9D9D9]"></td>
+              <td className="border border-[#D9D9D9]"></td>
+            </tr>
+          </tbody>
+        </table>
       </div> {/* 타이틀 영역 end */}
 
+      {/* 상단 타이틀 정보*/}
+      <div className="w-full h-[125px] gap-[20px] flex">
+        {/* 상단 왼쪽 정보*/}
+        <div className="w-[170px] h-[125px] gap-[10px]">
+          <div className="w-full h-[34px] px-[10px] py-[5px] text-[9px] font-[Spoqa Han Sans Neo] flex items-center border-b border-[#D9D9D9]">
+            <span>P0 :</span>
+            <span className='pl-[10px]'>GP-250412-01</span>
+          </div>
+
+          <div className="w-full flex justify-center">  
+          <div className= "w-[121px] h-[81px] gap-[10px]  text-[9px] font-[Spoqa Han Sans Neo] flex flex-col items-center justify-center">
+            <div className = "w-full h-[22px] flex items-center justify-center gap-[10px]"> 
+              <p>{year}</p>
+              <p>년</p>
+              <p>{month}</p>
+              <p>월</p>
+              <p>{day}</p>
+              <p>일</p>
+            </div> 
+            <p className= "font-medium"> 아래와 같이 발주합니다.</p>       
+          </div>
+          </div>  
+        </div>{/* 상단 왼쪽 정보 끝*/}
+          
+        {/* 상단 오른쪽 정보*/}
+        <div className="w-[365px] h-[125px] flex-start">
+        <table className="table-auto w-full border-t border-[#D9D9D9]"> 
+          <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
+            
+            <tr className="border-b border-[#D9D9D9] h-[25px]">
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">회사명</td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">123</td>
+            </tr>
+
+            <tr className="border-b border-[#D9D9D9] h-[25px]">
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">사업자등록번호</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">대표명</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+            </tr>
+
+            <tr className="border-b border-[#D9D9D9] h-[25px]">
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">업태</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">업종</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+            </tr>
+
+            <tr className="border-b border-[#D9D9D9] h-[25px]">
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">전화번호</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">팩스번호</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+            </tr>
+
+            <tr className="border-b border-[#D9D9D9] h-[25px]">
+                <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">주소</td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">123</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>{/* 상단 오른쪽 정보 끝*/}
+      </div>{/* 상단 타이틀 정보 끝*/}
+
+        
+        {/* 하단 발주서 정보 */}
+      <div className= "w-full h-[571px]">
+      <table className="h-[25px] table-auto w-full border-t border-[#D9D9D9]">
+            {/* 테이블 제목 */}
+            <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[10px] font-style:normal bg-[rgba(238,238,238,0.5)]">
+                <tr className="border-b border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
+                <td className="border-r border-[#D9D9D9] w-[40px] h-[25px] px-[8px] ">No</td>
+                <td className="border-r border-[#D9D9D9] w-[335px] h-[25px] px-[8px] ">품명</td>
+                <td className="border-r border-[#D9D9D9] w-[40px] h-[25px] px-[8px] ">수량</td>
+                <td className="border-r border-[#D9D9D9] w-[70px] h-[25px] px-[8px] ">단가 </td>
+                <td className="w-[70px] h-[25px] px-[8px] ">납기</td>
+                </tr>
+            </tbody>
+
+                <tbody className="font-[Spoqa Han Sans Neo] text-[10px] font-style:normal text-center align-middle">
+                {/* 맵 입력 값 */}
+                {sample.map((item, index) => (
+                <tr key={index} className="border-b border-[#D9D9D9] h-[30px] text-[#000000A6]">
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{index + 1}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.estimateModelNm}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.quantity}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.unitPrice}</td>
+                    <td className="px-[8px]">{item.cost}</td>
+                </tr>
+                ))}
+
+                {/* 빈 줄 */}
+                {Array.from({ length: Math.max(0, 16 - sample.length - 1) }, (_, index) => (
+                <tr key={`empty-${index}`} className="border-b border-[#D9D9D9] h-[30px]">
+                    {Array.from({ length: 5 }).map((_, colIdx) => (
+                    <td 
+                    key={colIdx} className={`px-[8px] ${colIdx !== 4 ? 'border-r border-[#D9D9D9]' : ''}`}>&nbsp;
+                    </td>
+                    ))}
+                </tr>
+                ))}
+            </tbody>
+
+            <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[10px] font-style:normal text-[#000000A6]">
+                <tr className="border-b border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
+                <td className="border-r border-[#D9D9D9] w-[40px] h-[96px] px-[8px] ">비고</td>
+                <td colSpan={4} className="max-w-[75px] h-[96px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">-</td>
+                </tr>
+            </tbody>  
+      </table>
+      
+      </div>
     </div>
   )
 }
