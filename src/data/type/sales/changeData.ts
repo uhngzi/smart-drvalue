@@ -5,15 +5,15 @@ import { User, useUser } from "@/data/context/UserContext";
 import { selectType } from "../componentStyles";
 
 // 영업 - 고객발주 내 고객 발주만 등록 시 신규 발주 값 변환
-export const changeOrderMainNew = (formData:salesOrderCUType, me:User | null):salesOrderCUType => {
+export const changeOrderMainNew = (formData:salesOrderCUType, me:User | null) => {
   const jsonData = {
     ...formData,
     hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-    orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+    orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs().format('YYYY-MM-DD'),
     orderName: formData.orderName,
     orderRepDt: new Date(),
     empId: me?.id ?? "1",
-  } as salesOrderCUType;
+  };
 
   return jsonData;
 }
@@ -23,9 +23,9 @@ export const changeOrderNew = (formData:salesOrderCUType, newProducts:salesOrder
   const jsonData = {
     ...formData,
     hotGrade: formData.hotGrade ?? HotGrade.NORMAL,
-    orderDt: formData.orderDt ?? dayjs().format('YYYY-MM-DD'),
+    orderDt: formData.orderDt ? dayjs(formData.orderDt).format("YYYY-MM-DD") : dayjs().format('YYYY-MM-DD'),
     orderName: formData.orderName,
-    orderRepDt: new Date(),
+    orderRepDt: dayjs().format("YYYY-MM-DD"),
     empId: me?.id ?? "1",
     products: newProducts.map((product:salesOrderProcuctCUType) => ({
       customPartnerManagerId: formData.partnerManagerId,
@@ -71,7 +71,7 @@ export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrde
         currPrdInfo: prd.currPrdInfo,
         modelId: prd.modelId,
         modelStatus: prd.modelStatus,
-        orderDt: prd.currPrdInfo.orderDt ?? dayjs().format('YYYY-MM-DD'),
+        orderDt: prd.currPrdInfo.orderDt ? dayjs(prd.currPrdInfo.orderDt).format("YYYY-MM-DD") : dayjs().format('YYYY-MM-DD'),
         // orderNo: index.toString(),
         orderTit: prd.orderTit,
         prtOrderNo: prd.prtOrderNo,
@@ -88,7 +88,7 @@ export const changeOrderEdit = (formData:salesOrderCUType, newProducts:salesOrde
         currPrdInfo: prd.currPrdInfo,
         modelId: prd.modelId,
         modelStatus: prd.modelStatus,
-        orderDt: prd.currPrdInfo.orderDt ?? dayjs().format('YYYY-MM-DD'),
+        orderDt: prd.currPrdInfo.orderDt ? dayjs(prd.currPrdInfo.orderDt).format("YYYY-MM-DD") : dayjs().format('YYYY-MM-DD'),
         // orderNo: index.toString(),
         orderTit: prd.orderTit,
         prtOrderNo: prd.prtOrderNo,
