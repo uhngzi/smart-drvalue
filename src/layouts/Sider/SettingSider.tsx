@@ -160,7 +160,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
       children: [
         {
           key: 'buy/mt',
-          title: 'buy/mt',
+          title: 'buy/mt/list',
           label: '원자재',
         },
         {
