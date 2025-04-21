@@ -58,8 +58,9 @@ const SignInPage: React.FC & {
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
 
-        // 신양 작업 시 90포트에 gpn으로, else에 sy로 변경
         if(port === '90') {
+          cookie.set('companySY', 'sy');
+        } else if(port === '3000') {
           cookie.set('companySY', 'sy');
         } else {
           cookie.set('company', 'gpn');
