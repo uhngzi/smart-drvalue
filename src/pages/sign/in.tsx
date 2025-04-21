@@ -52,6 +52,7 @@ const SignInPage: React.FC & {
         userId: id,
         password: pw,
       });
+      console.log(response);
 
       const { data, resultCode } = response.data;
       
