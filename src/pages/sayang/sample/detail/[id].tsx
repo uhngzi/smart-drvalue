@@ -291,7 +291,7 @@ const SayangSampleAddPage: React.FC & {
       }, jsonData);
 
       if(result.resultCode === 'OK_0000') {
-        if(temp) {
+        if(temp && !cf) {
           showToast("임시저장 완료", "success");
         }
         // temp 값 초기화
