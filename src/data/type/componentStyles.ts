@@ -66,6 +66,8 @@ export type treeType = {
     id: string;
     label: string;
     odNum?: number;
+    isInternal?: boolean;
+    wipPrcNm?: string;
     useYn?: boolean;
   }>;
   open: boolean;
