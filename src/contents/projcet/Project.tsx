@@ -1,4 +1,3 @@
-// ...여기로 변경
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import GanttChart from "@/utils/third-party/GanttChart";
 import { Button, Checkbox, DatePicker, Dropdown, Input, Tooltip } from "antd";
@@ -43,13 +42,15 @@ import { Popup } from "@/layouts/Body/Popup";
 import { DividerH } from "@/components/Divider/Divider";
 
 interface Props {
+  id: string,
 }
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
-const ProjcetPage: React.FC<Props> = ({
+const Projcet: React.FC<Props> = ({
+  id,
 }) => {
   const router = useRouter();
-  const { id } = router.query;
+  // const { id } = router.query;
   const { showToast, ToastContainer } = useToast();
     
   const [orderOpen, setOrderOpen] = useState<boolean>(false);
@@ -535,7 +536,7 @@ function addPopWorkers(data: any) {
                   <th colSpan={2}>
                     <div className="flex items-center justify-center gap-30">
                       <span>시작일</span>
-                      <RightArrow/>
+                      <RightArrow />
                       <span>종료일</span>
                     </div>
                   </th>
@@ -595,17 +596,15 @@ function addPopWorkers(data: any) {
                             </div>
                           </td>
                           <td>
-                            {/* <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top"> */}
-                              <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
-                                ref={(el) => { progDateRefObj.current[task.id] = el; }}
-                                onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
-                            {/* </Tooltip> */}
+                            <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
+                              ref={(el) => { progDateRefObj.current[task.id] = el; }}
+                              onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  (e.target as HTMLInputElement).blur();
+                                }
+                              }}
+                              onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
                           </td>
                           <td colSpan={2}>
                             <div className="flex items-center gap-5">
@@ -700,7 +699,7 @@ function addPopWorkers(data: any) {
               />
           </section>
         </AntdDrawer>
-        <ProjectDrawer 
+        <ProjectDrawer
           open={processOpen} 
           selectId={selectId}
           schedules={schedules} 
@@ -840,7 +839,7 @@ function addPopWorkers(data: any) {
   )
 }
 
-export default ProjcetPage;
+export default Projcet;
 
 const ProjectTable = styled.table`
   min-width: 500px;
