@@ -3,6 +3,18 @@
 import { Dayjs } from "dayjs";
 import { LamDtlTypeEm } from "../enum";
 
+export type laminationMaterialType = {
+  id?: string;
+  matNm?: string;
+  epoxy?: number;
+  code?: string;
+  lamDtlTypeEm?: LamDtlTypeEm;
+  ordNo?: number;
+  useYn?: boolean;
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+}
+
 export type laminationRType = {
   id: string;
   lamDtlTypeEm: LamDtlTypeEm;
