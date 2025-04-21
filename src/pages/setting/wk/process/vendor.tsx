@@ -70,6 +70,8 @@ const WkProcessVendorListPage: React.FC & {
           children: group.processes.map((process:processRType) => ({
             id: process.id,
             label: process.prcNm,
+            wipPrcNm: process.wipPrcNm,
+            isInternal: process.isInternal,
           })),
           open: true,
         }));

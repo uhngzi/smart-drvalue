@@ -12,6 +12,7 @@ import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined
 import { useEffect, useState } from "react";
 import { treeType } from "@/data/type/componentStyles"
 import { Button, Checkbox, CheckboxChangeEvent } from "antd"
+import FullChip from "../Chip/FullChip"
 
 interface Props {
   data: treeType[];
@@ -150,8 +151,10 @@ const CustomTreeSelect:React.FC<Props> = ({
                 {item.children?.map((child) => (
                   <div key={child.id} className={`w-full h-40 h-center gap-10 pl-20 cursor-pointer ${childCheckId === child.id ? '!bg-[#f3faff]' : ''}`} onClick={() => handleSelect(child)}>
                     <div className="w-5 h-5 bg-[#ddd] rounded-50" />
-                    <div className="relative flex-1 flex v-between-h-center">
+                    <div className="relative flex-1 flex h-center text-left gap-8">
+                      {child?.isInternal === false ? <FullChip label="외주" state="mint"/>: <></>}
                       <span>{child.label}</span>
+                      {child?.wipPrcNm && <span className="h-center gap-8">- <FullChip label="WIP"/> {child.wipPrcNm}</span>}
                       {childCheckId === child.id && <BlueCheck/>}
                     </div>
                   </div>
