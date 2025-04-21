@@ -53,6 +53,7 @@ const WkProcessGroupListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        sort: "ordNo,ASC",
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -64,7 +65,7 @@ const WkProcessGroupListPage: React.FC & {
           id: group.id,
           label: group.prcGrpNm,
           ordNo: group.ordNo,
-          children: group.processes.map((process:processRType) => {
+          children: group.processes.sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((process:processRType) => {
             const child = {
               id: process.id,
               label: process.prcNm,

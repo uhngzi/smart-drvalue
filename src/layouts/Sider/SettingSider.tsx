@@ -25,6 +25,10 @@ import cookie from "cookiejs";
 interface Props {
 }
 
+// 브라우저 환경인지 체크
+const isBrowser = typeof window !== 'undefined';
+const port = isBrowser ? window.location.port : ''; // 현재 포트
+
 const SettingSider: React.FC<Props> = ({ }) => {
   const router = useRouter();
 
@@ -217,7 +221,12 @@ const SettingSider: React.FC<Props> = ({ }) => {
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" onClick={()=>{router.push('/');}}>
             {/* <Image src={Logo} alt="logo" width={120}/> */}
-            <Image src={cookie.get('companySY') === 'gpn' ? Logo : cookie.get('companySY') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
+            <Image
+              src={port === '90' ? LogoSY : Logo}
+              alt="logo"
+              width={120}
+            />
+            {/* <Image src={cookie.get('companySY') === 'gpn' ? Logo : cookie.get('companySY') === 'sy' ? LogoSY : ""} alt="logo" width={120}/> */}
           </div>
         </div>
       </div>
