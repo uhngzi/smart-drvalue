@@ -348,6 +348,51 @@ const WKStatusWIPPage: {
     });
   }, [procs.map((row) => row.wkProcEdCnt).join(",")]);
 
+  // ---------- 공정 진행 내 외주처 변경 --------- 시작
+  const handleVenderChange = (procId: string, venderId: string) => {
+    if(!procId || procId === "" || !venderId || venderId === "") {
+      showToast("공정과 외주처 선택은 필수입니다.", "error");
+      return;
+    }
+
+    handleVenderChangeAPI(procId, venderId);
+  }
+
+  const handleVenderChangeAPI = async (procId: string, venderId: string) => {
+    try {
+      const jsonData = {
+        worksheetId: detailData?.id,
+        venderSetting: [
+          {
+            worksheetProcId: procId,
+            venderId: venderId,
+          }
+        ]
+      }
+      console.log(JSON.stringify(jsonData));
+
+      const result = await postAPI({
+        type: 'core-d2',
+        utype: 'tenant/',
+        url: 'worksheet/vender/default/update-vender',
+        jsx: 'default',
+        etc: true,
+      }, jsonData);
+
+      if(result.resultCode === 'OK_0000') {
+        showToast("외주처 변경 완료", "success");
+      } else {
+        const msg = result?.response?.data?.message;
+        setErrMsg(msg);
+        setResultType("error");
+        setResultOpen(true);
+      }
+    } catch(e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  }
+  // ---------- 공정 진행 내 외주처 변경 --------- 끝
+  
   return (
   <div className="flex gap-20">
     <div className="w-[7%] pt-15">
@@ -469,7 +514,7 @@ const WKStatusWIPPage: {
 
           <AntdTableEdit
             create={true}
-            columns={WkStatusProcPopClmn(dataVendor)}
+            columns={WkStatusProcPopClmn(dataVendor, setProcs, handleVenderChange)}
             data={procs}
             setData={setProcs}
             styles={{
