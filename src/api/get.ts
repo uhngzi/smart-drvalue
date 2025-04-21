@@ -122,7 +122,7 @@ export const getAPI = async (
     page?: number;
     s_totOper?: "and" | "or";
     s_query?: SQueryType | string;
-    sort?: string;
+    sort?: string | string[];
     anykeys?: { [key: string]: unknown };
   }
 ): Promise<apiGetResponseType | apiAuthResponseType> => {
@@ -146,7 +146,7 @@ export const getAPI = async (
       limit: params?.limit ?? null,
       page: params?.page ?? null,
       s: sParam,
-      sort: params?.sort ?? "createdAt,DESC",
+      sort: params?.sort ?? ["ordNo,ASC","createdAt,DESC"],
       ...(params?.anykeys || {}),
     }
   };
