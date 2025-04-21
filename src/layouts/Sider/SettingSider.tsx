@@ -217,7 +217,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" onClick={()=>{router.push('/');}}>
             {/* <Image src={Logo} alt="logo" width={120}/> */}
-            <Image src={cookie.get('company') === 'gpn' ? Logo : cookie.get('company') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
+            <Image src={cookie.get('companySY') === 'gpn' ? Logo : cookie.get('companySY') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
           </div>
         </div>
       </div>

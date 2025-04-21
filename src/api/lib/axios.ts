@@ -20,9 +20,7 @@ instanceRoot.interceptors.request.use(
     const tenantCode = isBrowser
       ? port === '90'
         ? 'shinyang-test'
-        : cookie.get('company') === 'sy'
-          ? 'shinyang-test'
-          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+        : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
       : 'gpntest-sebuk-ver';
 
     config.headers["x-tenant-code"] = tenantCode;
@@ -49,9 +47,7 @@ export const instance = axios.create({
     'x-tenant-code': isBrowser
       ? port === '90'
         ? 'shinyang-test'
-        : cookie.get('company') === 'sy'
-          ? 'shinyang-test'
-          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+        : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
       : 'gpntest-sebuk-ver',
   },
 });
@@ -64,9 +60,7 @@ instance.interceptors.request.use(
     config.headers["x-tenant-code"] = isBrowser
       ? port === '90'
         ? 'shinyang-test'
-        : cookie.get('company') === 'sy'
-          ? 'shinyang-test'
-          : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
+        : cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
       : 'gpntest-sebuk-ver';
 
     return config;

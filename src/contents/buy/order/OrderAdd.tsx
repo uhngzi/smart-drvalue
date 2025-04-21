@@ -596,7 +596,7 @@ const OrderAddLayout = () => {
           {/* 발주 컨텐츠 */}
           <Popup
             title="발주 등록"
-            className={cookie.get('company') === 'sy' ? "!min-h-[570px] !min-w-[800px]" : "!min-h-[420px] !min-w-[800px]"}
+            className={cookie.get('companySY') === 'sy' ? "!min-h-[570px] !min-w-[800px]" : "!min-h-[420px] !min-w-[800px]"}
           >
             <div
               className="w-full h-full flex gap-30 overflow-auto"
@@ -604,7 +604,7 @@ const OrderAddLayout = () => {
               ref={el => {if(el)  stepRef.current[0] = el;}}
             >
               <div className="w-[222px] flex flex-col gap-20">
-                { !cookie.get('company').toString().includes("gpn") && <>
+                { !cookie.get('companySY').toString().includes("gpn") && <>
                   <LabelItem label="생산제품">
                     <AntdSelect
                       options={wkSelect}

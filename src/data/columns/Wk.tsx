@@ -40,9 +40,9 @@ export const WkPalnWaitClmn = (
     editable: false,
     render: (_, record) => (
       <div
-        className={`w-full text-left ${cookie.get('company') === 'sy' ? 'cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500' : ''}`}
+        className={`w-full text-left ${cookie.get('companySY') === 'sy' ? 'cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500' : ''}`}
         onClick={()=>{
-          if(cookie.get('company') === 'sy') {
+          if(cookie.get('companySY') === 'sy') {
             router?.push(`/wk/plan/${record?.id}`);
           }
         }}
@@ -57,7 +57,7 @@ export const WkPalnWaitClmn = (
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
     align: 'center',
-    editable: cookie.get('company') === 'sy' ? false : true,
+    editable: cookie.get('companySY') === 'sy' ? false : true,
     editType: 'date',
     enter: true,
     enterSubmit: (id, value)=>handleSubmit(id, value),
@@ -121,7 +121,7 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
-    title: cookie.get('company') === 'sy' ? '제품 W * 제품 H' : 'PCS W * PCS H',
+    title: cookie.get('companySY') === 'sy' ? '제품 W * 제품 H' : 'PCS W * PCS H',
     width: 130,
     dataIndex: 'specModel.pcsW*specModel.pcsL',
     key: 'specModel.pcsW*specModel.pcsL',
@@ -460,7 +460,7 @@ export const WKStatusProcClmn = (
       <div
         className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
         onClick={()=>{
-          if(cookie.get('company') !== 'sy') {
+          if(cookie.get('companySY') !== 'sy') {
             setSelect?.(record);
           } else {
             router?.push(`/wk/plan/${record.id}`);
@@ -472,7 +472,7 @@ export const WKStatusProcClmn = (
     )
   },
   {
-    title: cookie.get('company') === 'sy'? '시작일' :'투입일',
+    title: cookie.get('companySY') === 'sy'? '시작일' :'투입일',
     width: 100,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -541,7 +541,7 @@ export const WKStatusProcClmn = (
     align: 'center',
   },
   {
-    title: cookie.get('company') === 'sy'? '수주량' :'수주량(PCS)',
+    title: cookie.get('companySY') === 'sy'? '수주량' :'수주량(PCS)',
     width: 80,
     dataIndex: 'wkPrdCnt',
     key: 'wkPrdCnt',

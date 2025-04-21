@@ -296,7 +296,7 @@ const SalesModelTable:React.FC<Props> = ({
           key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
           className="min-w-[1490px]"
         >
-          {cookie.get('company') === 'sy' &&
+          {cookie.get('companySY') === 'sy' &&
           <SalesModelHeadSy
             model={model}
             handleModelDataChange={handleModelDataChange}
@@ -314,7 +314,7 @@ const SalesModelTable:React.FC<Props> = ({
             partnerMngId={partnerMngId}
           />
           }
-          {cookie.get('company') !== 'sy' &&
+          {cookie.get('companySY') !== 'sy' &&
           <SalesModelHead
             model={model}
             handleModelDataChange={handleModelDataChange}
@@ -334,7 +334,7 @@ const SalesModelTable:React.FC<Props> = ({
           <div className="flex flex-col ">
             <AntdTable
               columns={
-              cookie.get('company') === 'sy' ? 
+              cookie.get('companySY') === 'sy' ? 
               salesOrderModelClmn(
                 data,
                 setData,

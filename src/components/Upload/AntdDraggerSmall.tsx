@@ -156,7 +156,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
         name="files"
         headers={{
           'x-tenant-code' : (
-             cookie.get('company') === 'sy' ? 'shinyang-test' :
+             cookie.get('companySY') === 'sy' ? 'shinyang-test' :
              cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
              'gpntest-sebuk-ver'
            ),

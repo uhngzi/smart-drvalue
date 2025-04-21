@@ -102,7 +102,7 @@ const AntdDragger: React.FC<Props> = ({
         headers={{
         //  'x-tenant-code' : 'gpntest-sebuk-ver',
          'x-tenant-code' : (
-            cookie.get('company') === 'sy' ? 'shinyang-test' :
+            cookie.get('companySY') === 'sy' ? 'shinyang-test' :
             cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
             'gpntest-sebuk-ver'
           ),

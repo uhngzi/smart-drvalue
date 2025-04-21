@@ -355,7 +355,7 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if(cookie.get('company') === 'sy') {
+          if(cookie.get('companySY') === 'sy') {
             if(model.modelStatus === ModelStatus.NEW) {
               handleSubmit(entity.id, entity);
             }
@@ -383,7 +383,7 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if(cookie.get('company') === 'sy') {
+          if(cookie.get('companySY') === 'sy') {
             console.log(result.data);
             if(model.modelStatus === ModelStatus.NEW) {
               setTimeout(()=>handleSubmit(model.id ?? "", model), 500);
