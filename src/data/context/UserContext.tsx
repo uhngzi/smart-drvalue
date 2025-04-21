@@ -64,6 +64,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: "core-d3",
         utype: "tenant/",
         url: "personal-memo/jsxcrud/me",
+      },{
+        sort: "orderNo,ASC"
       });
       if (result.resultCode === "OK_0000") {
         setMyMemo(result.data.data);
