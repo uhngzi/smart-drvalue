@@ -463,7 +463,7 @@ export const WKStatusProcClmn = (
           if(cookie.get('companySY') !== 'sy') {
             setSelect?.(record);
           } else {
-            router?.push(`/wk/plan/${record.id}`);
+            router?.push(`/wk/status/${record.id}`);
           }
         }}
       >
