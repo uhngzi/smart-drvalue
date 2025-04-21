@@ -332,7 +332,7 @@ const BuyOrderPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('company') === 'sy' ?
+            cookie.get('companySY') === 'sy' ?
             BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router).filter(f=>
               !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")

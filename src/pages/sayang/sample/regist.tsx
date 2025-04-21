@@ -137,7 +137,7 @@ const SayangSampleListPage: React.FC & {
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
 
-    if(cookie.get('company') === 'sy') {
+    if(cookie.get('companySY') === 'sy') {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       handleSumbitTemp();
       return;
@@ -344,7 +344,7 @@ const SayangSampleListPage: React.FC & {
         <List>
           <AntdTableEdit
             columns={
-            cookie.get('company') === 'sy' ?
+            cookie.get('companySY') === 'sy' ?
             specIngClmn(
               ingData.length,
               setPartnerData,
@@ -375,7 +375,7 @@ const SayangSampleListPage: React.FC & {
         <List>
           <AntdTableEdit
             columns={
-            cookie.get('company') === 'sy' ?
+            cookie.get('companySY') === 'sy' ?
             sayangSampleWaitClmn(
               waitData.length,
               setPartnerData,

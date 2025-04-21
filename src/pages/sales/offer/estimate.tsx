@@ -150,7 +150,7 @@ const SalesUserEstimatePage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-          cookie.get('company') === 'sy' ?
+          cookie.get('companySY') === 'sy' ?
           salesEstimateClmn(
             totalData,
             setPartnerData,

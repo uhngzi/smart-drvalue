@@ -209,7 +209,7 @@ const WKStatusProcPage: {
         <List>
           <AntdTableEdit
             columns={
-              cookie.get('company') === 'sy'?
+              cookie.get('companySY') === 'sy'?
               WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined)?.filter(f=> f.key !== 'check'
                 && !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
                 && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
@@ -218,7 +218,7 @@ const WKStatusProcPage: {
               )
               :
               WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined).filter(f=>f.key !== 'check')
-              // cookie.get('company') === 'sy' ?
+              // cookie.get('companySY') === 'sy' ?
               // WKStatusInClmn(totalData, pagination, setPartnerData)?.filter(f=>
               //   !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               //   && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")

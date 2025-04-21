@@ -356,7 +356,7 @@ export const salesOrderModelClmn = (
     ]
   },
   {
-    title: cookie.get('company') === 'sy' ? '도장' : '특수인쇄',
+    title: cookie.get('companySY') === 'sy' ? '도장' : '특수인쇄',
     width:125,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -372,15 +372,15 @@ export const salesOrderModelClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdSelectFill 
-                options={cookie.get('company') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
+                options={cookie.get('companySY') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
                 value={record.currPrdInfo?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange(record.id, 'currPrdInfo.spPrint.id', e)}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                placeholder={cookie.get('company') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
-                tabIndex={cookie.get('company') === 'sy' ? record.index*40+13 : record.index*40+14}
+                placeholder={cookie.get('companySY') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
+                tabIndex={cookie.get('companySY') === 'sy' ? record.index*40+13 : record.index*40+14}
               />
             </div>
-            { cookie.get('company') === 'sy' &&
+            { cookie.get('companySY') === 'sy' &&
             <div className={divClass}>
               <AntdSelectFill
                 options={stampTypeSelectList ?? []}
@@ -424,7 +424,7 @@ export const salesOrderModelClmn = (
     align: 'center',
     children: [
       {
-        title:cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부',
+        title:cookie.get('companySY') === 'sy' ? 'Manhle Size 유무' : '승인원 여부',
         width: 60,
         dataIndex: 'surface',
         key:'surface',
@@ -447,7 +447,7 @@ export const salesOrderModelClmn = (
                 value={record.approvalYn ?? true}
                 onChange={(e)=>handleModelDataChange(record.id, 'approvalYn', e)}
                 disabled={record.completed ? true : selectId === record.id ? !newFlag : record.modelStatus === ModelStatus.REPEAT}
-                placeholder={cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
+                placeholder={cookie.get('companySY') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
                 tabIndex={record.index*40+19}
               />
             </div>
@@ -499,7 +499,7 @@ export const salesOrderModelClmn = (
   //   ]
   // },
   {
-    title:cookie.get('company') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
+    title:cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
     width:70,
     dataIndex: 'pcs',
     key: 'pcs',
@@ -1537,7 +1537,7 @@ export const salesOrderModelAddClmn = (
     ]
   },
   {
-    title: cookie.get('company') === 'sy' ? '도장' : '특수인쇄',
+    title: cookie.get('companySY') === 'sy' ? '도장' : '특수인쇄',
     width:125,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -1553,15 +1553,15 @@ export const salesOrderModelAddClmn = (
           <div className={divTopClass}>
             <div className={divClass}>
               <AntdSelectFill 
-                options={cookie.get('company') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
+                options={cookie.get('companySY') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
                 value={record?.spPrint?.id}
                 onChange={(e)=>handleModelDataChange('spPrint.id', e)}
                 readonly={readonly}
-                placeholder={cookie.get('company') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
+                placeholder={cookie.get('companySY') === 'sy' ? '도장컬러 입력' : "특수인쇄 입력"}
                 tabIndex={40+14}
               />
             </div>
-            { cookie.get('company') === 'sy' &&
+            { cookie.get('companySY') === 'sy' &&
             <div className={divClass}>
               <AntdSelectFill
                 options={stampTypeSelectList ?? []}
@@ -1604,7 +1604,7 @@ export const salesOrderModelAddClmn = (
     align: 'center',
     children: [
       {
-        title: cookie.get('company') === 'sy' ? 'Manhle Size 유무': '승인원 여부',
+        title: cookie.get('companySY') === 'sy' ? 'Manhle Size 유무': '승인원 여부',
         width: 60,
         dataIndex: 'surface',
         key:'surface',
@@ -1626,7 +1626,7 @@ export const salesOrderModelAddClmn = (
                 options={[{value:true,label:'유'},{value:false,label:'무'}]}
                 value={record?.approvalYn ?? true}
                 onChange={(e)=>handleModelDataChange('approvalYn', e)}
-                placeholder={cookie.get('company') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
+                placeholder={cookie.get('companySY') === 'sy' ? 'Manhle Size 유무' : '승인원 여부'}
                 readonly={readonly}
                 tabIndex={40+20}
               />
@@ -1677,7 +1677,7 @@ export const salesOrderModelAddClmn = (
   //   ]
   // },
   {
-    title: cookie.get('company') === 'sy' ? '제품 SIZE': 'PCS SIZE',
+    title: cookie.get('companySY') === 'sy' ? '제품 SIZE': 'PCS SIZE',
     width:70,
     dataIndex: 'pcs',
     key: 'pcs',

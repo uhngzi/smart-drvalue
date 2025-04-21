@@ -36,9 +36,14 @@ const SignInPage: React.FC & {
     pw: '',
   });
 
+  // 브라우저 환경인지 체크
+  const isBrowser = typeof window !== 'undefined';
+  const port = isBrowser ? window.location.port : '';
+
   const handleSignIn = async (id: string, pw: string) => {
     try {
       // 기존에 저장된 쿠키 삭제
+      cookie.remove('companySY');
       cookie.remove('company');
       cookie.remove(cookieName);
 
@@ -51,8 +56,12 @@ const SignInPage: React.FC & {
       
       if (resultCode === 'OK_0000') {
         cookie.set(cookieName, data.accessToken, { expires: 7 });
-        cookie.set('company', 'gpn');
-        // cookie.set('company', 'sy');
+
+        if(port === '90') {
+          cookie.set('companySY', 'sy');
+        } else {
+          cookie.set('company', 'gpn');
+        }
         router.push('/');
       } else {
         setOpen(true);

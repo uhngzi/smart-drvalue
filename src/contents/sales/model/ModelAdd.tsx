@@ -294,7 +294,7 @@ const ModelAddLayout = () => {
       console.log(JSON.stringify(jsonData));
       
       const val = validReq(jsonData, modelReq());
-      if(!val.isValid && cookie.get('company') !== 'sy') {
+      if(!val.isValid && cookie.get('companySY') !== 'sy') {
         setErrMsg(val.missingLabels+'은(는) 필수 입력입니다.');
         setAlertType("error");
         setAlertOpen(true);
@@ -409,7 +409,7 @@ const ModelAddLayout = () => {
                       />
                     </div>
                   </div>
-                  { cookie.get('company') === 'sy' &&
+                  { cookie.get('companySY') === 'sy' &&
                   <div className="h-center gap-15">
                     <Items2
                       label1="고객"
@@ -565,7 +565,7 @@ const ModelAddLayout = () => {
                       }
                     />
                   </div>}
-                  { cookie.get('company') !== 'sy' &&
+                  { cookie.get('companySY') !== 'sy' &&
                   <div className="h-center gap-15">
                     <Items2
                       size1={1}
@@ -779,7 +779,7 @@ const ModelAddLayout = () => {
               </BoxHead>
               <AntdTable
                 columns={
-                cookie.get('company') === 'sy' ?
+                cookie.get('companySY') === 'sy' ?
                 salesOrderModelAddClmn(
                   unitSelectList,
                   vcutSelectList,

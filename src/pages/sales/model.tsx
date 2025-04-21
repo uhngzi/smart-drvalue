@@ -171,7 +171,7 @@ const SalesModelPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('company') === 'sy' ? 
+            cookie.get('companySY') === 'sy' ? 
             salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router).filter(f=>f.dataIndex !== 'fpNo' && !f.dataIndex.includes("pnl"))
             :
             salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)

@@ -164,7 +164,7 @@ const SalesUserPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-          cookie.get('company') === 'sy' ?
+          cookie.get('companySY') === 'sy' ?
           salesUserOrderClmn(
             totalData,
             setPartnerData,

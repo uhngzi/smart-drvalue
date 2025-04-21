@@ -179,7 +179,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" style={{display:collapsed?'none':'flex'}} onClick={()=>{router.push('/');}}>
-            <Image src={cookie.get('company') === 'gpn' ? Logo : cookie.get('company') === 'sy' ? LogoSY : ""} alt="logo" width={120}/>
+            <Image src={cookie.get('companySY') === 'sy' ? LogoSY : Logo} alt="logo" width={120}/>
           </div>
           <div className="h-center cursor-pointer" style={{marginLeft:collapsed?0:40}} onClick={()=>{setCollapsed(!collapsed)}}>
             <MenuIcon />

@@ -86,7 +86,7 @@ const WkPlanWaitPage: React.FC & {
         limit: pagination.size,
         page: pagination.current,
         s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
-        anykeys: {applyAutoFilter : cookie.get('company') === 'sy' ? true : false},
+        anykeys: {applyAutoFilter : cookie.get('companySY') === 'sy' ? true : false},
       });
     }
   });
@@ -175,7 +175,7 @@ const WkPlanWaitPage: React.FC & {
         <AntdTableEdit
           create={true}
           columns={
-            cookie.get('company') === 'sy' ?
+            cookie.get('companySY') === 'sy' ?
             WkPalnWaitClmn(
               totalData,
               pagination,

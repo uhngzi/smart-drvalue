@@ -446,7 +446,7 @@ const BuyCostWaitPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('company') === 'sy' ?
+            cookie.get('companySY') === 'sy' ?
             BuyCostOutClmn(totalData, pagination, setOpen, setSelect).filter(f=>
               !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("pnlW") && !f.key?.toString().includes("kit")
@@ -550,7 +550,7 @@ const BuyCostWaitPage: React.FC & {
                     {isExpanded && (
                       <AntdTableEdit
                         columns={
-                          cookie.get('company') === 'sy' ?
+                          cookie.get('companySY') === 'sy' ?
                           BuyCostOutPriceClmn(
                             selectPrice,
                             setSelectPrice,
