@@ -44,6 +44,8 @@ import { RightTab } from "@/layouts/Body/RightTab";
 import { IconButton } from "@/components/Button/IconButton";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawer from "@/contents/base/model/ModelDrawer";
+import AntdModal from "@/components/Modal/AntdModal";
+import EstimateDocumentForm from "@/contents/documentForm/EstimateDocumentForm";
 
 const EstimateAddLayout = () => {
   const router = useRouter();
@@ -411,6 +413,8 @@ const EstimateAddLayout = () => {
   const [alertType, setAlertType] = useState<"del" | "cancel" | "discard" | "close" | "error" | "">("");
   const [errMsg, setErrMsg] = useState<string>("");
 
+  const [documentOpen, setDocumentOpen] = useState<boolean>(false);
+
   return (
     <>
       <div className="p-30 flex v-between-h-center w-full">
@@ -655,10 +659,11 @@ const EstimateAddLayout = () => {
                     </div>
                   </Popup>
                 </div>
-                <div className="w-full h-center justify-end gap-15 px-30">
+                <div className="w-full h-center justify-end gap-15 px-30 ">
                   <Button
                     className="h-32 rounded-6"
-                    onClick={()=>{
+                    onClick={(e)=>{
+                      setDocumentOpen(true);
                     }}
                   >
                     견적서 미리보기
@@ -743,6 +748,19 @@ const EstimateAddLayout = () => {
         data={newPartner}
         onSubmit={handleSubmitNewData}
         onDelete={()=>{}}
+      />
+      
+      <AntdModal
+        open={documentOpen}
+        setOpen={setDocumentOpen}
+        title={"견적서 미리보기"}
+        contents={
+          <EstimateDocumentForm
+            formData={formData}
+            products={products}
+          />
+        }
+        width={635}
       />
 
       {/* 삭제 시 확인 모달창 */}
