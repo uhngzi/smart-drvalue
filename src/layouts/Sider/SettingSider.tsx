@@ -173,6 +173,11 @@ const SettingSider: React.FC<Props> = ({ }) => {
           title: 'buy/out',
           label: '외주 매입',
         },
+        {
+          key: 'buy/unit',
+          title: 'buy/unit/model',
+          label: '제품 단가',
+        },
       ]
     },
     {
