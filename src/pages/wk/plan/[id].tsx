@@ -1,6 +1,6 @@
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { useRouter } from "next/router";
-import Projcet from "@/contents/projcet/Project";
+import Project from "@/contents/project/Project";
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
 const ProjcetPage: React.FC & {
@@ -11,7 +11,7 @@ const ProjcetPage: React.FC & {
 
   return(
     <>
-      <Projcet id={id?.toString() ?? ""} />
+      <Project id={id?.toString() ?? ""} />
     </>
   )
 }

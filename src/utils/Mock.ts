@@ -69,6 +69,7 @@ const MOCK = {
             { name:'empSts',label:'근무상태', widthType:'third', type:'select', option:[{value:'대기',label:'대기'},{value:'근무',label:'근무'},{value:'휴직',label:'휴직'},{value:'병가',label:'병가'},{value:'퇴사',label:'퇴사'}]},
             { name:'defMetaDataWorkType',label:'근무형태', widthType:'third', type:'select', option:[]},
             { name:'defMetaDataJobType',label:'업무구분', widthType:'third', type:'select', option:[]},
+            { name:'empRemarks',label:'특이사항', widthType:'full', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},

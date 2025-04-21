@@ -25,7 +25,7 @@ import Trash from "@/assets/svg/icons/red-trash.svg";
 import TopArrow from "@/assets/svg/icons/projectTopArrow.svg";
 
 
-import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
+import ProjectDrawer from "@/contents/project/ProjectDrawer";
 import useToast from "@/utils/useToast";
 import { projectSchedules, Task } from "@/data/type/base/project";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
@@ -46,7 +46,7 @@ interface Props {
 }
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
-const Projcet: React.FC<Props> = ({
+const Project: React.FC<Props> = ({
   id,
 }) => {
   const router = useRouter();
@@ -110,9 +110,12 @@ const Projcet: React.FC<Props> = ({
         const arr = result.data?.data?.map((item: any) => ({
           empId: item.id,
           name: item.name,
-          special: item.detail.empTit
+          jobType: item.detail.defMetaDataJobType,
+          workType: item.detail.defMetaDataWorkType,
+          empTit: item.detail.empTit,
+          empRemarks: item.detail.empRemarks,
         }));
-        setProjectWorkers([{empId: "1", special: "용접", name: "test" , age:"30", career: "20", tel: "010-1234-1234", remark: "특이사항"}, ...arr])
+        setProjectWorkers(arr)
       } else {
         console.log('error:', result.response);
       }
@@ -295,8 +298,9 @@ const Projcet: React.FC<Props> = ({
 
 
 function addPopWorkers(data: any) {
-  if(workerPlanList.find((item) => item.id === data.id)) {
-    setWorkerPlanList((prev) => prev.filter((item) => item.id !== data.id));
+  console.log(data)
+  if(workerPlanList.find((item) => item.empId === data.empId)) {
+    setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId !== data.empId ? item : {...item, delYn: true}))
   } else {
     setWorkerPlanList((prev) => (Array.isArray(prev) ? [...prev, data] : [data]));
   }
@@ -411,6 +415,7 @@ function addPopWorkers(data: any) {
   }
 
   async function addWorkerPlan(workerPlanList: any[], procId: string | undefined) {
+    console.log(workerPlanList)
     const { withId, withoutId } = workerPlanList.reduce(
       (acc, item) => {
         if (item.id !== undefined) {
@@ -446,7 +451,7 @@ function addPopWorkers(data: any) {
         return;
       }
     }
-    if(withoutId.length > 0){
+    if(withoutId.filter((v:any) => !v?.delYn).length > 0){
       const data = withoutId.map((item: any) => ({
         empIdx: item.empId,
         wkEmpProcScheInDt: item.workPlanStart,
@@ -495,7 +500,6 @@ function addPopWorkers(data: any) {
     }
       
   }
-  console.log(workerPlanList);
   return(
     <div className="w-full overflow-auto h-[calc(100vh-140px)] pr-20">
       <section className="flex flex-col w-full h-full">
@@ -536,7 +540,7 @@ function addPopWorkers(data: any) {
                   <th colSpan={2}>
                     <div className="flex items-center justify-center gap-30">
                       <span>시작일</span>
-                      <RightArrow />
+                      <RightArrow/>
                       <span>종료일</span>
                     </div>
                   </th>
@@ -596,15 +600,17 @@ function addPopWorkers(data: any) {
                             </div>
                           </td>
                           <td>
-                            <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
-                              ref={(el) => { progDateRefObj.current[task.id] = el; }}
-                              onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  (e.target as HTMLInputElement).blur();
-                                }
-                              }}
-                              onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
+                            {/* <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top"> */}
+                              <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
+                                ref={(el) => { progDateRefObj.current[task.id] = el; }}
+                                onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
+                            {/* </Tooltip> */}
                           </td>
                           <td colSpan={2}>
                             <div className="flex items-center gap-5">
@@ -630,6 +636,7 @@ function addPopWorkers(data: any) {
                                 <span>{worker.name}</span>
                               </div>
                             </td>
+                            <td>{worker.workPlanStart && worker.workPlanEnd ? getDaysBetween(worker.workPlanStart, worker.workPlanEnd) : ""}</td>
                             <td colSpan={2}>
                               <div className="flex items-center gap-5">
                                 <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
@@ -642,7 +649,6 @@ function addPopWorkers(data: any) {
                               </div>
                             </td>
                             
-                            <td>{worker.workPlanStart && worker.workPlanEnd ? getDaysBetween(worker.workPlanStart, worker.workPlanEnd) : ""}</td>
                           </tr>
                         ))}
                       </Fragment>
@@ -699,7 +705,7 @@ function addPopWorkers(data: any) {
               />
           </section>
         </AntdDrawer>
-        <ProjectDrawer
+        <ProjectDrawer 
           open={processOpen} 
           selectId={selectId}
           schedules={schedules} 
@@ -718,7 +724,11 @@ function addPopWorkers(data: any) {
                 className="w-109 h-32 bg-point1 text-white rounded-6"
                 style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
                 onClick={()=> {
-                  if(workerPlanList.some((item) => !item.workPlanStart || !item.workPlanEnd)) {
+                  if(workerPlanList.some((item) => {
+                    if(item?.delYn) return false;
+                    else if(!item?.workPlanStart || !item?.workPlanEnd) return true;
+                    else return false;
+                  })) {
                     showToast("투입일과 종료일을 선택해주세요.", "error");
                     return;
                   }
@@ -743,28 +753,28 @@ function addPopWorkers(data: any) {
                   const workerData = projectWorkers.find((item) => item.empId === worker.empId);
                   return (
                     <div className="flex gap-10 items-center" id={workerData?.empId} key={index}>
-                      <div className="w-33 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{workerData?.special}</div>
+                      <div className="w-40 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{workerData?.jobType}</div>
+                      <span className="w-54 text-center">{workerData?.workType}</span>
                       <span className="w-40 text-center">{workerData?.name}</span>
-                      <span className="w-54 text-center">{workerData?.age}세</span>
-                      <span className="w-54 text-center">{workerData?.career}년</span>
-                      <span className="w-[128px] text-center">{workerData?.tel}</span>
-                      <div className="flex items-center gap-3 w-[240px] py-5 px-2 border border-[#D9D9D9]">
+                      <span className="w-54 text-center">{workerData?.empTit}</span>
+                      <span className="w-[128px] text-center">{workerData?.empRemarks}</span>
+                      <div className="flex items-center gap-3 w-[230px] py-5 px-2 border border-[#D9D9D9]">
                         <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
                           value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
                           onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
                         <p className="w-32 flex justify-center"><RightArrow/></p>
-                        <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={<Calendar/>} allowClear={false} 
+                        <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
                           value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
                           onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
                       </div>
                       <Dropdown trigger={["click"]} menu={{ items:[
-                        {
-                          label: <div className="h-center gap-5">
-                                    <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
-                                  </div>,
-                          key: 0,
-                          onClick:()=>{}
-                        },
+                        // {
+                        //   label: <div className="h-center gap-5">
+                        //             <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
+                        //           </div>,
+                        //   key: 0,
+                        //   onClick:()=>{}
+                        // },
                         {
                           label: <div className="h-center gap-5">
                                     <p className="w-16 h-16"><Trash /></p>삭제
@@ -784,13 +794,13 @@ function addPopWorkers(data: any) {
               <AntdTableEdit
                 columns={[
                   { title: '', width:50, dataIndex: 'empId', key: 'empId', align: 'center', 
-                    render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => item.empId === record.empId) ? true : false} onChange={()=>addPopWorkers(record)} />)
+                    render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => (item.empId === record.empId && !item?.delYn )) ? true : false} onChange={()=>addPopWorkers(record)} />)
                   },
-                  { title: '전문분야', width:84, dataIndex: 'special', key: 'special', align: 'center' },
+                  { title: '업무구분', width:80, dataIndex: 'jobType', key: 'jobType', align: 'center' },
+                  { title: '근무형태', width:80, dataIndex: 'workType', key: 'workType', align: 'center'},
                   { title: '이름', width:75, dataIndex: 'name', key: 'name', align: 'center'},
-                  { title: '경력', width:58, dataIndex: 'career', key: 'career', align: 'center'},
-                  { title: '전화번호', width:120, dataIndex: 'tel', key: 'tel', align: 'center'},
-                  { title: '특이사항', width:250, dataIndex: 'remark', key: 'remark'},
+                  { title: '직함', width:75, dataIndex: 'empTit', key: 'empTit', align: 'center'},
+                  { title: '특이사항', width:250, dataIndex: 'empRemarks', key: 'empRemarks'},
                 ]}
                 data={projectWorkers}
                 styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px'}}
@@ -839,7 +849,8 @@ function addPopWorkers(data: any) {
   )
 }
 
-export default Projcet;
+
+export default Project;
 
 const ProjectTable = styled.table`
   min-width: 500px;
