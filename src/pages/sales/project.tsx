@@ -25,7 +25,7 @@ import Trash from "@/assets/svg/icons/red-trash.svg";
 import TopArrow from "@/assets/svg/icons/projectTopArrow.svg";
 
 
-import ProjectDrawer from "@/contents/projcet/ProjectDrawer";
+import ProjectDrawer from "@/contents/project/ProjectDrawer";
 import useToast from "@/utils/useToast";
 import { projectSchedules, Task } from "@/data/type/base/project";
 import AntdTableEdit from "@/components/List/AntdTableEdit";

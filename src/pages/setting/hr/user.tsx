@@ -119,7 +119,7 @@ const HrUserListPage: React.FC & {
           anykeys:{type: "JOB_TYPE"}
         });
         if(baseJob.resultCode === 'OK_0000') {
-          baseJobData = baseJob.data?.data.map((item:any) => ({value: item.id, label: item.data}));
+          baseJobData = baseJob.data?.data.map((item:any) => ({value: item.data, label: item.data}));
         }
 
         const baseWork = await getAPI({
@@ -130,7 +130,7 @@ const HrUserListPage: React.FC & {
           anykeys:{type: "WORK_TYPE"}
         });
         if(baseWork.resultCode === 'OK_0000') {
-          baseWorkData = baseWork.data?.data.map((item:any) => ({value: item.id, label: item.data}));
+          baseWorkData = baseWork.data?.data.map((item:any) => ({value: item.data, label: item.data}));
         }
         console.log(baseWorkData, baseJobData)
         setAddModalInfoList(MOCK.userItem.CUDPopItems.map((item) => {
@@ -413,6 +413,7 @@ const HrUserListPage: React.FC & {
         setNewOpen(false);
         showToast('삭제가 완료되었습니다.', 'success');
         userRefetch();
+        setUserDetailOpen(false);
       } else {
         setNewOpen(false);
         showToast('삭제중 오류가 발생했습니다.', 'error');
@@ -581,6 +582,7 @@ const HrUserListPage: React.FC & {
                               teamId: record.detail?.team.id,
                               defMetaDataWorkType: record.detail?.defMetaDataWorkType,
                               defMetaDataJobType: record.detail?.defMetaDataJobType,
+                              empRemarks: record.detail?.empRemarks,
                             }
                             console.log(recordData)
                             setUserData(recordData);
