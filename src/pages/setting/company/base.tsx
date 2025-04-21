@@ -98,7 +98,7 @@ const CompanyBaseListPage: React.FC & {
   ]
 
   //회사 직인 등록
-  const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
+  
   const [signFileList, setSignFileList] = useState<any[]>([]);
   const [signFileIdList, setSignFileIdList] = useState<string[]>([]);
   const [signImagePreview, setSignImagePreview] = useState<string | null>(null);
@@ -207,48 +207,54 @@ const CompanyBaseListPage: React.FC & {
   }
 
   // 파일 업로드 핸들러
-  const handleFileUpload = async () => {
-    if (signFileList.length === 0) {
-      setResultFunc('warning', '파일 없음', '직인 이미지를 등록해주세요.');
-      return;
-    }
+const handleFileUpload = async (file: File) => {
+   // 파일이 없는 경우 체크
+  if (!file || signFileList.length === 0) {
+    setResultFunc('warning', '파일 없음', '직인 이미지를 등록해주세요.');
+    return;
+  }
 
-    try {
-      const formData = new FormData();
-      signFileList.forEach(file => {
-        formData.append("files", file.originFileObj); // ✅ 여기서 "files"로 key 맞춰야 Swagger랑 호환됨
-      });
-       // 드래그 컴포넌트에서의 실제 파일
-      formData.append("type", "SIGN_IMAGE"); // 파일 타입 설정
+  try {
+    const formData = new FormData();
+    formData.append("files", file); // 단일 파일 추가
+    formData.append("type", "SIGN_IMAGE");
 
-      const result = await postAPI({
-        type: "file-mng",
-        utype: "tenant/",
-        url: "file-manager/upload/multiple",
-        etc: true,
-        jsx: "jsxcrud"
-      }, formData);
+    const result = await postAPI({
+      type: "file-mng",
+      utype: "tenant/",
+      url: "file-manager/upload/multiple",
+      etc: true,
+      jsx: "jsxcrud"
+    }, formData);
 
-      if (result.resultCode === "OK_0000") {
-        const uploadedIds = result.data?.map((file: any) => file?.fileId) ?? [];
-        setSignFileIdList(uploadedIds); // 서버에서 받은 ID 저장
+    if (result.resultCode === "OK_0000") {
+      const uploadedId = result.data?.[0]?.fileId;
+      console.log("업로드된 파일 ID:", uploadedId);
+      if (uploadedId) {
+        // 파일 ID 상태 업데이트
+        setSignFileIdList([uploadedId]);
         
-        // 업로드된 파일 정보로 미리보기 URL 설정
-        if (result.data && result.data.length > 0 && result.data[0].objectName) {
+        // 직접 데이터 상태에 파일 ID 업데이트
+        setData(prev => ({
+          ...prev,
+          signFileId: uploadedId
+        }));
+        
+        // 이미지 미리보기 URL 설정
+        if (result.data[0].objectName) {
           setSignImagePreview(`/api/file-mng/download/${result.data[0].objectName}`);
         }
         
         setResultFunc("success", "업로드 완료", "직인 이미지가 성공적으로 등록되었습니다.");
-        setUploadModalOpen(false);
-      } else {
-        setResultFunc("error", "업로드 실패", "직인 이미지 등록 중 문제가 발생했습니다.");
-        console.log(signFileList[0]);
       }
-    } catch (error) {
-      console.error("파일 업로드 중 오류 발생:", error);
+    } else {
       setResultFunc("error", "업로드 실패", "직인 이미지 등록 중 문제가 발생했습니다.");
     }
-  };
+  } catch (error) {
+    console.error("파일 업로드 중 오류 발생:", error);
+    setResultFunc("error", "업로드 실패", "직인 이미지 등록 중 문제가 발생했습니다.");
+  }
+};
 
   return (
     <>
@@ -268,10 +274,30 @@ const CompanyBaseListPage: React.FC & {
             <CardInputList title="" styles={{gap:"gap-20"}} items={companyTaxMng} handleDataChange={handleDataChange}/>
           </div>
           <div>
-            <p className="text-18 font-bold pb-10 px-10 v-between-h-center">
-              <span>회사직인</span>
-              <Button icon={<Image src={Sign} width={16} height={16} alt="sign"/>} onClick={() => setUploadModalOpen(true)}>직인 등록</Button>
-            </p>
+          <div className=" text-18 pb-10 px-10 flex items-center justify-between">
+            <span>회사 직인</span> 
+              <label htmlFor="signUploadInput">
+              <input
+                id="signUploadInput"
+                type="file"
+                accept="image/*"
+                className="w-[230px]"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSignFileList([{
+                      originFileObj: file,
+                      name: file.name,
+                      size: file.size,
+                      type: file.type,
+                    }]);
+                    handleFileUpload(file); 
+                  }
+                }}
+              />
+            </label>
+          </div>
+
             <div className="rounded-8 h-[300px] bg-[#F2F1ED]" style={{border:'1px solid #d9d9d9'}}>
               <div className="w-[730px] h-[240px] bg-white rounded-tl-[8px] relative" style={{boxShadow:'0px 4px 4px 0px #00000040'}}>
                 <span className="text-24 font-bold absolute" style={{color:'#d9d9d9', top:'100px', right:'275px'}}>서명 (인)</span>
@@ -302,40 +328,17 @@ const CompanyBaseListPage: React.FC & {
         contents={resultText}
         type={resultType} 
         onOk={()=>{
+        // 성공 타입일 때만 refetch 및 모달 닫기
+        if (resultType === 'success') {
           refetch();
           setResultOpen(false);
+        } else {
+        // 에러나 경고일 경우 모달은 닫지만 refetch는 하지 않음
+        setResultOpen(false);
+        }
         }}
         hideCancel={true}
         theme="base"
-      />
-
-      <AntdModal
-        open={uploadModalOpen}
-        setOpen={setUploadModalOpen}
-        width={600}
-        title="직인 이미지 등록"
-        contents={
-          <div className="flex flex-col gap-20 p-20">
-            <AntdDragger
-              fileList={signFileList}
-              setFileList={setSignFileList}
-              fileIdList={signFileIdList}
-              setFileIdList={setSignFileIdList}
-              mult={false} // 단일 이미지만 업로드
-              beforeUpload={(file) => {
-                // 파일 객체를 저장하여 이후 업로드 시 사용할 수 있도록 합니다.
-                (file as any).originFileObj = file;
-                return false;
-              }}
-            />
-            <Button
-              type="primary"
-              onClick={handleFileUpload}
-            >
-              등록
-            </Button>
-          </div>
-        }
       />
     </>
   )
