@@ -6,7 +6,6 @@ import cookie from "cookiejs";
 // 브라우저 환경인지 체크
 const isBrowser = typeof window !== 'undefined';
 const port = isBrowser ? window.location.port : ''; // 현재 포트
-console.log(port);
 
 export const instanceRoot = axios.create({
   baseURL,

@@ -31,6 +31,10 @@ interface Props {
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// 브라우저 환경인지 체크
+const isBrowser = typeof window !== 'undefined';
+const port = isBrowser ? window.location.port : ''; // 현재 포트
+
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
   const { menuLoading, sider } = useMenu();
@@ -179,7 +183,11 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div className="h-center cursor-pointer" style={{display:collapsed?'none':'flex'}} onClick={()=>{router.push('/');}}>
-            <Image src={cookie.get('companySY') === 'sy' ? LogoSY : Logo} alt="logo" width={120}/>
+            <Image
+              src={port === '90' ? LogoSY : Logo}
+              alt="logo"
+              width={120}
+            />
           </div>
           <div className="h-center cursor-pointer" style={{marginLeft:collapsed?0:40}} onClick={()=>{setCollapsed(!collapsed)}}>
             <MenuIcon />
