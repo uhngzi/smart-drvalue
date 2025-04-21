@@ -20,7 +20,7 @@ import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
 
-const WkLaminationListPage: React.FC & {
+const WkLaminationSourceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
@@ -409,8 +409,16 @@ const WkLaminationListPage: React.FC & {
   )
 }
 
-WkLaminationListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'80px'}}>{page}</SettingPageLayout>
+WkLaminationSourceListPage.layout = (page: React.ReactNode) => (
+  <SettingPageLayout styles={{pd:'70px'}}
+    menu={[
+      { text: '적층구조 자재', link: '/setting/wk/lamination/material' },
+      { text: '적층구조 동박', link: '/setting/wk/lamination/copper' },
+      { text: '적층구조 요소', link: '/setting/wk/lamination/source' },
+    ]}
+  >
+    {page}
+  </SettingPageLayout>
 )
 
-export default WkLaminationListPage;
+export default WkLaminationSourceListPage;

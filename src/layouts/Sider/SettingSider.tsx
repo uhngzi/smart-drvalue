@@ -138,7 +138,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
         },
         {
           key: 'wk/lamination',
-          title: 'wk/lamination',
+          title: 'wk/lamination/material',
           label: '적층 구조 유형',
         },
         {
