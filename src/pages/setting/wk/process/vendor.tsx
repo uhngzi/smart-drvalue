@@ -67,7 +67,7 @@ const WkProcessVendorListPage: React.FC & {
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
           id: group.id,
           label: group.prcGrpNm,
-          children: group.processes.map((process:processRType) => ({
+          children: group.processes.sort((a,b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((process:processRType) => ({
             id: process.id,
             label: process.prcNm,
             wipPrcNm: process.wipPrcNm,
