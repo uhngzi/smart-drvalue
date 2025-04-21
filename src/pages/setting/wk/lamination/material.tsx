@@ -4,6 +4,7 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { useState } from "react";
 import { laminationMaterialType, setLaminationMaterialType } from "@/data/type/base/lamination";
+import { useQuery } from "@tanstack/react-query";
 
 
 
@@ -13,6 +14,9 @@ const WkLaminationMaterialListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
  
+  const [dataLoading, setDataLoading] = useState<boolean>(true);
+  const [ data, setData ] = useState<Array<laminationMaterialType>>([]);
+
   const [totalData, setTotalData] = useState<number>(1);
   const [ newData, setNewData ] = useState<laminationMaterialType>();
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
@@ -20,7 +24,7 @@ const WkLaminationMaterialListPage: React.FC & {
     current: 1,
     size: 10,
   });
-  
+
   return (
     <>
     
@@ -71,7 +75,8 @@ const WkLaminationMaterialListPage: React.FC & {
         key: 'code',
         align: 'center',
       },
-     
+      
+  
     ]}/>
     
     </>

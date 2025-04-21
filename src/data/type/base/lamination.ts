@@ -14,6 +14,19 @@ export type laminationMaterialType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
 }
+export const setLaminationMaterialType = (data: any):laminationMaterialType => {
+  return {
+    id: data.id,
+    matNm: data.matNm,
+    epoxy: data.epoxy,
+    code: data.code,
+    lamDtlTypeEm: data.lamDtlTypeEm,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  }
+}
 
 export type laminationRType = {
   id: string;
