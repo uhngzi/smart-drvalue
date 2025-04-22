@@ -450,7 +450,7 @@ const SayangModelAddPage: React.FC & {
         style={{minWidth:1600}}
       >
         {/* 테이블 */}
-        <div className="w-[calc(100%-100px)] flex flex-col gap-40">
+        <div className="w-[calc(100%-100px)] flex flex-col gap-40 overflow-auto">
           {/* 수주 탭 */}
           <Popup
             className="!gap-0"

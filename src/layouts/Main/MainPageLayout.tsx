@@ -273,12 +273,12 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="0"
             </p>
           </div>
           <div
-            className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 px-30 pb-20 bg-back"
+            className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 pl-30 pb-20 bg-back"
             style={{
               height:
                 typeof window !== "undefined" && window.innerWidth < 1920
-                  ? "calc(100vh - 10px)"
-                  : "100vh"
+                  ? "calc(100vh - 70px)"
+                  : "calc(100vh - 60px)"
             }}
           >
             {children}
