@@ -91,8 +91,6 @@ const WKStatusWIPPage: {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

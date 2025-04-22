@@ -91,8 +91,6 @@ const ProcessSelection: React.FC<Props> = ({
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -208,8 +206,6 @@ const ProcessSelection: React.FC<Props> = ({
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

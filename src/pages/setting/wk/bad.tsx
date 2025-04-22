@@ -54,7 +54,6 @@ const WkBadListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        sort: "ordNo,ASC",
       });
 
       if (result.resultCode === 'OK_0000') {
