@@ -38,7 +38,8 @@ export const instance = axios.create({
       port === '90' ?
         'shinyang-test' :
         port === '3000' ?
-          'shinyang-test' :
+          // 'shinyang-test' :
+          'gpntest-dev' :
           cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
           : 'gpntest-sebuk-ver',
   },
@@ -54,7 +55,8 @@ instance.interceptors.request.use(
       port === '90' ?
         'shinyang-test' :
         port === '3000' ?
-          'shinyang-test' :
+          // 'shinyang-test' :
+          'gpntest-dev' :  // 임시
           cookie.get('x-custom-tenant-code') || 'gpntest-sebuk-ver'
           : 'gpntest-sebuk-ver';
 

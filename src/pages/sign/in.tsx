@@ -61,7 +61,8 @@ const SignInPage: React.FC & {
         if(port === '90') {
           cookie.set('companySY', 'sy');
         } else if(port === '3000') {
-          cookie.set('companySY', 'sy');
+          // cookie.set('companySY', 'sy');
+          cookie.set('company', 'gpn');  // 임시
         } else {
           cookie.set('company', 'gpn');
         }
