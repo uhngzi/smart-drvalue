@@ -299,6 +299,7 @@ export type buyCostOutDetailType = {
         ordNo?: number;
         prcWkRemark?: string;
       },
+      vendorPriceIdxNoForgKey?: string | null;
       tempPrdInfo?: string;
       vendor?: partnerRType;
       vendorPrice?: number;

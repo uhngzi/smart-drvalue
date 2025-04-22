@@ -235,7 +235,25 @@ const BuyCostWaitPage: React.FC & {
 
       if(result.resultCode === "OK_0000") {
         const entity = result.data.data as buyCostOutDetailType;
+        let priceArr:{
+          id: string;
+          processId: string;
+          vendorId: string;
+          value: number;
+        }[] = [];
+        entity.procs?.map((item) => {
+          if(item.vendorPriceIdxNoForgKey) {
+            priceArr.push({
+              id: item.vendorPriceIdxNoForgKey,
+              processId: item.specPrdGrp?.process?.id ?? "",
+              vendorId: item.vendor?.id ?? "",
+              value: Number(item.vendorPrice ?? 0),
+            });
+          }
+        })
         setDetailData(entity);
+        console.log(priceArr);
+        setSelectPrice(priceArr);
         
         setOpen(true);
       }
@@ -332,6 +350,7 @@ const BuyCostWaitPage: React.FC & {
         venderPrice: selectPrice.map((item) => ({
           worksheetProcId: detailData?.procs?.find(f=>f.specPrdGrp?.process?.id === item.processId)?.id,
           venderPrice: item.value,
+          venderPriceIdxNoForgKey: item.id,
         }))
       }
       console.log(JSON.stringify(jsonData));
@@ -363,7 +382,6 @@ const BuyCostWaitPage: React.FC & {
   // 신규 등록 모달 입력값 상태
   const [newData, setNewData] = useState<processVendorPriceCUType>(newDataProcessVendorPriceCUType);
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>([]);
-
 
   const handleSubmitNewData = async () => {
     try {

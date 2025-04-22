@@ -79,8 +79,9 @@ export const BuyCostOutClmn = (
     render: (value:0 | 1 | boolean, record:buyCostOutType) => (
       <div className="w-full h-full v-h-center">
         {
-          value === 0 || value === false ? <FullChip state="yellow" label="등록전"/> :
-          <FullChip state="mint" label="등록완료"/>
+          record.progress === 0 ?
+          <FullChip label="등록전"/> :
+          <FullChip state="yellow" label="등록중"/>
         }
       </div>
     )
@@ -381,7 +382,7 @@ export const BuyCostOutPriceClmn = (
     cellAlign: 'right',
     render: (value, record) => (
       <div className="v-h-center w-full h-full" style={{background:select===record.id?"#F0F5FF":""}}>
-        {value}
+        {Number(value ?? 0).toLocaleString()}
       </div>
     )
   },
