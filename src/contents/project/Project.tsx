@@ -886,6 +886,7 @@ function addPopWorkers(data: any) {
   )
 }
 
+MemoizedDatePicker.displayName = "MemoizedDatePicker";
 
 export default Project;
 
