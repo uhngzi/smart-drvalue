@@ -55,7 +55,7 @@ const BuyMtUnitListPage: React.FC & {
   const { showToast, ToastContainer } = useToast();
 
 
-  const [actionType, setActionType] = useState<'create' | 'update'>('create');
+  const [actionType, setActionType] = useState<'create' | 'update' | 'delete'>('create');
   const [dataMaterial, setDataMaterial] = useState<materialType[]>([]);
   const [data, setData] = useState<materialPriceType[]>([]);
 
@@ -147,7 +147,7 @@ const BuyMtUnitListPage: React.FC & {
     fetchPartnersByMaterial();
   }, [newData.materialIdx]);
   // --------- 필요 데이터 끝 ----------
-  
+
   const { refetch } = useQuery<apiGetResponseType>({
     queryKey: ['material-price/jsxcrud/many', pagination.current],
     queryFn: async () => {
@@ -169,21 +169,21 @@ const BuyMtUnitListPage: React.FC & {
     },
   });
 
-  // 적용일이 지난 경우 가격만 수정 가능하도록 처리
+  // 적용일이 지난 경우 가격만 수정 불가능하도록 처리
   const getUpdatedCUDPopItems = () => {
     return MOCK.materialPriceItems.CUDPopItems.map((item) => {
-      // 적용일이 지났고 priceUnit이 아닌 필드는 disabled 처리
+      // priceUnit만 disabled 처리
       let disabled = false;
       if (
         newData.id &&
         newData.appDt &&
         dayjs(newData.appDt).isValid() &&
-        dayjs(newData.appDt).isBefore(dayjs(), 'day') && // 어제까지 포함
-        item.name === 'priceUnit' // 단가 필드만 비활성화
+        (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
+        dayjs(newData.appDt).isSame(dayjs(), 'day')) &&
+        item.name !== 'priceUnit'  // priceUnit만 비활성화
       ) {
         disabled = true;
       }
-      
       
       if (item.name === 'materialIdx') {
         return {
@@ -225,15 +225,19 @@ const BuyMtUnitListPage: React.FC & {
     useYn: record.useYn,
     materialIdx: record.material?.id,
     partnerIdx: record.partner?.id,
-    appOriginDt: record.appDt, // 원본 적용일 추가
+    appOriginDt: record.appDt,
   });
 
   const handleSubmitNewData = async () => {
-    const val = validReq(newData, materialPriceReq());
-    if (!val.isValid) {
-      showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
-      return;
-    }
+    // const val = validReq(newData, materialPriceReq());
+    // if (!val.isValid) {
+    //   showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+    //   return;
+    // }
+    // 등록 or 수정 전 appDt 날짜 처리
+    const formattedAppDt = newData.appDt && dayjs(newData.appDt).isValid()
+    ? dayjs(newData.appDt).format() // 또는 .format("YYYY-MM-DD")
+    : null;
 
     try {
       // 새로운 등록인 경우
@@ -243,6 +247,7 @@ const BuyMtUnitListPage: React.FC & {
           { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
           {
             ...newData,
+            appDt: formattedAppDt,
             material: { id: newData.materialIdx ?? '' },
             partner: { id: newData.partnerIdx ?? '' },
             materialIdx: undefined,
@@ -262,12 +267,18 @@ const BuyMtUnitListPage: React.FC & {
       // 수정인 경우
       else {
         setActionType('update');
-        // 적용일이 지난 경우 가격만 변경 가능
-        if (newData.appOriginDt && dayjs(newData.appOriginDt) <= dayjs()) {
+        
+        // 적용일이 지난 경우, 가격을 제외한 나머지 필드만 변경 가능
+        if (newData.appOriginDt && (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
+        dayjs(newData.appDt).isSame(dayjs(), 'day'))) {
+          // 원본 데이터에서 priceUnit을 제외
+          
           const result = await patchAPI(
             { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
-            newData.id, 
-            { priceUnit: newData.priceUnit }
+            newData?.id ?? '', 
+            {
+              priceUnit: newData?.priceUnit ?? 0
+            }
           );
           
           if (result.resultCode === 'OK_0000') {
@@ -287,6 +298,7 @@ const BuyMtUnitListPage: React.FC & {
             id ?? '', 
             {
               ...payloadWithoutId,
+              appDt: formattedAppDt,
               material: { id: newData.materialIdx ?? '' },
               partner: { id: newData.partnerIdx ?? '' },
               materialIdx: undefined,
@@ -323,9 +335,11 @@ const BuyMtUnitListPage: React.FC & {
     try {
       const result = await deleteAPI({ type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, id);
       if (result.resultCode === 'OK_0000') {
+        setActionType('delete'); 
         setResultType('success');
         refetch();
       } else {
+        setActionType('delete'); 
         setResultType('error');
         setErrMsg(result?.response?.data?.message || '삭제 실패');
       }
@@ -344,17 +358,20 @@ const BuyMtUnitListPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string
   ) => {
-    if (type === 'select') {
-      setNewData({ ...newData, [name]: typeof e === 'object' && e !== null ? e.value ?? e : e });
-    }
-    else if (type === 'input' && typeof e !== 'string') {
-      setNewData({ ...newData, [name]: e.target.value });
-    }
-    else if (type === 'date') {
-      setNewData({ ...newData, [name]: dayjs(e).toDate() });
-    }
-    else {
-      setNewData({ ...newData, [name]: e });
+    if (type === "input" && typeof e !== "string") {
+      const { value } = e.target;
+      setNewData({ ...newData, [name]: value });
+    } else if (type === "select") {
+      if (key) {
+        setNewData({
+          ...newData, [name]: {
+            ...((newData as any)[name] || {}), // 기존 객체 값 유지
+            [key]: e?.toString(), // 새로운 key 값 업데이트
+          }
+        });
+      }else {
+        setNewData({ ...newData, [name]: e });
+      }
     }
   };
   
@@ -455,12 +472,22 @@ const BuyMtUnitListPage: React.FC & {
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === 'success' 
-          ? `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 성공` 
-          : `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 실패`}
-        contents={resultType === 'success' 
-          ? <div>{actionType === 'create' ? '등록' : '수정'}이 완료되었습니다.</div> 
-          : <div>{errMsg}</div>}
+        title={
+          resultType === 'success'
+            ? actionType === 'delete'
+              ? '원자재 단가 삭제 성공'
+              : `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 성공`
+            : actionType === 'delete'
+              ? '원자재 단가 삭제 실패'
+              : `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 실패`
+        }
+        contents={
+          resultType === 'success'
+            ? actionType === 'delete'
+              ? <div>삭제가 완료되었습니다.</div>
+              : <div>{actionType === 'create' ? '등록' : '수정'}이 완료되었습니다.</div>
+            : <div>{errMsg}</div>
+        }
         type={resultType}
         onOk={() => setResultOpen(false)}
         hideCancel
