@@ -13,23 +13,25 @@ const MainHeader: React.FC<Props> = ({ title }) => {
   const { me } = useUser();
 
   return (
-    <div className="h-80 w-full v-between-h-center bg-white px-25">
-      <p className="text-25 text-[#343C6A] font-medium">
+    <div className="!h-60 min-h-60 w-full v-between-h-center px-30">
+      <p className="text-18 text-[#343C6A] font-medium">
         {title}
       </p>
-      <div className="flex">
+      <div className="flex h-center gap-15">
         <div
-          className="v-h-center rounded-50 bg-back m-5 w-50 h-50 cursor-pointer"
+          className="w-40 h-40 v-h-center"
           onClick={()=>{router.push("/setting")}}
         >
-          <p className="text-[#718EBF] w-30 h-30">
-            <Setting stroke="#718EBF" className="w-30 h-30"/>
+          <p className="w-24 h-24 text-[#718EBF]">
+            <Setting />
           </p>
         </div>
-        <div className="v-h-center rounded-50 bg-back m-5 w-50 h-50">
-          <p className="text-[#FE5C73] w-27 h-30"><Bell fill="#FE5C73" className="w-27 h-30"/></p>
+        <div className="w-40 h-40 v-h-center">
+          <p className="w-24 h-24 text-[#718EBF]">
+            <Bell />
+          </p>
         </div>
-        <div className="v-h-center rounded-50 bg-back m-5 w-50 h-50 text-18">
+        <div className="w-40 h-40 v-h-center text-[#718EBF] text-12 font-normal">
           {me?.userName ?? "-"}
         </div>
       </div>

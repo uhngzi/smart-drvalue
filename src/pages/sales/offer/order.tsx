@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
+import cookie from "cookiejs";
 
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
@@ -20,6 +21,7 @@ import {
   partnerMngRType, 
   partnerRType 
 } from "@/data/type/base/partner";
+import { useMenu } from "@/data/context/MenuContext";
 
 import useToast from "@/utils/useToast";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
@@ -28,11 +30,6 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
-import { postAPI } from "@/api/post";
-import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
-import dayjs from "dayjs";
-import { useMenu } from "@/data/context/MenuContext";
-import cookie from "cookiejs";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;

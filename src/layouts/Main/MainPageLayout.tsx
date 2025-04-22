@@ -74,7 +74,7 @@ const menuItems = [
   },
 ];
 
-const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10px 30px 20px 30px", modal, head }) => {
+const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="0", modal, head }) => {
   const router = useRouter();
   const { selectMenu } = useMenu();
   const [login, setLogin] = useState<boolean>(false);
@@ -230,7 +230,7 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
 
-      <div className='flex flex-col gap-40 bg-back' 
+      <div className='flex flex-col bg-back' 
         style={{
           width:`calc(100% - ${width}px)`
         }}
@@ -238,7 +238,15 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
         { !modal && <>
           <MainHeader title={menuTitle} />
           
-          <div className="w-full h-[calc(100vh-80px)] overflow-auto px-40 mb-40">
+          <div
+            className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 px-30 pb-20 bg-back"
+            style={{
+              height:
+                typeof window !== "undefined" && window.innerWidth < 1920
+                  ? "calc(100vh - 70px)"
+                  : "calc(100vh - 60px)"
+            }}
+          >
             <Contents padding={pd} bg={bg} >
               { router.pathname !== "/" && selectMenu?.children && selectMenu?.children?.length > 1 && 
                 <TabLarge
@@ -246,23 +254,17 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
                     text: menu.menuNm ?? "",
                     link: "/"+(menu.menuUrl ?? ""),
                   }))}
-                  pathname={router.pathname}
+                  pathname={router.pathname} noLine
                 />
               }
-              {/* {menu && (
-                <TabLarge
-                  items={menu}
-                  pathname={router.pathname}
-                />
-              )} */}
               {children}
             </Contents>
           </div>
         </>}
 
         { head && modal && <div>
-          <div className="p-30 flex v-between-h-center">
-            <p className="text-20 fw-500 font-semibold">{menuTitle}</p>
+          <div className="px-30 min-h-60 !h-60 v-between-h-center w-full">
+            <p className="text-18 font-[500]">{menuTitle}</p>
             <p 
               className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
               onClick={(()=>router.back())}
@@ -270,13 +272,29 @@ const MainPageLayout: React.FC<Props> = ({ children, menu, menuTitle, bg, pd="10
               <Close />
             </p>
           </div>
-          <div className="w-full max-h-[calc(100vh-80px)] h-[calc(100vh-80px)] overflow-auto pl-30 pb-20">
+          <div
+            className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 px-30 pb-20 bg-back"
+            style={{
+              height:
+                typeof window !== "undefined" && window.innerWidth < 1920
+                  ? "calc(100vh - 10px)"
+                  : "100vh"
+            }}
+          >
             {children}
           </div>
         </div>}
 
         { !head && modal && <>
-          <div className="w-full max-h-[calc(100vh)] h-[calc(100vh)] overflow-auto ">
+          <div
+            className="w-full max-h-[calc(100vh)] h-[calc(100vh)] overflow-auto "
+            style={{
+              height:
+                typeof window !== "undefined" && window.innerWidth < 1920
+                  ? "calc(100vh - 10px)"
+                  : "100vh"
+            }}
+          >
             {children}
           </div>
         </>}

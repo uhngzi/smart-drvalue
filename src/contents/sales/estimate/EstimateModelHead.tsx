@@ -199,7 +199,7 @@ const EstimateModelHead:React.FC<Props> = ({
   }, [model.unitPrice])
 
   return (
-    <BlueBox>
+    <BlueBox className="min-w-[1550px]">
       <BoxHead>
         <Checkbox
           checked={model.selected}

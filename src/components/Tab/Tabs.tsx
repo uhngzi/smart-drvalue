@@ -47,20 +47,31 @@ interface PropsLarge {
     link: string;
   }>;
   pathname: any;
+  noLine?: boolean;
 }
 
 export const TabLarge: React.FC<PropsLarge> = ({
   items,
   pathname,
+  noLine,
 }) => {
   return (
-    <div className="w-full flex h-50 z-10 relative" style={{borderBottom:'1px solid #D9D9D9'}}>
+    <div
+      className="w-full flex h-50 z-10 relative"
+      style={noLine?{}:{borderBottom:'1px solid #D9D9D9'}}
+    >
       {
         items.map((i, idx) => (
           <div 
             key={idx}
             className="flex items-center w-fit px-20 py-10 mr-10 text-14 font-medium"
-            style={i.link===pathname?{borderBottom:'3px solid #4880FF'}:{}}
+            style={
+              i.link===pathname?
+                {borderBottom:'3px solid #4880FF'} :
+              // noLine?
+              //   {borderBottom:'1px solid #D9D9D9'} :
+                {}
+            }
           >
             <Link href={i.link} className={i.link===pathname?"#4880FF":"text-[#718EBF]"}>{i.text}</Link>
           </div>

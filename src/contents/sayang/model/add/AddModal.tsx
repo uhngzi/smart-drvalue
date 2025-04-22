@@ -336,7 +336,7 @@ const AddModal: React.FC<Props> = ({
           </p>
         </div>
 
-        <div className="w-full flex-1 flex gap-20 h-[calc(100vh-80px)] overflow-hidden pb-20 px-20" key="contents">
+        <div className="w-full flex-1 flex gap-20 h-[calc(100vh-60px)] overflow-hidden pb-20 px-20" key="contents">
           <div className="w-[90%] flex flex-col gap-20" key="contents-main">
             <div className="w-full h-[100%] flex-1 overflow-auto">
               <div className="w-full h-[990px] bg-white p-20 text-center rounded-14 overflow-auto">

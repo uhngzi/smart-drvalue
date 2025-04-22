@@ -156,9 +156,6 @@ const SalesModelPage: React.FC & {
         />
       </div>
 
-
-      <DividerH />
-
       <ListPagination
         pagination={pagination}
         totalData={totalData}

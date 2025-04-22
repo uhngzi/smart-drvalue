@@ -356,8 +356,8 @@ const ModelAddLayout = () => {
   const [errMsg, setErrMsg] = useState<string>("");
 
   return (<>
-    <div className="p-30 flex v-between-h-center w-full">
-      <p className="text-20 fw-500 font-semibold">{ model?.id?.includes("new") ? "모델 등록" : "모델 수정 및 상세"}</p>
+    <div className="px-30 min-h-60 !h-60 flex v-between-h-center w-full">
+      <p className="text-18 font-[500]">{ model?.id?.includes("new") ? "모델 등록" : "모델 수정 및 상세"}</p>
       <p 
         className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
         onClick={(()=>{
@@ -373,7 +373,15 @@ const ModelAddLayout = () => {
         <Close />
       </p>
     </div>
-    <div className="w-full overflow-auto pl-30 pb-20 h-[calc(100vh-95px)]">
+    <div
+      className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 pl-30 pb-20"
+      style={{
+        height:
+          typeof window !== "undefined" && window.innerWidth < 1920
+            ? "calc(100vh - 70px)"
+            : "calc(100vh - 60px)"
+      }}
+    >
       <div className="w-full v-between-h-center gap-20 h-full">
         <div className="w-[calc(100%-100px)] h-full !min-w-[1200px]">
           <Popup className="w-full">

@@ -571,8 +571,8 @@ const OrderAddLayout = () => {
   const [errMsg, setErrMsg] = useState<string>("");
 
   return (<>
-    <div className="p-30 flex v-between-h-center w-full">
-      <p className="text-20 fw-500 font-semibold">{ id?.includes("new") ? "발주 등록" : "발주 수정"}</p>
+    <div className="px-30 min-h-60 !h-60 v-between-h-center w-full">
+      <p className="text-18 font-[500]">{ id?.includes("new") ? "발주 등록" : "발주 수정"}</p>
       <p 
         className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
         onClick={(()=>{
@@ -582,7 +582,15 @@ const OrderAddLayout = () => {
         <Close />
       </p>
     </div>
-    <div className="w-full overflow-auto px-30 pb-20 h-[calc(100vh-95px)]">
+    <div
+      className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 pl-30 pb-20"
+      style={{
+        height:
+          typeof window !== "undefined" && window.innerWidth < 1920
+            ? "calc(100vh - 70px)"
+            : "calc(100vh - 60px)"
+      }}
+    >
       <div className="w-full h-full">
         {/* 스탭 */}
         <div className="w-full h-80 p-30 v-between-h-center">

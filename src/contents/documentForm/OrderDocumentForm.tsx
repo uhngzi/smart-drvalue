@@ -1,27 +1,72 @@
 // 완제 발주서
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useState } from 'react';
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
+import { useQuery } from '@tanstack/react-query';
+import { getAPI } from '@/api/get';
+import { buyOrderType } from '@/data/type/buy/cost';
+import { companyType } from '@/data/type/base/company';
 
 //현재 날짜 구하는 함수
-  const now = dayjs();
-  const year = now.format("YYYY");
-  const month = now.format("MM");
-  const day = now.format("DD");
-  const sample:any[] = [
-    {
-        modelTypeEm: ModelTypeEm.SAMPLE,
-        layerEm: LayerEm.L1,
-        estimateModelNm: "1",
-        quantity: "1",
-        unitPrice: "1000",
-        cost: "1000",
-        index: "",       
-    },
+const now = dayjs();
+const year = now.format("YYYY");
+const month = now.format("MM");
+const day = now.format("DD");
+const sample:any[] = [
+  {
+      modelTypeEm: ModelTypeEm.SAMPLE,
+      layerEm: LayerEm.L1,
+      estimateModelNm: "1",
+      quantity: "1",
+      unitPrice: "1000",
+      cost: "1000",
+      index: "",       
+  },
+]
 
-    
-  ]
-const OrderDocumentForm = () => {
+interface Props {
+  id: string;
+}
+
+const OrderDocumentForm:React.FC<Props> = ({
+  id
+}) => {
+  const [order, setOrder] = useState<buyOrderType | null>(null);
+  const {data:queryDetailData} = useQuery({
+    queryKey: ['request/material/detail/jsxcrud/one', id],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d2',
+        utype: 'tenant/',
+        url: `request/material/detail/jsxcrud/one/${id}`
+      });
+
+      if(result.resultCode === "OK_0000") {
+        setOrder(result.data?.data ?? null);
+      }
+
+      return result;
+    },
+    enabled: !!id
+  });
+
+  const [company, setCompany] = useState<companyType | null>(null);
+  const { data:queryData, refetch } = useQuery({
+    queryKey: ['company-default/jsxcrud/one'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'company-default/jsxcrud/one'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        setCompany(result.data?.data ?? null);
+      }
+      return result;
+    },
+  });
+
 
   return (
     <div className="flex w-[595px] h-[842px] px-[20px] py-[30px] gap-[15px] items-center justify-center flex-col bg-[white]  ">
@@ -64,18 +109,15 @@ const OrderDocumentForm = () => {
         <div className="w-[170px] h-[125px] gap-[10px]">
           <div className="w-full h-[34px] px-[10px] py-[5px] text-[9px] font-[Spoqa Han Sans Neo] flex items-center border-b border-[#D9D9D9]">
             <span>P0 :</span>
-            <span className='pl-[10px]'>GP-250412-01</span>
+            <span className='pl-[10px]'>{order?.detailInfo?.docNo}</span>
           </div>
 
           <div className="w-full flex justify-center">  
           <div className= "w-[121px] h-[81px] gap-[10px]  text-[9px] font-[Spoqa Han Sans Neo] flex flex-col items-center justify-center">
             <div className = "w-full h-[22px] flex items-center justify-center gap-[10px]"> 
-              <p>{year}</p>
-              <p>년</p>
-              <p>{month}</p>
-              <p>월</p>
-              <p>{day}</p>
-              <p>일</p>
+              <p>{dayjs(order?.detailInfo?.orderDt).format("YYYY년")}</p>
+              <p>{dayjs(order?.detailInfo?.orderDt).format("MM월")}</p>
+              <p>{dayjs(order?.detailInfo?.orderDt).format("DD일")}</p>
             </div> 
             <p className= "font-medium"> 아래와 같이 발주합니다.</p>       
           </div>
@@ -89,33 +131,33 @@ const OrderDocumentForm = () => {
             
             <tr className="border-b border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">회사명</td>
-                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">123</td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">{company?.companyName}</td>
             </tr>
 
             <tr className="border-b border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">사업자등록번호</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.businessRegNo}</td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">대표명</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.ceoName}</td>
             </tr>
 
             <tr className="border-b border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">업태</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.bizCondition}</td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">업종</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.bizType}</td>
             </tr>
 
             <tr className="border-b border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">전화번호</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.ceoPhone}</td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">팩스번호</td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">{company?.ceoFax}</td>
             </tr>
 
             <tr className="border-b border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">주소</td>
-                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">123</td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]">{company?.address}</td>
             </tr>
             </tbody>
         </table>

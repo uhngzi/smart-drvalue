@@ -417,8 +417,8 @@ const EstimateAddLayout = () => {
 
   return (
     <>
-      <div className="p-30 flex v-between-h-center w-full">
-        <p className="text-20 fw-500 font-semibold">{ (formData?.id ?? "").includes("new") ? "견적 등록" : "견적 수정"}</p>
+      <div className="px-30 min-h-60 !h-60 v-between-h-center w-full">
+        <p className="text-18 font-[500]">{ (formData?.id ?? "").includes("new") ? "견적 등록" : "견적 수정"}</p>
         <p 
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={(()=>{
@@ -428,238 +428,246 @@ const EstimateAddLayout = () => {
           <Close />
         </p>
       </div>
-      <div className="w-full overflow-auto pl-30 pb-20 h-[calc(100vh-95px)] v-between-h-center gap-20">
-        <div className="w-full h-full">
-          {/* 스탭 */}
-          <div className="w-full h-80 p-30 v-between-h-center">
-            <Steps
-              current={stepCurrent}
-              items={[{title:'견적 등록'}, {title:'견적 모델 등록'}]}
-            />
-          </div>
-
-          <div className="w-full !h-[calc(100%-80px)] overflow-y-auto flex flex-col gap-20">
-            {/* 견적 컨텐츠 */}
-            <Popup title="견적 등록">
-              <div
-                className="w-full h-full flex gap-30 overflow-auto"
-                // 스크롤 자동을 위해 ref 추가
-                ref={el => {
-                  if(el) {
-                    stepRef.current[0] = el;
-                    ref.current = el;
-                  }
-                }}
-              >
-                <div className="w-[222px] flex flex-col gap-20">
-                  <LabelItem label="고객">
-                    <CustomAutoComplete
-                      className="!w-full !h-36"
-                      inputClassName="!h-36 !rounded-2"
-                      option={csList}
-                      value={prtId}
-                      onChange={(value) => setPrtId(value)}
-                      placeholder="고객 검색 후 선택"
-                      addLabel="고객 추가"
-                      handleAddData={()=>setAddPartner(true)}
-                    />
-                  </LabelItem>
-
-                  <LabelItem label="총 견적 금액">
-                    <AntdInput
-                      value={formData?.totalEstimatePrice}
-                      onChange={(e)=>{
-                        setFormData({
-                          ...formData,
-                          totalEstimatePrice: Number(e.target.value ?? 0),
-                        });
-                      }}
-                      styles={{ht:'36px'}} type="number"
-                    />
-                  </LabelItem>
-
-                  <LabelItem label="견적일">
-                    <AntdDatePicker
-                      value={formData?.estimateDt ?? dayjs()}
-                      onChange={(e)=>{
-                        setFormData({
-                          ...formData,
-                          estimateDt: e,
-                        })
-                      }}
-                      className="!w-full !rounded-2 !h-36 !border-[#D9D9D9]" suffixIcon={"cal"}
-                    />
-                  </LabelItem>
-
-                  <LabelItem label="긴급상태">
-                    <AntdSelect
-                      options={[
-                        {value:HotGrade.SUPER_URGENT,label:'초긴급'},
-                        {value:HotGrade.URGENT,label:'긴급'},
-                        {value:HotGrade.NORMAL,label:'일반'},
-                      ]}
-                      value={formData?.hotGrade ?? HotGrade.NORMAL}
-                      onChange={(e)=>{
-                        const value = e+'' as HotGrade;
-                        setFormData({...formData, hotGrade:value});
-                      }}
-                      styles={{ht:'36px'}}
-                    />
-                  </LabelItem>
-
-                  <AntdDraggerSmall
-                    fileList={fileList}
-                    setFileList={setFileList}
-                    fileIdList={fileIdList}
-                    setFileIdList={setFileIdList}
-                    mult={true}
-                    divRef={ref}
-                    changeHeight={changeHeight}
-                    defaultHeight={428}
-                  />
-                </div>
-
-                <DividerV />
-
-                <div className="flex-1 h-full flex flex-col gap-24">
-                  <LabelItem label="견적명">
-                  <AntdInput
-                    value={formData?.estimateNm}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData({...formData, estimateNm:value});
-                    }}
-                    styles={{ht:'36px'}} memoView
-                  />
-                  </LabelItem>
-                  <LabelItem label="견적내용">
-                    <TextArea
-                      value={formData?.estimateTxt}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setFormData({...formData, estimateTxt:value});
-                      }}
-                      className="rounded-2"
-                      style={{height:400,minHeight:400}}
-                      onResize={(e)=>{setChangeHeight(e)}}
-                    />
-                  </LabelItem>
-                </div>
-              </div>
-            </Popup>
-
-            {/* 담당자 컨텐츠 */}
-            <CsMngContent
-              csMngList={csMngList}
-              setCsMngList={setCsMngList}
-              formPrtId={prtId}
-              formPrtMngId={prtMngId}
-              handleFormChange={(id)=>{
-                setPrtMngId(id);
-                csRefetch();
-              }}
-              showToast={showToast}
-            />
-
-            {/* 발주 하단 버튼 */}
-            <div className="w-full v-between-h-center px-30">
-              <Button 
-                className="w-80 h-32 rounded-6"
-                style={{color:"#444444E0"}}
-                onClick={() => {
-                }}
-              >
-                <CloseOutlined /> {!(formData?.id ?? "").includes("new") ? "삭제" : "취소"}
-              </Button>
-            { stepCurrent < 1 &&
-              <Button 
-                className="w-109 h-32 bg-point1 text-white rounded-6"
-                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={()=>{
-                  if(!formData?.estimateNm || formData?.estimateNm === "" || prtId === "") {
-                    showToast("고객, 견적명은 필수 입력입니다.", "error");
-                    return;
-                  }
-                  setStepCurrent(1);
-                  if((formData.id ?? "").includes("new")) {
-                    setProducts([newSalesEstimateProductType(0)]);
-                  }
-                }}
-              >
-                <Arrow /> 다음 단계
-              </Button>}
+      <div
+        className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 pl-30 pb-20"
+        style={{
+          height:
+            typeof window !== "undefined" && window.innerWidth < 1920
+              ? "calc(100vh - 70px)"
+              : "calc(100vh - 60px)"
+        }}
+      >
+        <div className="w-full v-between-h-center gap-20 h-full">
+          <div className="w-[calc(100%-100px)] h-full">
+            {/* 스탭 */}
+            <div className="w-full h-80 p-30 v-between-h-center">
+              <Steps
+                current={stepCurrent}
+                items={[{title:'견적 등록'}, {title:'견적 모델 등록'}]}
+              />
             </div>
 
-            {/* 모델 컨텐츠 */}
-            { stepCurrent > 0 &&
-              <div
-                className="flex w-full relative pl-10 flex flex-col gap-20"
-                ref={el => {
-                  if (el) {
-                    stepRef.current[1] = el;
-                  }
-                }}
-              >
-                <div className="w-full">
-                  <Popup
-                    className="overflow-auto !gap-20"
-                  >
-                    <LabelMedium label="견적 모델 등록"/>
-                    
-                    <div className="v-between-h-center">
-                      <span>등록된 모델 중 선택 체크된 모델만 견적서에 포함됩니다.</span>
-                      <div className="flex-1 h-center justify-end gap-20 h-46">
-                        <span>선택된 모델의 합계 금액(총 견적 금액) : {(formData?.totalEstimatePrice ?? 0).toLocaleString()}원</span>
-                        <span>모델 총 합계 금액 : {totAll.toLocaleString()}원</span>
-                      </div>
-                    </div>
+            <div className="w-full !h-[calc(100%-80px)] overflow-y-auto flex flex-col gap-20">
+              {/* 견적 컨텐츠 */}
+              <Popup title="견적 등록">
+                <div
+                  className="w-full h-full flex gap-30 overflow-auto"
+                  // 스크롤 자동을 위해 ref 추가
+                  ref={el => {
+                    if(el) {
+                      stepRef.current[0] = el;
+                      ref.current = el;
+                    }
+                  }}
+                >
+                  <div className="w-[222px] flex flex-col gap-20">
+                    <LabelItem label="고객">
+                      <CustomAutoComplete
+                        className="!w-full !h-36"
+                        inputClassName="!h-36 !rounded-2"
+                        option={csList}
+                        value={prtId}
+                        onChange={(value) => setPrtId(value)}
+                        placeholder="고객 검색 후 선택"
+                        addLabel="고객 추가"
+                        handleAddData={()=>setAddPartner(true)}
+                      />
+                    </LabelItem>
 
-                    { products && products.map((model, index) => (
-                    <EstimateModelHead
-                      key={index} spec={spec}
-                      model={model} inputRef={inputRef}
-                      products={products} setProducts={setProducts}
-                      handleModelDataChange={handleModelDataChange}
-                      handleModelChange={handleModelChange}
-                      showToast={showToast}
+                    <LabelItem label="총 견적 금액">
+                      <AntdInput
+                        value={formData?.totalEstimatePrice}
+                        onChange={(e)=>{
+                          setFormData({
+                            ...formData,
+                            totalEstimatePrice: Number(e.target.value ?? 0),
+                          });
+                        }}
+                        styles={{ht:'36px'}} type="number"
+                      />
+                    </LabelItem>
+
+                    <LabelItem label="견적일">
+                      <AntdDatePicker
+                        value={formData?.estimateDt ?? dayjs()}
+                        onChange={(e)=>{
+                          setFormData({
+                            ...formData,
+                            estimateDt: e,
+                          })
+                        }}
+                        className="!w-full !rounded-2 !h-36 !border-[#D9D9D9]" suffixIcon={"cal"}
+                      />
+                    </LabelItem>
+
+                    <LabelItem label="긴급상태">
+                      <AntdSelect
+                        options={[
+                          {value:HotGrade.SUPER_URGENT,label:'초긴급'},
+                          {value:HotGrade.URGENT,label:'긴급'},
+                          {value:HotGrade.NORMAL,label:'일반'},
+                        ]}
+                        value={formData?.hotGrade ?? HotGrade.NORMAL}
+                        onChange={(e)=>{
+                          const value = e+'' as HotGrade;
+                          setFormData({...formData, hotGrade:value});
+                        }}
+                        styles={{ht:'36px'}}
+                      />
+                    </LabelItem>
+
+                    <AntdDraggerSmall
+                      fileList={fileList}
+                      setFileList={setFileList}
+                      fileIdList={fileIdList}
+                      setFileIdList={setFileIdList}
+                      mult={true}
+                      divRef={ref}
+                      changeHeight={changeHeight}
+                      defaultHeight={428}
                     />
-                    ))}
+                  </div>
 
-                    <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
-                      onClick={() => {
-                        setProducts([
-                          ...products,
-                          {
-                            id: "new-"+products.length+1,
-                            selected: true,
-                            modelStatus: ModelStatus.NEW,
-                            modelTypeEm: ModelTypeEm.SAMPLE,
-                            layerEm: LayerEm.L1,
-                            estimateModelNm: "",
-                            array: "",
-                            textureIdx: "",
-                            sizeH: 0,
-                            sizeW: 0,
-                            thickness: 0,
-                            quantity: 0,
-                            unitPrice: 0,
-                            calculatedUnitPrice: 0,
-                            surfaceTreatment: "",
-                            cost: 0,
-                            calculatedCost: 0,
-                            autoCalculatedUnitPrice: 0,
-                            autoCalculatedCost: 0,
-                            remark: "",
-                          }
-                        ])
+                  <DividerV />
+
+                  <div className="flex-1 h-full flex flex-col gap-24">
+                    <LabelItem label="견적명">
+                    <AntdInput
+                      value={formData?.estimateNm}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData({...formData, estimateNm:value});
                       }}
-                    >
-                      <PlusOutlined />
-                      <span>품목 추가하기</span>
-                    </div>
-                  </Popup>
+                      styles={{ht:'36px'}} memoView
+                    />
+                    </LabelItem>
+                    <LabelItem label="견적내용">
+                      <TextArea
+                        value={formData?.estimateTxt}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({...formData, estimateTxt:value});
+                        }}
+                        className="rounded-2"
+                        style={{height:400,minHeight:400}}
+                        onResize={(e)=>{setChangeHeight(e)}}
+                      />
+                    </LabelItem>
+                  </div>
                 </div>
-                <div className="w-full h-center justify-end gap-15 px-30 ">
+              </Popup>
+
+              {/* 담당자 컨텐츠 */}
+              <CsMngContent
+                csMngList={csMngList}
+                setCsMngList={setCsMngList}
+                formPrtId={prtId}
+                formPrtMngId={prtMngId}
+                handleFormChange={(id)=>{
+                  setPrtMngId(id);
+                  csRefetch();
+                }}
+                showToast={showToast}
+              />
+
+              {/* 발주 하단 버튼 */}
+              <div className="w-full v-between-h-center px-30">
+                <Button 
+                  className="w-80 h-32 rounded-6"
+                  style={{color:"#444444E0"}}
+                  onClick={() => {
+                  }}
+                >
+                  <CloseOutlined /> {!(formData?.id ?? "").includes("new") ? "삭제" : "취소"}
+                </Button>
+              { stepCurrent < 1 &&
+                <Button 
+                  className="w-109 h-32 bg-point1 text-white rounded-6"
+                  style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                  onClick={()=>{
+                    if(!formData?.estimateNm || formData?.estimateNm === "" || prtId === "") {
+                      showToast("고객, 견적명은 필수 입력입니다.", "error");
+                      return;
+                    }
+                    setStepCurrent(1);
+                    if((formData.id ?? "").includes("new")) {
+                      setProducts([newSalesEstimateProductType(0)]);
+                    }
+                  }}
+                >
+                  <Arrow /> 다음 단계
+                </Button>}
+              </div>
+
+              {/* 모델 컨텐츠 */}
+              { stepCurrent > 0 &&
+              <>
+                <div
+                  className="flex w-full relative pl-10 flex-col"
+                  ref={el => {
+                    if (el) {
+                      stepRef.current[1] = el;
+                    }
+                  }}
+                >
+                  <div className="w-full">
+                    <Popup className="overflow-auto !gap-20">
+                      <LabelMedium label="견적 모델 등록"/>
+                      <div className="v-between-h-center">
+                        <span>등록된 모델 중 선택 체크된 모델만 견적서에 포함됩니다.</span>
+                        <div className="flex-1 h-center justify-end gap-20 h-46">
+                          <span>선택된 모델의 합계 금액(총 견적 금액) : {(formData?.totalEstimatePrice ?? 0).toLocaleString()}원</span>
+                          <span>모델 총 합계 금액 : {totAll.toLocaleString()}원</span>
+                        </div>
+                      </div>
+
+                      { products && products.map((model, index) => (
+                      <EstimateModelHead
+                        key={index} spec={spec}
+                        model={model} inputRef={inputRef}
+                        products={products} setProducts={setProducts}
+                        handleModelDataChange={handleModelDataChange}
+                        handleModelChange={handleModelChange}
+                        showToast={showToast}
+                      />
+                      ))}
+
+                      <div className="h-40 gap-4 v-h-center cursor-pointer bg-[#EEEEEE45] text-[#00000085] rounded-8"
+                        onClick={() => {
+                          setProducts([
+                            ...products,
+                            {
+                              id: "new-"+products.length+1,
+                              selected: true,
+                              modelStatus: ModelStatus.NEW,
+                              modelTypeEm: ModelTypeEm.SAMPLE,
+                              layerEm: LayerEm.L1,
+                              estimateModelNm: "",
+                              array: "",
+                              textureIdx: "",
+                              sizeH: 0,
+                              sizeW: 0,
+                              thickness: 0,
+                              quantity: 0,
+                              unitPrice: 0,
+                              calculatedUnitPrice: 0,
+                              surfaceTreatment: "",
+                              cost: 0,
+                              calculatedCost: 0,
+                              autoCalculatedUnitPrice: 0,
+                              autoCalculatedCost: 0,
+                              remark: "",
+                            }
+                          ])
+                        }}
+                      >
+                        <PlusOutlined />
+                        <span>품목 추가하기</span>
+                      </div>
+                    </Popup>
+                  </div>
+                </div>
+                <div className="w-full h-center justify-end gap-15 px-30">
                   <Button
                     className="h-32 rounded-6"
                     onClick={(e)=>{
@@ -689,21 +697,21 @@ const EstimateAddLayout = () => {
                     <Arrow /> 확정 저장
                   </Button>
                 </div>
-              </div>
-            }
+              </>}
+            </div>
           </div>
-        </div>
 
-        {/* 우측 탭 */}
-        <RightTab>
-          <IconButton
-            icon={<Category />}
-            size="lg"
-            onClick={()=>{
-              setModelDrawerOpen(true);
-            }}
-          />
-        </RightTab>
+          {/* 우측 탭 */}
+          <RightTab>
+            <IconButton
+              icon={<Category />}
+              size="lg"
+              onClick={()=>{
+                setModelDrawerOpen(true);
+              }}
+            />
+          </RightTab>
+        </div>
 
         {/* 모델 목록 드로워 */}
         <AntdDrawer

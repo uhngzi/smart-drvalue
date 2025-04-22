@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { List, Spin } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { Button, List, Spin } from "antd";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import cookie from "cookiejs";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { getPrtSupAPI } from "@/api/cache/client";
@@ -20,13 +21,11 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 
 import { useUser } from "@/data/context/UserContext";
 import { companyType } from "@/data/type/base/company";
-import { selectType } from "@/data/type/componentStyles";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
-import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
+import { buyOrderType } from "@/data/type/buy/cost";
 import { BuyOrderClmn } from "@/data/columns/Buy";
-import { materialGroupBadType, materialPriceType } from "@/data/type/base/material_back";
 import { newDataPartnerType, partnerCUType, partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { useMenu } from "@/data/context/MenuContext";
 
 import { MOCK } from "@/utils/Mock";
 import useToast from "@/utils/useToast";
@@ -34,12 +33,11 @@ import { inputFax } from "@/utils/formatFax";
 import { isValidEmail } from "@/utils/formatEmail";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
-import { handleDirectPrint } from "@/utils/printOrderForm";
 
 import Bag from "@/assets/svg/icons/bag.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
-import { useMenu } from "@/data/context/MenuContext";
-import cookie from "cookiejs";
+import AntdModal from "@/components/Modal/AntdModal";
+import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -257,38 +255,6 @@ const BuyOrderPage: React.FC & {
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
-  // ------------ 디테일 데이터 세팅 ------------ 시작
-  const {data:queryDetailData} = useQuery({
-    queryKey: ['request/material/detail/jsxcrud/one', order?.id],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: 'core-d2',
-        utype: 'tenant/',
-        url: `request/material/detail/jsxcrud/one/${order?.id}`
-      });
-
-      if(result.resultCode === "OK_0000") {
-        const entity = result.data.data as buyOrderType;
-        const mtList = (entity?.detailInfo?.details ?? []).map((item) => ({
-          nm: item.mtNm ?? item.material?.mtNm ?? "",
-          w: item.mtOrderSizeW ?? 0,
-          h: item.mtOrderSizeH ?? 0,
-          thk: item.mtOrderThk ?? 0,
-          cnt: item.mtOrderQty ?? 0,
-          unit: item.mtOrderUnit ?? "",
-          wgt: item.mtOrderWeight ?? 0,
-          price: item.mtOrderAmount ?? 0,
-          priceUnit: item.mtOrderInputPrice ?? 0,
-        }));
-        handleDirectPrint(mtList, entity, company, setOrderDocumentFormOpen);
-      }
-
-      return result;
-    },
-    enabled: !!order?.id
-  });
-  // ------------ 디테일 데이터 세팅 ------------ 끝
-
   // 결과 모달창을 위한 변수
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<"success" | "error" | "">("");
@@ -317,8 +283,6 @@ const BuyOrderPage: React.FC & {
           icon={<SplusIcon stroke="#FFF"className="w-16 h-16"/>}
         />
       </div>
-
-      <DividerH />
 
       <ListPagination
         pagination={pagination}
@@ -387,6 +351,26 @@ const BuyOrderPage: React.FC & {
           setCsMngList([...csMngList, {...entity} ]);
           setPrtMngId(entity.id);
         }}
+      />
+
+      <AntdModal
+        open={orderDocumentFormOpen}
+        setOpen={setOrderDocumentFormOpen}
+        title={"발주서 미리보기"}
+        width={635}
+        contents={
+          <>
+            <OrderDocumentForm id={order?.id ?? ""} />
+            <div className="v-h-center gap-5 mt-20">
+              <Button>
+                인쇄
+              </Button>
+              <Button type="primary">
+                발주서 발송
+              </Button>
+            </div>
+          </>
+        }
       />
 
       <AntdAlertModal
