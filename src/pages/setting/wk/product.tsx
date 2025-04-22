@@ -48,6 +48,8 @@ const WkProductListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'product-lines-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -76,6 +78,8 @@ const WkProductListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: `product-lines-group/jsxcrud/one/${productGroupId}`
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -104,6 +108,7 @@ const WkProductListPage: React.FC & {
           utype: 'tenant/',
           url: 'process-group/jsxcrud/many'
         },{
+          sort: "ordNo,ASC"
         });
   
         if (result.resultCode === 'OK_0000') {

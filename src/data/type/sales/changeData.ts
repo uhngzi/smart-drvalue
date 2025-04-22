@@ -129,7 +129,7 @@ export const changeEstimateNewEdit = (
     files: fileIdList,
     products: products.map((item, index) => ({
       id: item.id?.includes("new") ? undefined : item.id,
-      // ordNo: index,
+      ordNo: index,
       currPrdInfo: "",
       tempPrdInfo: "",
       selected: item.selected,

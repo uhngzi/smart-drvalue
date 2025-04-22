@@ -80,6 +80,8 @@ const WkProcessVendorPriceListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process-vendor/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -104,6 +106,8 @@ const WkProcessVendorPriceListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -128,6 +132,8 @@ const WkProcessVendorPriceListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -508,7 +514,7 @@ const WkProcessVendorPriceListPage: React.FC & {
                 align: 'center',
                 render: (_: any, record: any) => (
                   <div
-                    className="text-blue-600 cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => {
                       setNewData(setDataProcessVendorPriceType(record));
                       setNewOpen(true);

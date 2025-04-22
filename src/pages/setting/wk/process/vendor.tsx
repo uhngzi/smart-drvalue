@@ -52,15 +52,14 @@ const WkProcessVendorListPage: React.FC & {
   const { data:queryTreeData } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryKey: ['setting', 'wk', 'process'],
     queryFn: async () => {
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
       },{
-        limit: pagination.size,
-        page: pagination.current,
+        sort: "ordNo,ASC",
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -124,6 +123,8 @@ const WkProcessVendorListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -147,6 +148,8 @@ const WkProcessVendorListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'process/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -180,6 +183,7 @@ const WkProcessVendorListPage: React.FC & {
         utype: 'tenant/',
         url: `process-vendor/jsxcrud/many`
       },{
+        sort: "ordNo,ASC",
         s_query: childCheckId ? { "process.id": { "$eq": childCheckId } } : undefined
       });
 

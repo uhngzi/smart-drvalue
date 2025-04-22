@@ -65,6 +65,7 @@ const BuyMtListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        sort: "ordNo,ASC",
         s_query: groupCheck ? { "materialGroup.id": { "$eq": groupCheck } } : undefined
       });
 
@@ -320,6 +321,8 @@ const BuyMtListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'material-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

@@ -56,6 +56,7 @@ const WkBoardListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
+        sort: "ordNo,ASC",
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -231,6 +232,8 @@ const WkBoardListPage: React.FC & {
         type: 'baseinfo',
         utype: 'tenant/',
         url: 'board-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

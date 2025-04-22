@@ -60,6 +60,8 @@ const CommonListPage: React.FC & {
         type: 'baseinfo', 
         utype: 'tenant/',
         url: 'common-code-group/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -112,6 +114,8 @@ const CommonListPage: React.FC & {
         type: 'baseinfo', 
         utype: 'tenant/',
         url: 'dept/jsxcrud/many'
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

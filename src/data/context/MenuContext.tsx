@@ -131,6 +131,8 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: "baseinfo",
         utype:'tenant/',
         url: "menu/tree-view/by-max-depth/4"
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === "OK_0000") {
@@ -152,6 +154,8 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: "baseinfo",
         utype:'tenant/',
         url: "menu/default/flat"
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === "OK_0000") {

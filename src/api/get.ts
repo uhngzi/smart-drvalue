@@ -146,7 +146,7 @@ export const getAPI = async (
       limit: params?.limit ?? null,
       page: params?.page ?? null,
       s: sParam,
-      sort: params?.sort ?? ["ordNo,ASC","createdAt,DESC"],
+      sort: params?.sort ?? ["createdAt,DESC"],
       ...(params?.anykeys || {}),
     }
   };

@@ -89,6 +89,8 @@ const HrUserListPage: React.FC & {
         type: 'baseinfo', 
         utype: 'tenant/',
         url: `dept/jsxcrud/many`
+      },{
+        sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {

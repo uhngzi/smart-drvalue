@@ -42,7 +42,7 @@ const WkProcessGroupListPage: React.FC & {
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryKey: ['setting', 'wk', 'process'],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -51,13 +51,12 @@ const WkProcessGroupListPage: React.FC & {
         utype: 'tenant/',
         url: 'process-group/jsxcrud/many'
       },{
-        limit: pagination.size,
-        page: pagination.current,
+        sort: "ordNo,ASC",
       });
 
       if (result.resultCode === 'OK_0000') {
         setData(result.data?.data ?? []);
-        setTotalData(result.data?.total ?? 0);
+        setTotalData((result.data?.data ?? []).length ?? 0);
         let childArr:processRType[] = [];
 
         const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
