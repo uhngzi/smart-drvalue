@@ -3,8 +3,7 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
-import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
-import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
+import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { processGroupRType, processRType } from "@/data/type/base/process";
 import { treeType } from "@/data/type/componentStyles";
@@ -128,7 +127,7 @@ const WkBadListPage: React.FC & {
         utype: 'tenant/',
         url: `process/bad-mapping/jsxcrud/many`
       },{
-        sort: "ordNo,ASC"
+        // sort: "ordNo,ASC"
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -332,21 +331,22 @@ const WkBadListPage: React.FC & {
       <div className="w-full flex gap-30">
         
         <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
-          <CustomTreeSelect
+          
+          <CustomTreeUsed
             data={treeData}
-            childCheck={true}
-            childCheckId={processId}
-            setChildCheckId={setProcessId}
-            //notCollapsed={true}
+            isSelect={true}
+            selectId={processId}
+            setSelectId={setProcessId}
+            notCollapsed={true}
           />
         </div>
         <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
-        <CustomTreeCheck
+        
+        <CustomTreeUsed
           data={badGroupData}
+          isCheck={true}
           checkedData={procBadData}
-          isChild={true}
-          childCheck={true}
-          onChange={handleCheck}
+          checkChange={handleCheck}
           //notCollapsed={true}
         />
           {/* <AntdTableEdit

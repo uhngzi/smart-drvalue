@@ -19,13 +19,12 @@ import useToast from "@/utils/useToast";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
 import AntdModal from "@/components/Modal/AntdModal";
-import CustomTree from "@/components/Tree/CustomTree";
-import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
 import AntdTable from "@/components/List/AntdTable";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { MOCK } from "@/utils/Mock";
 import { postAPI } from "@/api/post";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
+import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 
 const groupType = {
   dept: {name: '조직도', child:'team'},
@@ -526,11 +525,11 @@ const HrUserListPage: React.FC & {
             </div>
             <div className="flex gap-20">
               <div className="w-[300px] rounded-14 p-20 bg-white" style={{border:'1px solid #D9D9D9'}}>
-                <CustomTreeSelect
+                <CustomTreeUsed
                   data={newData}
-                  childCheck={true}
-                  childCheckId={selectedTeam}
-                  setChildCheckId={setSelectedTeam}
+                  isSelect={true}
+                  selectId={selectedTeam}
+                  setSelectId={setSelectedTeam}
                 />
               </div>
               <div className="w-full">

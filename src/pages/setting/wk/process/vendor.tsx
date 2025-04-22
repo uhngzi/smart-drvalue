@@ -27,7 +27,7 @@ import Search from "@/assets/svg/icons/s_search.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
 import { MoreOutlined } from "@ant-design/icons";
 import { deleteAPI } from "@/api/delete";
-import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
+import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 
 const WkProcessVendorListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -367,12 +367,11 @@ const WkProcessVendorListPage: React.FC & {
       <>
         <div className="w-full flex gap-30">
           <div className="w-[30%] rounded-14 p-20" style={{border: '1px solid #D9D9D9'}}>
-            <CustomTreeSelect
+            <CustomTreeUsed
               data={treeData}
-              childCheck={true}
-              childCheckId={childCheckId}
-              setChildCheckId={handleSelect}
-              onChange={handleCheck}
+              isSelect={true}
+              selectId={childCheckId}
+              setSelectId={handleSelect}
             />
           </div>
           <div className="w-[70%] flex flex-col gap-15">
