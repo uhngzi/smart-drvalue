@@ -33,8 +33,6 @@ export const setUnitTextureType = (data: any):unitTextureType => {
 
 export const newUnitTextureType = ():unitTextureType => {
   return {
-    //texture: { id: '', cdNm: '', cdDesc: '', useYn: true } as commonCodeRType,
-    // texture: { id: '' } as commonCodeRType,
     texture: { id: '' },
     remark: "",
     weight: 0,
@@ -46,42 +44,3 @@ export const newUnitTextureType = ():unitTextureType => {
     updatedAt: null,
   }
 }
-
-/* 참고용: (나중에 지우기)
-export type laminationCUType = {
-  id?: string;
-  lamDtlTypeEm: LamDtlTypeEm | null;
-  matCd: string;
-  matThk: number;
-  copOut: string;
-  copIn: string;
-  lamDtlThk: number;
-  lamDtlRealThk: number;
-  useYn: boolean;
-}
-  export const setLaminationCUType = (data: any):laminationCUType => {
-  return {
-    id: data.id,
-    lamDtlTypeEm: data.lamDtlTypeEm,
-    matCd: data.matCd,
-    matThk: data.matThk,
-    copOut: data.copOut,
-    copIn: data.copIn,
-    lamDtlThk: data.lamDtlThk,
-    lamDtlRealThk: data.lamDtlRealThk,
-    useYn: data.useYn,
-  }
-}
-
-export const newLaminationCUType  = ():laminationCUType => {
-  return {
-    lamDtlTypeEm: null,
-    matCd: '',
-    matThk: 0,
-    copOut: '',
-    copIn: '',
-    lamDtlThk: 0,
-    lamDtlRealThk: 0,
-    useYn: true,
-  }
-}*/

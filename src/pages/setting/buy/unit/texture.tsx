@@ -49,6 +49,8 @@ const BuyunitTextureListPage: React.FC & {
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
+
+      // 재질 리스트 조회
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
@@ -120,7 +122,7 @@ const BuyunitTextureListPage: React.FC & {
         const id = data.id;
         delete data.id;
 
-        // 등록
+        // 재질 수정
         const result = await patchAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -139,7 +141,8 @@ const BuyunitTextureListPage: React.FC & {
         }
 
       }else{
-        // 생성
+
+        // 재질 등록
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -170,6 +173,8 @@ const BuyunitTextureListPage: React.FC & {
 
   const handleDataDelete = async (id: string) => {
     try {
+
+      // 재질 삭제
       const result = await deleteAPI({
         type: 'baseinfo', 
         utype: 'tenant/',

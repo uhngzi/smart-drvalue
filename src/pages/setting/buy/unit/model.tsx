@@ -31,6 +31,7 @@ const BuyUnitModelListPage: React.FC & {
   const { type } = router.query;
   const { metarialSelectList } = useBase();
 
+  // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
   const layerEmList = Object.keys(LayerEm).map((key) => ({
     value: key,
     label: LayerEm[key as keyof typeof LayerEm],
@@ -57,6 +58,8 @@ const BuyUnitModelListPage: React.FC & {
       queryFn: async () => {
         setDataLoading(true);
         setData([]);
+
+        // 모델 단가 리스트 조회
         const result = await getAPI({
           type: 'baseinfo',
           utype: 'tenant/',
@@ -98,7 +101,7 @@ const BuyUnitModelListPage: React.FC & {
     const [ newData, setNewData ] = useState<unitModelType>(newUnitModelType);
     const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.unitModelItems.CUDPopItems);
   
-  //값 변경 함수
+    //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
@@ -127,7 +130,7 @@ const BuyUnitModelListPage: React.FC & {
         const id = data.id;
         delete data.id;
 
-        // 등록
+        // 모델 단가 수정
         const result = await patchAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -146,8 +149,8 @@ const BuyUnitModelListPage: React.FC & {
         }
 
       }else{
-        // 생성
-        
+
+        // 모델 단가 등록
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -174,6 +177,8 @@ const BuyUnitModelListPage: React.FC & {
 
   const handleDataDelete = async (id: string) => {
     try {
+
+      // 모델 단가 삭제
       const result = await deleteAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
@@ -207,7 +212,6 @@ const BuyUnitModelListPage: React.FC & {
     if (!layerEmList || layerEmList.length < 1) return;
 
     const arr = MOCK.unitModelItems.CUDPopItems.map((item) => {
-      console.log(item, "item 테스트중!!!!!")
       if (item.name === 'layerEm') {
         return {
           key: 'id',

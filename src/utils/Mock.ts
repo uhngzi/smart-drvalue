@@ -116,15 +116,15 @@ const MOCK = {
     unitModelItems: {
         tableColumns: [],
         CUDPopItems: [
-            { name:'layerEm', label:'레이어 유형', widthType:'full', type:'select', option:[{value:'L1', label:'L1'}] },
-            { name:'minAmount', label:'최소 수량', widthType:'full', type:'input', inputType:'number' },
-            { name:'maxAmount', label:'최대 수량', widthType:'full', type:'input', inputType:'number' },
-            { name:'price', label:'가격', widthType:'full', type:'input', inputType:'number' },
-            { name:'deliveryDays', label:'배송일', widthType:'full', type:'input', inputType:'number' },
-            //{ name:'ordNo', label:'순번', widthType:'full', type:'input', inputType:'number' },
-            { name:'useYn', label:'사용 여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
-            { name:'remark', label:'비고', widthType:'full', type:'input' },
-            { name:'appDt', label:'적용일', widthType:'full', type:'date' },
+            { name:'layerEm', label:'레이어 유형', widthType:'half', type:'select', option:[{value:'L1', label:'L1'}] },
+            { name:'minAmount', label:'최소 수량', widthType:'half', type:'input', inputType:'number' },
+            { name:'maxAmount', label:'최대 수량', widthType:'half', type:'input', inputType:'number' },
+            { name:'price', label:'가격', widthType:'half', type:'input', inputType:'number' },
+            { name:'deliveryDays', label:'배송일', widthType:'half', type:'input', inputType:'number' },
+            //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
+            { name:'useYn', label:'사용 여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+            { name:'remark', label:'비고', widthType:'half', type:'input' },
+            { name:'appDt', label:'적용일', widthType:'half', type:'date' },
         ]
     },
 
