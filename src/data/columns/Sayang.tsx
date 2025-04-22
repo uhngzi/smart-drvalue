@@ -56,7 +56,7 @@ export const specStatusClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
@@ -74,9 +74,10 @@ export const specStatusClmn = (
     key: 'specModels.prdNm',
     align: 'center',
     cellAlign: 'left',
+    tooltip: "모델명을 클릭하면 상세 정보를 볼 수 있어요",
     render: (_, record:specType) => (
       <div
-        className="w-full h-full h-center cursor-pointer"
+        className="reference-detail"
         onClick={()=>{
           router?.push({pathname:`/sayang/sample/detail/${record.id}`, query: {view:true}})
         }}
@@ -253,7 +254,7 @@ export const specIngClmn = (
     align: 'center',
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="w-full h-center text-left cursor-pointer gap-5"
+      <div className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record.specModels?.[0]?.partner ?? null);
           setPartnerMngData(null);
@@ -273,7 +274,7 @@ export const specIngClmn = (
     cellAlign: 'left',
     tooltip: "모델명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (_, record:specType) => (
-      <div className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+      <div className="reference-detail"
         onClick={()=>{
           router?.push(`/sayang/sample/detail/${record.id}`);
         }}
@@ -513,7 +514,7 @@ export const sayangSampleWaitClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:modelsMatchRType) => (
       <div 
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record.orderModel?.prtInfo.prt ?? null);
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
@@ -534,7 +535,7 @@ export const sayangSampleWaitClmn = (
     tooltip: "모델명을 클릭하면 조합하거나 신규 등록을 할 수 있어요",
     render: (value, record) => (
       <div
-        className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+        className="reference-detail"
         onClick={()=>{sayangPopOpen?.(record.id, record.model?.id ?? '', record.glbStatus?.id ?? '', record);}}
       >
         {record?.tempModel?.prdNm}
@@ -1500,7 +1501,7 @@ export const sayangModelWaitClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:salesOrderRType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record.prtInfo.prt);
           setPartnerMngData(record.prtInfo.mng);
@@ -1520,7 +1521,7 @@ export const sayangModelWaitClmn = (
     cellAlign: 'left',
     tooltip: "고객발주명을 클릭하면 수정하거나 상세 정보를 볼 수 있어요",
     render: (value, record) => (
-      <div className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+      <div className="reference-detail"
         onClick={()=>{router.push(`/sayang/model/wait/${record?.id}`)}}
       >
         {value}
@@ -2519,7 +2520,7 @@ export const sayangModelStatusClmn = (
     tooltip: "모델명을 클릭하면 상세 정보를 볼 수 있어요",
     render: (_, record:modelsType) => (
       <div
-        className="text-left cursor-pointer text-shadow-hover hover:underline hover:decoration-blue-500"
+        className="reference-modal"
         onClick={()=>{
           setModelId(record);
         }}

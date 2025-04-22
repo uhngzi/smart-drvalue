@@ -210,14 +210,14 @@ const WKStatusProcPage: {
           <AntdTableEdit
             columns={
               cookie.get('companySY') === 'sy'?
-              WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined)?.filter(f=> f.key !== 'check'
+              WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined, router, true)?.filter(f=> f.key !== 'check'
                 && !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
                 && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
                 && !f.key?.toString().includes("board") && !f.key?.toString().includes("prdCnt") && !f.key?.toString().includes("sth")
                 && !f.key?.toString().includes("rein") && !f.key?.toString().includes("m2")
               )
               :
-              WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined).filter(f=>f.key !== 'check')
+              WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined, router, true).filter(f=>f.key !== 'check')
               // cookie.get('companySY') === 'sy' ?
               // WKStatusInClmn(totalData, pagination, setPartnerData)?.filter(f=>
               //   !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")

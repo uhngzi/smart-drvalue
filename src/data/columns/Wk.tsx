@@ -38,9 +38,10 @@ export const WkPalnWaitClmn = (
     align: 'center',
     cellAlign: 'left',
     editable: false,
+    tooltip: cookie.get('companySY') === 'sy' ? '모델명을 클릭하면 일정 및 인력을 관리할 수 있어요' : undefined,
     render: (_, record) => (
       <div
-        className={`w-full text-left ${cookie.get('companySY') === 'sy' ? 'cursor-pointer transition--colors duration-300 hover:text-point1 hover:underline hover:decoration-blue-500' : ''}`}
+        className={`w-full text-left ${cookie.get('companySY') === 'sy' ? 'reference-detail' : ''}`}
         onClick={()=>{
           if(cookie.get('companySY') === 'sy') {
             router?.push(`/wk/plan/${record?.id}`);
@@ -347,6 +348,7 @@ export const WKStatusProcClmn = (
   setCheckeds?: React.Dispatch<SetStateAction<wkPlanWaitType[]>>,
   handleCheckedAllClick?: () => void,
   router?: NextRouter,
+  input?: boolean,
 ): CustomColumn[] => [
   {
     title: <div>
@@ -438,7 +440,7 @@ export const WKStatusProcClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
@@ -455,10 +457,10 @@ export const WKStatusProcClmn = (
     key: 'specModel.prdNm',
     align: 'center',
     cellAlign: 'left',
-    tooltip: "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
+    tooltip: input ? undefined : "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+        className={input? "" :"reference-detail"}
         onClick={()=>{
           if(cookie.get('companySY') !== 'sy') {
             setSelect?.(record);
@@ -739,7 +741,7 @@ export const WKStatusInClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}
@@ -909,7 +911,7 @@ export const WkStatusOutClmn = (
     tooltip: "코드/업체명을 클릭하면 고객정보 및 담당자 정보를 볼 수 있어요",
     render: (_, record:wkPlanWaitType) => (
       <div
-        className="w-full h-center cursor-pointer text-left text-shadow-hover gap-5"
+        className="reference-modal gap-5"
         onClick={()=>{
           setPartnerData(record?.specModel?.partner ?? null);
         }}

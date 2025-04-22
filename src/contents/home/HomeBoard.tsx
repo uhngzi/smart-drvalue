@@ -263,7 +263,7 @@ const HomeBoard: React.FC<{
               tooltip: "제목을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
               render: (value, record) => (
                 <div
-                  className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+                  className="reference-detail"
                   onClick={()=>{
                     //사용자가 리스트에서 제목이나 내용을 클릭하면, select에 해당 게시글을 설정하고, fileIdList를 게시글의 files로 설정합니다.
                     setSelect(record);
@@ -285,7 +285,7 @@ const HomeBoard: React.FC<{
               tooltip: "내용을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
               render: (value, record) => (
                 <div
-                  className="w-full h-center cursor-pointer justify-left transition--colors duration-300 text-point1 hover:underline hover:decoration-blue-500"
+                  className="reference-detail"
                   onClick={()=>{
                     setSelect(record);
                     setFileIdList(record.files ?? []);
