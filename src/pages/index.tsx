@@ -16,7 +16,7 @@ const HomePage: React.FC & {
 
   return (
     <div className="w-full h-full">
-      <div className="w-full flex h-50 z-10 relative border-b-1 border-bdDefault">
+      <div className="w-full flex h-50 z-10 relative">
         {/* <div 
           className="flex items-center w-fit px-20 py-10 mr-10 text-14 font-medium cursor-pointer"
           style={tab==="mytodo"?{color:'#4880FF',borderBottom:'3px solid #4880FF'}:{color:"#718EBF"}}

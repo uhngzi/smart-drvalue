@@ -34,13 +34,15 @@ const SettingSider: React.FC<Props> = ({ }) => {
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
+  const [selectedKey, setSelectedKey] = useState<string>("");
+
+  useEffect(() => {
+    const segments = router.asPath.split("/"); // ex: ["", "setting", "client", "sup"]
+    const key = segments.slice(2, 4).join("/"); // "client/sup"
+    setSelectedKey(key);
+  }, [router.asPath]);
+
   const currentPath = router.pathname.split('/').slice(1).join();
-  const [newPath, setNewPath] = useState<string>('');
-  useEffect(()=>{
-    //3뎁스일 때 마지막을 제외한 키 값 추출
-    const path = currentPath.split(',').slice(1).slice(0, 2);
-    setNewPath(path.join('/'));
-  },[currentPath])
 
   const [signIn, setSignIn] = useState<boolean>(false);
   useEffect(()=>{
@@ -71,7 +73,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
       style: {margin: 10},
     },
     {
-      key: 'hr',
+      key: 'hr/user',
       title:'hr/user',
       label: '인사',
       icon: <p className={iconClassNm}><Hr /></p>,
@@ -240,7 +242,7 @@ const SettingSider: React.FC<Props> = ({ }) => {
           }}
           className="sider__menu h-[100%]"
           defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
-          selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
+          selectedKeys={[selectedKey]} // 현재 경로에 해당하는 메뉴 항목을 선택
         />
       </div>
       

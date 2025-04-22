@@ -41,13 +41,22 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
-  const currentPath = router.pathname.split('/').slice(1).join();
-  const [newPath, setNewPath] = useState<string>('');
-  useEffect(()=>{
-    //3뎁스일 때 마지막을 제외한 키 값 추출
-    const path = currentPath.split(',').slice(0, 2);
-    setNewPath(path.join('/'));
-  },[currentPath])
+  const [selectedKey, setSelectedKey] = useState<string>("");
+
+  useEffect(() => {
+    const pathSegments = router.asPath.split("/").filter(Boolean);
+    
+    let matched = "";
+    if (pathSegments.length >= 2) {
+      matched = `${pathSegments[0]}/${pathSegments[1]}`;
+    } else if (pathSegments.length === 1) {
+      matched = pathSegments[0];
+    } else {
+      matched = '/';
+    }
+  
+    setSelectedKey(matched);
+  }, [router.asPath]);
 
   const [signIn, setSignIn] = useState<boolean>(false);
   useEffect(()=>{
@@ -165,11 +174,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     //   icon: <p className={iconClassNm}><Wk /></p>,
     // },
   ]
-
-  const getOpenKeys = (path: string) => {
-    const firstSegment = path.split(',')[0];
-    return [firstSegment];
-  };
   
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -205,8 +209,8 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           }}
           className="sider__menu"
           inlineCollapsed={collapsed}
-          defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
-          selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
+          selectedKeys={[selectedKey]}
+          defaultOpenKeys={[selectedKey.split('/')[0]]}
         />
       </div>
       
@@ -261,8 +265,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           ]}
           className="sider__menu"
           inlineCollapsed={collapsed}
-          defaultOpenKeys={getOpenKeys(currentPath)} // 현재 경로에 따라 열린 메뉴
-          selectedKeys={[newPath]} // 현재 경로에 해당하는 메뉴 항목을 선택
         />
       </div>
     </SiderStyled>
