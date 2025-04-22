@@ -68,7 +68,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // --------- 필요 데이터 시작 ----------
 
-  // 공정 외주처 데이터
+  //외주처
   const [dataVendor, setDataVendor] = useState<Array<processVendorRType>>([]);
   const { data: queryDataVendor } = useQuery<
     apiGetResponseType, Error
@@ -94,7 +94,7 @@ const WkProcessVendorPriceListPage: React.FC & {
     },
   });
 
-  // 공정 그룹 데이터
+  // 공정 그룹 조회
   const [dataGroup, setDataGroup] = useState<Array<processGroupRType>>([]);
   const { data: queryDataGroup } = useQuery<
     apiGetResponseType, Error
@@ -120,7 +120,7 @@ const WkProcessVendorPriceListPage: React.FC & {
     },
   });
 
-  // 공정 데이터
+  // 공정 목록 조회
   const [dataProcess, setDataProcess] = useState<Array<processRType>>([]);
   const { data: queryDataProcess } = useQuery<
     apiGetResponseType, Error

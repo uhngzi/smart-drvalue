@@ -44,6 +44,7 @@ const WkBadListPage: React.FC & {
   const { data:queryTreeData } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'process'],
     queryFn: async () => {
+      //공정그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
@@ -75,6 +76,7 @@ const WkBadListPage: React.FC & {
   const { data:querybadData, refetch: badGroupRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'bad-group'],
     queryFn: async () => {
+      //공정 불량 그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
@@ -122,6 +124,7 @@ const WkBadListPage: React.FC & {
   const { data:badData, refetch: procBadRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'bad', processId],
     queryFn: async () => {
+      //공정 불량 매핑 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
