@@ -6,16 +6,14 @@
 
 import Search from "@/assets/svg/icons/s_search.svg"
 import Plus from "@/assets/svg/icons/s_plus_gray.svg"
-import Minus from "@/assets/svg/icons/s_minus.svg"
-import Close from "@/assets/svg/icons/s_close.svg"
 import Edit from "@/assets/svg/icons/s_ellipsis.svg"
 import Trash from "@/assets/svg/icons/red-trash.svg"
 import AllOpen from "@/assets/svg/icons/allOpen.svg"
 import AllClose from "@/assets/svg/icons/allClose.svg"
 import CloseEye from "@/assets/svg/icons/close_eye.svg"
 import BlueCheck from "@/assets/svg/icons/blue_check.svg"
+import SettingFill from "@/assets/svg/icons/settingFill.svg"
 
-import { CaretDownFilled, CaretUpFilled, MinusSquareOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { CUtreeType, treeType } from "@/data/type/componentStyles"
 import { Button, Dropdown, Input, MenuProps, Switch, Tooltip } from "antd"
@@ -555,11 +553,11 @@ const CustomTree:React.FC<Props> = ({
             return(
               <div key={item.id}>
                 <div 
-                  className={`w-full h-40 h-center pl-5 gap-10 ${isCheckUse ? isCheckUse.checkId === item.id ? '!bg-[#f3faff]' : '' : ''} ${isCheckUse ? 'cursor-pointer' : ''}`} 
+                  className={`w-full h-40 h-center pl-5 gap-10 hover:bg-[#0000000a] cursor-pointer ${isCheckUse ? isCheckUse.checkId === item.id ? '!bg-[#f3faff]' : '' : ''} ${isCheckUse ? 'cursor-pointer' : ''}`} 
                   key={item.id}  //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
-                  onClick={() => handleSelect(item)}
+                  onClick={(e) => {e.stopPropagation(); handleShowList(item.id)}} //handleSelect(item)
                   onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)}>
-                  {(isChild && searchText === '') ? (
+                  {/* {(isChild && searchText === '') ? (
                     <>
                       {item.open ? (
                         <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
@@ -573,8 +571,11 @@ const CustomTree:React.FC<Props> = ({
                     </>
                   ) : (
                     <div className="w-5 h-5 bg-[#000000] rounded-50" />
-                  )}
-                  <span className="flex-1 text-left">{item.label}</span>
+                  )} */}
+                  {/* <div className="flex h-center gap-10"> */}
+                    <SettingFill/>
+                    <span className="flex-1 text-left">{item.label}</span>
+                  {/* </div> */}
                   {isCheckUse && isCheckUse.checkId == item.id ? (
                     <BlueCheck/>
                   ) : (

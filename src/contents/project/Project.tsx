@@ -1,12 +1,12 @@
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import GanttChart from "@/utils/third-party/GanttChart";
-import { Button, Checkbox, DatePicker, Dropdown, Input, Tooltip } from "antd";
-import dayjs from "dayjs";
+import { Button, Checkbox, DatePicker, DatePickerProps, Dropdown, Input, Tooltip } from "antd";
+import dayjs, { Dayjs } from "dayjs";
 //@ts-ignore
 import styled from "styled-components";
 
 import { getDaysBetween } from "@/utils/formatDate";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useRef, useState } from "react";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 
 import Edit from "@/assets/svg/icons/edit.svg";
@@ -44,6 +44,31 @@ import { DividerH } from "@/components/Divider/Divider";
 interface Props {
   id: string,
 }
+
+type MemoizedDatePickerProps = {
+  value: Dayjs | null;
+  onChange: (date: Dayjs | Date | null) => void;
+  disabled: boolean;
+};
+
+const MemoizedDatePicker = memo(({ value, onChange, disabled }: MemoizedDatePickerProps) => {
+
+  const handleChange: DatePickerProps["onChange"] = (date) => {
+    onChange(date);
+  };
+
+  return (
+    <CustomDatePicker
+      size="small"
+      suffixIcon={null}
+      allowClear={false}
+      value={value}
+      onChange={(date, dateString) => handleChange(date as Dayjs, dateString)}
+      style={{ marginBottom: 8, display: "block" }}
+      disabled={disabled}
+    />
+  );
+});
 
 // 함수형 컴포넌트로 작성된 projcet 페이지
 const Project: React.FC<Props> = ({
@@ -102,18 +127,16 @@ const Project: React.FC<Props> = ({
         type: 'auth',
         utype: 'tenant/',
         url: `user/jsxcrud/many`,
-      },{
-        s_query: {"detail.team.teamNm": { "$eq": "생산팀" }}
       });
 
       if (result.resultCode === 'OK_0000') {
         const arr = result.data?.data?.map((item: any) => ({
           empId: item.id,
           name: item.name,
-          jobType: item.detail.defMetaDataJobType,
-          workType: item.detail.defMetaDataWorkType,
-          empTit: item.detail.empTit,
-          empRemarks: item.detail.empRemarks,
+          jobType: item?.detail?.defMetaDataJobType,
+          workType: item?.detail?.defMetaDataWorkType,
+          empTit: item?.detail?.empTit,
+          empRemarks: item?.detail?.empRemarks,
         }));
         setProjectWorkers(arr)
       } else {
@@ -125,6 +148,7 @@ const Project: React.FC<Props> = ({
   });
 
   const [schedules, setSchedules] = useState<projectSchedules>([]);
+  const [procDateObj, setProcDateObj] = useState<{[key: string]: {from: string, to: string}}>({});
   const [workerPlanList, setWorkerPlanList] = useState<any[]>([]);
   const { data:queryData, refetch:pmsRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['pms', 'proc', 'worksheet', id],
@@ -137,6 +161,7 @@ const Project: React.FC<Props> = ({
 
       if (result.resultCode === 'OK_0000') {
         let wsExpDts:(string | null)[] = [];
+        let dateObj: {[key: string]: {from: string, to: string}} = {};
         let arr = await Promise.all(
           result.data?.data?.map(async (item: any) => {
             const tasks = await Promise.all(
@@ -157,7 +182,7 @@ const Project: React.FC<Props> = ({
                   workPlanEnd: worker.wkEmpProcScheOutDt,
                   workDetail: worker.emp?.workDetail
                 }));
-        
+                dateObj[task.id] = {from: task.wkProcStDtm, to: task.wkProcEdDtm}
                 return {
                   id: task.id,
                   name: task.processName,
@@ -181,6 +206,7 @@ const Project: React.FC<Props> = ({
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", arr);
         // updateWsExpDt(wsExpDts);
         setSchedules(arr);
+        setProcDateObj(dateObj);
       } else {
         console.log('error:', result.response);
       }
@@ -306,29 +332,29 @@ function addPopWorkers(data: any) {
   }
 }
 
-  async function changeProgDate(task: any, e: React.FocusEvent<HTMLInputElement>) {
+  async function changeProgDate(taskId: string, from:string,  e: React.FocusEvent<HTMLInputElement>) {
     if(e.target.value == ""){
-      progDateRefObj.current[task.id].input.value = "1"
+      progDateRefObj.current[taskId].input.value = "1"
       return;
     }
     console.log(e.target.value)
     console.log(schedules.flatMap(process => process.task));
 
-    if(!task?.from){
+    if(!from){
       showToast("시작일을 먼저 입력해야 합니다.", "error");
-      pmsRefetch();
       return;
     }
     const keys = Object.keys(progDateRefObj.current);
-    const currentIndex = keys.indexOf(task.id);
+    const currentIndex = keys.indexOf(taskId);
     const nextIndex = currentIndex + 1;
     const nextId = keys[nextIndex];
-    const nextTask = schedules.flatMap(process => process.task).find(task => task.id === nextId);
+    const nextTask = procDateObj[nextId];
+          
 
     const dayCnt = e.target.value;
     const day = Number(dayCnt);
-    const startDate = task.from;
-    const id = task.id;
+    const startDate = from;
+    const id = taskId;
 
     const endDate = dayjs(startDate).add(day-1, 'day').format('YYYY-MM-DD');
     console.log(day, startDate, endDate);
@@ -344,27 +370,14 @@ function addPopWorkers(data: any) {
     console.log(result);
 
     if(result.resultCode === 'OK_0000') {
-      if(!!nextId && !nextTask?.progFrom){
-        const nextStartDate = dayjs(endDate).add(1, 'day').format('YYYY-MM-DD');
-        const nextData = {startDate: nextStartDate, endDate: nextStartDate}
-        const nextResult = await patchAPI({
-          type: 'core-d3', 
-          utype: 'tenant/',
-          jsx: 'default',
-          url: `pms/proc/default/update-date/${nextId}`,
-          etc: true,
-        },nextId, nextData);
-        
-        if(nextResult.resultCode != 'OK_0000') {
-          pmsRefetch();
-          showToast("현재 일정은 저장했지만, 다음 일정 자동 업데이트에 실패했습니다.", "error");
-          return;
-        }else{
+      pmsRefetch().then(() => {
+        showToast("저장완료", "success");
+        if(!!nextId && !nextTask?.from){
+          const nextStartDate = dayjs(data?.endDate).add(1, 'day').format('YYYY-MM-DD');
+          setProcDateObj(prev => ({...prev, [nextId]: {...prev[nextId], from: nextStartDate}})) 
         }
-      }
-      progDateRefObj.current[nextId]?.input.focus();
-      pmsRefetch();
-      showToast("저장완료", "success");
+        progDateRefObj.current[nextId]?.input.focus();
+      });
     } else {
       const msg = result?.response?.data?.message;
       setResultType("error");
@@ -375,43 +388,60 @@ function addPopWorkers(data: any) {
   }
   async function changeDate(date: any, id: string, type: string, otherDate: any) {
     const newDate = dayjs(date).format('YYYY-MM-DD')
-    otherDate = otherDate ? dayjs(otherDate).format('YYYY-MM-DD') : newDate;
-    let data = {}
-    if(type === "from") {
-      data = {startDate: newDate, endDate: otherDate}
-      const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
-      if (to && dayjs(newDate).startOf('day').isAfter(dayjs(to).startOf('day'))) {
-        showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
-        return;
+    console.log(otherDate)
+    if(otherDate){
+      let data:{startDate:string, endDate:string} = { startDate: "", endDate: "" }
+      if(type === "from") {
+        data = {startDate: newDate, endDate: otherDate}
+        // const to = schedules.flatMap(process => process.task).find(task => task.id === id)?.to;
+        if (otherDate && dayjs(newDate).startOf('day').isAfter(dayjs(otherDate).startOf('day'))) {
+          showToast("시작일은 종료일보다 이전이어야 합니다.", "error");
+          return;
+        }
+      } else {
+        data = {startDate: otherDate, endDate: newDate}
+        console.log(data);
+        // const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
+        if (otherDate && dayjs(newDate).startOf('day').isBefore(dayjs(otherDate).startOf('day'))) {
+          showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
+          return;
+        }
       }
-    } else {
-      data = {startDate: otherDate, endDate: newDate}
-      console.log(data);
-      const from = schedules.flatMap(process => process.task).find(task => task.id === id)?.from;
-      if (from && dayjs(newDate).startOf('day').isBefore(dayjs(from).startOf('day'))) {
-        showToast("종료일은 시작일보다 이후이어야 합니다.", "error");
-        return;
+  
+      const result = await patchAPI({
+        type: 'core-d3', 
+        utype: 'tenant/',
+        jsx: 'default',
+        url: `pms/proc/default/update-date/${id}`,
+        etc: true,
+      },id, data);
+      console.log(result);
+  
+      if(result.resultCode === 'OK_0000') {
+        pmsRefetch().then(() => {
+          showToast("저장완료", "success");
+
+          const keys = Object.keys(progDateRefObj.current);
+          const currentIndex = keys.indexOf(id);
+          const nextIndex = currentIndex + 1;
+          const nextId = keys[nextIndex];
+          const nextTask = procDateObj[nextId];
+          if(!!nextId && !nextTask?.from){
+            const nextStartDate = dayjs(data?.endDate).add(1, 'day').format('YYYY-MM-DD');
+            setProcDateObj(prev => ({...prev, [nextId]: {...prev[nextId], from: nextStartDate}})) 
+          }
+        });
+
+        
+      } else {
+        const msg = result?.response?.data?.message;
+        setResultType("error");
+        setResultMsg(msg);
+        setResultOpen(true);
       }
     }
+    setProcDateObj(prev => ({...prev, [id]: {...prev[id], [type]: newDate}}));
 
-    const result = await patchAPI({
-      type: 'core-d3', 
-      utype: 'tenant/',
-      jsx: 'default',
-      url: `pms/proc/default/update-date/${id}`,
-      etc: true,
-    },id, data);
-    console.log(result);
-
-    if(result.resultCode === 'OK_0000') {
-      pmsRefetch();
-      showToast("저장완료", "success");
-    } else {
-      const msg = result?.response?.data?.message;
-      setResultType("error");
-      setResultMsg(msg);
-      setResultOpen(true);
-    }
   }
 
   async function addWorkerPlan(workerPlanList: any[], procId: string | undefined) {
@@ -616,19 +646,19 @@ function addPopWorkers(data: any) {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task, e);}}/>
+                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task.id, procDateObj[task.id]?.from, e);}}/>
                             {/* </Tooltip> */}
                           </td>
                           <td colSpan={2}>
                             <div className="flex items-center gap-5">
-                              <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
-                                value={dayjs(task.from).isValid() ? dayjs(task.from) : null} 
-                                onChange={(date) => changeDate(date, task.id, "from", task.to)} 
+                              <MemoizedDatePicker
+                                value={procDateObj[task.id]?.from ? dayjs(procDateObj[task.id]?.from) : null} 
+                                onChange={(date) => changeDate(date, task.id, "from", procDateObj[task.id]?.to)} 
                                 disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                               <p className="w-32 flex justify-center"><RightArrow/></p>
-                              <CustomDatePicker size="small" suffixIcon={null} allowClear={false} //<Calendar/>
-                                value={dayjs(task.to).isValid() ? dayjs(task.to) : null} 
-                                onChange={(date) => changeDate(date, task.id, "to", task.from)} 
+                              <MemoizedDatePicker //<Calendar/>
+                                value={procDateObj[task.id]?.to ? dayjs(procDateObj[task.id]?.to) : null} 
+                                onChange={(date) => changeDate(date, task.id, "to", procDateObj[task.id]?.from)} 
                                 disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
                             </div>
                           </td>
@@ -906,6 +936,7 @@ const CustomDatePicker = styled(DatePicker)`
   padding: 0;
   border: 0;
   border-radius: 0;
+  margin: 0 !important;
   .ant-picker-input {
     & > input{
       text-align: center;

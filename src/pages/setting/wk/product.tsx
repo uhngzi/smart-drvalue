@@ -2,8 +2,7 @@ import { deleteAPI } from "@/api/delete";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
-import CustomTreeCheck from "@/components/Tree/CustomTreeCheck";
-import CustomTreeView from "@/components/Tree/CustomTreeView";
+import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { processGroupRType, processRType } from "@/data/type/base/process";
 import { productLinesGroupRType } from "@/data/type/base/product";
@@ -14,7 +13,7 @@ import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
 import { Button, CheckboxChangeEvent } from "antd";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const WkProductListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -235,6 +234,12 @@ const WkProductListPage: React.FC & {
     }
   }
 
+  useEffect(() => {
+    if(productGroupId === null) {
+      setPrdProcData([]);
+    }
+  }, [productGroupId]);
+
   return (
     <>
       <section className="w=full">
@@ -249,21 +254,25 @@ const WkProductListPage: React.FC & {
         <div className="w-full flex gap-30">
 
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
-            <CustomTreeView
+            <CustomTreeUsed
               data={treeData}
-              setSelect={setProductGroupId}
+              selectId={productGroupId}
+              setSelectId={setProductGroupId}
               notCollapsed={true}
-              isChild={false}
+              isSelect={true}
             />
           </div>
           <div className="p-20 min-h-[600px] w-[50%] rounded-8" style={{border:'1px solid #B9B9B9'}}>
-            <CustomTreeCheck
+            <CustomTreeUsed
               data={procTreeData}
               checkedData={prdProcData}
-              childCheck={true}
-              onChange={handleCheck}
+              isChild={true}
+              isCheck={true}
+              checkChange={handleCheck}
+              notCollapsed={true}
               // notCollapsed={true}
             />
+
           </div>
         </div>
         {/* <div className="py-20">
