@@ -1,6 +1,10 @@
 //구매 발주서
-import React from 'react';
+import React, { useState } from 'react';
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
+import { buyOrderType } from '@/data/type/buy/cost';
+import { useQuery } from '@tanstack/react-query';
+import { getAPI } from '@/api/get';
+import { companyType } from '@/data/type/base/company';
 
 const sample:any[] = [
     {
@@ -18,13 +22,50 @@ const sample:any[] = [
             cost: "",
             index: "",  
     }, 
-
-    
-
 ]
-const PurchaseDocumentForm: React.FC =({ }) => {
+interface Props {
+  id: string;
+}
+
+const PurchaseDocumentForm: React.FC<Props> =({
+	id
+}) => {
+  const [order, setOrder] = useState<buyOrderType | null>(null);
+  const {data:queryDetailData} = useQuery({
+    queryKey: ['request/material/detail/jsxcrud/one', id],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'core-d2',
+        utype: 'tenant/',
+        url: `request/material/detail/jsxcrud/one/${id}`
+      });
+
+      if(result.resultCode === "OK_0000") {
+        setOrder(result.data?.data ?? null);
+      }
+
+      return result;
+    },
+    enabled: !!id
+  });
+
+  const [company, setCompany] = useState<companyType | null>(null);
+  const { data:queryData, refetch } = useQuery({
+    queryKey: ['company-default/jsxcrud/one'],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'company-default/jsxcrud/one'
+      });
+
+      if (result.resultCode === 'OK_0000') {
+        setCompany(result.data?.data ?? null);
+      }
+      return result;
+    },
+  });
     return (
-        
         //타이틀 영역 
         <div className="flex w-[842px] h-[595px] px-[20px] py-[30px] items-center justify-center flex-col bg-[white]  ">
             {/* 구매 발주서란 */}

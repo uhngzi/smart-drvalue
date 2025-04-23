@@ -39,6 +39,7 @@ import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import AntdModal from "@/components/Modal/AntdModal";
 import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
 import { port } from "../_app";
+import PurchaseDocumentForm from "@/contents/documentForm/PurchaseDocumentForm";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -361,7 +362,7 @@ const BuyOrderPage: React.FC & {
         width={635}
         contents={
           <>
-            <OrderDocumentForm id={order?.id ?? ""} />
+            <PurchaseDocumentForm id={order?.id ?? ""} />
             <div className="v-h-center gap-5 mt-20">
               <Button>
                 인쇄

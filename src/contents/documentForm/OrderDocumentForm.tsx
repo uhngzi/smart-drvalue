@@ -67,7 +67,6 @@ const OrderDocumentForm:React.FC<Props> = ({
     },
   });
 
-
   return (
     <div className="flex w-[595px] h-[842px] px-[20px] py-[30px] gap-[15px] items-center justify-center flex-col bg-[white]  ">
       
@@ -115,11 +114,11 @@ const OrderDocumentForm:React.FC<Props> = ({
           <div className="w-full flex justify-center">  
           <div className= "w-[121px] h-[81px] gap-[10px]  text-[9px] font-[Spoqa Han Sans Neo] flex flex-col items-center justify-center">
             <div className = "w-full h-[22px] flex items-center justify-center gap-[10px]"> 
-              <p>{dayjs(order?.detailInfo?.orderDt).format("YYYY년")}</p>
-              <p>{dayjs(order?.detailInfo?.orderDt).format("MM월")}</p>
-              <p>{dayjs(order?.detailInfo?.orderDt).format("DD일")}</p>
+              <p>{dayjs().format("YYYY년")}</p>
+              <p>{dayjs().format("MM월")}</p>
+              <p>{dayjs().format("DD일")}</p>
             </div> 
-            <p className= "font-medium"> 아래와 같이 발주합니다.</p>       
+            <p className= "font-medium"> 아래와 같이 발주합니다.</p>
           </div>
           </div>  
         </div>{/* 상단 왼쪽 정보 끝*/}
@@ -181,13 +180,13 @@ const OrderDocumentForm:React.FC<Props> = ({
 
                 <tbody className="font-[Spoqa Han Sans Neo] text-[10px] font-style:normal text-center align-middle">
                 {/* 맵 입력 값 */}
-                {sample.map((item, index) => (
+                {order?.detailInfo?.details && order?.detailInfo?.details.map((item, index) => (
                 <tr key={index} className="border-b border-[#D9D9D9] h-[30px] text-[#000000A6]">
                     <td className="border-r border-[#D9D9D9] px-[8px]">{index + 1}</td>
-                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.estimateModelNm}</td>
-                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.quantity}</td>
-                    <td className="border-r border-[#D9D9D9] px-[8px]">{item.unitPrice}</td>
-                    <td className="px-[8px]">{item.cost}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px] text-left">{item.mtNm ? item.mtNm : item.material?.mtNm}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{(item.mtOrderQty ?? 0).toLocaleString()}</td>
+                    <td className="border-r border-[#D9D9D9] px-[8px]">{(item.mtOrderInputPrice ?? 0).toLocaleString()}</td>
+                    <td className="px-[8px]">{(item.mtOrderAmount ?? 0).toLocaleString()}</td>
                 </tr>
                 ))}
 
