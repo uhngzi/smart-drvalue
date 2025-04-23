@@ -167,6 +167,7 @@ const Project: React.FC<Props> = ({
             const tasks = await Promise.all(
               item.process.map(async (task: any) => {
                 wsExpDts.push(task.wkProcStDtm);
+                dateObj[task.id] = {from: task.wkProcStDtm, to: task.wkProcEdDtm}
 
                 const workerRes = await getAPI({
                   type: 'core-d3',
@@ -181,8 +182,9 @@ const Project: React.FC<Props> = ({
                   workPlanStart: worker.wkEmpProcScheInDt,
                   workPlanEnd: worker.wkEmpProcScheOutDt,
                   workDetail: worker.emp?.workDetail
-                }));
-                dateObj[task.id] = {from: task.wkProcStDtm, to: task.wkProcEdDtm}
+                }))
+                .sort((a:any, b:any) => new Date(a.workPlanStart).getTime() - new Date(b.workPlanStart).getTime());
+
                 return {
                   id: task.id,
                   name: task.processName,
@@ -655,7 +657,7 @@ function addPopWorkers(data: any) {
                                 value={procDateObj[task.id]?.from ? dayjs(procDateObj[task.id]?.from) : null} 
                                 onChange={(date) => changeDate(date, task.id, "from", procDateObj[task.id]?.to)} 
                                 disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                              <p className="w-32 flex justify-center"><RightArrow/></p>
+                              <p className="w-24 flex justify-center"><RightArrow/></p>
                               <MemoizedDatePicker //<Calendar/>
                                 value={procDateObj[task.id]?.to ? dayjs(procDateObj[task.id]?.to) : null} 
                                 onChange={(date) => changeDate(date, task.id, "to", procDateObj[task.id]?.from)} 
@@ -679,7 +681,7 @@ function addPopWorkers(data: any) {
                                 <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                                   value={dayjs(worker.workPlanStart).isValid() ? dayjs(worker.workPlanStart) : null} 
                                   open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                                <p className="w-32 flex justify-center"><RightArrow/></p>
+                                <p className="w-24 flex justify-center"><RightArrow/></p>
                                 <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
                                   value={dayjs(worker.workPlanEnd).isValid() ? dayjs(worker.workPlanEnd) : null} 
                                 open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
