@@ -5,24 +5,8 @@ import { buyOrderType } from "@/data/type/buy/cost";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { companyType } from "@/data/type/base/company";
+import dayjs from "dayjs";
 
-const sample: any[] = [
-  {
-    modelTypeEm: ModelTypeEm.SAMPLE,
-    layerEm: LayerEm.L1,
-    estimateModelNm: "",
-    array: "",
-    texturenm: "",
-    sizeH: 0,
-    sizeW: 0,
-    thickness: 0,
-    quantityUnit: "",
-    quantity: "",
-    unitPrice: "",
-    cost: "",
-    index: "",
-  },
-];
 interface Props {
   id: string;
 }
@@ -66,7 +50,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
 
   return (
     //타이틀 영역
-    <div className="flex w-[842px] h-[595px] px-[20px] py-[30px] items-center justify-center flex-col bg-[white]  ">
+    <div className="flex w-[842px] h-[595px] px-[20px] py-[30px] items-center justify-center flex-col bg-[white]">
       {/* 구매 발주서란 */}
       <div className="flex items-center gap-[230px] w-full justify-start">
         <div className="w-[75px] h-[40px] bg-[#000] text-[#fff] flex items-center justify-center text-[12px]">
@@ -76,22 +60,22 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
         <div className="text-20 text-[#000] font-medium whitespace-nowrap">
           구매 발주서
         </div>
-        <table className="table-fixed border border-[#D9D9D9] text-center text-[9px] font-[Spoqa Han Sans Neo] w-[270px]">
+        <table className="table-fixed border border-[#D9D9D9] text-center text-[9px] font-[Spoqa Han Sans Neo] w-[170px]">
           <tbody>
-            <tr className="bg-[rgba(238,238,238,0.5)]">
+            <tr>
               <td
                 rowSpan={3}
-                className="w-[20px] border border-[#D9D9D9] align-middle"
+                className="w-[20px] border-r-1 border-[#D9D9D9] align-middle bg-[rgba(238,238,238,0.5)] text-center"
               >
                 결<br />재
               </td>
-              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">
+              <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
                 담당
               </td>
-              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">
+              <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
                 검토
               </td>
-              <td className="w-[50px] h-[20px] border border-[#D9D9D9]">
+              <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
                 승인
               </td>
             </tr>
@@ -116,51 +100,71 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
         <div className="flex w-[391px] h-[125px] items-center justify-center flex-[1_0_0]">
           <table className="table-auto w-full border-t border-[#D9D9D9]">
             <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[50px] pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                   발주 번호
                 </td>
-                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px]"></td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px] pt-[5px]">
+                  {order?.detailInfo?.docNo}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                   발주 금액
                 </td>
-                <td colSpan={3} className="max-w-[75px] pl-[8px]"></td>
+                <td colSpan={3} className="max-w-[75px] pl-[8px]">
+                  {(order?.detailInfo?.totalAmount ?? 0).toLocaleString()}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   발주 일자
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {order?.detailInfo?.orderDt
+                    ? dayjs(order?.detailInfo?.orderDt).format(
+                        "YYYY년 MM월 DD일"
+                      )
+                    : ""}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   납품 장소
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {/* {order?.detailInfo?.} */}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   담당 부서
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {order?.detailInfo?.prtInfo?.mng?.prtMngDeptNm}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   담당자
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {order?.detailInfo?.prtInfo?.mng?.prtMngNm}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   전화번호
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {order?.detailInfo?.prtInfo?.mng?.prtMngTel}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] whitespace-nowrap">
                   팩스번호
                 </td>
-                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[120px] pl-[8px] whitespace-nowrap">
+                  {order?.detailInfo?.prtInfo?.mng?.prtMngFax}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -171,7 +175,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
         <div className="w-[391px] h-[125px] flex-start">
           <table className="table-auto w-full border-t border-[#D9D9D9]">
             <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td
                   rowSpan={5}
                   className="w-[30px] border border-[#D9D9D9] bg-[#E9EDF5] pl-[10px]"
@@ -185,44 +189,56 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                   colSpan={3}
                   className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]"
                 >
-                  123
+                  {company?.companyName}
                 </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   사업자등록번호
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.businessRegNo}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   대표명
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.ceoName}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   업태
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.bizCondition}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   업종
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.bizType}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   전화번호
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">1</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.ceoPhone}
+                </td>
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   팩스번호
                 </td>
-                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">2</td>
+                <td className="max-w-[105px] pl-[8px] whitespace-nowrap">
+                  {company?.ceoFax}
+                </td>
               </tr>
 
-              <tr className="border-b border-[#D9D9D9] h-[25px]">
+              <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                 <td className="w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                   주소
                 </td>
@@ -230,7 +246,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                   colSpan={3}
                   className="max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap pb-[5px]"
                 >
-                  123
+                  {company?.address}
                 </td>
               </tr>
             </tbody>
@@ -248,7 +264,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
         <table className="h-[25px] table-auto w-full border-t border-[#D9D9D9]">
           {/* 테이블 제목 */}
           <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
-            <tr className="border-b border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
+            <tr className="border-b-1 border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
               <td className="border-r border-[#D9D9D9] w-[40px] h-[25px] px-[8px] ">
                 No
               </td>
@@ -277,58 +293,88 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
           {/* 항목 메인 */}
           <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal text-center align-middle ">
             {/* 맵 입력 값 */}
-            {sample.map((item, index) => (
-              <tr
-                key={index}
-                className="border-b border-[#D9D9D9] h-[20px] text-[#000000A6]"
-              >
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {index + 1}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.estimateModelNm}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.array}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.texturenm}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.quantityUnit}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.quantity}
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
-                  {item.unitPrice}
-                </td>
-                <td className="px-[8px]">{item.cost}</td>
-              </tr>
-            ))}
+            {order?.detailInfo?.details &&
+              order?.detailInfo?.details.map((item, index) => (
+                <tr
+                  key={index}
+                  className="border-b-1 border-[#D9D9D9] h-[20px] text-[#000000A6]"
+                >
+                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                    {index + 1}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px] text-left">
+                    {item.mtNm ? item.mtNm : item.material?.mtNm}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                    {order.detailInfo?.deliveryDueDt
+                      ? dayjs(order.detailInfo?.deliveryDueDt).format(
+                          "YYYY-MM-DD"
+                        )
+                      : ""}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                    {item.mtOrderSizeW} * {item.mtOrderSizeH} *{" "}
+                    {item.mtOrderThk}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                    {item.mtOrderTxtur}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px] text-right">
+                    {item.mtOrderQty}
+                  </td>
+                  <td className="border-r border-[#D9D9D9] px-[8px] text-right">
+                    {(item.mtOrderPrice ?? 0).toLocaleString()}
+                  </td>
+                  <td className="px-[8px] text-right">
+                    {(item.mtOrderAmount ?? 0).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
 
             {/* 총 합계 */}
-            <tr className="border-b border-[#D9D9D9] h-[25px] bg-[rgba(238,238,238,0.5)]">
+            <tr className="border-b-1 border-[#D9D9D9] h-[25px] bg-[rgba(238,238,238,0.5)]">
               <td className="border-r border-[#D9D9D9] px-[8px]" colSpan={5}>
                 <span className="px-[30px]">합</span>
                 <span>계</span>
               </td>
-              <td className="border-r border-[#D9D9D9] px-[8px]">160</td>
               <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                -
+                {order?.detailInfo?.details &&
+                  order?.detailInfo?.details.length > 0 &&
+                  order.detailInfo.details
+                    .map((item) => item.mtOrderQty ?? 0)
+                    .reduce((a, b) => a + b, 0)
+                    .toLocaleString()}
               </td>
               <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                -
+                {order?.detailInfo?.details &&
+                  order?.detailInfo?.details.length > 0 &&
+                  order.detailInfo.details
+                    .map((item) => item.mtOrderPrice ?? 0)
+                    .reduce((a, b) => a + b, 0)
+                    .toLocaleString()}
+              </td>
+              <td className="border-r border-[#D9D9D9] px-[8px] text-right">
+                {order?.detailInfo?.details &&
+                  order?.detailInfo?.details.length > 0 &&
+                  order.detailInfo.details
+                    .map((item) => item.mtOrderAmount ?? 0)
+                    .reduce((a, b) => a + b, 0)
+                    .toLocaleString()}
               </td>
             </tr>
 
             {/* 빈 줄 */}
             {Array.from(
-              { length: Math.max(0, 11 - sample.length - 1) },
+              {
+                length: Math.max(
+                  0,
+                  11 - (order?.detailInfo?.details ?? []).length - 1
+                ),
+              },
               (_, index) => (
                 <tr
                   key={`empty-${index}`}
-                  className="border-b border-[#D9D9D9] h-[20px]"
+                  className="border-b-1 border-[#D9D9D9] h-[20px]"
                 >
                   {Array.from({ length: 8 }).map((_, colIdx) => (
                     <td
@@ -346,17 +392,21 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
           </tbody>
         </table>
         <div className="font-normal text-[9px] font-[Spoqa Han Sans Neo] flex text-[#000000A6]">
-          <div className="w-[40px] h-[47px] flex justify-center items-center gap-[8px] border-b border-r border-[#D9D9D9]">
+          <div className="w-[40px] h-[47px] flex justify-center items-center gap-[8px] border-b-1 border-r border-[#D9D9D9]">
             특기 사항
           </div>
-          <div className="w-[361px] h-[47px] flex items-center px-[8px] border-b border-r border-[#D9D9D9] whitespace-nowrap">
-            지불 조건: 납품 후 60일 결재
+          <div className="w-[361px] h-[47px] flex items-center px-[8px] border-b-1 border-r border-[#D9D9D9] whitespace-nowrap">
+            {order?.detailInfo?.paymentCondition
+              ? `지불 조건 : ${order?.detailInfo?.paymentCondition}`
+              : ""}
           </div>
-          <div className="w-[40px] h-[47px] flex justify-center items-center gap-[8px] border-b border-r border-[#D9D9D9]">
+          <div className="w-[40px] h-[47px] flex justify-center items-center gap-[8px] border-b-1 border-r border-[#D9D9D9]">
             비고
           </div>
-          <div className="w-[361px] h-[47px] flex items-center px-[8px] border-b border-[#D9D9D9] whitespace-nowrap ">
-            지불 조건: 납품 후 60일 결재
+          <div className="w-[361px] h-[47px] flex items-center px-[8px] border-b-1 border-[#D9D9D9] whitespace-nowrap ">
+            {order?.detailInfo?.paymentCondition
+              ? `지불 조건 : ${order?.detailInfo?.paymentCondition}`
+              : ""}
           </div>
         </div>
       </div>
