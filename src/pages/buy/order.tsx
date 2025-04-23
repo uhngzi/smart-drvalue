@@ -335,6 +335,7 @@ const BuyOrderPage: React.FC & {
       allowTaint: true,
       scale: 2,
       backgroundColor: "#fff",
+      scrollY: 0,
     });
     const imgData = canvas.toDataURL("image/png");
 
@@ -343,7 +344,7 @@ const BuyOrderPage: React.FC & {
       printWindow.document.write(`
         <html>
           <head>
-            <title>발주서 출력</title>
+            <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
             <style>
               @page {
                 size: A4 landscape;
@@ -498,11 +499,14 @@ const BuyOrderPage: React.FC & {
         open={orderDocumentFormOpen}
         setOpen={setOrderDocumentFormOpen}
         title={"발주서 미리보기"}
-        width={882}
+        width={1163}
         draggable
         contents={
           <>
-            <div ref={componentRef}>
+            <div
+              ref={componentRef}
+              className="px-[20px] py-[30px] w-[1123px] bg-white"
+            >
               <PurchaseDocumentForm id={order?.id ?? ""} />
             </div>
             <div className="v-h-center gap-5 mt-20">
