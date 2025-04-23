@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 const WkLaminationMaterialListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
- 
+  console.log(setLaminationMaterialType, 'setLaminationMaterialType!!!');
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [ data, setData ] = useState<Array<laminationMaterialType>>([]);
 

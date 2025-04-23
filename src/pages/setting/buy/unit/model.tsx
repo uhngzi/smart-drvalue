@@ -12,7 +12,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 // 기초 타입 import
-import { unitModelType, setUnitModelType, newUnitModelType } from "@/data/type/base/unit";
+import {
+  unitModelType,
+  unitModelCUType,
+  setUnitModelType,
+  setUnitModelCUType,
+  newUnitModelCUType
+} from "@/data/type/base/unit";
 
 // 레이어 유형 enum import
 import { LayerEm } from "@/data/type/enum";
@@ -98,7 +104,7 @@ const BuyUnitModelListPage: React.FC & {
       //등록 모달창을 위한 변수
     const [ newOpen, setNewOpen ] = useState<boolean>(false);
       //등록 모달창 데이터
-    const [ newData, setNewData ] = useState<unitModelType>(newUnitModelType);
+    const [ newData, setNewData ] = useState<unitModelCUType>(newUnitModelCUType);
     const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.unitModelItems.CUDPopItems);
   
     //값 변경 함수
@@ -204,7 +210,7 @@ const BuyUnitModelListPage: React.FC & {
 
   function modalClose(){
     setNewOpen(false);
-    setNewData(newUnitModelType);
+    setNewData(newUnitModelCUType);
   }
   
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
@@ -274,7 +280,7 @@ const BuyUnitModelListPage: React.FC & {
                 <div
                   className="w-full h-full h-center justify-center cursor-pointer"
                   onClick={()=>{
-                    setNewData(setUnitModelType(record));
+                    setNewData(setUnitModelCUType(record));
                     setNewOpen(true);
                   }}
                 >
@@ -346,7 +352,8 @@ const BuyUnitModelListPage: React.FC & {
         items={addModalInfoList} 
         data={newData}
         onSubmit={handleSubmitNewData}
-        onDelete={handleDataDelete}/>
+        onDelete={handleDataDelete}
+        handleDataChange={handleDataChange}/>
 
       <AntdAlertModal
         open={resultOpen}
@@ -357,7 +364,7 @@ const BuyUnitModelListPage: React.FC & {
         onOk={()=>{
           refetch();
           setResultOpen(false);
-          setNewData(newUnitModelType);
+          setNewData(newUnitModelCUType);
         }}
         hideCancel={true}
         theme="base"
