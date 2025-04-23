@@ -22,9 +22,12 @@ import FullChip from "../Chip/FullChip"
  * @property {boolean} [isSelect=false] - 선택 모드 활성화 여부
  * @property {string | null} [selectId] - 선택된 노드 ID, isSelect가 true일때만 사용할 수 있습니다.
  * @property {(id: any) => void} [setSelectId] - 선택 이벤트 발생 시 호출되는 함수, isSelect가 true일때만 사용할 수 있습니다.
- * @property {boolean} [isCheck=false] - 체크박스 모드 활성화 여부
+ * @property {boolean} [isCheck=false] - 체크박스 모드 자식 활성화 여부
  * @property {{matchId: string, checkId: string}[]} [checkedData] - 체크된 노드 목록, isCheck가 true일때만 사용할 수 있습니다.
  * @property {(e: CheckboxChangeEvent, matchId: any) => void} [checkChange] - 체크박스 변경 이벤트 핸들러, isCheck가 true일때만 사용할 수 있습니다.
+ * @property {boolean} [isCheckParents=false] - 체크박스 모드 부모 활성화 여부
+ * @property {{matchId: string, checkId: string}[]} [checkedParentsData] - 체크된 부모 노드 목록, isCheckParents가 true일때만 사용할 수 있습니다.
+ * @property {(e: CheckboxChangeEvent, matchId: any) => void} [checkParentsChange] - 부모 체크박스 변경 이벤트 핸들러, isCheckParents가 true일때만 사용할 수 있습니다.
  * @property {boolean} [notCollapsed] - 트리 전체 펴기 접기 활성화 여부
  */
 interface Props {
@@ -39,6 +42,10 @@ interface Props {
   checkedData?: {matchId: string, checkId: string}[];
   checkChange?: (e: CheckboxChangeEvent, matchId: any) => void;
   notCollapsed?: boolean;
+
+  isCheckParents?: boolean;
+  checkedParentsData?: {matchId: string, checkId: string}[];
+  checkParentsChange?: (e: CheckboxChangeEvent, matchId: any) => void;
 }
 
 const CustomTreeUsed:React.FC<Props> = ({
@@ -53,6 +60,10 @@ const CustomTreeUsed:React.FC<Props> = ({
   checkedData,
   checkChange,
   notCollapsed,
+
+  isCheckParents = false,
+  checkedParentsData,
+  checkParentsChange,
 }) => {
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
   const [ list, setList ] = useState<treeType[]>([]);
@@ -142,6 +153,10 @@ const CustomTreeUsed:React.FC<Props> = ({
             <div key={item.id}>
               <div className={`w-full h-30 h-center pl-5 gap-10 cursor-pointer h-45 hover:bg-[#f3f6f7] ${selectId === item.id ? '!bg-[#f3faff] justify-between' : ''}`} key={item.id} 
                   onClick={(e)=>{
+                    // Checkbox, 버튼 클릭 시는 무시
+                    const target = e.target as HTMLElement;
+                    if (target.tagName === 'INPUT') return;
+
                     e.stopPropagation(); 
                     if(isChild) {
                       handleShowList(item.id)
@@ -160,7 +175,15 @@ const CustomTreeUsed:React.FC<Props> = ({
                 )} */}
                 <div className="flex h-center gap-10">
                   <SettingFill/>
-                  {!isChild && isCheck ? <Checkbox onChange={(e) => checkChange?.(e, checkedData?.find(chk => chk.checkId === item.id)?.matchId || null)} value={item.id} checked={checkedData?.some(chk => chk.checkId === item.id)}/> : <></> }
+                  {isCheckParents ? (
+                    <Checkbox
+                      onChange={(e) =>
+                        checkParentsChange?.(e, checkedParentsData?.find((chk) => chk.checkId === item.id)?.matchId || null)
+                      }
+                      value={item.id}
+                      checked={checkedParentsData?.some((chk) => chk.checkId === item.id)}
+                    />
+                  ) : !isChild && isCheck ? <Checkbox onChange={(e) => checkChange?.(e, checkedData?.find(chk => chk.checkId === item.id)?.matchId || null)} value={item.id} checked={checkedData?.some(chk => chk.checkId === item.id)}/> : <></> }
                   <span className="flex text-left">{item.label}</span>
                 </div>
                 {isChild ? (
