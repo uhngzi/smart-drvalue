@@ -5,7 +5,7 @@ import { commonCodeRType } from "./common"; // 공통코드
 
 export type unitTextureType = {
   id?: string;
-  texture?: commonCodeRType;
+  texture?: commonCodeRType | null;
   remark?: string,
   weight?: number,
   addCost?: number,
@@ -31,16 +31,38 @@ export const setUnitTextureType = (data: any):unitTextureType => {
   }
 }
 
-export const newUnitTextureType = ():unitTextureType => {
+export type unitTextureCUType = {
+  id?: string;
+  texture?: commonCodeRType | null;
+  remark?: string,
+  weight?: number,
+  addCost?: number,
+  appDt?: Date | Dayjs | null;
+  ordNo?: number,
+  useYn?: boolean,
+}
+
+export const setUnitTextureCUType = (data: any):unitTextureCUType => {
+  return {
+    id: data.id,
+    texture: data.texture?.id,
+    remark: data.remark,
+    weight: data.weight,
+    addCost: data.addCost,
+    appDt: data.appDt,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
+  }
+}
+
+export const newUnitTextureCUType = ():unitTextureCUType => {
   return {
     texture: { id: '' },
     remark: "",
+    ordNo: 0,
+    useYn: true,
     weight: 0,
     addCost: 0,
     appDt: null,
-    ordNo: 0,
-    useYn: true,
-    createdAt: null,
-    updatedAt: null,
   }
 }

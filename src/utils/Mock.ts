@@ -133,11 +133,12 @@ const MOCK = {
     unitTextureItems: {
         tableColumns: [],
         CUDPopItems: [
-            { name:'texture',label:'재질', widthType:'full', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}] },
-            { name:'weight',label:'가중치', widthType:'full', type:'input', inputType:'number' },
-            { name:'addCost',label:'추가 비용', widthType:'full', type:'input', inputType:'number' },
-            { name:'addDt',label:'적용일', widthType:'full', type:'date' },
-            { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+            { name:'texture', label:'재질', widthType:'half', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}] },
+            { name:'weight', label:'가중치', widthType:'half', type:'input', inputType:'number' },
+            { name:'addCost', label:'추가 비용', widthType:'half', type:'input', inputType:'number' },
+            { name:'useYn', label:'사용여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+            { name:'remark', label:'비고', widthType:'half', type:'input' },
+            { name:'appDt', label:'적용일', widthType:'half', type:'date' },
         ]
     },
       
