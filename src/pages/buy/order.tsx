@@ -359,7 +359,7 @@ const BuyOrderPage: React.FC & {
         open={orderDocumentFormOpen}
         setOpen={setOrderDocumentFormOpen}
         title={"발주서 미리보기"}
-        width={635}
+        width={882}
         contents={
           <>
             <PurchaseDocumentForm id={order?.id ?? ""} />
