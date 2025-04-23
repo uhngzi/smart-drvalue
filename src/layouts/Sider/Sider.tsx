@@ -25,15 +25,12 @@ import Err from "@/assets/svg/icons/s_excalm.svg";
 import { loginCheck, logout } from "@/utils/signUtil";
 
 import { useMenu } from "@/data/context/MenuContext";
+import { port } from "@/pages/_app";
 
 interface Props {
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-// 브라우저 환경인지 체크
-const isBrowser = typeof window !== 'undefined';
-const port = isBrowser ? window.location.port : ''; // 현재 포트
 
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();

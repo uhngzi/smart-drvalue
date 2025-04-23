@@ -11,11 +11,7 @@ import AuthPageLayout from "@/layouts/Main/AuthPageLayout";
 
 import User from "@/assets/svg/icons/user.svg";
 import Lock from "@/assets/svg/icons/lock.svg";
-
-// 브라우저 환경인지 체크
-const isBrowser = typeof window !== 'undefined';
-const port = isBrowser ? window.location.port : '';
-console.log(port);
+import { port } from "../_app";
 
 const gradientStyle = {
   background: 'linear-gradient(91.55deg, #4880FF 12%, #03C75A 30%, #038D07 100%)',
@@ -61,8 +57,8 @@ const SignInPage: React.FC & {
         if(port === '90') {
           cookie.set('companySY', 'sy');
         } else if(port === '3000') {
-          // cookie.set('companySY', 'sy');
-          cookie.set('company', 'gpn');
+          cookie.set('companySY', 'sy');
+          // cookie.set('company', 'gpn');
         } else {
           cookie.set('company', 'gpn');
         }

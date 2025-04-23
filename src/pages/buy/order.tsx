@@ -38,6 +38,7 @@ import Bag from "@/assets/svg/icons/bag.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import AntdModal from "@/components/Modal/AntdModal";
 import OrderDocumentForm from "@/contents/documentForm/OrderDocumentForm";
+import { port } from "../_app";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -296,7 +297,7 @@ const BuyOrderPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             BuyOrderClmn(totalData, pagination, setOrderDocumentFormOpen, setOrder, router).filter(f=>
               !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")

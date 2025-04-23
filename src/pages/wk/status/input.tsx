@@ -9,6 +9,7 @@ import { partnerRType } from "@/data/type/base/partner";
 import { wkPlanWaitType } from "@/data/type/wk/plan";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import { port } from "@/pages/_app";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
@@ -209,7 +210,7 @@ const WKStatusProcPage: {
         <List>
           <AntdTableEdit
             columns={
-              cookie.get('companySY') === 'sy'?
+              port === '90' || cookie.get('companySY') === 'sy'?
               WKStatusProcClmn(totalData, pagination, setPartnerData, undefined, undefined, undefined, undefined, router, true)?.filter(f=> f.key !== 'check'
                 && !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
                 && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")

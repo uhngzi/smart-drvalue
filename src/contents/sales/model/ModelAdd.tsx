@@ -58,6 +58,7 @@ import BoxHead from "@/layouts/Body/BoxHead";
 import LabelItem from "@/components/Text/LabelItem";
 import cookie from "cookiejs";
 import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
+import { port } from "@/pages/_app";
 
 const ModelAddLayout = () => {
   const router = useRouter();
@@ -294,7 +295,7 @@ const ModelAddLayout = () => {
       console.log(JSON.stringify(jsonData));
       
       const val = validReq(jsonData, modelReq());
-      if(!val.isValid && cookie.get('companySY') !== 'sy') {
+      if(!val.isValid && port !== '90') {
         setErrMsg(val.missingLabels+'은(는) 필수 입력입니다.');
         setAlertType("error");
         setAlertOpen(true);
@@ -417,7 +418,7 @@ const ModelAddLayout = () => {
                       />
                     </div>
                   </div>
-                  { cookie.get('companySY') === 'sy' &&
+                  { port === '90' || cookie.get('companySY') === 'sy' &&
                   <div className="h-center gap-15">
                     <Items2
                       label1="고객"
@@ -573,7 +574,7 @@ const ModelAddLayout = () => {
                       }
                     />
                   </div>}
-                  { cookie.get('companySY') !== 'sy' &&
+                  { port === '90' || cookie.get('companySY') !== 'sy' &&
                   <div className="h-center gap-15">
                     <Items2
                       size1={1}
@@ -787,7 +788,7 @@ const ModelAddLayout = () => {
               </BoxHead>
               <AntdTable
                 columns={
-                cookie.get('companySY') === 'sy' ?
+                port === '90' || cookie.get('companySY') === 'sy' ?
                 salesOrderModelAddClmn(
                   unitSelectList,
                   vcutSelectList,

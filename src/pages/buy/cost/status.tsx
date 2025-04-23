@@ -16,6 +16,7 @@ import Close from "@/assets/svg/icons/s_close.svg";
 import CardList from "@/components/List/CardList";
 import { useMenu } from "@/data/context/MenuContext";
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 const BuyCostStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -149,7 +150,7 @@ const BuyCostStatusPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             BuyCostOutStatusClmn(totalData, pagination, setSelect).filter(f=>
               !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("pnlW") && !f.key?.toString().includes("kit")

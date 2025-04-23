@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/data/context/MenuContext";
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 const WkPlanWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -86,7 +87,7 @@ const WkPlanWaitPage: React.FC & {
         limit: pagination.size,
         page: pagination.current,
         s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
-        anykeys: {applyAutoFilter : cookie.get('companySY') === 'sy' ? true : false},
+        anykeys: {applyAutoFilter : port === '90' || cookie.get('companySY') === 'sy' ? true : false},
       });
     }
   });
@@ -175,7 +176,7 @@ const WkPlanWaitPage: React.FC & {
         <AntdTableEdit
           create={true}
           columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             WkPalnWaitClmn(
               totalData,
               pagination,

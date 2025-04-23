@@ -64,6 +64,7 @@ import cookie from "cookiejs";
 import { changeModelAddNewModel, changeModelAddNewModelSy } from "@/data/type/sayang/changeData";
 import { modelReq, orderModelType } from "@/data/type/sayang/models";
 import { useBase } from "@/data/context/BaseContext";
+import { port } from "@/pages/_app";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -355,7 +356,7 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if(cookie.get('companySY') === 'sy') {
+          if(port === '90' || cookie.get('companySY') === 'sy') {
             if(model.modelStatus === ModelStatus.NEW) {
               handleSubmit(entity.id, entity);
             }
@@ -383,7 +384,7 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if(cookie.get('companySY') === 'sy') {
+          if(port === '90' || cookie.get('companySY') === 'sy') {
             console.log(result.data);
             if(model.modelStatus === ModelStatus.NEW) {
               setTimeout(()=>handleSubmit(model.id ?? "", model), 500);

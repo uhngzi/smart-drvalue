@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import BlueBox from "@/layouts/Body/BlueBox";
 import cookie from "cookiejs";
 import SalesModelHeadSy from "./SalesModelHeadSy";
+import { port } from "@/pages/_app";
 
 interface LogEntry {
   date: Date | Dayjs | null;
@@ -296,7 +297,7 @@ const SalesModelTable:React.FC<Props> = ({
           key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
           className="min-w-[1490px]"
         >
-          {cookie.get('companySY') === 'sy' &&
+          {port === '90' || cookie.get('companySY') === 'sy' &&
           <SalesModelHeadSy
             model={model}
             handleModelDataChange={handleModelDataChange}
@@ -314,7 +315,7 @@ const SalesModelTable:React.FC<Props> = ({
             partnerMngId={partnerMngId}
           />
           }
-          {cookie.get('companySY') !== 'sy' &&
+          {port === '90' || cookie.get('companySY') !== 'sy' &&
           <SalesModelHead
             model={model}
             handleModelDataChange={handleModelDataChange}
@@ -334,7 +335,7 @@ const SalesModelTable:React.FC<Props> = ({
           <div className="flex flex-col ">
             <AntdTable
               columns={
-              cookie.get('companySY') === 'sy' ? 
+              port === '90' || cookie.get('companySY') === 'sy' ? 
               salesOrderModelClmn(
                 data,
                 setData,

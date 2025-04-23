@@ -50,6 +50,7 @@ import FullOkButtonSmall from "@/components/Button/FullOkButtonSmall";
 import cookie from "cookiejs";
 import TitleIcon from "@/components/Text/TitleIcon";
 import AntdDragger from "@/components/Upload/AntdDragger";
+import { port } from "@/pages/_app";
 
 const SayangSampleAddPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -184,7 +185,7 @@ const SayangSampleAddPage: React.FC & {
       });
       setPrcNotice(rdata.prcNotice ?? "");
       setCamNotice(rdata.camNotice ?? "");
-      if(cookie.get('companySY') === 'sy' && (rdata.brdArrStorageKey ?? "").length > 0) {
+      if(port === '90' || cookie.get('companySY') === 'sy' && (rdata.brdArrStorageKey ?? "").length > 0) {
         setFileIdList((rdata.brdArrStorageKey ?? "").split(','));
         setDetailChk(true);
       }
@@ -526,7 +527,7 @@ const SayangSampleAddPage: React.FC & {
   const [ fileIdList, setFileIdList ] = useState<string[]>([]);
 
   useEffect(()=>{
-    if(cookie.get('companySY') === 'sy' && fileIdList.length > 0) {
+    if(port === '90' || cookie.get('companySY') === 'sy' && fileIdList.length > 0) {
       setDetailData({
         ...detailData,
         brdArrStorageKey: fileIdList.toString(),
@@ -543,7 +544,7 @@ const SayangSampleAddPage: React.FC & {
       <p 
         className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
         onClick={()=>{
-          if(cookie.get('companySY') === 'sy' && !fileSubmitFlag) {
+          if(port === '90' || cookie.get('companySY') === 'sy' && !fileSubmitFlag) {
             setResultType("fileClose");
             setResultOpen(true);
           } else {
@@ -625,7 +626,7 @@ const SayangSampleAddPage: React.FC & {
           <div>
             <AntdTable
               columns={
-              cookie.get('companySY') === 'sy' ?
+              port === '90' || cookie.get('companySY') === 'sy' ?
               sayangSampleWaitAddClmn(
                 surfaceSelectList,
                 unitSelectList,
@@ -678,7 +679,7 @@ const SayangSampleAddPage: React.FC & {
             />
           </div>
         </Popup>}
-        { cookie.get('companySY') === 'sy' &&
+        { port === '90' || cookie.get('companySY') === 'sy' &&
         <div className="flex gap-40 flex-row">
           <Popup className="!w-[300px] flex-grow-[20]">
             <TitleIcon
@@ -721,7 +722,7 @@ const SayangSampleAddPage: React.FC & {
           </Popup>
         </div>
         }
-        { cookie.get('companySY') !== 'sy' &&
+        { port === '90' || cookie.get('companySY') !== 'sy' &&
         <div className="flex gap-40 flex-row">
           <Popup className="!w-[300px] flex-grow-[20]">
             {/* 적층 구조 */}
@@ -807,7 +808,7 @@ const SayangSampleAddPage: React.FC & {
                   return;
                 }
               })
-              if(flag && cookie.get('companySY') === 'sy') {
+              if(flag && (port === '90' || cookie.get('companySY') === 'sy')) {
                 showToast("모델 내 수량을 입력해주세요.", "error");
                 return;
               }

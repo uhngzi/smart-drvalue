@@ -23,6 +23,7 @@ import AutoHideTooltip from '@/components/Tooltip/AntdHideTooltip';
 import CustomAutoCompleteLabel from '@/components/AutoComplete/CustomAutoCompleteLabel';
 import cookie from 'cookiejs';
 import GlobalMemo from '@/contents/globalMemo/GlobalMemo';
+import { port } from '@/pages/_app';
 
 export const specStatusClmn = (
   totalData: number,
@@ -362,7 +363,7 @@ export const specIngClmn = (
     }
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS',
     width: 100,
     dataIndex: 'specModels.pcsW',
     key: 'specModels.pcsW',
@@ -603,7 +604,7 @@ export const sayangSampleWaitClmn = (
     }
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS',
     width: 100,
     dataIndex: 'tempModel.pcsW',
     key: 'tempModel.pcsW',
@@ -756,12 +757,12 @@ export const sayangSampleWaitAddClmn = (
     ]
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '두께(T)' : '층',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '두께(T)' : '층',
     dataIndex: 'layer',
     key: 'layer',
     align: 'center',
     width: 55,
-    render: cookie.get('companySY') !== 'sy' ? undefined : (_, record:specModelType) => (
+    render: port === '90' || cookie.get('companySY') !== 'sy' ? undefined : (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdInputFill
@@ -774,7 +775,7 @@ export const sayangSampleWaitAddClmn = (
         </div>
       </div>
     ),
-    children: cookie.get('companySY') !== 'sy' ? [
+    children: port === '90' || cookie.get('companySY') !== 'sy' ? [
       {
         title:'두께(T)',
         width: 55,
@@ -1026,7 +1027,7 @@ export const sayangSampleWaitAddClmn = (
     )
   },
   {
-    title: cookie.get('companySY') === 'sy'? '도장': '특수인쇄',
+    title: port === '90' || cookie.get('companySY') === 'sy'? '도장': '특수인쇄',
     width:80,
     dataIndex: 'tPrint',
     key: 'tPrint',
@@ -1035,10 +1036,10 @@ export const sayangSampleWaitAddClmn = (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdSelectFill 
-            options={cookie.get('companySY') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
+            options={port === '90' || cookie.get('companySY') === 'sy' ? (stampColorSelectList ?? []) : spPrintSelectList}
             value={record?.spPrint?.id}
             onChange={(e)=>handleModelDataChange(record.id, 'spPrint.id', e)}
-            placeholder={cookie.get('companySY') === 'sy'? "도장컬러" : "특수인쇄"}
+            placeholder={port === '90' || cookie.get('companySY') === 'sy'? "도장컬러" : "특수인쇄"}
             tabIndex={(record?.index ?? 1)*40+15}
             disabled={view?true:false}
           />
@@ -1048,7 +1049,7 @@ export const sayangSampleWaitAddClmn = (
             options={spTypeSelectList}
             value={record?.spType?.id}
             onChange={(e)=>handleModelDataChange(record.id, 'spType.id', e)}
-            placeholder={cookie.get('companySY') === 'sy'? "도장종류" : "특수인쇄종류"}
+            placeholder={port === '90' || cookie.get('companySY') === 'sy'? "도장종류" : "특수인쇄종류"}
             tabIndex={(record?.index ?? 1)*40+16}
             disabled={view?true:false}
           />
@@ -1172,7 +1173,7 @@ export const sayangSampleWaitAddClmn = (
     )
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 SIZE' : 'PCS SIZE',
     width:80,
     dataIndex: 'pcs',
     key: 'pcs',
@@ -1310,7 +1311,7 @@ export const sayangSampleWaitAddClmn = (
     key: 'spec',
     align: 'center',
     render: (_, record:specModelType) => (
-      cookie.get('companySY') === 'sy' ? 
+      port === '90' || cookie.get('companySY') === 'sy' ? 
       <>
         <div className={divClass+"mb-3 gap-5"}>
           <p className="text-left min-w-50 w-50 !text-12">Design Press</p>
@@ -1425,13 +1426,13 @@ export const sayangSampleWaitAddClmn = (
     key: 'cnt',
     align: 'center',
     render: (_, record:specModelType) => (
-      cookie.get('companySY') !== 'sy' ?
+      port === '90' || cookie.get('companySY') !== 'sy' ?
       <div className={divTopClass}>
         <AutoHideTooltip title="수주량" className="w-full">
         <div className={divClass+" !w-full !justify-end gap-5"}>
           <div className="!mr-10">{(record.modelMatch?.orderModel.orderPrdCnt ?? 0).toLocaleString()}</div>
           <div className="!min-w-25 !w-25 !text-12">
-            {cookie.get('companySY') !== 'sy' ? 'PCS' : 'EA'}
+            {port === '90' || cookie.get('companySY') !== 'sy' ? 'PCS' : 'EA'}
           </div>
         </div>
         </AutoHideTooltip>

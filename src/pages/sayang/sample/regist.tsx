@@ -29,6 +29,7 @@ import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 
 import useToast from "@/utils/useToast";
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 const SayangSampleListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -137,7 +138,7 @@ const SayangSampleListPage: React.FC & {
   function sayangPopOpen(matchId:string, modelId:string, statusId:string, record:modelsMatchRType) {
     setRecord(record);
 
-    if(cookie.get('companySY') === 'sy') {
+    if(port === '90' || cookie.get('companySY') === 'sy') {
       setSelectedValue({...selectedValue, matchId:matchId, modelId:modelId, statusId:statusId});
       handleSumbitTemp();
       return;
@@ -344,7 +345,7 @@ const SayangSampleListPage: React.FC & {
         <List>
           <AntdTableEdit
             columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             specIngClmn(
               ingData.length,
               setPartnerData,
@@ -375,7 +376,7 @@ const SayangSampleListPage: React.FC & {
         <List>
           <AntdTableEdit
             columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             sayangSampleWaitClmn(
               waitData.length,
               setPartnerData,

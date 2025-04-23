@@ -30,6 +30,7 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import AntdDrawer from "@/components/Drawer/AntdDrawer";
 import ModelDrawerContent from "@/contents/sayang/model/add/ModelDrawerContent";
+import { port } from "@/pages/_app";
 
 const SalesUserPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -161,7 +162,7 @@ const SalesUserPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-          cookie.get('companySY') === 'sy' ?
+          port === '90' || cookie.get('companySY') === 'sy' ?
           salesUserOrderClmn(
             totalData,
             setPartnerData,

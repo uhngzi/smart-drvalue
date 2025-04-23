@@ -16,6 +16,7 @@ import cookie from 'cookiejs';
 import { cookieName } from '@/api/lib/config';
 import useToast from '@/utils/useToast';
 import { Upload } from 'antd/lib';
+import { port } from '@/pages/_app';
 
 
 interface Props {
@@ -102,7 +103,7 @@ const AntdDragger: React.FC<Props> = ({
         headers={{
         //  'x-tenant-code' : 'gpntest-sebuk-ver',
          'x-tenant-code' : (
-            cookie.get('companySY') === 'sy' ? 'shinyang-test' :
+            port === '90' || cookie.get('companySY') === 'sy' ? 'shinyang-test' :
             cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
             'gpntest-sebuk-ver'
           ),

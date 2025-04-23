@@ -22,6 +22,7 @@ import AntdTableEdit from "@/components/List/AntdTableEdit";
 import cookie from "cookiejs";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { salesEstimateClmn } from "@/data/columns/Sales";
+import { port } from "@/pages/_app";
 
 const SalesUserEstimatePage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -150,7 +151,7 @@ const SalesUserEstimatePage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-          cookie.get('companySY') === 'sy' ?
+          port === '90' || cookie.get('companySY') === 'sy' ?
           salesEstimateClmn(
             totalData,
             setPartnerData,

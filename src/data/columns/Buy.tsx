@@ -14,6 +14,7 @@ import AntdInput from "@/components/Input/AntdInput";
 import CustomAutoCompleteLabel from "@/components/AutoComplete/CustomAutoCompleteLabel";
 import { InputRef, Tooltip } from "antd";
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 export const BuyCostOutClmn = (
   totalData: number,
@@ -87,7 +88,7 @@ export const BuyCostOutClmn = (
     )
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '사양확정일' : '작업지시확정일',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '사양확정일' : '작업지시확정일',
     width: 120,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -101,7 +102,7 @@ export const BuyCostOutClmn = (
     align: 'center',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '시작예정일' : '투입예정일',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '시작예정일' : '투입예정일',
     width: 100,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -156,7 +157,7 @@ export const BuyCostOutClmn = (
     cellAlign: 'right',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 W' : '제품 PCS W',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 W' : '제품 PCS W',
     width: 100,
     dataIndex: 'specModel.pcsW',
     key: 'specModel.pcsW',
@@ -164,7 +165,7 @@ export const BuyCostOutClmn = (
     cellAlign: 'right',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 H' : '제품 PCS H',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 H' : '제품 PCS H',
     width: 100,
     dataIndex: 'specModel.pcsL',
     key: 'specModel.pcsL',
@@ -554,7 +555,7 @@ export const BuyCostOutStatusClmn = (
     )
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '사양확정일' : '작업지시확정일',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '사양확정일' : '작업지시확정일',
     width: 120,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -568,7 +569,7 @@ export const BuyCostOutStatusClmn = (
     align: 'center',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '시작예정일' : '투입예정일',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '시작예정일' : '투입예정일',
     width: 100,
     dataIndex: 'wsExpDt',
     key: 'wsExpDt',
@@ -623,7 +624,7 @@ export const BuyCostOutStatusClmn = (
     cellAlign: 'right',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 W' : '제품 PCS W',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 W' : '제품 PCS W',
     width: 100,
     dataIndex: 'specModel.pcsW',
     key: 'specModel.pcsW',
@@ -631,7 +632,7 @@ export const BuyCostOutStatusClmn = (
     cellAlign: 'right',
   },
   {
-    title: cookie.get('companySY') === 'sy' ? '제품 H' : '제품 PCS H',
+    title: port === '90' || cookie.get('companySY') === 'sy' ? '제품 H' : '제품 PCS H',
     width: 100,
     dataIndex: 'specModel.pcsL',
     key: 'specModel.pcsL',

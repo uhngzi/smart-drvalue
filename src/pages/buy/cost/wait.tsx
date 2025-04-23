@@ -34,6 +34,7 @@ import dayjs from "dayjs";
 import { generateFloorOptions } from "@/data/type/enum";
 import { validReq } from "@/utils/valid";
 import { selectType } from "@/data/type/componentStyles";
+import { port } from "@/pages/_app";
 
 const BuyCostWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -464,7 +465,7 @@ const BuyCostWaitPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('companySY') === 'sy' ?
+            port === '90' || cookie.get('companySY') === 'sy' ?
             BuyCostOutClmn(totalData, pagination, setOpen, setSelect).filter(f=>
               !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
               && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("pnlW") && !f.key?.toString().includes("kit")
@@ -568,7 +569,7 @@ const BuyCostWaitPage: React.FC & {
                     {isExpanded && (
                       <AntdTableEdit
                         columns={
-                          cookie.get('companySY') === 'sy' ?
+                          port === '90' || cookie.get('companySY') === 'sy' ?
                           BuyCostOutPriceClmn(
                             selectPrice,
                             setSelectPrice,

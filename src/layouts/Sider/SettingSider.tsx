@@ -21,13 +21,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react"
 import { loginCheck, logout } from "@/utils/signUtil"
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 interface Props {
 }
-
-// 브라우저 환경인지 체크
-const isBrowser = typeof window !== 'undefined';
-const port = isBrowser ? window.location.port : ''; // 현재 포트
 
 const SettingSider: React.FC<Props> = ({ }) => {
   const router = useRouter();

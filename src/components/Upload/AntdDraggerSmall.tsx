@@ -12,6 +12,7 @@ import { downloadFileByObjectName, sliceByDelimiter } from './upLoadUtils';
 import cookie from 'cookiejs';
 import { baseURL, cookieName } from '@/api/lib/config';
 import useToast from '@/utils/useToast';
+import { port } from '@/pages/_app';
 
 
 interface Props {
@@ -156,7 +157,7 @@ const AntdDraggerSmall: React.FC<Props> = ({
         name="files"
         headers={{
           'x-tenant-code' : (
-             cookie.get('companySY') === 'sy' ? 'shinyang-test' :
+             port === '90' || cookie.get('companySY') === 'sy' ? 'shinyang-test' :
              cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
              'gpntest-sebuk-ver'
            ),

@@ -33,6 +33,7 @@ import { apiGetResponseType } from "@/data/type/apiResponse";
 import FullChip from "@/components/Chip/FullChip";
 import { useMenu } from "@/data/context/MenuContext";
 import cookie from "cookiejs";
+import { port } from "@/pages/_app";
 
 const WKStatusProcPage: {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -394,7 +395,7 @@ const WKStatusProcPage: {
     <List>
       <AntdTableEdit
         columns={
-          cookie.get('companySY') === 'sy'?
+          port === '90' || cookie.get('companySY') === 'sy'?
           WKStatusProcClmn(totalData, pagination, setPartnerData, setSelect, checkeds, setCheckeds, handleCheckedAllClick, router)?.filter(f=>
             !f.key?.toString().includes("layerEm") && !f.key?.toString().includes("sm") && !f.key?.toString().includes("mk")
             && !f.key?.toString().includes("pnlL") && !f.key?.toString().includes("kit") && !f.key?.toString().includes("Kit")
@@ -430,7 +431,7 @@ const WKStatusProcPage: {
         <div className="w-full h-full p-30 bg-white rounded-14 flex flex-col gap-30">
           <div className="flex flex-col gap-10">
             <LabelMedium label="생산 정보"/>
-            { cookie.get('companySY') === 'sy' &&
+            { port === '90' || cookie.get('companySY') === 'sy' &&
             <Description separatorColor="#e7e7ed">
               <DescriptionItems3
                 height="20"
@@ -464,7 +465,7 @@ const WKStatusProcPage: {
               </DescriptionItems>
             </Description>
             }
-            { cookie.get('companySY') !== 'sy' &&
+            { port === '90' || cookie.get('companySY') !== 'sy' &&
             <Description separatorColor="#e7e7ed">
               <DescriptionItems3
                 height="20"

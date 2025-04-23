@@ -19,6 +19,7 @@ import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import { DividerH } from "@/components/Divider/Divider";
 import { useMenu } from "@/data/context/MenuContext";
 import cookie from "cookiejs";
+import { port } from "../_app";
 
 const SalesModelPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -168,7 +169,7 @@ const SalesModelPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            cookie.get('companySY') === 'sy' ? 
+            port === '90' || cookie.get('companySY') === 'sy' ? 
             salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router).filter(f=>f.dataIndex !== 'fpNo' && !f.dataIndex.includes("pnl"))
             :
             salesModelsClmn(totalData, setPartnerData, setPartnerMngData, pagination, router)

@@ -18,6 +18,9 @@ import { BaseProvider } from '@/data/context/BaseContext';
 import { ToastContainer } from 'react-toastify';
 import { MenuProvider } from '@/data/context/MenuContext';
 
+// 브라우저 환경인지 체크
+const isBrowser = typeof window !== 'undefined';
+export const port = isBrowser ? window.location.port : '';
 
 type AppPropsWithLayout = AppProps & {
   Component: {
