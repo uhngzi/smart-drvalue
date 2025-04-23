@@ -762,7 +762,7 @@ export const sayangSampleWaitAddClmn = (
     key: 'layer',
     align: 'center',
     width: 55,
-    render: port !== '90' || cookie.get('companySY') !== 'sy' ? undefined : (_, record:specModelType) => (
+    render: cookie.get('companySY') !== 'sy' ? undefined : (_, record:specModelType) => (
       <div className={divTopClass}>
         <div className={divClass}>
           <AntdInputFill
@@ -775,7 +775,7 @@ export const sayangSampleWaitAddClmn = (
         </div>
       </div>
     ),
-    children: port !== '90' || cookie.get('companySY') !== 'sy' ? [
+    children: cookie.get('companySY') !== 'sy' ? [
       {
         title:'두께(T)',
         width: 55,
