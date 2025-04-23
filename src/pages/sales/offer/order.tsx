@@ -12,7 +12,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { List } from "@/layouts/Body/List";
 import { ListPagination } from "@/layouts/Body/Pagination";
 
-import { SalesOrderStatus } from "@/data/type/enum";
+import { FinalGlbStatus, SalesOrderStatus } from "@/data/type/enum";
 import { salesOrderRType } from "@/data/type/sales/order";
 import { salesUserOrderClmn } from "@/data/columns/Sales";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
@@ -128,7 +128,15 @@ const SalesUserPage: React.FC & {
         {
           limit: pagination.size,
           page: pagination.current,
-          s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+          s_query:
+            sQueryJson.length > 1
+              ? {
+                  $and: [
+                    { isDiscard: { $eq: false } },
+                    { ...JSON.parse(sQueryJson) },
+                  ],
+                }
+              : [{ key: "isDiscard", oper: "eq", value: false }],
         }
       );
     },
@@ -137,8 +145,9 @@ const SalesUserPage: React.FC & {
   useEffect(() => {
     setDataLoading(true);
     if (!isLoading) {
-      const arr = (queryData?.data?.data ?? []).map(
-        (item: salesOrderRType) => ({
+      const arr = ((queryData?.data?.data as salesOrderRType[]) ?? [])
+        // .filter((f) => !f.isDiscard)
+        .map((item: salesOrderRType) => ({
           ...item,
           modelCnt: item.products?.filter(
             (f) =>
@@ -160,8 +169,7 @@ const SalesUserPage: React.FC & {
                     dayjs(b.orderPrdDueDt).valueOf()
                 )[0].orderPrdDueDt
               : "",
-        })
-      );
+        }));
       setData(arr);
       setTotalData(queryData?.data?.total ?? 0);
       setDataLoading(false);

@@ -1,5 +1,8 @@
-import { apiAuthResponseType, apiGetResponseType } from "@/data/type/apiResponse";
-import { instance, instanceRoot } from "./lib/axios"
+import {
+  apiAuthResponseType,
+  apiGetResponseType,
+} from "@/data/type/apiResponse";
+import { instance, instanceRoot } from "./lib/axios";
 
 /*
   *** API 사용 예시 ***
@@ -63,42 +66,42 @@ import { instance, instanceRoot } from "./lib/axios"
 
 // 조건 연산자 타입 정의
 type ConditionOperator =
-  'eq'       // Equal: 필드의 값이 주어진 값과 정확하게 일치하는지 확인
-| 'ne'       // Not Equal: 필드의 값이 주어진 값과 일치하지 않는지 확인
-| 'gt'       // Greater Than: 필드의 값이 주어진 값보다 큰지 확인
-| 'lt'       // Less Than: 필드의 값이 주어진 값보다 작은지 확인
-| 'gte'      // Greater Than or Equal: 필드의 값이 주어진 값보다 크거나 같은지 확인
-| 'lte'      // Less Than or Equal: 필드의 값이 주어진 값보다 작거나 같은지 확인
-| 'starts'   // Starts With: 문자열 필드가 주어진 값으로 시작하는지 확인 (대소문자 구분)
-| 'ends'     // Ends With: 문자열 필드가 주어진 값으로 끝나는지 확인 (대소문자 구분)
-| 'cont'     // Contains: 문자열 필드에 주어진 값이 포함되어 있는지 확인
-| 'excl'     // Excludes: 문자열 필드에 주어진 값이 포함되어 있지 않은지 확인
-| 'in'       // In: 필드의 값이 제공된 값 목록 중 하나와 일치하는지 확인
-| 'notin'    // Not In: 필드의 값이 제공된 값 목록에 포함되지 않는지 확인
-| 'between'  // Between: 필드의 값이 두 값 사이에 있는지 확인
-| 'isnull'   // Is Null: 필드의 값이 null인지 확인
-| 'notnull'  // Not Null: 필드의 값이 null이 아닌지 확인
-| 'eqL'      // Equal (Localized): 대소문자 무시 또는 로컬 비교하여 일치하는지 확인
-| 'neL'      // Not Equal (Localized): 대소문자 무시 또는 로컬 비교하여 일치하지 않는지 확인
-| 'startsL'  // Starts With (Localized): 대소문자 무시 또는 로컬 비교하여 시작하는지 확인
-| 'endsL'    // Ends With (Localized): 대소문자 무시 또는 로컬 비교하여 끝나는지 확인
-| 'contL'    // Contains (Localized): 대소문자 무시 또는 로컬 비교하여 포함되는지 확인
-| 'exclL'    // Excludes (Localized): 대소문자 무시 또는 로컬 비교하여 포함되지 않는지 확인
-| 'inL'      // In (Localized): 대소문자 무시 또는 로컬 비교하여 목록 내 일치 여부 확인
-| 'notinL';  // Not In (Localized): 대소문자 무시 또는 로컬 비교하여 목록 내 미일치 여부 확인
+  | "eq" // Equal: 필드의 값이 주어진 값과 정확하게 일치하는지 확인
+  | "ne" // Not Equal: 필드의 값이 주어진 값과 일치하지 않는지 확인
+  | "gt" // Greater Than: 필드의 값이 주어진 값보다 큰지 확인
+  | "lt" // Less Than: 필드의 값이 주어진 값보다 작은지 확인
+  | "gte" // Greater Than or Equal: 필드의 값이 주어진 값보다 크거나 같은지 확인
+  | "lte" // Less Than or Equal: 필드의 값이 주어진 값보다 작거나 같은지 확인
+  | "starts" // Starts With: 문자열 필드가 주어진 값으로 시작하는지 확인 (대소문자 구분)
+  | "ends" // Ends With: 문자열 필드가 주어진 값으로 끝나는지 확인 (대소문자 구분)
+  | "cont" // Contains: 문자열 필드에 주어진 값이 포함되어 있는지 확인
+  | "excl" // Excludes: 문자열 필드에 주어진 값이 포함되어 있지 않은지 확인
+  | "in" // In: 필드의 값이 제공된 값 목록 중 하나와 일치하는지 확인
+  | "notin" // Not In: 필드의 값이 제공된 값 목록에 포함되지 않는지 확인
+  | "between" // Between: 필드의 값이 두 값 사이에 있는지 확인
+  | "isnull" // Is Null: 필드의 값이 null인지 확인
+  | "notnull" // Not Null: 필드의 값이 null이 아닌지 확인
+  | "eqL" // Equal (Localized): 대소문자 무시 또는 로컬 비교하여 일치하는지 확인
+  | "neL" // Not Equal (Localized): 대소문자 무시 또는 로컬 비교하여 일치하지 않는지 확인
+  | "startsL" // Starts With (Localized): 대소문자 무시 또는 로컬 비교하여 시작하는지 확인
+  | "endsL" // Ends With (Localized): 대소문자 무시 또는 로컬 비교하여 끝나는지 확인
+  | "contL" // Contains (Localized): 대소문자 무시 또는 로컬 비교하여 포함되는지 확인
+  | "exclL" // Excludes (Localized): 대소문자 무시 또는 로컬 비교하여 포함되지 않는지 확인
+  | "inL" // In (Localized): 대소문자 무시 또는 로컬 비교하여 목록 내 일치 여부 확인
+  | "notinL"; // Not In (Localized): 대소문자 무시 또는 로컬 비교하여 목록 내 미일치 여부 확인
 
 // 간단한 단일 조건에 대한 타입
 export interface QueryCondition {
   key: string;
-  oper: ConditionOperator | 'or' | 'and';
-  value: string | number;
+  oper: ConditionOperator | "or" | "and";
+  value: string | number | boolean | null;
 }
 
 // 필드 조건: 필드명에 해당하는 조건 객체 (예: { "prdNm": { "$cont": "DSF" } })
 export interface FieldQuery {
   [field: string]: {
     [K in `$${ConditionOperator}`]?: string;
-  }
+  };
 }
 
 // 논리 연산자를 통한 중첩 조건 타입
@@ -112,8 +115,16 @@ export type SQueryType = QueryCondition[] | LogicalQuery | FieldQuery;
 
 export const getAPI = async (
   server: {
-    type: 'file-mng' | 'auth' | 'sync' | 'baseinfo' | 'core-d1' | 'core-d2' | 'core-d3' | 'utility';
-    utype?: 'root/' | 'tenant/';
+    type:
+      | "file-mng"
+      | "auth"
+      | "sync"
+      | "baseinfo"
+      | "core-d1"
+      | "core-d2"
+      | "core-d3"
+      | "utility";
+    utype?: "root/" | "tenant/";
     url: string;
     header?: boolean;
   },
@@ -132,7 +143,7 @@ export const getAPI = async (
     if (Array.isArray(params.s_query)) {
       // 단순 조건 배열인 경우 각 조건을 변환하여 s_totOper로 감쌉니다.
       const squery = params.s_query.map((qr) => ({
-        [qr.key]: { ['$' + qr.oper]: qr.value }
+        [qr.key]: { ["$" + qr.oper]: qr.value },
       }));
       sParam = JSON.stringify({ ["$" + (params?.s_totOper ?? "and")]: squery });
     } else {
@@ -148,19 +159,19 @@ export const getAPI = async (
       s: sParam,
       sort: params?.sort ?? ["createdAt,DESC"],
       ...(params?.anykeys || {}),
-    }
+    },
   };
 
   let response;
   if (server.header) {
     response = await instanceRoot.get(
-      `${server.type}/v1/${server.utype ?? ''}${server.url}`,
+      `${server.type}/v1/${server.utype ?? ""}${server.url}`,
       config
     );
     console.log(`%cGET :: ${server.url}`, "color: red", response);
   } else {
     response = await instance.get(
-      `${server.type}/v1/${server.utype ?? ''}${server.url}`,
+      `${server.type}/v1/${server.utype ?? ""}${server.url}`,
       config
     );
     console.log(`%cGET :: ${server.url}`, "color: red", response);
@@ -168,4 +179,4 @@ export const getAPI = async (
 
   const { data, resultCode } = response.data;
   return { data, resultCode, response };
-}
+};
