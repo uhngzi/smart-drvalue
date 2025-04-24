@@ -164,7 +164,7 @@ const QualityReportsPage: React.FC & {
 };
 
 QualityReportsPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout menuTitle="성적서">{page}</MainPageLayout>
+  <MainPageLayout menuTitle="(QC)성적서">{page}</MainPageLayout>
 );
 
 export default QualityReportsPage;

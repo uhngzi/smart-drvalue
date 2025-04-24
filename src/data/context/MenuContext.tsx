@@ -218,7 +218,9 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({
       children: m1.children?.map((m2) => ({
         id: m2.children?.[0]?.id ?? "",
         key: m2.children?.[0]?.menuUrl?.split("/").slice(0, 2).join("/"),
-        title: m2.children?.[0]?.menuUrl,
+        title: m2.children?.[0]?.menuUrl?.includes("requirements")
+          ? "/quality/requirement"
+          : m2.children?.[0]?.menuUrl,
         label: m2.menuNm,
         onClick: () => {
           setTimeout(() => setSelectMenu({ ...m2, parentsNm: m1.menuNm }), 50);

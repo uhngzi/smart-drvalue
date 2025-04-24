@@ -133,6 +133,12 @@ const QualityRequirementsPage: React.FC & {
                 dataIndex: "remarks",
                 key: "remarks",
               },
+              {
+                title: "히스토리",
+                width: 80,
+                dataIndex: "history",
+                key: "history",
+              },
             ]}
             data={data}
             styles={{
@@ -164,16 +170,7 @@ const QualityRequirementsPage: React.FC & {
 };
 
 QualityRequirementsPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout
-    menuTitle="품질요구관리"
-    // menu={[
-    //   { text: "품질요구관리", link: "/quality/requirements" },
-    //   { text: "인증현황", link: "/quality/certification" },
-    //   { text: "성적서", link: "/quality/reports" },
-    // ]}
-  >
-    {page}
-  </MainPageLayout>
+  <MainPageLayout menuTitle="(QA)고객사">{page}</MainPageLayout>
 );
 
 export default QualityRequirementsPage;

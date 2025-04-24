@@ -164,7 +164,7 @@ const QualityCertificationPage: React.FC & {
 };
 
 QualityCertificationPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout menuTitle="인증 현황">{page}</MainPageLayout>
+  <MainPageLayout menuTitle="(QA)시스템">{page}</MainPageLayout>
 );
 
 export default QualityCertificationPage;
