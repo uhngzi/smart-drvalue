@@ -80,43 +80,86 @@ const QualityReportsPage: React.FC & {
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   return (
-    <>
-      <ListPagination
-        pagination={pagination}
-        totalData={totalData}
-        onChange={handlePageChange}
-        // handleMenuClick={handlePageMenuClick}
-        searchs={searchs}
-        setSearchs={setSearchs}
-        handleSearchs={handleSearchs}
-      />
-
-      <List>
-        <AntdTableEdit
-          columns={[]}
-          data={data}
-          styles={{
-            th_bg: "#E9EDF5",
-            td_bg: "#FFFFFF",
-            round: "14px",
-            line: "n",
+    <div className="flex gap-20">
+      <div className="flex flex-col flex-1 h-full">
+        <ListPagination
+          pagination={pagination}
+          totalData={totalData}
+          onChange={handlePageChange}
+          // handleMenuClick={handlePageMenuClick}
+          searchs={searchs}
+          setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
+          handleSubmitNew={() => {
+            console.log("handleSubmitNew");
           }}
-          loading={dataLoading}
         />
-      </List>
 
-      <ListPagination
-        pagination={pagination}
-        totalData={totalData}
-        onChange={handlePageChange}
-        // handleMenuClick={handlePageMenuClick}
-        searchs={searchs}
-        setSearchs={setSearchs}
-        handleSearchs={handleSearchs}
-      />
+        <List>
+          <AntdTableEdit
+            columns={[
+              {
+                title: "No",
+                width: 50,
+                dataIndex: "index",
+                key: "index",
+                align: "center",
+                leftPin: true,
+                render: (_: any, __: any, index: number) =>
+                  totalData -
+                  ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+              },
+              {
+                title: "인증서 이름",
+                minWidth: 200,
+                dataIndex: "nm",
+                key: "nm",
+              },
+              {
+                title: "발급처",
+                minWidth: 200,
+                dataIndex: "in",
+                key: "in",
+              },
+              {
+                title: "유효일자",
+                width: 100,
+                dataIndex: "dt",
+                key: "dt",
+              },
+              {
+                title: "비고",
+                width: 80,
+                dataIndex: "remarks",
+                key: "remarks",
+              },
+            ]}
+            data={data}
+            styles={{
+              th_bg: "#E9EDF5",
+              td_bg: "#FFFFFF",
+              round: "14px",
+              line: "n",
+            }}
+            loading={dataLoading}
+          />
+        </List>
+
+        <ListPagination
+          pagination={pagination}
+          totalData={totalData}
+          onChange={handlePageChange}
+          // handleMenuClick={handlePageMenuClick}
+          searchs={searchs}
+          setSearchs={setSearchs}
+          handleSearchs={handleSearchs}
+        />
+      </div>
+
+      <div className="flex min-w-[595px] w-[595px] min-h-[842px] h-full px-20 py-30 bg-[#EEE]"></div>
 
       <ToastContainer />
-    </>
+    </div>
   );
 };
 
