@@ -253,6 +253,13 @@ const BuyMtUnitListPage: React.FC & {
   });
 
   const handleSubmitNewData = async () => {
+<<<<<<< HEAD
+    const val = validReq(newData, materialPriceReq());
+      if (!val.isValid) {
+        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+        return;
+     }
+=======
     // const val = validReq(newData, materialPriceReq());
     // if (!val.isValid) {
     //   showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
@@ -263,6 +270,7 @@ const BuyMtUnitListPage: React.FC & {
       newData.appDt && dayjs(newData.appDt).isValid()
         ? dayjs(newData.appDt).format() // 또는 .format("YYYY-MM-DD")
         : null;
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
 
     try {
       // 새로운 등록인 경우
@@ -277,9 +285,14 @@ const BuyMtUnitListPage: React.FC & {
           },
           {
             ...newData,
+<<<<<<< HEAD
+            material: { id: newData.materialIdx ?? '' },
+            partner: { id: newData.partnerIdx ?? '' },
+=======
             appDt: formattedAppDt,
             material: { id: newData.materialIdx ?? "" },
             partner: { id: newData.partnerIdx ?? "" },
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
             materialIdx: undefined,
             partnerIdx: undefined,
           }
@@ -345,9 +358,14 @@ const BuyMtUnitListPage: React.FC & {
             id ?? "",
             {
               ...payloadWithoutId,
+<<<<<<< HEAD
+              material: { id: newData.materialIdx ?? '' },
+              partner: { id: newData.partnerIdx ?? '' },
+=======
               appDt: formattedAppDt,
               material: { id: newData.materialIdx ?? "" },
               partner: { id: newData.partnerIdx ?? "" },
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
               materialIdx: undefined,
               partnerIdx: undefined,
             }
@@ -427,8 +445,24 @@ const BuyMtUnitListPage: React.FC & {
             [key]: e?.toString(), // 새로운 key 값 업데이트
           },
         });
+<<<<<<< HEAD
+      }else {
+        // 원자재가 바뀌었을 때 관련 종속 값들 초기화
+        if (name === 'materialIdx') {
+          setNewData({
+            ...newData,
+            [name]: e,
+            partnerIdx: undefined, // 공급처 초기화
+            priceNm: '', // 가격명 초기화
+            priceUnit: 0, // 가격 초기화
+          });
+        } else {
+          setNewData({ ...newData, [name]: e });
+        }
+=======
       } else {
         setNewData({ ...newData, [name]: e });
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
       }
     }
   };
@@ -465,6 +499,18 @@ const BuyMtUnitListPage: React.FC & {
                 align: "center",
               },
               {
+<<<<<<< HEAD
+                title: '원자재명',
+                dataIndex: 'material',
+                render: (m: materialType | null) => m?.mtNm ?? '-',
+                align: 'center'
+              },
+              {
+                title: '공급처명',
+                dataIndex: 'partner',
+                render: (p: partnerRType | null) => p?.prtNm ?? '-',
+                align: 'center'
+=======
                 title: "원자재명",
                 dataIndex: "material",
                 render: (m: materialType) => m?.mtNm,
@@ -475,14 +521,17 @@ const BuyMtUnitListPage: React.FC & {
                 dataIndex: "partner",
                 render: (p: partnerRType) => p?.prtNm,
                 align: "center",
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
               },
               {
                 title: "가격명",
                 dataIndex: "priceNm",
                 render: (_: any, record: any) => (
                   <span
-                    className="text-blue-600 cursor-pointer"
-                    onClick={() => handleEditClick(record)}
+                    className="cursor-pointer"
+                    onClick={() => 
+                      handleEditClick(record)
+                    }
                   >
                     {record.priceNm}
                   </span>
@@ -501,10 +550,18 @@ const BuyMtUnitListPage: React.FC & {
                 align: "center",
               },
               {
+<<<<<<< HEAD
+                title: '사용여부',
+                dataIndex: 'useYn',
+                render: (value: boolean) => value ? '사용' : '미사용',
+                align: 'center'
+              }
+=======
                 title: "사용여부",
                 dataIndex: "useYn",
                 align: "center",
               },
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
             ]}
             data={data}
           />
@@ -519,10 +576,15 @@ const BuyMtUnitListPage: React.FC & {
         </>
       )}
       <BaseInfoCUDModal
+<<<<<<< HEAD
+        title={{ name: `원자재 단가 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
+
+=======
         title={{
           name: `원자재 단가 ${newData.id ? "수정" : "등록"}`,
           icon: <Bag />,
         }}
+>>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
         data={newData}
         onSubmit={handleSubmitNewData}
         setOpen={setNewOpen}
