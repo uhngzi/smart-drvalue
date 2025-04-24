@@ -571,8 +571,8 @@ const SayangSampleAddPage: React.FC & {
 
   return (
     <>
-      <div className="p-30 flex v-between-h-center">
-        <p className="text-20 fw-500 font-semibold">사양 등록</p>
+      <div className="px-30 min-h-70 !h-70 v-between-h-center w-full">
+        <p className="text-18 font-[500]">사양 등록</p>
         <p
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={() => {
@@ -590,7 +590,15 @@ const SayangSampleAddPage: React.FC & {
           <Close />
         </p>
       </div>
-      <div className="w-full overflow-auto pl-30 pb-20">
+      <div
+        className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20 bg-back"
+        style={{
+          height:
+            typeof window !== "undefined" && window.innerWidth < 1920
+              ? "calc(100vh - 80px)"
+              : "calc(100vh - 70px)",
+        }}
+      >
         <div className="w-full pr-30 flex flex-col gap-40">
           {detailDataLoading && (
             <>
