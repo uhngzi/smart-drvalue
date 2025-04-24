@@ -517,7 +517,7 @@ const HrUserListPage: React.FC & {
           <section>
             <div className="h-center justify-end pb-10">
               <div
-                className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+                className="w-90 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
                 onClick={()=>setUserDetailOpen(true)}
               >
                 구성원 관리
@@ -569,7 +569,7 @@ const HrUserListPage: React.FC & {
                       align: 'center',
                       render: (_, record) => (
                         <div
-                          className="w-full h-full h-center cursor-pointer"
+                          className="w-full h-full h-center cursor-pointer reference-detail"
                           onClick={()=>{
                             const recordData = {
                               id: record.id,
