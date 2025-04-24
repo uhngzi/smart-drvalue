@@ -386,7 +386,7 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
           </div>
         </div>
         {/* 하단 바디 시작 */}
-        <div className="w-full h-[445px] ">
+        <div className="w-full">
           <table className="h-[25px] table-auto w-full border-t border-[#D9D9D9]">
             {/* 테이블 제목 */}
             <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
