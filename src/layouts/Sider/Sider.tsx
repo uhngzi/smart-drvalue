@@ -232,7 +232,15 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   if (menuLoading) return;
 
   return (
-    <SiderStyled $width={collapsed ? "80px" : "240px"}>
+    <SiderStyled
+      $width={collapsed ? "80px" : "240px"}
+      style={{
+        height:
+          typeof window !== "undefined" && window.innerWidth < 1920
+            ? "calc(100vh - 15px)"
+            : "calc(100vh - 5px)",
+      }}
+    >
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
           <div
@@ -351,8 +359,6 @@ const SiderStyled = styled.div<{
   justify-content: space-between;
 
   width: ${({ $width }) => $width};
-  height: calc(100vh - 10px);
-  max-height: calc(100vh - 15px);
 
   background: rgba(72, 128, 255, 0.05);
 
