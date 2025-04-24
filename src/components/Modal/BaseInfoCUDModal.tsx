@@ -250,10 +250,14 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = (
                             setFormData(prev => ({ ...prev, [item.name]: value }));
                             console.log("🔄 select changed:", item.name, value);
                             handleDataChange?.(value, item.name, "select");
-                            if(item.child) {
+                            if (item.name === 'material') {
+                              setData('matNm', value);
+                              setFormData(prev => ({ ...prev, matNm: value }));
+                            }
+                        
+                            if (item.child) {
                               const childData = item.option?.find((f) => f.value === value)?.children;
-                              setIfChildList(childData)
-                              console.log(childData)
+                              setIfChildList(childData);
                             }
                           }}
                           disabled={item.disabled}

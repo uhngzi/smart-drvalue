@@ -83,7 +83,7 @@ const WkLaminationSourceListPage: React.FC & {
   }
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
-    //등록 모달창 데이터
+    //등록 모달창 데이터``
   const [ newData, setNewData ] = useState<laminationCUType>(newLaminationCUType);
     //값 변경 함수
   const handleDataChange = (
