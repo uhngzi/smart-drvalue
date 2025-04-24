@@ -3,6 +3,7 @@
 import { Dayjs } from "dayjs";
 import { LamDtlTypeEm } from "../enum";
 
+//--------------------copper.tsx------------------------------------------------//
 export type laminationCopperList = {
   id?: string,
   name?: string,
@@ -35,7 +36,10 @@ export const newlaminationCopperList  = ():laminationCopperList => {
     updatedAt: null,
   }
 }
+//--------------------copper.tsx------------------------------------------------// 끝
 
+
+//--------------------source.tsx------------------------------------------------//
 export type laminationMaterialType = {
   id?: string;
   matNm?: string;
@@ -74,21 +78,48 @@ export const newLaminationMaterialType  = ():laminationMaterialType => {
     updatedAt: null,
   }
 }
+//--------------------source.tsx------------------------------------------------//끝
 
-export type laminationRType = {
-  id: string;
-  lamDtlTypeEm: LamDtlTypeEm;
-  matCd: string;
-  matThk: number;
-  copOut: string;
-  copIn: string;
-  lamDtlThk: number;
-  lamDtlRealThk: number;
-  useYn: boolean;
+export type laminationSourceList = {
+  id?: string;
+  matNm?: string;
+  epoxy?: number;
+  code?: string;
+  lamDtlTypeEm?: LamDtlTypeEm | null;
+  ordNo?: 0;
+  useYn?: true;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-  deletedAt?: Date | Dayjs | null;
 }
+
+export const setLaminationSourceList = (data: any):laminationSourceList => {
+  return {
+    id: data.id,
+    matNm: data.matNm,
+    epoxy: data.epoxy,
+    code: data.code,
+    lamDtlTypeEm: data.lamDtlRealThk,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
+    createdAt: null,
+    updatedAt: null,
+  }
+}
+
+export const newLaminationSourceList  = ():laminationSourceList => {
+  return {
+    matNm: '',
+    epoxy: 0,
+    code: '',
+    lamDtlTypeEm: null,
+    ordNo: 0,
+    useYn: true,
+    createdAt: null,
+    updatedAt: null,
+  }
+}
+
+
 
 export type laminationCUType = {
   id?: string;

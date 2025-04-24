@@ -7,7 +7,7 @@ import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import AddContents from "@/contents/base/wk/lamination/AddContents";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { laminationCUType, laminationRType, newLaminationCUType, setLaminationCUType } from "@/data/type/base/lamination";
+import { laminationSourceList,  newLaminationSourceList,  setLaminationSourceList } from "@/data/type/base/lamination";
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -37,7 +37,7 @@ const WkLaminationSourceListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<laminationRType>>([]);
+  const [ data, setData ] = useState<Array<laminationSourceList>>([]);
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
@@ -83,8 +83,8 @@ const WkLaminationSourceListPage: React.FC & {
   }
     //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
-    //등록 모달창 데이터``
-  const [ newData, setNewData ] = useState<laminationCUType>(newLaminationCUType);
+    //등록 모달창 데이터
+  const [ newData, setNewData ] = useState<laminationSourceList>(newLaminationSourceList);
     //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -182,7 +182,7 @@ const WkLaminationSourceListPage: React.FC & {
 
   function modalClose(){
     setNewOpen(false);
-    setNewData(newLaminationCUType);
+    setNewData(newLaminationSourceList);
   }
 
   return (
@@ -230,7 +230,7 @@ const WkLaminationSourceListPage: React.FC & {
                 <div
                   className="w-full h-full justify-center h-center cursor-pointer"
                   onClick={()=>{
-                    setNewData(setLaminationCUType(record));
+                    setNewData(setLaminationSourceList(record));
                     setNewOpen(true);
                   }}
                 >
@@ -239,7 +239,7 @@ const WkLaminationSourceListPage: React.FC & {
               )
             },
             {
-              title: '재질',
+              title: '자재',
               width: 130,
               dataIndex: 'matCd',
               key: 'matCd',
@@ -248,7 +248,7 @@ const WkLaminationSourceListPage: React.FC & {
                 <div
                   className="w-full h-full h-center justify-center cursor-pointer"
                   onClick={()=>{
-                    setNewData(setLaminationCUType(record));
+                    setNewData(setLaminationSourceList(record));
                     setNewOpen(true);
                   }}
                 >
@@ -257,40 +257,42 @@ const WkLaminationSourceListPage: React.FC & {
               )
             },
             {
-              title: '재질두께',
+              title: '자재두께',
               width: 130,
               dataIndex: 'matThk',
               key: 'matThk',
               align: 'center',
             },
             {
-              title: '동박외층',
+              title: 'Epoxy',
               width: 130,
-              dataIndex: 'copOut',
-              key: 'copOut',
+              dataIndex: 'epoxy',
+              key: 'epoxy',
               align: 'center',
             },
             {
-              title: '동박내층',
+              title: '동박',
+              width: 130,
+              dataIndex: 'copNm',
+              key: 'copNm',
+              align: 'center',
+            },
+            {
+              title: '동박두께',
               width: 130,
               dataIndex: 'copIn',
               key: 'copIn',
               align: 'center',
             },
             {
-              title: '두께',
+              title: '사용여부',
               width: 130,
-              dataIndex: 'lamDtlThk',
-              key: 'lamDtlThk',
+              dataIndex: 'useYn',
+              key: 'useYn',
               align: 'center',
+              render: (value: boolean) => value ? "사용" : "미사용", 
             },
-            {
-              title: '실두께',
-              width: 130,
-              dataIndex: 'lamDtlRealThk',
-              key: 'lamDtlRealThk',
-              align: 'center',
-            },
+            
           ]}
           data={data}
         />
@@ -400,7 +402,7 @@ const WkLaminationSourceListPage: React.FC & {
         onOk={()=>{
           refetch();
           setResultOpen(false);
-          setNewData(newLaminationCUType);
+          setNewData(newLaminationSourceList);
         }}
         hideCancel={true}
         theme="base"
