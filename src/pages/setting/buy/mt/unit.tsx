@@ -229,15 +229,11 @@ const BuyMtUnitListPage: React.FC & {
   });
 
   const handleSubmitNewData = async () => {
-    // const val = validReq(newData, materialPriceReq());
-    // if (!val.isValid) {
-    //   showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
-    //   return;
-    // }
-    // 등록 or 수정 전 appDt 날짜 처리
-    const formattedAppDt = newData.appDt && dayjs(newData.appDt).isValid()
-    ? dayjs(newData.appDt).format() // 또는 .format("YYYY-MM-DD")
-    : null;
+    const val = validReq(newData, materialPriceReq());
+      if (!val.isValid) {
+        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+        return;
+     }
 
     try {
       // 새로운 등록인 경우
@@ -247,7 +243,6 @@ const BuyMtUnitListPage: React.FC & {
           { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
           {
             ...newData,
-            appDt: formattedAppDt,
             material: { id: newData.materialIdx ?? '' },
             partner: { id: newData.partnerIdx ?? '' },
             materialIdx: undefined,
@@ -298,7 +293,6 @@ const BuyMtUnitListPage: React.FC & {
             id ?? '', 
             {
               ...payloadWithoutId,
-              appDt: formattedAppDt,
               material: { id: newData.materialIdx ?? '' },
               partner: { id: newData.partnerIdx ?? '' },
               materialIdx: undefined,
@@ -370,7 +364,18 @@ const BuyMtUnitListPage: React.FC & {
           }
         });
       }else {
-        setNewData({ ...newData, [name]: e });
+        // 원자재가 바뀌었을 때 관련 종속 값들 초기화
+        if (name === 'materialIdx') {
+          setNewData({
+            ...newData,
+            [name]: e,
+            partnerIdx: undefined, // 공급처 초기화
+            priceNm: '', // 가격명 초기화
+            priceUnit: 0, // 가격 초기화
+          });
+        } else {
+          setNewData({ ...newData, [name]: e });
+        }
       }
     }
   };
@@ -407,13 +412,13 @@ const BuyMtUnitListPage: React.FC & {
               {
                 title: '원자재명',
                 dataIndex: 'material',
-                render: (m: materialType) => m.mtNm,
+                render: (m: materialType | null) => m?.mtNm ?? '-',
                 align: 'center'
               },
               {
                 title: '공급처명',
                 dataIndex: 'partner',
-                render: (p: partnerRType) => p.prtNm,
+                render: (p: partnerRType | null) => p?.prtNm ?? '-',
                 align: 'center'
               },
               {
@@ -421,8 +426,10 @@ const BuyMtUnitListPage: React.FC & {
                 dataIndex: 'priceNm',
                 render: (_: any, record: any) => (
                   <span
-                    className="text-blue-600 cursor-pointer"
-                    onClick={() => handleEditClick(record)}
+                    className="cursor-pointer"
+                    onClick={() => 
+                      handleEditClick(record)
+                    }
                   >
                     {record.priceNm}
                   </span>
@@ -443,6 +450,7 @@ const BuyMtUnitListPage: React.FC & {
               {
                 title: '사용여부',
                 dataIndex: 'useYn',
+                render: (value: boolean) => value ? '사용' : '미사용',
                 align: 'center'
               }
             ]}
@@ -460,6 +468,7 @@ const BuyMtUnitListPage: React.FC & {
       )}
       <BaseInfoCUDModal
         title={{ name: `원자재 단가 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
+
         data={newData}
         onSubmit={handleSubmitNewData}
         setOpen={setNewOpen}

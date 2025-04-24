@@ -145,7 +145,7 @@ export type materialPriceCUType = {
   safeInv?: number;
   appDt?: Date | Dayjs | null;
   useYn?: boolean;
-
+  
   // UI 입력용 보조 필드 (선택)
   materialIdx?: string;
   partnerIdx?: string;
@@ -192,7 +192,6 @@ export const materialPriceReq = () => [
   { field: 'wgtMin', label: '최소 중량' },
   { field: 'wgtMax', label: '최대 중량' },
   { field: 'unitType', label: '단위' },
-  { field: 'remarks', label: '기타사항' },
   { field: 'safeInv', label: '안전재고' },
   { field: 'appDt', label: '적용일' },
 ];
