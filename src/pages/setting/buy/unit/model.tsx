@@ -284,7 +284,7 @@ const BuyUnitModelListPage: React.FC & {
                     setNewOpen(true);
                   }}
                 >
-                  {record.layerEm}
+                  {record.layerEm.replace("L", "") + "층"}
                 </div>
               )
             },
@@ -294,6 +294,11 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'minAmount',
               key: 'minAmount',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '최대 수량',
@@ -301,6 +306,11 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'maxAmount',
               key: 'maxAmount',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '가격',
@@ -308,12 +318,24 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'price',
               key: 'price',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '배송일',
               width: 130,
               dataIndex: 'deliveryDays',
               key: 'deliveryDays',
+              align: 'center',
+            },
+            {
+              title: '비고',
+              width: 130,
+              dataIndex: 'remark',
+              key: 'remark',
               align: 'center',
             },
             /*{
