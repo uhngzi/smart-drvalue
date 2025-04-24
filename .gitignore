@@ -44,3 +44,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+src/api/lib/axios.ts
+src/pages/sign/in.tsx
