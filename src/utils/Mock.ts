@@ -35,12 +35,11 @@ const MOCK = {
         tableColumns: [],
         CUDPopItems: [
             { name:'lamDtlTypeEm',label:'유형', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
-            { name:'matCd',label:'재질', widthType:'full', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}], },
-            { name:'matThk',label:'재질두께', widthType:'full', type:'input', inputType:'number', },
-            { name:'copOut',label:'동박외층', widthType:'full', type:'input', },
-            { name:'copIn',label:'동박내층', widthType:'full', type:'input', },
-            { name:'lamDtlThk',label:'두께', widthType:'full', type:'input', inputType:'number', },
-            { name:'lamDtlRealThk',label:'실두께', widthType:'full', type:'input', inputType:'number', },
+            { name:'matNm',label:'자재', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
+						{ name:'matNm',label:'자재두께', widthType:'full', type:'input', },
+            { name:'lamDtlThk',label:'Epoxy', widthType:'full', type:'input', inputType:'number', },
+            { name:'copNm',label:'동박', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
+            { name:'copNm',label:'동박두께', widthType:'full', type:'disabled', },
             { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
         ]
     },
@@ -58,7 +57,7 @@ const MOCK = {
 			tableColumns: [],
 				CUDPopItems: [ 
 						{ name:'name',label:'이름', widthType:'full', type:'input'},
-						{ name:'copThk',label:'코딩 두께', widthType:'full', type:'input', inputType:'number', },
+						{ name:'copThk',label:'두께', widthType:'full', type:'input', inputType:'number', },
 						{ name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
 				]   
 		},
