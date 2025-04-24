@@ -153,7 +153,7 @@ const MainPageLayout: React.FC<Props> = ({
               </p>
             </div>
             <div
-              className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20"
+              className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20 bg-back"
               style={{
                 height:
                   typeof window !== "undefined" && window.innerWidth < 1920

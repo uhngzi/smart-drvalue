@@ -348,7 +348,7 @@ const GlobalMemo: React.FC<Props> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed z-[9999999] p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
+              className="fixed z-[999] p-4 bg-white shadow-lg border rounded-md flex flex-col gap-10 !p-10"
               style={{
                 position: "fixed",
                 left: pos.x,

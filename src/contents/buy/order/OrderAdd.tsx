@@ -7,10 +7,11 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { getPrtSupAPI } from "@/api/cache/client";
 import TextArea from "antd/es/input/TextArea";
-import { Button, Dropdown, Space, Steps } from "antd";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Steps } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+import domtoimage from "dom-to-image";
+import { port } from "@/pages/_app";
 
-import { LabelThin } from "@/components/Text/Label";
 import { DividerV } from "@/components/Divider/Divider";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
@@ -19,10 +20,7 @@ import LabelItem from "@/components/Text/LabelItem";
 import AntdSelect from "@/components/Select/AntdSelect";
 import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
 import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import AntdTable from "@/components/List/AntdTable";
-import Items2 from "@/components/Item/Items2";
-import AntdSelectFill from "@/components/Select/AntdSelectFill";
+import AntdModal from "@/components/Modal/AntdModal";
 
 import {
   newDataPartnerType,
@@ -37,33 +35,23 @@ import {
   materialPriceType,
 } from "@/data/type/base/material_back";
 import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
-import {
-  BuyOrderMtClmn,
-  BuyOrderMtPriceClmn,
-  BuyOrderMtViewClmn,
-} from "@/data/columns/Buy";
 import { useUser } from "@/data/context/UserContext";
 import { selectType } from "@/data/type/componentStyles";
 
 import Close from "@/assets/svg/icons/s_close.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
-import Edit from "@/assets/svg/icons/edit.svg";
-import Memo from "@/assets/svg/icons/memo.svg";
-import Trash from "@/assets/svg/icons/trash.svg";
 
 import useToast from "@/utils/useToast";
 import { MOCK } from "@/utils/Mock";
 import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel } from "@/utils/formatPhoneNumber";
 
+import MtList from "./MtList";
 import { Popup } from "@/layouts/Body/Popup";
-import BlueBox from "@/layouts/Body/BlueBox";
-import BoxHead from "@/layouts/Body/BoxHead";
 
 import CsMngContent from "@/contents/sales/order/add/CsMngContent";
-import MtList from "./MtList";
-import { port } from "@/pages/_app";
+import PurchaseDocumentForm from "@/contents/documentForm/PurchaseDocumentForm";
 
 const OrderAddLayout = () => {
   const router = useRouter();
@@ -624,6 +612,60 @@ const OrderAddLayout = () => {
   };
   // -------------- step 3단계 -------------- 끝
 
+  // --------------- 발주서 모달 -------------- 시작
+  const [orderDocumentFormOpen, setOrderDocumentFormOpen] =
+    useState<boolean>(false);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = async () => {
+    const node = document.getElementById("print-area");
+    if (!node) return;
+
+    try {
+      const dataUrl = await domtoimage.toPng(node, {
+        quality: 1,
+        height: node.offsetHeight * 2,
+        width: node.offsetWidth * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+        },
+      });
+
+      const win = window.open("");
+      win?.document.write(`
+        <html>
+          <head>
+            <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+            <style>
+              @page {
+                size: A4 landscape;
+                margin: 0;
+              }
+              body { margin: 0; }
+              img { width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <img src="${dataUrl}" />
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() {
+                  window.close();
+                };
+              }
+            </script>
+          </body>
+        </html>
+      `);
+      win?.document.close();
+    } catch (error) {
+      console.error("캡처 실패", error);
+    }
+  };
+  // --------------- 발주서 모달 -------------- 끝
+
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [alertType, setAlertType] = useState<
     "del" | "cancel" | "discard" | "close" | "error" | ""
@@ -646,7 +688,7 @@ const OrderAddLayout = () => {
         </p>
       </div>
       <div
-        className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20"
+        className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20 bg-back pr-30"
         style={{
           height:
             typeof window !== "undefined" && window.innerWidth < 1920
@@ -921,7 +963,13 @@ const OrderAddLayout = () => {
                 />
 
                 {/* 발주 하단 버튼 */}
-                <div className="w-full h-center px-30 justify-end">
+                <div className="w-full h-center px-30 justify-end gap-15">
+                  <Button
+                    className="h-32 rounded-6"
+                    onClick={() => setOrderDocumentFormOpen(true)}
+                  >
+                    발주서 미리보기
+                  </Button>
                   <Button
                     className="w-109 h-32 bg-point1 text-white rounded-6"
                     style={{ color: "#ffffffE0", backgroundColor: "#4880FF" }}
@@ -948,6 +996,30 @@ const OrderAddLayout = () => {
           data={newPartner}
           onSubmit={handleSubmitNewData}
           onDelete={() => {}}
+        />
+
+        {/* 발주서 */}
+        <AntdModal
+          open={orderDocumentFormOpen}
+          setOpen={setOrderDocumentFormOpen}
+          title={"발주서 미리보기"}
+          width={1163}
+          draggable
+          contents={
+            <>
+              <div
+                id="print-area"
+                ref={componentRef}
+                className="px-[20px] py-[30px] w-[1123px] bg-white"
+              >
+                <PurchaseDocumentForm id={id?.toString() ?? ""} />
+              </div>
+              <div className="v-h-center gap-5 mt-20">
+                <Button onClick={handlePrint}>인쇄</Button>
+                <Button type="primary">발주서 발송</Button>
+              </div>
+            </>
+          }
         />
 
         {/* 삭제 시 확인 모달창 */}

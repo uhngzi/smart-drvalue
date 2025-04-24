@@ -603,6 +603,32 @@ export const WKStatusProcClmn = (
     align: "center",
     render: (value: number) => <ProgressBar value={value} />,
   },
+  {
+    title: "메모",
+    width: 80,
+    dataIndex: "memo",
+    key: "memo",
+    align: "center",
+    editable: false,
+    rightPin: true,
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizWorksheetEntity"
+        entityRelation={{
+          RnTenantCbizSalesOrderProductEntity: {
+            RnTenantCbizSalesOrderEntity: true,
+            RnTenantCbizModelEntity: true,
+            RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true,
+            },
+          },
+        }}
+      />
+    ),
+  },
 ];
 
 export const WkStatusProcPopClmn = (
@@ -866,6 +892,32 @@ export const WKStatusInClmn = (
       </div>
     ),
   },
+  {
+    title: "메모",
+    width: 80,
+    dataIndex: "memo",
+    key: "memo",
+    align: "center",
+    editable: false,
+    rightPin: true,
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizWorksheetEntity"
+        entityRelation={{
+          RnTenantCbizSalesOrderProductEntity: {
+            RnTenantCbizSalesOrderEntity: true,
+            RnTenantCbizModelEntity: true,
+            RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true,
+            },
+          },
+        }}
+      />
+    ),
+  },
 ];
 
 export const WkStatusOutClmn = (
@@ -1055,6 +1107,32 @@ export const WkStatusOutClmn = (
             (record?.specModel?.spec?.stdH ?? "")
           : ""}
       </div>
+    ),
+  },
+  {
+    title: "메모",
+    width: 80,
+    dataIndex: "memo",
+    key: "memo",
+    align: "center",
+    editable: false,
+    rightPin: true,
+    render: (_, record, index) => (
+      <GlobalMemo
+        key={index}
+        id={record.id ?? ""}
+        entityName="RnTenantCbizWorksheetEntity"
+        entityRelation={{
+          RnTenantCbizSalesOrderProductEntity: {
+            RnTenantCbizSalesOrderEntity: true,
+            RnTenantCbizModelEntity: true,
+            RnTenantCbizBizPartnerMngMatchEntity: {
+              RnTenantCbizBizPartnerEntity: true,
+              RnTenantCbizBizPartnerManagerEntity: true,
+            },
+          },
+        }}
+      />
     ),
   },
 ];

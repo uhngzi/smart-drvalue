@@ -101,24 +101,31 @@ export const ListPagination: React.FC<Props> = ({
           />
         </div>
         {handleMenuClick && (
-          <Dropdown
-            menu={{ items }}
-            trigger={["click"]}
-            placement="bottomCenter"
-            getPopupContainer={(triggerNode) => triggerNode.parentElement!}
-          >
-            <Tooltip
-              title="엑셀 다운로드 또는 프린트를 할 수 있어요"
-              placement="rightTop"
+          <div>
+            <Dropdown
+              menu={{ items }}
+              trigger={["click"]}
+              placement="bottomRight"
+              getPopupContainer={
+                handleSubmitNew
+                  ? () => document.body
+                  : (triggerNode) => triggerNode.parentElement!
+              }
+              destroyPopupOnHide={true}
             >
-              <Button
-                type="text"
-                size="small"
-                icon={<MoreOutlined />}
-                style={{ backgroundColor: "#E9EDF5" }}
-              />
-            </Tooltip>
-          </Dropdown>
+              <Tooltip
+                title="엑셀 다운로드 또는 프린트를 할 수 있어요"
+                placement="topLeft"
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<MoreOutlined />}
+                  style={{ backgroundColor: "#E9EDF5" }}
+                />
+              </Tooltip>
+            </Dropdown>
+          </div>
         )}
 
         {handleSubmitNew && (
