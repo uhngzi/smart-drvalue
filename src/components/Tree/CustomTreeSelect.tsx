@@ -125,22 +125,33 @@ const CustomTreeSelect:React.FC<Props> = ({
       <div>
         {
           list.map((item) => (
-            <div key={item.id}>
-              <div className={`w-full h-30 h-center pl-5 gap-10 cursor-pointer h-45`} key={item.id} 
-                  onMouseEnter={() => setHoverId(item.id)} onMouseLeave={() => setHoverId(null)} onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                {/* { item.open ? (
-                  <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                    <CaretDownFilled />
-                  </Button>
-                ) : (
-                  <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                    <CaretUpFilled />
-                  </Button>
-                )} */}
+            <div
+              key={item.id}
+              className={mainCheck && childCheckId === item.id ? '!bg-[#f3faff]' : ''}
+            >
+              <div
+                className={`w-full h-30 h-center pl-5 gap-10 cursor-pointer h-45`}
+                onMouseEnter={() => setHoverId(item.id)}
+                onMouseLeave={() => setHoverId(null)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShowList(item.id);
+                  if(mainCheck) {
+                    if(childCheckId === item.id) {
+                      setChildCheckId?.("");
+                    } else {
+                      setChildCheckId?.(item.id);
+                    }
+                  }
+                }}
+              >
                 <SettingFill/>
                 <span className="flex text-left">{item.label}</span>
                 <div className="h-1 flex-1 bg-[#D9D9D9]"/>
                 <span className="flex font-medium text-[#444444A6]">{item.children?.length}</span>
+                {mainCheck && childCheckId === item.id && (
+                  <BlueCheck/>
+                )}
               </div>
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${

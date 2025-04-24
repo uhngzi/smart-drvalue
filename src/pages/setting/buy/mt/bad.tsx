@@ -9,7 +9,7 @@ import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
 //데이터타입
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { treeType } from "@/data/type/componentStyles";
-import { processGroupRType, processRType } from "@/data/type/base/process";
+import { materialBadGroupType, materialBadType, materialGroupType } from "@/data/type/base/mt";
 //레이아웃
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 //utils
@@ -31,11 +31,11 @@ const BuyMtBadListPage: React.FC & {
     current: 1,
     size: 10,
   });
-  
 
   // ---------- 필요 데이터 시작---------- 
   const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
 
+  //불량 항목 추가/수정용 설정
   const addEdits = {
     childInfo: addChildEditsInfo,
     setChildInfo: setAddChildEditsInfo,
@@ -50,46 +50,40 @@ const BuyMtBadListPage: React.FC & {
   const [ procBadData, setProcBadData ] = useState<{matchId:string, checkId:string}[]>([]);
 
   const { data:queryTreeData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryKey: ['material-group/jsxcrud/many', pagination.current],
     queryFn: async () => {
       //원자재 그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process-group/jsxcrud/many'
+        url: 'material-group/jsxcrud/many'
       },{
         limit: pagination.size,
         page: pagination.current,
       });
 
       if (result.resultCode === 'OK_0000') {
-        const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
+        const arr = (result.data?.data ?? []).map((group: materialGroupType) => ({
           id: group.id,
-          label: group.prcGrpNm,
+          label: group.mtGrpNm, 
           ordNo: group.ordNo,
-          children: group.processes.map((process:processRType) => ({
-            id: process.id,
-            label: process.prcNm,
-            ordNo: process.ordNo,
-          })),
-          open: true,
         }));
         setTreeData(arr);
       } else {
         console.log('error:', result.response);
       }
-      console.log(result.data);
       return result;
     },
   });
+  
   const { data:querybadData, refetch: badGroupRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['setting', 'wk', 'bad-group'],
+    queryKey: ['material-group-bad-group/jsxcrud/many'],
     queryFn: async () => {
-      //공정 불량 그룹 목록 조회
+      //원자재 불량 그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process-bad-group/jsxcrud/many'
+        url: 'material-group-bad-group/jsxcrud/many'
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -97,188 +91,190 @@ const BuyMtBadListPage: React.FC & {
           id: group.id,
           label: group.badGrpNm,
           ordNo: group.ordNo,
-          children: group.processBads.map((process:any) => ({
-            id: process.id,
-            label: process.badNm,
-            badDesc: process.badDesc || "",
-            ordNo: process.ordNo,
-          })),
+          children: group.materialGroupBads?.map((bad:any) => ({
+            id: bad.id,
+            label: bad.badNm,
+            badDesc: bad.badDesc || "",
+            ordNo: bad.ordNo,
+          })) || [],
           open: true,
         }));
         setBadGroupData(arr);
         const childInfoArr = (result.data?.data ?? []).flatMap((d:any) => 
-          (d.processBads ?? []).map((c:any) => ({
+          (d.materialGroupBads ?? []).map((c:any) => ({
             id: c.id,
-            label: c.cdNm,
-            cdDesc: c.badDesc,
+            label: c.badNm,
+            badDesc: c.badDesc,
             ordNo: c.ordNo
           })))
-          setAddChildEditsInfo(childInfoArr);
+        setAddChildEditsInfo(childInfoArr);
       } else {
         console.log('error:', result.response);
       }
-      console.log(result.data);
       return result;
     },
   });
-  console.log(badGroupData)
+  
   useEffect(() => {
     if (processId == null) {
       setProcBadData([]);
+      procBadRefetch();
     }
   },[processId]);
 
   const { data:badData, refetch: procBadRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['setting', 'wk', 'bad', processId],
+    queryKey: ['material-bad-mapping/jsxcrud/many', processId],
     queryFn: async () => {
-      //공정 불량 매핑 조회
+      //원자재 그룹 불량 그룹 매핑 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process/bad-mapping/jsxcrud/many'
+        url: 'material-bad-mapping/jsxcrud/many'
+      },{
+        anykeys: {materialGroupId: processId}
       });
 
       if (result.resultCode === 'OK_0000') {
-        const arr = (result.data?.data ?? []).filter((d:any)=> d.process.id === processId).map((d:any)=>({
+        const arr = (result.data?.data ?? []).map((d:any)=>({
           matchId: d.id,
-          checkId: d.processBad.id
+          checkId: d.materialBad?.id,
         }))
 
         setProcBadData(arr);
       } else {
         console.log('error:', result.response);
       }
-      console.log(result.data);
       return result;
     },
     enabled: !!processId,
   });
+  
   const handleCheck = async (e: CheckboxChangeEvent, matchId: any) => {
     if(!processId){
-      showToast('공정을 먼저 선택해주세요.', 'error');
+      showToast('원자재 그룹을 먼저 선택해주세요.', 'error');
       return;
     }
-    console.log(e.target.checked, matchId, e.target.value)
+
     const data = {
-      process:{
-        id: processId,
-      },
-      processBad:{
+      materialBad:{
         id: e.target.value,
       },
-    }
-
+      materialGroup:{
+        id: processId,
+      },
+    };
+    console.log(JSON.stringify(data));
+  
     if(e.target.checked) {
       const result = await postAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process/bad-mapping',
+        url: 'material-bad-mapping',
         jsx: 'jsxcrud'
       }, data);
       if (result.resultCode === 'OK_0000') {
-        setProcBadData((prev) => ([...prev, {matchId: result.data?.data.id, checkId: e.target.value}]));
         showToast('저장이 완료되었습니다.', 'success');
+        procBadRefetch();
       } else {
         console.log('error:', result.response);
       }
     } else {
+      if (matchId === null) {
+        const mapping = procBadData.find(item => item.checkId === e.target.value);
+        if (mapping) {
+          matchId = mapping.matchId;
+        }
+      }
+      
       const dResult = await deleteAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: "process/bad-mapping",
+        url: "material-bad-mapping",
         jsx: 'jsxcrud'
-      }, matchId)
+      }, matchId);
+      
       if(dResult.resultCode === 'OK_0000') {
         setProcBadData((prev) => prev.filter((item) => item.matchId !== matchId));
         showToast('삭제가 완료되었습니다.', 'success');
       }
     }
-    setProcBadData((prev) => {
-      if (prev.includes(e.target.value)) {
-        return prev.filter((id) => id !== e.target.value);
-      } else {
-        return [...prev, e.target.value];
-      }
-    });
-  }
+    await procBadRefetch();
+  };
   // ---------- 필요 데이터 끝----------
   
-    const [ addList, setAddList ] = useState<any[]>([]);
-      const [ editList, setEditList ] = useState<any[]>([]);
-      const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
-      const [badPopOpen, setBadPopOpen] = useState<boolean>(false);
+  const [ addList, setAddList ] = useState<any[]>([]);
+  const [ editList, setEditList ] = useState<any[]>([]);
+  const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
+  const [badPopOpen, setBadPopOpen] = useState<boolean>(false);
+
+  async function onBadPopSubmit(list: treeType[]){
+    const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
+    console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
+    let result:boolean = false
     
-      async function onBadPopSubmit(list: treeType[]){
-          const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
-          console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
-          let result:boolean = false
-          
-          for(const item of updatedAddList){
-            const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo:0}
-            let url = "";
-            if(item.parentId){
-              url = "process/bad"
-              jsonData.processBadGroup = {id: item.parentId};
-              jsonData.badNm = item.label;
-            }else{
-              url = "process-bad-group"
-              jsonData.badGrpNm = item.label;
-            }
-            result = await onTreeAdd(url, jsonData);
-      
-            if(!result) {
-              showToast('데이터 추가중 오류가 발생했습니다.', 'error');
-            }
-            console.log("add", result)
-          }
-      
-          for(const item of finalEditList){
-            const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo: Number(item.ordNo)};
-            let url = "";
-            if(item.parentId){
-              url = "process/bad"
-              jsonData.processBadGroup = {id: item.parentId};
-              jsonData.badNm = item.label;
-              jsonData.badDesc = item.badDesc;
-            }else{
-              url = "process-bad-group"
-              jsonData.badGrpNm = item.label;
-            }
-               
-            result = await onTreeEdit(item, url, jsonData);
-            if(!result){
-              showToast('데이터 수정중 오류가 발생했습니다.', 'error');
-            }
-          }
-          
-          for(const item of updatedDeleteList){
-            let url = "";
-            if(item.type === "child"){
-              url = "process/bad"
-            }else{
-              url = "process-bad-group"
-            }
-            result = await onTreeDelete(item, url);
-      
-            if(!result){
-              showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
-            }
-          }
-          console.log(result);
-          if(result) {
-            setAddList([]);
-            setEditList([]);
-            setDeleteList([]);
-            showToast('저장이 완료되었습니다.', 'success');
-            badGroupRefetch();
-          }
-        }
-    
-      function modalClose(){
-        setBadPopOpen(false);
+    for(const item of updatedAddList){
+      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo:0}
+      let url = "";
+      if(item.parentId){
+        url = "material-group-bad"
+        jsonData.materialGroupBadGroup = {id: item.parentId};
+        jsonData.badNm = item.label;
+      }else{
+        url = "material-group-bad-group"
+        jsonData.badGrpNm = item.label;
       }
+      result = await onTreeAdd(url, jsonData);
 
+      if(!result) {
+        showToast('데이터 추가중 오류가 발생했습니다.', 'error');
+      }
+    }
 
+    for(const item of finalEditList){
+      const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true, ordNo: Number(item.ordNo)};
+      let url = "";
+      if(item.parentId){
+        url = "material-group-bad"
+        jsonData.materialGroupBadGroup = {id: item.parentId};
+        jsonData.badNm = item.label;
+        jsonData.badDesc = item.badDesc;
+      }else{
+        url = "material-group-bad-group"
+        jsonData.badGrpNm = item.label;
+      }
+         
+      result = await onTreeEdit(item, url, jsonData);
+      if(!result){
+        showToast('데이터 수정중 오류가 발생했습니다.', 'error');
+      }
+    }
+    
+    for(const item of updatedDeleteList){
+      let url = "";
+      if(item.type === "child"){
+        url = "material-group-bad"
+      }else{
+        url = "material-group-bad-group"
+      }
+      result = await onTreeDelete(item, url);
+
+      if(!result){
+        showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
+      }
+    }
+    
+    if(result) {
+      setAddList([]);
+      setEditList([]);
+      setDeleteList([]);
+      showToast('저장이 완료되었습니다.', 'success');
+      badGroupRefetch();
+    }
+  }
+
+  function modalClose(){
+    setBadPopOpen(false);
+  }
 
   return (
     <section>
@@ -297,6 +293,7 @@ const BuyMtBadListPage: React.FC & {
             childCheck={true}
             childCheckId={processId}
             setChildCheckId={setProcessId}
+            mainCheck={true}
             //notCollapsed={true}
           />
         </div>

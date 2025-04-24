@@ -3,17 +3,51 @@
 import { Dayjs } from "dayjs";
 import { LamDtlTypeEm } from "../enum";
 
+export type laminationCopperList = {
+  id?: string,
+  name?: string,
+  copThk?: number,
+  ordNo?: number,
+  useYn?: boolean,
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+}
+
+export const setlaminationCopperList = (data: any):laminationCopperList => {
+  return {
+    id: data.id,
+    name: data.name,
+    copThk: data.copThk,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  }
+}
+
+export const newlaminationCopperList  = ():laminationCopperList => {
+  return {
+    name: '',
+    copThk: 0,
+    ordNo: 0,
+    useYn: true,
+    createdAt: null,
+    updatedAt: null,
+  }
+}
+
 export type laminationMaterialType = {
   id?: string;
   matNm?: string;
   epoxy?: number;
   code?: string;
-  lamDtlTypeEm?: LamDtlTypeEm;
+  lamDtlTypeEm?: LamDtlTypeEm | null;
   ordNo?: number;
   useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
 }
+
 export const setLaminationMaterialType = (data: any):laminationMaterialType => {
   return {
     id: data.id,
@@ -25,6 +59,19 @@ export const setLaminationMaterialType = (data: any):laminationMaterialType => {
     useYn: data.useYn,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
+  }
+}
+
+export const newLaminationMaterialType  = ():laminationMaterialType => {
+  return {
+    lamDtlTypeEm: null,
+    matNm: '',
+    epoxy: 0,
+    code: '',
+    ordNo: 0,
+    useYn: true,
+    createdAt: null,
+    updatedAt: null,
   }
 }
 

@@ -145,7 +145,7 @@ export type materialPriceCUType = {
   safeInv?: number;
   appDt?: Date | Dayjs | null;
   useYn?: boolean;
-
+  
   // UI 입력용 보조 필드 (선택)
   materialIdx?: string;
   partnerIdx?: string;
@@ -192,7 +192,6 @@ export const materialPriceReq = () => [
   { field: 'wgtMin', label: '최소 중량' },
   { field: 'wgtMax', label: '최대 중량' },
   { field: 'unitType', label: '단위' },
-  { field: 'remarks', label: '기타사항' },
   { field: 'safeInv', label: '안전재고' },
   { field: 'appDt', label: '적용일' },
 ];
@@ -248,8 +247,28 @@ export type materialSupplierType = {
     createdAt?: string;
     updatedAt?: string;
     deletedAt?: string;
-  };
+  }
+}
 
+// 불량 그룹
+export type materialBadGroupType = {
+  id?: string;
+  badGrpNm?: string; 
+  ordNo?: number;
+  useYn?: boolean;
+  materialGroupBads?: materialBadType[]; 
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string;
+};
+
+// 불량 항목
+export type materialBadType = {
+  id?: string;
+  badNm?: string;  
+  badDesc?: string; 
+  ordNo?: number;
+  useYn?: boolean;
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string;

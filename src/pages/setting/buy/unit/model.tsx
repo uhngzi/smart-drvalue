@@ -12,7 +12,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 // 기초 타입 import
-import { unitModelType, setUnitModelType, newUnitModelType } from "@/data/type/base/unit";
+import {
+  unitModelType,
+  unitModelCUType,
+  setUnitModelType,
+  setUnitModelCUType,
+  newUnitModelCUType
+} from "@/data/type/base/unit";
 
 // 레이어 유형 enum import
 import { LayerEm } from "@/data/type/enum";
@@ -49,58 +55,58 @@ const BuyUnitModelListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-    const [ data, setData ] = useState<Array<unitModelType>>([]);
-    const { data:queryData, refetch } = useQuery<
-      apiGetResponseType, Error
-    >({
-      //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-      queryKey: ['model-base-price/jsxcrud/many'],
-      queryFn: async () => {
-        setDataLoading(true);
-        setData([]);
+  const [ data, setData ] = useState<Array<unitModelType>>([]);
+  const { data:queryData, refetch } = useQuery<
+    apiGetResponseType, Error
+  >({
+    //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
+    queryKey: ['model-base-price/jsxcrud/many'],
+    queryFn: async () => {
+      setDataLoading(true);
+      setData([]);
 
-        // 모델 단가 리스트 조회
-        const result = await getAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'model-base-price/jsxcrud/many'
-        },{
-          limit: pagination.size,
-          page: pagination.current,
-          anykeys: {id: type}
-        });
-  
-        if (result.resultCode === 'OK_0000') {
-          setData(result.data?.data ?? []);
-          setTotalData(result.data?.total ?? 0);
-        } else {
-          console.log('error:', result.response);
-        }
-  
-        setDataLoading(false);
-        return result;
-      },
-    });
-    // ---------- 리스트 데이터 끝 ----------
+      // 모델 단가 리스트 조회
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'model-base-price/jsxcrud/many'
+      },{
+        limit: pagination.size,
+        page: pagination.current,
+        anykeys: {id: type}
+      });
 
-    // ---------- 신규 데이터 시작 ----------
-      // 결과 모달창을 위한 변수
-    const [ resultOpen, setResultOpen ] = useState<boolean>(false);
-    const [ resultType, setResultType ] = useState<AlertType>('info');
-    const [ resultTitle, setResultTitle ] = useState<string>('');
-    const [ resultText, setResultText ] = useState<string>('');
-    function setResultFunc(type: AlertType, title: string, text: string) {
-      setResultOpen(true);
-      setResultType(type);
-      setResultTitle(title);
-      setResultText(text);
-    }
-      //등록 모달창을 위한 변수
-    const [ newOpen, setNewOpen ] = useState<boolean>(false);
-      //등록 모달창 데이터
-    const [ newData, setNewData ] = useState<unitModelType>(newUnitModelType);
-    const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.unitModelItems.CUDPopItems);
-  
+      if (result.resultCode === 'OK_0000') {
+        setData(result.data?.data ?? []);
+        setTotalData(result.data?.total ?? 0);
+      } else {
+        console.log('error:', result.response);
+      }
+
+      setDataLoading(false);
+      return result;
+    },
+  });
+  // ---------- 리스트 데이터 끝 ----------
+
+  // ---------- 신규 데이터 시작 ----------
+    // 결과 모달창을 위한 변수
+  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
+  const [ resultType, setResultType ] = useState<AlertType>('info');
+  const [ resultTitle, setResultTitle ] = useState<string>('');
+  const [ resultText, setResultText ] = useState<string>('');
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    setResultType(type);
+    setResultTitle(title);
+    setResultText(text);
+  }
+    //등록 모달창을 위한 변수
+  const [ newOpen, setNewOpen ] = useState<boolean>(false);
+    //등록 모달창 데이터
+  const [ newData, setNewData ] = useState<unitModelCUType>(newUnitModelCUType);
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.unitModelItems.CUDPopItems);
+
     //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -204,7 +210,7 @@ const BuyUnitModelListPage: React.FC & {
 
   function modalClose(){
     setNewOpen(false);
-    setNewData(newUnitModelType);
+    setNewData(newUnitModelCUType);
   }
   
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
@@ -274,11 +280,11 @@ const BuyUnitModelListPage: React.FC & {
                 <div
                   className="w-full h-full h-center justify-center cursor-pointer"
                   onClick={()=>{
-                    setNewData(setUnitModelType(record));
+                    setNewData(setUnitModelCUType(record));
                     setNewOpen(true);
                   }}
                 >
-                  {record.layerEm}
+                  {record.layerEm.replace("L", "") + "층"}
                 </div>
               )
             },
@@ -288,6 +294,11 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'minAmount',
               key: 'minAmount',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '최대 수량',
@@ -295,6 +306,11 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'maxAmount',
               key: 'maxAmount',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '가격',
@@ -302,12 +318,31 @@ const BuyUnitModelListPage: React.FC & {
               dataIndex: 'price',
               key: 'price',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '배송일',
               width: 130,
               dataIndex: 'deliveryDays',
               key: 'deliveryDays',
+              align: 'center',
+            },
+            {
+              title: '적용일',
+              width: 130,
+              dataIndex: 'appDt',
+              key: 'appDt',
+              align: 'center',
+            },
+            {
+              title: '비고',
+              width: 130,
+              dataIndex: 'remark',
+              key: 'remark',
               align: 'center',
             },
             /*{
@@ -318,11 +353,16 @@ const BuyUnitModelListPage: React.FC & {
               align: 'center',
             },*/
             {
-              title: '적용일',
+              title: '변경이력',
               width: 130,
-              dataIndex: 'appDt',
-              key: 'appDt',
+              dataIndex: 'updatedAt',
+              key: 'updatedAt',
               align: 'center',
+              render: (value: string) => (
+                <div>
+                  {value.split("T")[0]}
+                </div>
+              )
             },
           ]}
           data={data}
@@ -346,7 +386,8 @@ const BuyUnitModelListPage: React.FC & {
         items={addModalInfoList} 
         data={newData}
         onSubmit={handleSubmitNewData}
-        onDelete={handleDataDelete}/>
+        onDelete={handleDataDelete}
+        handleDataChange={handleDataChange}/>
 
       <AntdAlertModal
         open={resultOpen}
@@ -357,7 +398,7 @@ const BuyUnitModelListPage: React.FC & {
         onOk={()=>{
           refetch();
           setResultOpen(false);
-          setNewData(newUnitModelType);
+          setNewData(newUnitModelCUType);
         }}
         hideCancel={true}
         theme="base"
