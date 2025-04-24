@@ -1012,7 +1012,14 @@ const OrderAddLayout = () => {
                 ref={componentRef}
                 className="px-[20px] py-[30px] w-[1123px] bg-white"
               >
-                <PurchaseDocumentForm id={id?.toString() ?? ""} />
+                <PurchaseDocumentForm
+                  formData={order}
+                  products={orderDetails}
+                  prtNm={csList.find((f: any) => f.id === prtId)?.label ?? ""}
+                  prtMng={
+                    csMngList.filter((f: any) => f.id === prtMngId)?.[0] ?? null
+                  }
+                />
               </div>
               <div className="v-h-center gap-5 mt-20">
                 <Button onClick={handlePrint}>인쇄</Button>

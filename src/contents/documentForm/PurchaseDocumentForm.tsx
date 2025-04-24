@@ -1,38 +1,28 @@
 //구매 발주서
 import React, { useEffect, useState } from "react";
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
-import { buyOrderType } from "@/data/type/buy/cost";
+import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "@/api/get";
 import { companyType } from "@/data/type/base/company";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { baseURL } from "@/api/lib/config";
+import { partnerMngRType } from "@/data/type/base/partner";
 
 interface Props {
-  id: string;
+  formData: buyOrderType | null;
+  products: buyOrderDetailType[];
+  prtNm: string;
+  prtMng: partnerMngRType | null;
 }
 
-const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
-  const [order, setOrder] = useState<buyOrderType | null>(null);
-  const { data: queryDetailData } = useQuery({
-    queryKey: ["request/material/detail/jsxcrud/one", id],
-    queryFn: async () => {
-      const result = await getAPI({
-        type: "core-d2",
-        utype: "tenant/",
-        url: `request/material/detail/jsxcrud/one/${id}`,
-      });
-
-      if (result.resultCode === "OK_0000") {
-        setOrder(result.data?.data ?? null);
-      }
-
-      return result;
-    },
-    enabled: !!id,
-  });
-
+const PurchaseDocumentForm: React.FC<Props> = ({
+  formData,
+  products,
+  prtNm,
+  prtMng,
+}) => {
   const [company, setCompany] = useState<companyType | null>(null);
   const { data: queryData, refetch } = useQuery({
     queryKey: ["company-default/jsxcrud/one"],
@@ -137,7 +127,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                     발주 번호
                   </td>
                   <td colSpan={3} className="max-w-[75px] pl-[8px]">
-                    {order?.detailInfo?.docNo}
+                    {formData?.detailInfo?.docNo}
                   </td>
                 </tr>
 
@@ -146,7 +136,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                     발주 금액
                   </td>
                   <td colSpan={3} className="max-w-[75px] pl-[8px]">
-                    {(order?.detailInfo?.totalAmount ?? 0).toLocaleString()}
+                    {(formData?.orderRoot?.totalAmount ?? 0).toLocaleString()}
                   </td>
                 </tr>
 
@@ -155,8 +145,8 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                     발주 일자
                   </td>
                   <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {order?.detailInfo?.orderDt
-                      ? dayjs(order?.detailInfo?.orderDt).format(
+                    {formData?.orderRoot?.orderDt
+                      ? dayjs(formData?.orderRoot?.orderDt).format(
                           "YYYY년 MM월 DD일"
                         )
                       : ""}
@@ -164,9 +154,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                   <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                     납품 장소
                   </td>
-                  <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {/* {order?.detailInfo?.} */}
-                  </td>
+                  <td className="max-w-[120px] w-[120px] pl-[8px] "></td>
                 </tr>
 
                 <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
@@ -174,13 +162,13 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                     담당 부서
                   </td>
                   <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {order?.detailInfo?.prtInfo?.mng?.prtMngDeptNm}
+                    {prtMng?.prtMngDeptNm}
                   </td>
                   <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                     담당자
                   </td>
                   <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {order?.detailInfo?.prtInfo?.mng?.prtMngNm}
+                    {prtMng?.prtMngNm}
                   </td>
                 </tr>
 
@@ -189,13 +177,13 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                     전화번호
                   </td>
                   <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {order?.detailInfo?.prtInfo?.mng?.prtMngTel}
+                    {prtMng?.prtMngTel}
                   </td>
                   <td className="w-[75px] pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                     팩스번호
                   </td>
                   <td className="max-w-[120px] w-[120px] pl-[8px] ">
-                    {order?.detailInfo?.prtInfo?.mng?.prtMngFax}
+                    {prtMng?.prtMngFax}
                   </td>
                 </tr>
               </tbody>
@@ -326,8 +314,8 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
             {/* 항목 메인 */}
             <tbody className="text-[9px] font-style:normal text-center align-middle ">
               {/* 맵 입력 값 */}
-              {order?.detailInfo?.details &&
-                order?.detailInfo?.details.map((item, index) => (
+              {products &&
+                products.map((item, index) => (
                   <tr
                     key={index}
                     className="border-b-1 border-[#D9D9D9] h-[20px] text-[#000000A6]"
@@ -336,13 +324,11 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                       {index + 1}
                     </td>
                     <td className="border-r border-[#D9D9D9] px-[8px] text-left">
-                      {item.mtNm ? item.mtNm : item.material?.mtNm}
+                      {item.mtNm}
                     </td>
                     <td className="border-r border-[#D9D9D9] px-[8px]">
-                      {order.detailInfo?.deliveryDueDt
-                        ? dayjs(order.detailInfo?.deliveryDueDt).format(
-                            "YYYY-MM-DD"
-                          )
+                      {formData?.deliveryDate
+                        ? dayjs(formData.deliveryDate).format("YYYY-MM-DD")
                         : ""}
                     </td>
                     <td className="border-r border-[#D9D9D9] px-[8px]">
@@ -367,10 +353,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
               {/* 빈 줄 */}
               {Array.from(
                 {
-                  length: Math.max(
-                    0,
-                    18 - (order?.detailInfo?.details ?? []).length - 1
-                  ),
+                  length: Math.max(0, 18 - products.length - 1),
                 },
                 (_, index) => (
                   <tr
@@ -398,25 +381,22 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                   <span>계</span>
                 </td>
                 <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                  {order?.detailInfo?.details &&
-                    order?.detailInfo?.details.length > 0 &&
-                    order.detailInfo.details
+                  {products.length > 0 &&
+                    products
                       .map((item) => item.mtOrderQty ?? 0)
                       .reduce((a, b) => a + b, 0)
                       .toLocaleString()}
                 </td>
                 <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                  {order?.detailInfo?.details &&
-                    order?.detailInfo?.details.length > 0 &&
-                    order.detailInfo.details
+                  {products.length > 0 &&
+                    products
                       .map((item) => item.mtOrderPrice ?? 0)
                       .reduce((a, b) => a + b, 0)
                       .toLocaleString()}
                 </td>
                 <td className="border-r-0 border-[#D9D9D9] px-[8px] text-right">
-                  {order?.detailInfo?.details &&
-                    order?.detailInfo?.details.length > 0 &&
-                    order.detailInfo.details
+                  {products.length > 0 &&
+                    products
                       .map((item) => item.mtOrderAmount ?? 0)
                       .reduce((a, b) => a + b, 0)
                       .toLocaleString()}
@@ -428,18 +408,16 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
             <div className="w-[55px] h-[47px] flex justify-center items-center gap-[8px] border-b-1 border-r border-[#D9D9D9]">
               특기 사항
             </div>
-            <div className="flex-1 h-[47px] flex items-center px-[8px] border-b-1 border-r border-[#D9D9D9] ">
-              {order?.detailInfo?.paymentCondition
-                ? `지불 조건 : ${order?.detailInfo?.paymentCondition}`
+            <div className="flex-1 h-[47px] flex items-center px-[8px] border-b-1 border-r border-[#D9D9D9] whitespace-pre-wrap">
+              {formData?.orderRoot?.paymentCondition
+                ? `결제조건 : ${formData?.orderRoot?.paymentCondition}`
                 : ""}
             </div>
             <div className="w-[55px] h-[47px] flex justify-center items-center gap-[8px] border-b-1 border-r border-[#D9D9D9]">
               비고
             </div>
-            <div className="flex-1 h-[47px] flex items-center px-[8px] border-b-1 border-[#D9D9D9]  ">
-              {order?.detailInfo?.paymentCondition
-                ? `지불 조건 : ${order?.detailInfo?.paymentCondition}`
-                : ""}
+            <div className="flex-1 h-[47px] flex items-center px-[8px] border-b-1 border-[#D9D9D9] whitespace-pre-wrap">
+              {formData?.orderRoot?.remarks}
             </div>
           </div>
         </div>
