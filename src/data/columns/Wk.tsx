@@ -996,7 +996,7 @@ export const WkStatusOutClmn = (
     align: "center",
   },
   {
-    title: "판넬수",
+    title: port === "90" || cookie("companySY") === "sy" ? "제품수" : "판넬수",
     width: 80,
     dataIndex: "specModel.prdCnt",
     key: "specModel.prdCnt",
