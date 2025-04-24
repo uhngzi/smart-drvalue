@@ -490,8 +490,17 @@ const EstimateAddLayout = () => {
             <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
             <style>
               @page {
-                size: A4 landscape;
+                size: A4;
                 margin: 0;
+              }
+              @media print {
+                table {
+                  table-layout: fixed;
+                  width: 100%;
+                }
+                td {
+                  word-wrap: break-word;
+                }
               }
               body { margin: 0; }
               img { width: 100%; height: auto; }
@@ -898,13 +907,10 @@ const EstimateAddLayout = () => {
         open={documentOpen}
         setOpen={setDocumentOpen}
         title={"견적서 미리보기"}
+        draggable
         contents={
           <>
-            <div
-              id="print-area"
-              ref={componentRef}
-              className="px-[20px] py-[30px] w-[1123px] bg-white"
-            >
+            <div id="print-area" ref={componentRef}>
               <EstimateDocumentForm formData={formData} products={products} />
             </div>
             <div className="v-h-center gap-5 mt-20">
