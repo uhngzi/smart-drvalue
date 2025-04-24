@@ -1,5 +1,5 @@
 //구매 발주서
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LayerEm, ModelTypeEm } from "@/data/type/enum";
 import { buyOrderType } from "@/data/type/buy/cost";
 import { useQuery } from "@tanstack/react-query";
@@ -50,25 +50,49 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
     },
   });
 
+  const [logoBase64, setLogoBase64] = useState<string>("");
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (!company?.companyLogoId) return;
+
+      const response = await fetch(
+        `${baseURL}file-mng/v1/every/file-manager/download/${company.companyLogoId}`
+      );
+
+      const blob = await response.blob();
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoBase64(reader.result as string);
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    fetchLogo();
+  }, [company?.companyLogoId]);
+
   return (
     <>
       {/* 타이틀 영역 */}
       <div className="flex w-full items-center justify-center flex-col bg-[white]">
         {/* 구매 발주서란 */}
         <div className="flex items-center w-full justify-between">
-          <div className="w-[100px] h-[40px] text-[#fff] flex items-center justify-center text-[12px]">
-            {company?.companyLogoId && (
-              <Image
-                src={`${baseURL}file-mng/v1/every/file-manager/download/${company?.companyLogoId}`}
-                alt=""
+          <div className="w-[100px] h-[40px] text-[#fff] flex items-center justify-center text-[12px] leading-[40px] align-middle">
+            {logoBase64 && (
+              <img
+                src={logoBase64}
+                alt="logo"
                 width={100}
                 height={40}
+                style={{ objectFit: "contain" }}
               />
             )}
           </div>
 
-          <div className="text-20 text-[#000] font-medium ">구매 발주서</div>
-          <table className="table-fixed border border-[#D9D9D9] text-center text-[9px] font-[Spoqa Han Sans Neo] w-[170px]">
+          <div className="text-20 text-[#000] font-medium leading-[20px] align-middle">
+            구매 발주서
+          </div>
+          <table className="border border-[#D9D9D9] text-center text-[9px] w-[170px]">
             <tbody>
               <tr>
                 <td
@@ -77,13 +101,13 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                 >
                   결<br />재
                 </td>
-                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
+                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)] leading-[20px] align-middle">
                   담당
                 </td>
-                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
+                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)] leading-[20px] align-middle">
                   검토
                 </td>
-                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)]">
+                <td className="!w-[50px] h-[20px] border border-[#D9D9D9] bg-[rgba(238,238,238,0.5)] leading-[20px] align-middle">
                   승인
                 </td>
               </tr>
@@ -107,7 +131,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
           {/* 좌측 Table */}
           <div className="flex w-[391px] h-[125px] items-center justify-center flex-[1_0_0]">
             <table className="table-auto w-full border-t border-[#D9D9D9]">
-              <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
+              <tbody className="text-[9px] font-style:normal">
                 <tr className="border-b-1 border-[#D9D9D9] h-[25px]">
                   <td className="w-[50px] pl-[8px] bg-[rgba(238,238,238,0.5)] ">
                     발주 번호
@@ -182,7 +206,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
           {/* 우측 Table */}
           <div className="w-[391px] h-[125px] flex-start">
             <table className="table-auto w-full border-t border-[#D9D9D9]">
-              <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
+              <tbody className="text-[9px] font-style:normal">
                 <tr className="h-[25px]">
                   <td
                     rowSpan={5}
@@ -265,14 +289,14 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
         </div>
         {/* 상단 내용 끝*/}
 
-        <div className="w-full h-[22px] flex justify-center items-center font-medium text-[10px] font-[Spoqa Han Sans Neo]">
+        <div className="w-full h-[22px] flex justify-center items-center font-medium text-[10px]">
           하기와 같이 주문하오니 기일 내 납품하여 주시기 바랍니다.
         </div>
 
         <div className="w-full h-[445px] ">
           <table className="h-[25px] table-auto w-full border-t border-[#D9D9D9]">
             {/* 테이블 제목 */}
-            <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
+            <tbody className="mb-0 text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
               <tr className="border-b-1 border-[#D9D9D9] h-[25px] text-center align-middle ">
                 <td className="border-r border-[#D9D9D9] w-[40px] h-[25px] px-[8px] ">
                   No
@@ -300,7 +324,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
             </tbody>
 
             {/* 항목 메인 */}
-            <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal text-center align-middle ">
+            <tbody className="text-[9px] font-style:normal text-center align-middle ">
               {/* 맵 입력 값 */}
               {order?.detailInfo?.details &&
                 order?.detailInfo?.details.map((item, index) => (
@@ -345,7 +369,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
                 {
                   length: Math.max(
                     0,
-                    11 - (order?.detailInfo?.details ?? []).length - 1
+                    18 - (order?.detailInfo?.details ?? []).length - 1
                   ),
                 },
                 (_, index) => (
@@ -400,7 +424,7 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
               </tr>
             </tbody>
           </table>
-          <div className="font-normal text-[9px] font-[Spoqa Han Sans Neo] flex text-[#000000A6] w-full">
+          <div className="font-normal text-[9px] flex text-[#000000A6] w-full">
             <div className="w-[55px] h-[47px] flex justify-center items-center gap-[8px] border-b-1 border-r border-[#D9D9D9]">
               특기 사항
             </div>
