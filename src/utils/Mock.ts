@@ -53,6 +53,15 @@ const MOCK = {
             { name:'code',label:'코드', widthType:'full', type:'input', },
         ]   
     },
+
+		CopperListPage: {
+			tableColumns: [],
+				CUDPopItems: [ 
+						{ name:'name',label:'이름', widthType:'full', type:'input'},
+						{ name:'copThk',label:'코딩 두께', widthType:'full', type:'input', inputType:'number', },
+						{ name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
+				]   
+		},
     mtItems: {
         tableColumns: [],
         CUDPopItems: [
