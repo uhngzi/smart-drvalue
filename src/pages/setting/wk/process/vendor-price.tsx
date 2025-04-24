@@ -543,6 +543,7 @@ const WkProcessVendorPriceListPage: React.FC & {
                 dataIndex: 'useYn',
                 key: 'useYn',
                 align: 'center',
+                render: (value: boolean) => value ? '사용' : '미사용',
               },
             ]}
             data={data}

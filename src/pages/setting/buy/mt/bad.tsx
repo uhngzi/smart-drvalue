@@ -36,6 +36,7 @@ const BuyMtBadListPage: React.FC & {
   // ---------- 필요 데이터 시작---------- 
   const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
 
+  //불량 항목 추가/수정용 설정
   const addEdits = {
     childInfo: addChildEditsInfo,
     setChildInfo: setAddChildEditsInfo,
@@ -50,13 +51,13 @@ const BuyMtBadListPage: React.FC & {
   const [ procBadData, setProcBadData ] = useState<{matchId:string, checkId:string}[]>([]);
 
   const { data:queryTreeData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['setting', 'wk', 'process', pagination.current],
+    queryKey: ['material-sup-default/jsxcrud/many', pagination.current],
     queryFn: async () => {
       //원자재 그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process-group/jsxcrud/many'
+        url: 'material-sup-default/jsxcrud/many'
       },{
         limit: pagination.size,
         page: pagination.current,
@@ -83,13 +84,13 @@ const BuyMtBadListPage: React.FC & {
     },
   });
   const { data:querybadData, refetch: badGroupRefetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ['setting', 'wk', 'bad-group'],
+    queryKey: ['material-group-bad-group/jsxcrud/many'],
     queryFn: async () => {
       //공정 불량 그룹 목록 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process-bad-group/jsxcrud/many'
+        url: 'material-group-bad-group/jsxcrud/many'
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -131,11 +132,11 @@ const BuyMtBadListPage: React.FC & {
   const { data:badData, refetch: procBadRefetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ['setting', 'wk', 'bad', processId],
     queryFn: async () => {
-      //공정 불량 매핑 조회
+      //원자재 그룹 불량 그룹 매핑 조회
       const result = await getAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
-        url: 'process/bad-mapping/jsxcrud/many'
+        url: 'meterial-bad-mapping/jsxcrud/many'
       });
 
       if (result.resultCode === 'OK_0000') {

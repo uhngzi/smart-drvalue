@@ -10,10 +10,10 @@ export type unitModelType = {
   maxAmount?: number;
   price?: number;
   deliveryDays?: number;
-  ordNo?: number;
-  useYn?: boolean;
   remark?: string;
   appDt?: Date | Dayjs | null;
+  ordNo?: number;
+  useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
 }
@@ -26,10 +26,10 @@ export const setUnitModelType = (data: any):unitModelType => {
     maxAmount: data.maxAmount,
     price: data.price,
     deliveryDays: data.deliveryDays,
-    ordNo: data.ordNo,
-    useYn: data.useYn,
     remark: data.remark,
     appDt: data.appDt,
+    ordNo: data.ordNo,
+    useYn: data.useYn,
     createdAt: data.createAt,
     updatedAt: data.updatedAt,
   }
@@ -72,7 +72,7 @@ export const newUnitModelCUType = ():unitModelCUType => {
     deliveryDays: 0,
     ordNo: 0,
     useYn: true,
-    remark: '',
+    remark: "",
     appDt: null,
   }
 }

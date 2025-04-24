@@ -50,8 +50,8 @@ const BuyunitTextureListPage: React.FC & {
   const { data:queryData, refetch } = useQuery<
     apiGetResponseType, Error
   >({
-    queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    // queryKey: ['bp-texture/jsxcrud/many'],
+    // queryKey: ['setting', 'buy', 'unit', type, pagination.current],
+    queryKey: ['bp-texture/jsxcrud/many'],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -130,12 +130,6 @@ const BuyunitTextureListPage: React.FC & {
         delete data.id;
 
         // 재질 수정
-        /*const result = await patchAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'bp-texture',
-          jsx: 'jsxcrud'
-        }, id, data);*/
         const result = await patchAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -310,6 +304,11 @@ const BuyunitTextureListPage: React.FC & {
               dataIndex: 'addCost',
               key: 'addCost',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '적용일',
@@ -331,6 +330,11 @@ const BuyunitTextureListPage: React.FC & {
               dataIndex: 'updatedAt',
               key: 'updatedAt',
               align: 'center',
+              render: (value: string) => (
+                <div>
+                  {value.split("T")[0]}
+                </div>
+              )
             },
           ]}
           data={data}

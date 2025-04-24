@@ -42,7 +42,7 @@ const MOCK = {
             { name:'lamDtlThk',label:'두께', widthType:'full', type:'input', inputType:'number', },
             { name:'lamDtlRealThk',label:'실두께', widthType:'full', type:'input', inputType:'number', },
             { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
-        ]   
+        ]
     },
     MaterialListPage: {
         tableColumns: [],
@@ -78,6 +78,7 @@ const MOCK = {
             { name:'empSts',label:'근무상태', widthType:'third', type:'select', option:[{value:'대기',label:'대기'},{value:'근무',label:'근무'},{value:'휴직',label:'휴직'},{value:'병가',label:'병가'},{value:'퇴사',label:'퇴사'}]},
             { name:'defMetaDataWorkType',label:'근무형태', widthType:'third', type:'select', option:[]},
             { name:'defMetaDataJobType',label:'업무구분', widthType:'third', type:'select', option:[]},
+            { name:'empRemarks',label:'특이사항', widthType:'full', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
             // { name:'userName',label:'이름', widthType:'third', type:'input'},
@@ -119,9 +120,79 @@ const MOCK = {
           ] },
           { name: 'appDt', label: '적용일', widthType: 'third', type: 'date' },
         ]
-      }
+      },
+
+    // 모델 단가 items 추가
+    unitModelItems: {
+      tableColumns: [],
+      CUDPopItems: [
+        { name:'layerEm', label:'레이어 유형', widthType:'half', type:'select', option:[{value:'L1', label:'L1'}] },
+        { name:'minAmount', label:'최소 수량', widthType:'half', type:'input', inputType:'number' },
+        { name:'maxAmount', label:'최대 수량', widthType:'half', type:'input', inputType:'number' },
+        { name:'price', label:'가격', widthType:'half', type:'input', inputType:'number' },
+        { name:'deliveryDays', label:'배송일', widthType:'half', type:'input', inputType:'number' },
+        //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
+        { name:'useYn', label:'사용 여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+        { name:'remark', label:'비고', widthType:'half', type:'input' },
+        { name:'appDt', label:'적용일', widthType:'half', type:'date' },
+      ]
+    },
+
+    // 추가비용(두께) items 추가
+    unitThicknessItems: {
+      tableColumns: [],
+      CUDPopItems: [
+        { name:'layerEm', label:'레이어 유형', widthType:'half', type:'select', option:[{value:'L1', label:'L1'}] },
+        { name:'minThickness', label:'최소 두께', widthType:'half', type:'input', inputType:'number' },
+        { name:'maxThickness', label:'최대 두께', widthType:'half', type:'input', inputType:'number' },
+        { name:'weight', label:'가중치', widthType:'half', type:'input', inputType:'number' },
+        { name:'addCost', label:'추가 비용', widthType:'half', type:'input', inputType:'number' },
+        //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
+        { name:'useYn', label:'사용 여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+        { name:'remark', label:'비고', widthType:'half', type:'input' },
+        { name:'appDt', label:'적용일', widthType:'half', type:'date' },
+      ]
+    },
+
+    // 재질 items 추가
+    unitTextureItems: {
+      tableColumns: [],
+      CUDPopItems: [
+        { name:'texture', label:'재질', widthType:'half', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}] },
+        { name:'weight', label:'가중치', widthType:'half', type:'input', inputType:'number' },
+        { name:'addCost', label:'추가 비용', widthType:'half', type:'input', inputType:'number' },
+        { name:'useYn', label:'사용 여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
+        { name:'remark', label:'비고', widthType:'half', type:'input' },
+        { name:'appDt', label:'적용일', widthType:'half', type:'date' },
+      ]
+    },
       
-      
+    materialPriceItems: {
+      CUDPopItems: [
+        { name: 'materialIdx', label: '원자재', widthType: 'third', type: 'select', required: true },
+        { name: 'partnerIdx', label: '공급처', widthType: 'third', type: 'select', required: true },
+        { name: 'priceNm', label: '가격명', widthType: 'third', type: 'input', required: true },
+        { name: 'priceUnit', label: '단가', widthType: 'third', type: 'input', required: true },
+        { name: 'materialType', label: '금속 타입', widthType: 'third', type: 'input' },
+        { name: 'txturType', label: '재질 타입', widthType: 'third', type: 'input' },
+        { name: 'thicMin', label: '최소 두께', widthType: 'third', type: 'input' },
+        { name: 'thicMax', label: '최대 두께', widthType: 'third', type: 'input' },
+        { name: 'sizeW', label: '가로(mm)', widthType: 'third', type: 'input' },
+        { name: 'sizeH', label: '세로(mm)', widthType: 'third', type: 'input' },
+        { name: 'cntMin', label: '최소 수량', widthType: 'third', type: 'input' },
+        { name: 'cntMax', label: '최대 수량', widthType: 'third', type: 'input' },
+        { name: 'wgtMin', label: '최소 중량', widthType: 'third', type: 'input' },
+        { name: 'wgtMax', label: '최대 중량', widthType: 'third', type: 'input' },
+        { name: 'unitType', label: '단위', widthType: 'third', type: 'input' },
+        { name: 'remarks', label: '기타사항', widthType: 'third', type: 'input' },
+        { name: 'safeInv', label: '안전재고', widthType: 'third', type: 'input' },
+        { name: 'appDt', label: '적용일', widthType: 'third', type: 'date', required: true },
+        { name: 'useYn', label: '사용 여부', widthType: 'third', type: 'select', option: [
+          { value: true, label: '사용' },
+          { value: false, label: '미사용' }
+        ], required: true },
+      ]  
+    }, 
 }
 
 export { 
