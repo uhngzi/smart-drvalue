@@ -21,11 +21,18 @@ import Setting from "@/assets/svg/icons/s_setting.svg";
 import Logout from "@/assets/svg/icons/logout.svg";
 import Login from "@/assets/svg/icons/s_login.svg";
 import Err from "@/assets/svg/icons/s_excalm.svg";
+import CollapsedIcon from "@/assets/svg/icons/sider.svg";
+import PlaceHolderImg from "@/assets/png/placeholderImg.png";
 
 import { loginCheck, logout } from "@/utils/signUtil";
 
 import { useMenu } from "@/data/context/MenuContext";
 import { port } from "@/pages/_app";
+import { companyType } from "@/data/type/base/company";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import { baseURL } from "@/api/lib/config";
+import { useUser } from "@/data/context/UserContext";
 
 interface Props {
   collapsed: boolean;
@@ -35,6 +42,7 @@ interface Props {
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
   const { menuLoading, sider } = useMenu();
+  const { user } = useUser();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
@@ -59,6 +67,27 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   useEffect(() => {
     setSignIn(loginCheck);
   }, [signIn]);
+
+  // 회사 기본 정보 가져오는 api
+  const [company, setCompany] = useState<companyType | null>(null);
+  const { data: queryCompanyData } = useQuery({
+    queryKey: ["company-default/jsxcrud/one"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "company-default/jsxcrud/one",
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setCompany(result.data.data);
+      } else {
+        setCompany(null);
+      }
+
+      return result;
+    },
+  });
 
   const items: ItemType<MenuItemType>[] = [
     {
@@ -214,7 +243,16 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               router.push("/");
             }}
           >
-            <Image src={port === "90" ? LogoSY : Logo} alt="logo" width={120} />
+            {company?.companyLogoId ? (
+              <Image
+                src={`${baseURL}file-mng/v1/every/file-manager/download/${company?.companyLogoId}`}
+                alt="LOGO"
+                width={130}
+                height={50}
+              />
+            ) : (
+              <Image src={PlaceHolderImg} width={130} height={50} alt="LOGO" />
+            )}
           </div>
           <div
             className="h-center cursor-pointer"
@@ -223,7 +261,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               setCollapsed(!collapsed);
             }}
           >
-            <MenuIcon />
+            <CollapsedIcon />
           </div>
         </div>
       </div>
@@ -231,41 +269,12 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         <Menu
           mode="inline"
-          items={[
-            ...sider,
-            {
-              key: "quality",
-              title: "",
-              label: "품질샘플",
-              icon: (
-                <p className={iconClassNm}>
-                  <Setting />
-                </p>
-              ),
-              children: [
-                {
-                  key: "quality/certification",
-                  title: "quality/certification",
-                  label: "인증 현황",
-                },
-                {
-                  key: "quality/requirements",
-                  title: "quality/requirements",
-                  label: "품질인증관리",
-                },
-                {
-                  key: "quality/reports",
-                  title: "quality/reports",
-                  label: "성적서",
-                },
-              ],
-            },
-          ]}
+          items={sider}
           onClick={({ key, item }) => {
             const it: any = item;
             router.push(`/${it.props.title}`); //title이 실제 url이므로 title 추출
           }}
-          className="sider__menu"
+          className="!bg-[unset]"
           inlineCollapsed={collapsed}
           selectedKeys={[selectedKey]}
           defaultOpenKeys={[selectedKey.split("/")[0]]}
@@ -293,12 +302,6 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
                 router.push("/setting");
                 sessionStorage.setItem("prevUrl", router.asPath);
               },
-              // children: [
-              //   {
-              //     key: 'setting/profile',
-              //     label: '프로필',
-              //   }
-              // ]
             },
             {
               key: "err",
@@ -333,7 +336,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               },
             },
           ]}
-          className="sider__menu"
+          className="!bg-[unset]"
           inlineCollapsed={collapsed}
         />
       </div>
@@ -352,7 +355,7 @@ const SiderStyled = styled.div<{
   height: calc(100vh - 10px);
   max-height: calc(100vh - 15px);
 
-  background: white;
+  background: rgba(72, 128, 255, 0.05);
 
   transition: width 0.7s ease;
 
