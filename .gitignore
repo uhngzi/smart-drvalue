@@ -46,3 +46,4 @@ yarn-error.log*
 next-env.d.ts
 src/api/lib/axios.ts
 src/pages/sign/in.tsx
+src/api/lib/axios.ts
