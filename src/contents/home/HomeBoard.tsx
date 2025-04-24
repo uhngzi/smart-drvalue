@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Klip from '@/assets/svg/icons/klip.svg';
+import Klip from "@/assets/svg/icons/klip.svg";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import FullChip from "@/components/Chip/FullChip";
@@ -34,11 +34,11 @@ interface CompanyBoardType {
   id?: string;
   title?: string;
   content?: string;
-  files?: string[],
+  files?: string[];
   user?: {
     name?: string;
     userId?: string;
-  },
+  };
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
 }
@@ -46,9 +46,7 @@ interface CompanyBoardType {
 const HomeBoard: React.FC<{
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
-}> = ({
-  open, setOpen
-}) => {
+}> = ({ open, setOpen }) => {
   const router = useRouter();
   const { me, meLoading } = useUser();
   const { showToast, ToastContainer } = useToast();
@@ -70,20 +68,22 @@ const HomeBoard: React.FC<{
     queryFn: async () => {
       setDataLoading(true);
 
-      const result = await getAPI({
-        type: 'core-d3',
-        utype: 'tenant/',
-        url: 'notice-board/jsxcrud/many',
-      }, {
-        page: pagination.current,
-        limit: pagination.size,
-      });
+      const result = await getAPI(
+        {
+          type: "core-d3",
+          utype: "tenant/",
+          url: "notice-board/jsxcrud/many",
+        },
+        {
+          page: pagination.current,
+          limit: pagination.size,
+        }
+      );
 
       if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData(result?.data?.total ?? 0);
         setDataLoading(false);
-        
       } else {
         console.log("error:", result.response);
         setDataLoading(false);
@@ -94,8 +94,8 @@ const HomeBoard: React.FC<{
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   const [select, setSelect] = useState<CompanyBoardType>();
-  const [ fileList, setFileList ] = useState<any[]>([]);
-  const [ fileIdList, setFileIdList ] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileIdList, setFileIdList] = useState<string[]>([]);
   useEffect(() => {
     if (select) {
       setSelect((prevSelect) => ({
@@ -103,33 +103,34 @@ const HomeBoard: React.FC<{
         files: fileIdList,
       }));
     }
-  }, [fileIdList]);  
+  }, [fileIdList]);
 
   // 첨부파일 목록의 유동적인 높이 조절을 위해 추가
   // 전체 div의 크기를 가져오기 위한 변수
   const ref = useRef<HTMLDivElement>(null);
   // 높이 변경을 감지하기 위한 변수
-  const [changeHeight, setChangeHeight] = useState<{width: number; height: number;} | null>(null);
-
+  const [changeHeight, setChangeHeight] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   //select.files가 바뀌면 fetchFileInfo()가 호출되는 함수
-  useEffect(()=>{
-    if(select?.files && select.files.length > 0)
-      fetchFileInfo();
-  }, [select?.files])
+  useEffect(() => {
+    if (select?.files && select.files.length > 0) fetchFileInfo();
+  }, [select?.files]);
 
   //파일 정보 조회 함수
   const fetchFileInfo = async () => {
-    if(select?.files && select.files.length > 0) {
-      let fileArr:any[] = [];
+    if (select?.files && select.files.length > 0) {
+      let fileArr: any[] = [];
       for (const file of select.files) {
         const result = await getAPI({
-          type: 'file-mng',
+          type: "file-mng",
           url: `every/file-manager/default/info/${file}`,
           header: true,
         });
-        
-        if(result.resultCode === "OK_0000") {
+
+        if (result.resultCode === "OK_0000") {
           const entity = result?.data?.fileEntity;
           fileArr.push({
             ...entity,
@@ -138,44 +139,50 @@ const HomeBoard: React.FC<{
               name: entity?.originalName,
               size: entity?.size,
               type: entity?.type,
-            }
+            },
           });
         }
       }
       setFileList(fileArr);
       setFileIdList(select.files);
     }
-  }
-    
+  };
+
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [resultMsg, setResultMsg] = useState<string>("");
-  
+
   // ------------- 오류사항 등록 ------------- 시작
   const handleSubmit = async () => {
     try {
-      if(!select?.title || select?.title === "" || !select?.content || select?.content === "") {
-       showToast("제목과 내용을 입력해주세요.");
-       return;
+      if (
+        !select?.title ||
+        select?.title === "" ||
+        !select?.content ||
+        select?.content === ""
+      ) {
+        showToast("제목과 내용을 입력해주세요.");
+        return;
       }
 
       console.log(JSON.stringify(select));
-      if(select.id) {
+      if (select.id) {
         // 수정
-        const result = await patchAPI({
-            type: 'core-d3',
-            utype: 'tenant/',
-            url: 'notice-board',
-            jsx: 'jsxcrud'
+        const result = await patchAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            url: "notice-board",
+            jsx: "jsxcrud",
           },
           select.id,
-          { 
+          {
             title: select?.title,
             content: select?.content,
             files: select?.files,
           }
         );
-        
-        if(result.resultCode === "OK_0000") {
+
+        if (result.resultCode === "OK_0000") {
           refetch();
           showToast("수정 완료", "success");
         } else {
@@ -185,19 +192,21 @@ const HomeBoard: React.FC<{
         }
       } else {
         // 등록
-        const result = await postAPI({
-          type: 'core-d3',
-          utype: 'tenant/',
-          url: 'notice-board',
-          jsx: 'jsxcrud'},
-          { 
+        const result = await postAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            url: "notice-board",
+            jsx: "jsxcrud",
+          },
+          {
             title: select?.title,
             content: select?.content,
             files: select?.files,
           }
         );
-        
-        if(result.resultCode === "OK_0000") {
+
+        if (result.resultCode === "OK_0000") {
           refetch();
           const entity = result.data.data as CompanyBoardType;
           setSelect({ ...entity });
@@ -209,22 +218,22 @@ const HomeBoard: React.FC<{
           setAlertOpen(true);
         }
       }
-    } catch(e) {
+    } catch (e) {
       console.log("CATCH ERROR :: ", e);
-      setResultMsg(e+"");
+      setResultMsg(e + "");
       setAlertOpen(true);
     }
-  }
+  };
   // ------------- 오류사항 등록 ------------- 끝
-  
+
   // 값 초기화
-  useEffect(()=>{
-    if(!open) {
+  useEffect(() => {
+    if (!open) {
       setSelect(undefined);
       setFileIdList([]);
       setFileList([]);
     }
-  }, [open])
+  }, [open]);
 
   return (
     <div className="flex flex-col">
@@ -232,39 +241,45 @@ const HomeBoard: React.FC<{
         pagination={pagination}
         totalData={totalData}
         onChange={handlePageChange}
+        handleSubmitNew={() => {
+          setOpen(true);
+        }}
       />
 
       <List>
         <AntdTableEdit
           columns={[
             {
-              title: 'No',
+              title: "No",
               width: 50,
-              dataIndex: 'index',
-              key: 'index',
-              align: 'center',
+              dataIndex: "index",
+              key: "index",
+              align: "center",
               leftPin: true,
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+              render: (_: any, __: any, index: number) =>
+                totalData -
+                ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
             },
             {
-              title: '작성자명',
+              title: "작성자명",
               width: 100,
-              dataIndex: 'user.name',
-              key: 'user.name',
-              align: 'center',
+              dataIndex: "user.name",
+              key: "user.name",
+              align: "center",
             },
             {
-              title: '제목',
+              title: "제목",
               width: 300,
-              dataIndex: 'title',
-              key: 'title',
-              align: 'center',
-              cellAlign: 'left',
-              tooltip: "제목을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
+              dataIndex: "title",
+              key: "title",
+              align: "center",
+              cellAlign: "left",
+              tooltip:
+                "제목을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
               render: (value, record) => (
                 <div
                   className="reference-detail"
-                  onClick={()=>{
+                  onClick={() => {
                     //사용자가 리스트에서 제목이나 내용을 클릭하면, select에 해당 게시글을 설정하고, fileIdList를 게시글의 files로 설정합니다.
                     setSelect(record);
                     setFileIdList(record.files ?? []);
@@ -273,20 +288,21 @@ const HomeBoard: React.FC<{
                 >
                   {value}
                 </div>
-              )
+              ),
             },
             {
-              title: '내용',
+              title: "내용",
               minWidth: 100,
-              dataIndex: 'content',
-              key: 'content',
-              align: 'center',
-              cellAlign: 'left',
-              tooltip: "내용을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
+              dataIndex: "content",
+              key: "content",
+              align: "center",
+              cellAlign: "left",
+              tooltip:
+                "내용을 클릭하시면 세부 내용 및 첨부파일을 확인할 수 있습니다",
               render: (value, record) => (
                 <div
                   className="reference-detail"
-                  onClick={()=>{
+                  onClick={() => {
                     setSelect(record);
                     setFileIdList(record.files ?? []);
                     setOpen(true);
@@ -294,21 +310,26 @@ const HomeBoard: React.FC<{
                 >
                   {value}
                 </div>
-              )
+              ),
             },
             {
-              title: '작성일시',
+              title: "작성일시",
               width: 200,
-              dataIndex: 'createdAt',
-              key: 'createdAt',
-              align: 'center',
+              dataIndex: "createdAt",
+              key: "createdAt",
+              align: "center",
               render: (value) => {
                 return dayjs(value).format("YYYY-MM-DD HH:mm");
-              }
+              },
             },
           ]}
           data={data}
-          styles={{th_bg:'#E9EDF5',td_bg:'#FFFFFF',round:'14px',line:'n'}}
+          styles={{
+            th_bg: "#E9EDF5",
+            td_bg: "#FFFFFF",
+            round: "14px",
+            line: "n",
+          }}
           loading={dataLoading}
         />
       </List>
@@ -325,45 +346,51 @@ const HomeBoard: React.FC<{
         width={1000}
         draggable={true}
         title={select?.id ? "공지사항 상세" : "공지사항 등록"}
-        contents={<div className="flex flex-col gap-20">
-          <div className="w-full h-full min-h-100 bg-white rounded-14 p-20 flex flex-col gap-20">
-            <div className="w-full h-full flex flex-col gap-20">
-              <div>
-                <LabelThin label="제목"/>
-                <AntdInput
-                  value={select?.title}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setSelect({...select, title: value});
-                  }}
-                  memoView
-                  // readonly={select?.id ? true : false}
-                />
-              </div>
-              <div className="w-full">
-                <LabelThin label="내용"/>
-                <TextArea
-                  value={select?.content}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setSelect({...select, content:value});
-                  }}
-                  className="rounded-2"
-                  style={{height:200,minHeight:200,background:"#FFF",color:"#222222"}}
-                  // disabled={select?.id ? true : false}
-                />
-              </div>
-              <div>
-              {/* { !select?.id && */}
-                <AntdDragger
-                  fileList={fileList}
-                  setFileList={setFileList}
-                  fileIdList={fileIdList}
-                  setFileIdList={setFileIdList}
-                  mult={true}
-                />
-              {/* } */}
-              {/* { select?.id && select?.files && select?.files?.length > 0 &&
+        contents={
+          <div className="flex flex-col gap-20">
+            <div className="w-full h-full min-h-100 bg-white rounded-14 p-20 flex flex-col gap-20">
+              <div className="w-full h-full flex flex-col gap-20">
+                <div>
+                  <LabelThin label="제목" />
+                  <AntdInput
+                    value={select?.title}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setSelect({ ...select, title: value });
+                    }}
+                    memoView
+                    // readonly={select?.id ? true : false}
+                  />
+                </div>
+                <div className="w-full">
+                  <LabelThin label="내용" />
+                  <TextArea
+                    value={select?.content}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setSelect({ ...select, content: value });
+                    }}
+                    className="rounded-2"
+                    style={{
+                      height: 200,
+                      minHeight: 200,
+                      background: "#FFF",
+                      color: "#222222",
+                    }}
+                    // disabled={select?.id ? true : false}
+                  />
+                </div>
+                <div>
+                  {/* { !select?.id && */}
+                  <AntdDragger
+                    fileList={fileList}
+                    setFileList={setFileList}
+                    fileIdList={fileIdList}
+                    setFileIdList={setFileIdList}
+                    mult={true}
+                  />
+                  {/* } */}
+                  {/* { select?.id && select?.files && select?.files?.length > 0 &&
                 select?.files?.map((fileId, index) => (
                 <div className="h-center" key={index}>
                   <p className="w-16 h-16 mr-8 min-w-16 min-h-16"><Klip /></p>
@@ -376,24 +403,24 @@ const HomeBoard: React.FC<{
                 </div>
                 ))
               } */}
+                </div>
               </div>
+              {!select?.id && (
+                <div className="w-full h-center justify-end">
+                  <Button type="primary" onClick={handleSubmit}>
+                    <Arrow /> 등록
+                  </Button>
+                </div>
+              )}
+              {select?.id && (
+                <div className="w-full h-center justify-end">
+                  <Button type="primary" onClick={handleSubmit}>
+                    <Arrow /> 수정
+                  </Button>
+                </div>
+              )}
             </div>
-            { !select?.id &&
-              <div className="w-full h-center justify-end">
-                <Button type="primary" onClick={handleSubmit}>
-                  <Arrow/> 등록
-                </Button>
-              </div>
-            }
-            { select?.id &&
-              <div className="w-full h-center justify-end">
-                <Button type="primary" onClick={handleSubmit}>
-                  <Arrow/> 수정
-                </Button>
-              </div>
-            }
           </div>
-        </div>
         }
       />
 
@@ -403,13 +430,13 @@ const HomeBoard: React.FC<{
         title={"요청 실패"}
         contents={<div>{resultMsg}</div>}
         type={"error"}
-        onOk={()=>{
+        onOk={() => {
           setAlertOpen(false);
         }}
       />
       <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
 export default HomeBoard;

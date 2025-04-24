@@ -10,26 +10,13 @@ const AddPage: React.FC & {
   const router = useRouter();
   const { type, id } = router.query;
 
-  return (
-    type === "order" ?
-    <OrderAddLayout />
-    :
-    type === "model" ?
-    <ModelAddLayout />
-    :
-    type === "estimate" ?
-    <EstimateAddLayout />
-    :
-    <div>견적 등록 페이지</div>
-  );
+  return type === "model" ? <ModelAddLayout /> : <div>견적 등록 페이지</div>;
 };
 
 AddPage.layout = (page: React.ReactNode) => (
-  <MainPageLayout
-    menuTitle="모달"
-    head={false}
-    modal={true}
-  >{page}</MainPageLayout>
+  <MainPageLayout menuTitle="모달" head={false} modal={true}>
+    {page}
+  </MainPageLayout>
 );
 
 export default AddPage;

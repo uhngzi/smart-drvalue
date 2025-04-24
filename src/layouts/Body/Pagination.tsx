@@ -6,10 +6,10 @@ import { MoreOutlined } from "@ant-design/icons";
 
 import Excel from "@/assets/png/excel.png";
 import Print from "@/assets/png/print.png";
+import SplusIcon from "@/assets/svg/icons/s_plus.svg";
+
 import { LabelMedium } from "@/components/Text/Label";
-import AntdSelect from "@/components/Select/AntdSelect";
 import AntdInput from "@/components/Input/AntdInput";
-import { useMenu } from "@/data/context/MenuContext";
 import { SetStateAction } from "react";
 
 interface Props {
@@ -25,6 +25,7 @@ interface Props {
   searchs?: string;
   setSearchs?: React.Dispatch<SetStateAction<string>>;
   handleSearchs?: () => void;
+  handleSubmitNew?: () => void;
 }
 
 export const ListPagination: React.FC<Props> = ({
@@ -37,6 +38,7 @@ export const ListPagination: React.FC<Props> = ({
   searchs,
   setSearchs,
   handleSearchs,
+  handleSubmitNew,
 }) => {
   const items: MenuProps["items"] = [
     {
@@ -117,6 +119,16 @@ export const ListPagination: React.FC<Props> = ({
               />
             </Tooltip>
           </Dropdown>
+        )}
+
+        {handleSubmitNew && (
+          <Button
+            type="primary"
+            className="w-80 h-32 rounded-6 bg-point1 px-15 py-0"
+            onClick={handleSubmitNew}
+          >
+            <SplusIcon stroke="#FFF" className="w-16 h-16" /> 신규
+          </Button>
         )}
       </div>
     </div>

@@ -386,16 +386,6 @@ const BuyOrderPage: React.FC & {
 
   return (
     <>
-      <div className="w-full h-50">
-        <ListTitleBtn
-          label="신규"
-          onClick={() => {
-            router.push("/buy/order/new");
-          }}
-          icon={<SplusIcon stroke="#FFF" className="w-16 h-16" />}
-        />
-      </div>
-
       <ListPagination
         pagination={pagination}
         totalData={totalData}
@@ -404,6 +394,9 @@ const BuyOrderPage: React.FC & {
         searchs={searchs}
         setSearchs={setSearchs}
         handleSearchs={handleSearchs}
+        handleSubmitNew={() => {
+          router.push("/buy/order/new");
+        }}
       />
 
       <List>
