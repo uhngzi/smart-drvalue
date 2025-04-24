@@ -511,21 +511,28 @@ const CompanyBaseListPage: React.FC & {
               className="rounded-8 h-[150px] bg-[#F2F1ED] v-h-center"
               style={{ border: "1px solid #d9d9d9" }}
             >
-              {data.companyLogoId ? (
-                <Image
-                  src={`${baseURL}file-mng/v1/every/file-manager/download/${data.companyLogoId}`}
-                  alt=""
-                  width={120}
-                  height={120}
-                />
-              ) : (
-                <Image
-                  src={PlaceHolderImg}
-                  width={120}
-                  height={120}
-                  alt="placeholder"
-                />
-              )}
+              <div
+                className="w-[730px] h-[130px] bg-white relative top-9"
+                style={{ boxShadow: "4px -2px 4px 0px #00000040" }}
+              >
+                <div className="absolute" style={{ top: 35, left: 30 }}>
+                  {data.companyLogoId ? (
+                    <Image
+                      src={`${baseURL}file-mng/v1/every/file-manager/download/${data.companyLogoId}`}
+                      alt=""
+                      width={120}
+                      height={120}
+                    />
+                  ) : (
+                    <Image
+                      src={PlaceHolderImg}
+                      width={120}
+                      height={120}
+                      alt="placeholder"
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           <div className="h-[50px]">

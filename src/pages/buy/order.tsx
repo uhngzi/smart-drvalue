@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Button, List, Spin } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 import cookie from "cookiejs";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
@@ -325,23 +325,25 @@ const BuyOrderPage: React.FC & {
   // 발주서 모달
   const [orderDocumentFormOpen, setOrderDocumentFormOpen] =
     useState<boolean>(false);
-  const componentRef = useRef(null);
+  const componentRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = async () => {
-    if (!componentRef.current) return;
+    const node = document.getElementById("print-area");
+    if (!node) return;
 
-    const canvas = await html2canvas(componentRef.current as HTMLElement, {
-      useCORS: true,
-      allowTaint: true,
-      scale: 2,
-      backgroundColor: "#fff",
-      scrollY: 0,
-    });
-    const imgData = canvas.toDataURL("image/png");
+    try {
+      const dataUrl = await domtoimage.toPng(node, {
+        quality: 1,
+        height: node.offsetHeight * 2,
+        width: node.offsetWidth * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+        },
+      });
 
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
+      const win = window.open("");
+      win?.document.write(`
         <html>
           <head>
             <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
@@ -350,20 +352,12 @@ const BuyOrderPage: React.FC & {
                 size: A4 landscape;
                 margin: 0;
               }
-              body {
-                margin: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              }
-              img {
-                width: 100%;
-                height: auto;
-              }
+              body { margin: 0; }
+              img { width: 100%; height: auto; }
             </style>
           </head>
           <body>
-            <img src="${imgData}" />
+            <img src="${dataUrl}" />
             <script>
               window.onload = function() {
                 window.print();
@@ -375,7 +369,9 @@ const BuyOrderPage: React.FC & {
           </body>
         </html>
       `);
-      printWindow.document.close();
+      win?.document.close();
+    } catch (error) {
+      console.error("캡처 실패", error);
     }
   };
 
@@ -390,16 +386,6 @@ const BuyOrderPage: React.FC & {
 
   return (
     <>
-      <div className="w-full h-50">
-        <ListTitleBtn
-          label="신규"
-          onClick={() => {
-            router.push("/buy/order/new");
-          }}
-          icon={<SplusIcon stroke="#FFF" className="w-16 h-16" />}
-        />
-      </div>
-
       <ListPagination
         pagination={pagination}
         totalData={totalData}
@@ -408,6 +394,9 @@ const BuyOrderPage: React.FC & {
         searchs={searchs}
         setSearchs={setSearchs}
         handleSearchs={handleSearchs}
+        handleSubmitNew={() => {
+          router.push("/buy/order/new");
+        }}
       />
 
       <List>
@@ -504,6 +493,7 @@ const BuyOrderPage: React.FC & {
         contents={
           <>
             <div
+              id="print-area"
               ref={componentRef}
               className="px-[20px] py-[30px] w-[1123px] bg-white"
             >

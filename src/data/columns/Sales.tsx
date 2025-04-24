@@ -797,7 +797,7 @@ export const salesEstimateClmn = (
       <div
         className="reference-detail"
         onClick={() => {
-          router.push(`/sales/estimate/${record.id}`);
+          router.push(`/sales/offer/estimate/${record.id}`);
         }}
       >
         {value}

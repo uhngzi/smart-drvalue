@@ -1,4 +1,10 @@
-import { createContext, SetStateAction, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { getAPI } from "@/api/get";
 import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
@@ -65,7 +71,7 @@ interface MenuFlat {
     menuSearchJsxcrud?: string | null;
     ordNo?: number;
     useYn?: boolean;
-  }
+  };
 }
 interface Menu {
   id?: string;
@@ -86,6 +92,7 @@ interface Menu {
   ordNo?: number;
   useYn?: boolean;
   children?: Menu[];
+  parentsNm?: string;
 }
 
 interface MenuContextType {
@@ -105,13 +112,15 @@ const SELECT_MENU_COOKIE_KEY = "select_menu_id";
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
-export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [login, setLogin] = useState<boolean>(false);
   const router = useRouter();
 
-  useEffect(()=>{
+  useEffect(() => {
     // 로그인 안 했을 경우 로그인 페이지로 이동
-    if(typeof window !== 'undefined' && !loginCheck()) {
+    if (typeof window !== "undefined" && !loginCheck()) {
       setLogin(false);
       router.push("/sign/in");
     } else {
@@ -127,13 +136,16 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     queryKey: ["menu", login],
     queryFn: async () => {
       setMenuLoading(true);
-      const result = await getAPI({
-        type: "baseinfo",
-        utype:'tenant/',
-        url: "menu/tree-view/by-max-depth/4"
-      },{
-        sort: "ordNo,ASC"
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "menu/tree-view/by-max-depth/4",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
       if (result.resultCode === "OK_0000") {
         const data = (result.data ?? []) as Menu[];
@@ -143,20 +155,23 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
-    enabled: login
+    enabled: login,
   });
 
   const [menuFlat, setMenuFlat] = useState<MenuFlat[]>([]);
-  const { refetch:refetchMenuFlat } = useQuery<apiAuthResponseType, Error>({
+  const { refetch: refetchMenuFlat } = useQuery<apiAuthResponseType, Error>({
     queryKey: ["menuFlat", login],
     queryFn: async () => {
-      const result = await getAPI({
-        type: "baseinfo",
-        utype:'tenant/',
-        url: "menu/default/flat"
-      },{
-        sort: "ordNo,ASC"
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "menu/default/flat",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
       if (result.resultCode === "OK_0000") {
         const data = (result.data ?? []) as MenuFlat[];
@@ -166,47 +181,71 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return result;
     },
-    enabled: login
+    enabled: login,
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     const arr = menu?.map((m1) => ({
       id: m1.id,
-      key: m1.menuUrl ?? '/',
-      title: m1.menuUrl ?? '/',
+      key: m1.menuUrl ?? "/",
+      title: m1.menuUrl ?? "/",
       label: m1.menuNm ?? "홈",
       icon:
-        m1.menuNmOrigin === '영업' ? <p className={iconClassNm}><Sales className="w-24 h-24" /></p> :
-        m1.menuNmOrigin === '사양' ? <p className={iconClassNm}><Sayang /></p> :
-        m1.menuNmOrigin === '생산' ? <p className={iconClassNm}><Wk /></p> :
-        m1.menuNmOrigin === '관리/구매' ? <p className={iconClassNm}><Buy /></p> :
-        <p className={iconClassNm}><DashBoard /></p>,
+        m1.menuNmOrigin === "영업" ? (
+          <p className={iconClassNm}>
+            <Sales className="w-24 h-24" />
+          </p>
+        ) : m1.menuNmOrigin === "사양" ? (
+          <p className={iconClassNm}>
+            <Sayang />
+          </p>
+        ) : m1.menuNmOrigin === "생산" ? (
+          <p className={iconClassNm}>
+            <Wk />
+          </p>
+        ) : m1.menuNmOrigin === "관리/구매" ? (
+          <p className={iconClassNm}>
+            <Buy />
+          </p>
+        ) : m1.menuNmOrigin === "품질" ? (
+          <p className={iconClassNm}>
+            <Buy />
+          </p>
+        ) : (
+          <p className={iconClassNm}>
+            <DashBoard />
+          </p>
+        ),
       children: m1.children?.map((m2) => ({
         id: m2.children?.[0]?.id ?? "",
         key: m2.children?.[0]?.menuUrl?.split("/").slice(0, 2).join("/"),
         title: m2.children?.[0]?.menuUrl,
         label: m2.menuNm,
-        onClick: ()=>{
-          setTimeout(()=>setSelectMenu(m2), 50);
-        }
+        onClick: () => {
+          setTimeout(() => setSelectMenu({ ...m2, parentsNm: m1.menuNm }), 50);
+        },
       })),
     }));
 
     setSider([
       {
-        key: '/',
-        title:'/',
-        label: '홈 피드',
-        icon: <p className={iconClassNm}><DashBoard /></p>,
-        onClick: ()=>{
+        key: "/",
+        title: "/",
+        label: "홈 피드",
+        icon: (
+          <p className={iconClassNm}>
+            <DashBoard />
+          </p>
+        ),
+        onClick: () => {
           setSelectMenu(null);
-        }
+        },
       },
       {
-        type: 'divider',
-        style: {margin: 15},
+        type: "divider",
+        style: { margin: 15 },
       },
-      ...(arr ?? [])
+      ...(arr ?? []),
     ]);
     setMenuLoading(false);
   }, [menu]);
@@ -235,7 +274,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           return null;
         };
-  
+
         const restored = findMenuById(menu);
         if (restored) {
           setSelectMenu(restored);
@@ -245,12 +284,19 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [menu]);
 
   return (
-    <MenuContext.Provider value={{ 
-      menu, refetchMenu: refetch, menuLoading,
-      sider, setSider,
-      menuFlat, setMenuFlat,
-      selectMenu, setSelectMenu,
-    }}>
+    <MenuContext.Provider
+      value={{
+        menu,
+        refetchMenu: refetch,
+        menuLoading,
+        sider,
+        setSider,
+        menuFlat,
+        setMenuFlat,
+        selectMenu,
+        setSelectMenu,
+      }}
+    >
       {children}
     </MenuContext.Provider>
   );

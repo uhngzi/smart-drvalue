@@ -646,12 +646,12 @@ const OrderAddLayout = () => {
         </p>
       </div>
       <div
-        className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 pl-30 pb-20"
+        className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 pl-30 pb-20"
         style={{
           height:
             typeof window !== "undefined" && window.innerWidth < 1920
-              ? "calc(100vh - 70px)"
-              : "calc(100vh - 60px)",
+              ? "calc(100vh - 130px)"
+              : "calc(100vh - 120px)",
         }}
       >
         <div className="w-full h-full">

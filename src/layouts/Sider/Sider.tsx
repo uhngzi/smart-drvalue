@@ -21,11 +21,18 @@ import Setting from "@/assets/svg/icons/s_setting.svg";
 import Logout from "@/assets/svg/icons/logout.svg";
 import Login from "@/assets/svg/icons/s_login.svg";
 import Err from "@/assets/svg/icons/s_excalm.svg";
+import CollapsedIcon from "@/assets/svg/icons/sider.svg";
+import PlaceHolderImg from "@/assets/png/placeholderImg.png";
 
 import { loginCheck, logout } from "@/utils/signUtil";
 
 import { useMenu } from "@/data/context/MenuContext";
 import { port } from "@/pages/_app";
+import { companyType } from "@/data/type/base/company";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import { baseURL } from "@/api/lib/config";
+import { useUser } from "@/data/context/UserContext";
 
 interface Props {
   collapsed: boolean;
@@ -35,6 +42,7 @@ interface Props {
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
   const { menuLoading, sider } = useMenu();
+  const { user } = useUser();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
 
@@ -42,46 +50,79 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
 
   useEffect(() => {
     const pathSegments = router.asPath.split("/").filter(Boolean);
-    
+
     let matched = "";
     if (pathSegments.length >= 2) {
       matched = `${pathSegments[0]}/${pathSegments[1]}`;
     } else if (pathSegments.length === 1) {
       matched = pathSegments[0];
     } else {
-      matched = '/';
+      matched = "/";
     }
-  
+
     setSelectedKey(matched);
   }, [router.asPath]);
 
   const [signIn, setSignIn] = useState<boolean>(false);
-  useEffect(()=>{
+  useEffect(() => {
     setSignIn(loginCheck);
   }, [signIn]);
 
+  // 회사 기본 정보 가져오는 api
+  const [company, setCompany] = useState<companyType | null>(null);
+  const { data: queryCompanyData } = useQuery({
+    queryKey: ["company-default/jsxcrud/one"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "company-default/jsxcrud/one",
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setCompany(result.data.data);
+      } else {
+        setCompany(null);
+      }
+
+      return result;
+    },
+  });
+
   const items: ItemType<MenuItemType>[] = [
     {
-      key: '/',
-      title:'/',
-      label: '홈 피드',
-      icon: <p className={iconClassNm}><DashBoard /></p>,
+      key: "/",
+      title: "/",
+      label: "홈 피드",
+      icon: (
+        <p className={iconClassNm}>
+          <DashBoard />
+        </p>
+      ),
     },
     {
-      key: 'star',
-      title:'',
-      label: '즐겨찾는 메뉴',
-      icon: <p className={iconClassNm}><Star /></p>,
+      key: "star",
+      title: "",
+      label: "즐겨찾는 메뉴",
+      icon: (
+        <p className={iconClassNm}>
+          <Star />
+        </p>
+      ),
     },
     {
-      type: 'divider',
-      style: {margin: 15},
+      type: "divider",
+      style: { margin: 15 },
     },
     {
-      key: 'sales',
-      title:'sales',
-      label: '영업',
-      icon: <p className={iconClassNm}><Sales className="w-24 h-24" /></p>,
+      key: "sales",
+      title: "sales",
+      label: "영업",
+      icon: (
+        <p className={iconClassNm}>
+          <Sales className="w-24 h-24" />
+        </p>
+      ),
       children: [
         // {
         //   key: 'sales/project',
@@ -89,80 +130,92 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         //   label: '임시 일정관리',
         // },
         {
-          key: 'sales/model',
-          title: 'sales/model',
-          label: '모델 등록 및 현황',
+          key: "sales/model",
+          title: "sales/model",
+          label: "모델 등록 및 현황",
         },
         {
-          key: 'sales/offer',
-          title: 'sales/offer/order',
-          label: '고객발주/견적',
+          key: "sales/offer",
+          title: "sales/offer/order",
+          label: "고객발주/견적",
         },
         {
-          key: 'sales/status',
-          title: 'sales/status',
-          label: '수주현황',
+          key: "sales/status",
+          title: "sales/status",
+          label: "수주현황",
         },
         {
-          key: 'sales/array',
-          title: 'sales/array',
-          label: '원판 수율 계산',
+          key: "sales/array",
+          title: "sales/array",
+          label: "원판 수율 계산",
         },
-      ]
+      ],
     },
     {
-      key: 'sayang',
-      title:'sayang',
-      label: '사양',
-      icon: <p className={iconClassNm}><Sayang /></p>,
+      key: "sayang",
+      title: "sayang",
+      label: "사양",
+      icon: (
+        <p className={iconClassNm}>
+          <Sayang />
+        </p>
+      ),
       children: [
         {
-          key: 'sayang/model',
-          title: 'sayang/model/confirm',
-          label: '모델 확정 및 현황',
+          key: "sayang/model",
+          title: "sayang/model/confirm",
+          label: "모델 확정 및 현황",
         },
         {
-          key: 'sayang/sample',
-          title: 'sayang/sample/regist',
-          label: '사양 등록 및 현황',
+          key: "sayang/sample",
+          title: "sayang/sample/regist",
+          label: "사양 등록 및 현황",
         },
-      ]
+      ],
     },
     {
-      key: 'wk',
-      title:'wk',
-      label: '생산',
-      icon: <p className={iconClassNm}><Wk /></p>,
+      key: "wk",
+      title: "wk",
+      label: "생산",
+      icon: (
+        <p className={iconClassNm}>
+          <Wk />
+        </p>
+      ),
       children: [
         {
-          key: 'wk/plan',
-          title: 'wk/plan/wait',
-          label: '생산 대기',
+          key: "wk/plan",
+          title: "wk/plan/wait",
+          label: "생산 대기",
         },
         {
-          key: 'wk/status',
-          title: 'wk/status/proc',
-          label: '생산 관리',
+          key: "wk/status",
+          title: "wk/status/proc",
+          label: "생산 관리",
         },
-      ]
+      ],
     },
     {
-      key: 'buy',
-      title:'buy',
-      label: '관리/구매',
-      icon: <p className={iconClassNm}><Buy /></p>,
+      key: "buy",
+      title: "buy",
+      label: "관리/구매",
+      icon: (
+        <p className={iconClassNm}>
+          <Buy />
+        </p>
+      ),
       children: [
         {
-          key: 'buy/cost',
-          title: 'buy/cost/wait',
-          label: '외주처 단가 등록 및 현황',
+          key: "buy/cost",
+          title: "buy/cost/wait",
+          label: "외주처 단가 등록 및 현황",
         },
         {
-          key: 'buy/order',
-          title: 'buy/order',
-          label: '구매 및 발주',
+          key: "buy/order",
+          title: "buy/order",
+          label: "구매 및 발주",
         },
-      ]
+      ],
     },
     // {
     //   key: 'attd/secom',
@@ -170,28 +223,45 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     //   label: '근태',
     //   icon: <p className={iconClassNm}><Wk /></p>,
     // },
-  ]
-  
+  ];
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
-  if(!mounted)      return null;
-  if(menuLoading)   return;
+  if (!mounted) return null;
+  if (menuLoading) return;
 
   return (
-    <SiderStyled $width={collapsed?'80px':'240px'}>
+    <SiderStyled $width={collapsed ? "80px" : "240px"}>
       <div>
         <div className="flex justify-center h-80 cursor-pointer w-[100%]">
-          <div className="h-center cursor-pointer" style={{display:collapsed?'none':'flex'}} onClick={()=>{router.push('/');}}>
-            <Image
-              src={port === '90' ? LogoSY : Logo}
-              alt="logo"
-              width={120}
-            />
+          <div
+            className="h-center cursor-pointer"
+            style={{ display: collapsed ? "none" : "flex" }}
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            {company?.companyLogoId ? (
+              <Image
+                src={`${baseURL}file-mng/v1/every/file-manager/download/${company?.companyLogoId}`}
+                alt="LOGO"
+                width={130}
+                height={50}
+              />
+            ) : (
+              <Image src={PlaceHolderImg} width={130} height={50} alt="LOGO" />
+            )}
           </div>
-          <div className="h-center cursor-pointer" style={{marginLeft:collapsed?0:40}} onClick={()=>{setCollapsed(!collapsed)}}>
-            <MenuIcon />
+          <div
+            className="h-center cursor-pointer"
+            style={{ marginLeft: collapsed ? 0 : 40 }}
+            onClick={() => {
+              setCollapsed(!collapsed);
+            }}
+          >
+            <CollapsedIcon />
           </div>
         </div>
       </div>
@@ -202,71 +272,77 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           items={sider}
           onClick={({ key, item }) => {
             const it: any = item;
-            router.push(`/${it.props.title}`);  //title이 실제 url이므로 title 추출
+            router.push(`/${it.props.title}`); //title이 실제 url이므로 title 추출
           }}
-          className="sider__menu"
+          className="!bg-[unset]"
           inlineCollapsed={collapsed}
           selectedKeys={[selectedKey]}
-          defaultOpenKeys={[selectedKey.split('/')[0]]}
+          defaultOpenKeys={[selectedKey.split("/")[0]]}
         />
       </div>
-      
+
       <div className="flex flex-col h-[150px]">
         <Menu
           mode="vertical"
           items={[
             {
-              type: 'divider',
-              style: {marginBottom: 20},
+              type: "divider",
+              style: { marginBottom: 20 },
             },
             {
-              key: 'setting',
-              title: '',
-              label:'설정',
-              icon: <p className={iconClassNm}><Setting /></p>,
-              onClick:() => {
-                router.push('/setting');
-                sessionStorage.setItem('prevUrl', router.asPath);
-              }
-              // children: [
-              //   {
-              //     key: 'setting/profile',
-              //     label: '프로필',
-              //   }
-              // ]
+              key: "setting",
+              title: "",
+              label: "설정",
+              icon: (
+                <p className={iconClassNm}>
+                  <Setting />
+                </p>
+              ),
+              onClick: () => {
+                router.push("/setting");
+                sessionStorage.setItem("prevUrl", router.asPath);
+              },
             },
             {
-              key: 'err',
-              title: 'err',
-              label:'오류사항',
-              icon: <div className={iconClassNm}><p className="w-22 h-22 icons"><Err /></p></div>,
-              onClick:()=>{
+              key: "err",
+              title: "err",
+              label: "오류사항",
+              icon: (
+                <div className={iconClassNm}>
+                  <p className="w-22 h-22 icons">
+                    <Err />
+                  </p>
+                </div>
+              ),
+              onClick: () => {
                 router.push("/err");
-              }
+              },
             },
             {
-              key: signIn?'logout':'login',
-              title: '',
-              label:signIn?'로그아웃':'로그인',
-              icon: <p className={iconClassNm}>{signIn?<Logout />:<Login />}</p>,
-              onClick:()=>{
-                if(signIn) {
+              key: signIn ? "logout" : "login",
+              title: "",
+              label: signIn ? "로그아웃" : "로그인",
+              icon: (
+                <p className={iconClassNm}>{signIn ? <Logout /> : <Login />}</p>
+              ),
+              onClick: () => {
+                if (signIn) {
                   logout();
                   setSignIn(false);
-                  router.push('/');
+                  router.push("/");
                 } else {
-                  router.push('/sign/in');
+                  router.push("/sign/in");
                 }
-              }
+              },
             },
           ]}
-          className="sider__menu"
+          className="!bg-[unset]"
           inlineCollapsed={collapsed}
         />
       </div>
     </SiderStyled>
-  )
-}
+  );
+};
 
 const SiderStyled = styled.div<{
   $width: string;
@@ -279,14 +355,14 @@ const SiderStyled = styled.div<{
   height: calc(100vh - 10px);
   max-height: calc(100vh - 15px);
 
-  background: white;
-  
+  background: rgba(72, 128, 255, 0.05);
+
   transition: width 0.7s ease;
-  
+
   .ant-menu-item {
     display: flex;
     align-items: center;
-    border-inline-end: 0 !important; 
+    border-inline-end: 0 !important;
     padding-left: 23px !important;
   }
 
@@ -299,19 +375,19 @@ const SiderStyled = styled.div<{
       margin-left: 20px;
     }
   }
-    
+
   .ant-menu-item-selected {
-    background:  #4880FF;
+    background: #4880ff;
     color: white;
 
     .icons {
-      color: #4880FF;
+      color: #4880ff;
     }
   }
-  
+
   .menu_under {
     margin-top: auto;
   }
-`
+`;
 
 export default Sider;

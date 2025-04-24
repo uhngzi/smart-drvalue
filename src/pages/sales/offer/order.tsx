@@ -199,14 +199,6 @@ const SalesUserPage: React.FC & {
 
   return (
     <>
-      <ListTitleBtn
-        label="신규"
-        onClick={() => {
-          router.push("/sales/offer/order/new");
-        }}
-        icon={<SplusIcon stroke="#FFF" className="w-16 h-16" />}
-      />
-
       <ListPagination
         pagination={pagination}
         totalData={totalData}
@@ -215,6 +207,9 @@ const SalesUserPage: React.FC & {
         searchs={searchs}
         setSearchs={setSearchs}
         handleSearchs={handleSearchs}
+        handleSubmitNew={() => {
+          router.push("/sales/offer/order/new");
+        }}
       />
 
       <List>

@@ -450,7 +450,7 @@ const WkProcessVendorListPage: React.FC & {
                 ]}
                 data={data}
               />
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-10">
                 <Button type="primary" className="bg-[#038D07] text-white" onClick={vendorSave}><p className="w-16 h-16"><Arrow/></p>저장</Button>
               </div>
             </div>

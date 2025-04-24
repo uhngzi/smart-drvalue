@@ -16,7 +16,7 @@ const HomePage: React.FC & {
 
   return (
     <div className="w-full h-full">
-      <div className="w-full flex h-50 z-10 relative">
+      <div className="w-full flex h-50 z-10 relative border-b-1 borer-bdDefault">
         {/* <div 
           className="flex items-center w-fit px-20 py-10 mr-10 text-14 font-medium cursor-pointer"
           style={tab==="mytodo"?{color:'#4880FF',borderBottom:'3px solid #4880FF'}:{color:"#718EBF"}}
@@ -31,52 +31,35 @@ const HomePage: React.FC & {
         >
           <span>알림</span>
         </div> */}
-        <div 
+        <div
           className="flex items-center w-fit px-20 py-10 mr-10 text-14 font-medium cursor-pointer"
-          style={tab==="board"?{color:'#4880FF',borderBottom:'3px solid #4880FF'}:{color:"#718EBF"}}
-          onClick={()=>setTab("board")}
+          style={
+            tab === "board"
+              ? { color: "#4880FF", borderBottom: "3px solid #4880FF" }
+              : { color: "#718EBF" }
+          }
+          onClick={() => setTab("board")}
         >
           <span>공지사항</span>
         </div>
-
-        <div className="flex-1 h-center justify-end">
-          <div
-            className="w-80 h-30 rounded-6 bg-point1 text-white v-h-center cursor-pointer gap-4"
-            onClick={()=>{
-              if(tab==="board") {
-                setOpen(true);
-              }
-            }}
-          >
-            <SplusIcon stroke="#FFF"className="w-16 h-16"/>
-            <span>신규</span>
-          </div>
-        </div>
       </div>
       <div className="w-full h-full">
-        {
-          tab === "mytodo" ? 
+        {tab === "mytodo" ? (
           <Empty />
-          :
-          tab === "alarm" ? 
+        ) : tab === "alarm" ? (
           <Empty />
-          :
-          tab === "board" ?
-          <HomeBoard open={open} setOpen={setOpen}/>
-          :
+        ) : tab === "board" ? (
+          <HomeBoard open={open} setOpen={setOpen} />
+        ) : (
           <Empty />
-        }
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 HomePage.layout = (page: React.ReactNode) => (
-  <MainPageLayout
-    menuTitle="홈 피드"
-  >
-    {page}
-  </MainPageLayout>
+  <MainPageLayout menuTitle="홈 피드">{page}</MainPageLayout>
 );
 
 export default HomePage;
