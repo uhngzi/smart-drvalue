@@ -16,7 +16,6 @@ import Mng from "@/assets/svg/icons/mng.svg";
 import Sales from "@/assets/svg/icons/sales.svg";
 import Sayang from "@/assets/svg/icons/sayang.svg";
 import Wk from "@/assets/svg/icons/l_calendar.svg";
-import MenuIcon from "@/assets/svg/icons/l_menu.svg";
 import Setting from "@/assets/svg/icons/s_setting.svg";
 import Logout from "@/assets/svg/icons/logout.svg";
 import Login from "@/assets/svg/icons/s_login.svg";

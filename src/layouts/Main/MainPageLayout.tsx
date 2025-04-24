@@ -250,10 +250,10 @@ const MainPageLayout: React.FC<Props> = ({
           width: `calc(100% - ${width}px)`,
         }}
       >
+        <MainHeader />
+
         {!modal && (
           <>
-            <MainHeader />
-
             <div className="w-full h-50 px-30 h-center text-18 font-medium text-[#222]">
               <p>{menuTitle}</p>
               {!selectMenu?.children ||

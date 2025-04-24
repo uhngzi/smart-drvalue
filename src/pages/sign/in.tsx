@@ -57,8 +57,8 @@ const SignInPage: React.FC & {
         if (port === "90") {
           cookie.set("companySY", "sy");
         } else if (port === "3000") {
-          // cookie.set('companySY', 'sy');
-          cookie.set("company", "gpn");
+          cookie.set("companySY", "sy");
+          // cookie.set("company", "gpn");
         } else {
           cookie.set("company", "gpn");
         }
