@@ -79,9 +79,37 @@ const QualityRequirementsPage: React.FC & {
   // }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
+  // ------------ 드래그 핸들러 세팅 ------------ 시작
+  const [previewWidth, setPreviewWidth] = useState<number>(595);
+  const previewMin = 300;
+  const previewMax = 1100;
+
+  const handleDragMouseDown = (e: React.MouseEvent) => {
+    const startX = e.clientX;
+    const startWidth = previewWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const diffX = startX - moveEvent.clientX;
+      const newWidth = startWidth + diffX;
+      if (newWidth >= previewMin && newWidth <= previewMax) {
+        setPreviewWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+  // ------------ 드래그 핸들러 세팅 ------------ 끝
+
   return (
     <div className="flex gap-20">
-      <div className="flex flex-col flex-1 h-full">
+      {/* 리스트 보여주는 부분 */}
+      <div className="flex flex-col flex-1 h-full pr-2">
         <ListPagination
           pagination={pagination}
           totalData={totalData}
@@ -162,7 +190,21 @@ const QualityRequirementsPage: React.FC & {
         />
       </div>
 
-      <div className="flex min-w-[595px] w-[595px] min-h-[842px] h-full px-20 py-30 bg-[#EEE]"></div>
+      {/* 드래그 핸들 */}
+      <div
+        className="w-3 cursor-col-resize bg-[#ccc] hover:bg-[#bbb]"
+        onMouseDown={handleDragMouseDown}
+      />
+
+      {/* 인증서 미리보기 부분 */}
+      <div
+        className="flex min-w-[595px] w-[595px] min-h-[842px] h-full px-20 py-30 bg-[#EEE]"
+        style={{
+          width: `${previewWidth}px`,
+          minWidth: `${previewMin}px`,
+          maxWidth: `${previewMax}px`,
+        }}
+      ></div>
 
       <ToastContainer />
     </div>
