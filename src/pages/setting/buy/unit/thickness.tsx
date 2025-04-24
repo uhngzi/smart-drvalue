@@ -289,13 +289,20 @@ const BuyUnitThicknessListPage: React.FC & {
               )
             },
             {
+              title: '가중치(%)',
+              width: 130,
+              dataIndex: 'weight',
+              key: 'weight',
+              align: 'center',
+            },
+            {
               title: '최소 두께',
               width: 130,
               dataIndex: 'minThickness',
               key: 'minThickness',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
@@ -307,17 +314,10 @@ const BuyUnitThicknessListPage: React.FC & {
               key: 'maxThickness',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
-            },
-            {
-              title: '가중치(%)',
-              width: 130,
-              dataIndex: 'weight',
-              key: 'weight',
-              align: 'center',
             },
             {
               title: '추가 비용',
@@ -326,7 +326,7 @@ const BuyUnitThicknessListPage: React.FC & {
               key: 'addCost',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )

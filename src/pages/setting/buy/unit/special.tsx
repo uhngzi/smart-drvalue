@@ -348,28 +348,16 @@ const BuyUnitSpecialListPage: React.FC & {
               align: 'center',
             },
             {
-              title: '추가 비용',
-              width: 130,
-              dataIndex: 'addCost',
-              key: 'addCost',
-              align: 'center',
-              render: (value: number) => (
-                <div>
-                  {value.toLocaleString()}
-                </div>
-              )
-            },
-            {
               title: '최소 범위',
               width: 130,
               dataIndex: 'minRange',
               key: 'minRange',
               align: 'center',
-              /*render: (value: number) => (
-                <div>
+              render: (value: number) => (
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
-              )*/
+              )
             },
             {
               title: '최대 범위',
@@ -377,11 +365,23 @@ const BuyUnitSpecialListPage: React.FC & {
               dataIndex: 'maxRange',
               key: 'maxRange',
               align: 'center',
-              /*render: (value: number) => (
-                <div>
+              render: (value: number) => (
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
-              )*/
+              )
+            },
+            {
+              title: '추가 비용',
+              width: 130,
+              dataIndex: 'addCost',
+              key: 'addCost',
+              align: 'center',
+              render: (value: number) => (
+                <div className="text-right">
+                  {value.toLocaleString()}
+                </div>
+              )
             },
             {
               title: '단위',
@@ -402,6 +402,13 @@ const BuyUnitSpecialListPage: React.FC & {
               width: 130,
               dataIndex: 'appDt',
               key: 'appDt',
+              align: 'center',
+            },
+            {
+              title: '비고',
+              width: 130,
+              dataIndex: 'remark',
+              key: 'remark',
               align: 'center',
             },
             /*{

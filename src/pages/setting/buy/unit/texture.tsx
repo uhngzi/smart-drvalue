@@ -304,7 +304,7 @@ const BuyunitTextureListPage: React.FC & {
               key: 'addCost',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
