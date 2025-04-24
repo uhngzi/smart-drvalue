@@ -56,13 +56,13 @@ const PurchaseDocumentForm: React.FC<Props> = ({ id }) => {
       <div className="flex w-full items-center justify-center flex-col bg-[white]">
         {/* 구매 발주서란 */}
         <div className="flex items-center w-full justify-between">
-          <div className="w-[75px] h-[40px] text-[#fff] flex items-center justify-center text-[12px]">
+          <div className="w-[100px] h-[40px] text-[#fff] flex items-center justify-center text-[12px]">
             {company?.companyLogoId && (
               <Image
                 src={`${baseURL}file-mng/v1/every/file-manager/download/${company?.companyLogoId}`}
                 alt=""
-                layout="fill"
-                objectFit="contain"
+                width={100}
+                height={40}
               />
             )}
           </div>
