@@ -105,7 +105,7 @@ export const ListPagination: React.FC<Props> = ({
             menu={{ items }}
             trigger={["click"]}
             placement="bottomCenter"
-            getPopupContainer={() => document.body}
+            getPopupContainer={(triggerNode) => triggerNode.parentElement!}
           >
             <Tooltip
               title="엑셀 다운로드 또는 프린트를 할 수 있어요"
