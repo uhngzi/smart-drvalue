@@ -20,13 +20,13 @@ export type companyType = {
   taxManagerEmail: string;
   taxManagerPhone: string;
   signatureImageId: string | null;
+  companyLogoId?: string | null;
   createdAt?: Date | null;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
-}
+};
 
-
-export const setDataCompanyType = (data: any):companyType => {
+export const setDataCompanyType = (data: any): companyType => {
   return {
     companyName: data.companyName,
     companyKorAlias: data.companyKorAlias,
@@ -46,28 +46,29 @@ export const setDataCompanyType = (data: any):companyType => {
     taxManagerEmail: data.taxManagerEmail,
     taxManagerPhone: data.taxManagerPhone,
     signatureImageId: data.signatureImageId,
-  }
-}
+    companyLogoId: data.companyLogoId,
+  };
+};
 
-export const newDataCompanyType = ():companyType => {
+export const newDataCompanyType = (): companyType => {
   return {
-    companyName: '',
-    companyKorAlias: '',
-    companyEngName: '',
-    businessRegNo: '',
-    corpRegNo: '',
-    bizCondition: '',
-    bizType: '',
-    ceoName: '',
-    ceoPhone: '',
-    ceoFax: '',
-    ceoEmail: '',
-    postalCode: '',
-    address: '',
-    detailAddress: '',
-    taxManagerName: '',
-    taxManagerEmail: '',
-    taxManagerPhone: '',
+    companyName: "",
+    companyKorAlias: "",
+    companyEngName: "",
+    businessRegNo: "",
+    corpRegNo: "",
+    bizCondition: "",
+    bizType: "",
+    ceoName: "",
+    ceoPhone: "",
+    ceoFax: "",
+    ceoEmail: "",
+    postalCode: "",
+    address: "",
+    detailAddress: "",
+    taxManagerName: "",
+    taxManagerEmail: "",
+    taxManagerPhone: "",
     signatureImageId: null,
-  }
-}
+  };
+};
