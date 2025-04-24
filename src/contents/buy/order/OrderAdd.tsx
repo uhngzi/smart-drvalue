@@ -632,7 +632,7 @@ const OrderAddLayout = () => {
 
   return (
     <>
-      <div className="px-30 min-h-60 !h-60 v-between-h-center w-full">
+      <div className="px-30 min-h-70 !h-70 v-between-h-center w-full">
         <p className="text-18 font-[500]">
           {id?.includes("new") ? "발주 등록" : "발주 수정"}
         </p>
@@ -650,8 +650,8 @@ const OrderAddLayout = () => {
         style={{
           height:
             typeof window !== "undefined" && window.innerWidth < 1920
-              ? "calc(100vh - 130px)"
-              : "calc(100vh - 120px)",
+              ? "calc(100vh - 80px)"
+              : "calc(100vh - 70px)",
         }}
       >
         <div className="w-full h-full">
