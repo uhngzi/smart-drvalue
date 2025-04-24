@@ -18,7 +18,7 @@ import {
   materialPriceType,
   newMaterialPriceCUType,
   materialPriceReq,
-  materialSupplierType,
+  materialSupplierType
 } from "@/data/type/base/mt";
 import { partnerRType } from "@/data/type/base/partner";
 
@@ -43,24 +43,19 @@ import { Spin } from "antd";
 const BuyMtUnitListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
-  const [newData, setNewData] = useState<materialPriceCUType>(
-    newMaterialPriceCUType()
-  );
-  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
-    MOCK.materialPriceItems.CUDPopItems
-  );
+  const [newData, setNewData] = useState<materialPriceCUType>(newMaterialPriceCUType());
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.materialPriceItems.CUDPopItems);
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
   const [pagination, setPagination] = useState({ current: 1, size: 10 });
   const [newOpen, setNewOpen] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
-  const [resultType, setResultType] = useState<AlertType>("info");
-  const [errMsg, setErrMsg] = useState("");
+  const [resultType, setResultType] = useState<AlertType>('info');
+  const [errMsg, setErrMsg] = useState('');
   const { showToast, ToastContainer } = useToast();
 
-  const [actionType, setActionType] = useState<"create" | "update" | "delete">(
-    "create"
-  );
+
+  const [actionType, setActionType] = useState<'create' | 'update' | 'delete'>('create');
   const [dataMaterial, setDataMaterial] = useState<materialType[]>([]);
   const [data, setData] = useState<materialPriceType[]>([]);
 
@@ -71,120 +66,101 @@ const BuyMtUnitListPage: React.FC & {
   // --------- 필요 데이터 시작 ----------
   // 원자재 데이터 조회
   useQuery<apiGetResponseType>({
-    queryKey: ["material/jsxcrud/many"],
+    queryKey: ['material/jsxcrud/many'],
     queryFn: async () => {
-      const result = await getAPI({
-        type: "baseinfo",
-        utype: "tenant/",
-        url: "material/jsxcrud/many",
-      });
-      if (result.resultCode === "OK_0000")
-        setDataMaterial(result.data?.data ?? []);
+      const result = await getAPI({ type: 'baseinfo', utype: 'tenant/', url: 'material/jsxcrud/many' });
+      if (result.resultCode === 'OK_0000') setDataMaterial(result.data?.data ?? []);
       return result;
     },
   });
 
   // 공급처 데이터를 조회하는 API
-  const {
-    data: supplierData,
-    isLoading: supplierLoading,
-    refetch: supplierRefetch,
-  } = useQuery<apiGetResponseType>({
+  const { data: supplierData, isLoading: supplierLoading, refetch: supplierRefetch } = useQuery<apiGetResponseType>({
     queryKey: ["material-suppliers"],
     queryFn: async () => {
-      return await getAPI({
-        type: "baseinfo",
-        utype: "tenant/",
-        url: "material-sup/jsxcrud/many",
+      return await getAPI({ 
+        type: 'baseinfo', 
+        utype: 'tenant/', 
+        url: 'material-sup/jsxcrud/many' 
       });
     },
   });
 
   // 공급처 데이터가 로드되면 옵션 목록을 설정하는 useEffect
   useEffect(() => {
+  
     if (!supplierLoading && supplierData?.data?.data) {
-      const supplierOptions = (
-        supplierData.data.data as materialSupplierType[]
-      ).map((supplier) => ({
+      const supplierOptions = (supplierData.data.data as materialSupplierType[]).map((supplier) => ({
         value: supplier.supplier?.id,
-        label: `${supplier.supplier?.prtNm}`,
+        label: `${supplier.supplier?.prtNm}`
       }));
-
-      setAddModalInfoList((prev) =>
-        prev.map((item) =>
-          item.name === "partnerIdx"
-            ? { ...item, option: supplierOptions }
-            : item
+      
+      setAddModalInfoList(prev =>
+        prev.map(item =>
+          item.name === 'partnerIdx' ? { ...item, option: supplierOptions } : item
         )
       );
     }
   }, [supplierData?.data?.data, supplierLoading]);
-
+  
   // 선택된 원자재에 따라 공급처 필터링
   useEffect(() => {
-    console.log("[materialIdx 변경 감지]", newData.materialIdx);
-
+    console.log('[materialIdx 변경 감지]', newData.materialIdx);
+  
     if (!newData.materialIdx) {
-      console.log("[partnerIdx 옵션 초기화 진행됨]");
-      setAddModalInfoList((prev) =>
-        prev.map((item) =>
-          item.name === "partnerIdx" ? { ...item, option: [] } : item
+      console.log('[partnerIdx 옵션 초기화 진행됨]');
+      setAddModalInfoList(prev =>
+        prev.map(item =>
+          item.name === 'partnerIdx' ? { ...item, option: [] } : item
         )
       );
       return;
     }
-
+    
     // 선택된 원자재에 따른 공급처 필터링
     const fetchPartnersByMaterial = async () => {
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: `material-sup/jsxcrud/many`,
-        },
-        {
-          s_query: {
-            "material.id": { $eq: newData.materialIdx },
-          },
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: `material-sup/jsxcrud/many`,
+      }, {
+        s_query: {
+          "material.id": { $eq: newData.materialIdx }
         }
-      );
-
+      });
+  
       console.log("특정 원자재에 대한 공급처 응답:", result);
-      if (result.resultCode === "OK_0000") {
-        const partners =
-          (result.data?.data as materialSupplierType[]).map((sup) => ({
-            value: sup.supplier?.id ?? "",
-            label: `${sup.supplier?.prtNm || ""}`,
-          })) ?? [];
-
-        setAddModalInfoList((prev) =>
-          prev.map((item) =>
-            item.name === "partnerIdx" ? { ...item, option: partners } : item
+      if (result.resultCode === 'OK_0000') {
+        const partners = (result.data?.data as materialSupplierType[]).map((sup) => ({
+          value: sup.supplier?.id ?? '',
+          label: `${sup.supplier?.prtNm || ''}`
+        })) ?? [];
+  
+        setAddModalInfoList(prev =>
+          prev.map(item =>
+            item.name === 'partnerIdx' ? { ...item, option: partners } : item
           )
         );
       }
     };
-
+  
     fetchPartnersByMaterial();
   }, [newData.materialIdx]);
   // --------- 필요 데이터 끝 ----------
 
   const { refetch } = useQuery<apiGetResponseType>({
-    queryKey: ["material-price/jsxcrud/many", pagination.current],
+    queryKey: ['material-price/jsxcrud/many', pagination.current],
     queryFn: async () => {
       setDataLoading(true);
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "material-price/jsxcrud/many",
-        },
-        {
-          limit: pagination.size,
-          page: pagination.current,
-        }
-      );
-      if (result.resultCode === "OK_0000") {
+      const result = await getAPI({
+        type: 'baseinfo',
+        utype: 'tenant/',
+        url: 'material-price/jsxcrud/many',
+      }, {
+        limit: pagination.size,
+        page: pagination.current,
+      });
+      if (result.resultCode === 'OK_0000') {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
       }
@@ -202,21 +178,21 @@ const BuyMtUnitListPage: React.FC & {
         newData.id &&
         newData.appDt &&
         dayjs(newData.appDt).isValid() &&
-        (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
-          dayjs(newData.appDt).isSame(dayjs(), "day")) &&
-        item.name !== "priceUnit" // priceUnit만 비활성화
+        (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
+        dayjs(newData.appDt).isSame(dayjs(), 'day')) &&
+        item.name !== 'priceUnit'  // priceUnit만 비활성화
       ) {
         disabled = true;
       }
-
-      if (item.name === "materialIdx") {
+      
+      if (item.name === 'materialIdx') {
         return {
           ...item,
           option: dataMaterial.map((m) => ({ value: m.id, label: m.mtNm })),
           disabled: disabled,
         };
       }
-
+      
       return {
         ...item,
         disabled: disabled,
@@ -226,8 +202,8 @@ const BuyMtUnitListPage: React.FC & {
 
   useEffect(() => {
     setAddModalInfoList(getUpdatedCUDPopItems());
-  }, [dataMaterial, newData.appDt, newData.id]);
-
+  }, [dataMaterial, newData.appDt, newData.id]);  
+  
   const convertToCUType = (record: materialPriceType): materialPriceCUType => ({
     id: record.id,
     priceNm: record.priceNm,
@@ -253,139 +229,90 @@ const BuyMtUnitListPage: React.FC & {
   });
 
   const handleSubmitNewData = async () => {
-<<<<<<< HEAD
     const val = validReq(newData, materialPriceReq());
       if (!val.isValid) {
         showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
         return;
      }
-=======
-    // const val = validReq(newData, materialPriceReq());
-    // if (!val.isValid) {
-    //   showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
-    //   return;
-    // }
-    // 등록 or 수정 전 appDt 날짜 처리
-    const formattedAppDt =
-      newData.appDt && dayjs(newData.appDt).isValid()
-        ? dayjs(newData.appDt).format() // 또는 .format("YYYY-MM-DD")
-        : null;
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
 
     try {
       // 새로운 등록인 경우
       if (!newData.id) {
-        setActionType("create");
+        setActionType('create');
         const result = await postAPI(
-          {
-            type: "baseinfo",
-            utype: "tenant/",
-            url: "material-price",
-            jsx: "jsxcrud",
-          },
+          { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
           {
             ...newData,
-<<<<<<< HEAD
             material: { id: newData.materialIdx ?? '' },
             partner: { id: newData.partnerIdx ?? '' },
-=======
-            appDt: formattedAppDt,
-            material: { id: newData.materialIdx ?? "" },
-            partner: { id: newData.partnerIdx ?? "" },
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
             materialIdx: undefined,
             partnerIdx: undefined,
           }
         );
-
-        if (result.resultCode === "OK_0000") {
-          setResultType("success");
+        
+        if (result.resultCode === 'OK_0000') {
+          setResultType('success');
           setNewData(newMaterialPriceCUType());
           refetch();
         } else {
-          setResultType("error");
-          setErrMsg(
-            result?.response?.data?.message || "처리 중 오류가 발생했습니다."
-          );
+          setResultType('error');
+          setErrMsg(result?.response?.data?.message || '처리 중 오류가 발생했습니다.');
         }
-      }
+      } 
       // 수정인 경우
       else {
-        setActionType("update");
-
+        setActionType('update');
+        
         // 적용일이 지난 경우, 가격을 제외한 나머지 필드만 변경 가능
-        if (
-          newData.appOriginDt &&
-          (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
-            dayjs(newData.appDt).isSame(dayjs(), "day"))
-        ) {
+        if (newData.appOriginDt && (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
+        dayjs(newData.appDt).isSame(dayjs(), 'day'))) {
           // 원본 데이터에서 priceUnit을 제외
-
+          
           const result = await patchAPI(
+            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
+            newData?.id ?? '', 
             {
-              type: "baseinfo",
-              utype: "tenant/",
-              url: "material-price",
-              jsx: "jsxcrud",
-            },
-            newData?.id ?? "",
-            {
-              priceUnit: newData?.priceUnit ?? 0,
+              priceUnit: newData?.priceUnit ?? 0
             }
           );
-
-          if (result.resultCode === "OK_0000") {
-            setResultType("success");
+          
+          if (result.resultCode === 'OK_0000') {
+            setResultType('success');
             setNewData(newMaterialPriceCUType());
             refetch();
           } else {
-            setResultType("error");
-            setErrMsg(
-              result?.response?.data?.message || "처리 중 오류가 발생했습니다."
-            );
+            setResultType('error');
+            setErrMsg(result?.response?.data?.message || '처리 중 오류가 발생했습니다.');
           }
-        }
+        } 
         // 적용일이 지나지 않은 경우 모든 필드 변경 가능
         else {
           const { id, appOriginDt, ...payloadWithoutId } = newData;
           const result = await patchAPI(
-            {
-              type: "baseinfo",
-              utype: "tenant/",
-              url: "material-price",
-              jsx: "jsxcrud",
-            },
-            id ?? "",
+            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
+            id ?? '', 
             {
               ...payloadWithoutId,
-<<<<<<< HEAD
               material: { id: newData.materialIdx ?? '' },
               partner: { id: newData.partnerIdx ?? '' },
-=======
-              appDt: formattedAppDt,
-              material: { id: newData.materialIdx ?? "" },
-              partner: { id: newData.partnerIdx ?? "" },
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
               materialIdx: undefined,
               partnerIdx: undefined,
             }
           );
-
-          if (result.resultCode === "OK_0000") {
-            setResultType("success");
+          
+          if (result.resultCode === 'OK_0000') {
+            setResultType('success');
             setNewData(newMaterialPriceCUType());
             refetch();
           } else {
-            setResultType("error");
-            setErrMsg(
-              result?.response?.data?.message || "처리 중 오류가 발생했습니다."
-            );
+            setResultType('error');
+            setErrMsg(result?.response?.data?.message || '처리 중 오류가 발생했습니다.');
           }
         }
       }
     } catch (e) {
-      setResultType("error");
-      setErrMsg("처리 중 오류가 발생했습니다.");
+      setResultType('error');
+      setErrMsg('처리 중 오류가 발생했습니다.');
     } finally {
       setResultOpen(true);
       setNewOpen(false);
@@ -393,35 +320,27 @@ const BuyMtUnitListPage: React.FC & {
   };
 
   const handleEditClick = (record: materialPriceType) => {
-    setActionType("update");
+    setActionType('update');
     setNewData(convertToCUType(record));
     setNewOpen(true);
-  };
+  }; 
 
   const handleDataDelete = async (id: string) => {
     try {
-      const result = await deleteAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "material-price",
-          jsx: "jsxcrud",
-        },
-        id
-      );
-      if (result.resultCode === "OK_0000") {
-        setActionType("delete");
-        setResultType("success");
+      const result = await deleteAPI({ type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, id);
+      if (result.resultCode === 'OK_0000') {
+        setActionType('delete'); 
+        setResultType('success');
         refetch();
       } else {
-        setActionType("delete");
-        setResultType("error");
-        setErrMsg(result?.response?.data?.message || "삭제 실패");
+        setActionType('delete'); 
+        setResultType('error');
+        setErrMsg(result?.response?.data?.message || '삭제 실패');
       }
       setResultOpen(true);
       setNewOpen(false);
     } catch {
-      setResultType("error");
+      setResultType('error');
       setResultOpen(true);
       setNewOpen(false);
     }
@@ -430,7 +349,7 @@ const BuyMtUnitListPage: React.FC & {
   const handleDataChange = (
     e: any,
     name: string,
-    type: "input" | "select" | "date" | "other",
+    type: 'input' | 'select' | 'date' | 'other',
     key?: string
   ) => {
     if (type === "input" && typeof e !== "string") {
@@ -439,13 +358,11 @@ const BuyMtUnitListPage: React.FC & {
     } else if (type === "select") {
       if (key) {
         setNewData({
-          ...newData,
-          [name]: {
+          ...newData, [name]: {
             ...((newData as any)[name] || {}), // 기존 객체 값 유지
             [key]: e?.toString(), // 새로운 key 값 업데이트
-          },
+          }
         });
-<<<<<<< HEAD
       }else {
         // 원자재가 바뀌었을 때 관련 종속 값들 초기화
         if (name === 'materialIdx') {
@@ -459,14 +376,10 @@ const BuyMtUnitListPage: React.FC & {
         } else {
           setNewData({ ...newData, [name]: e });
         }
-=======
-      } else {
-        setNewData({ ...newData, [name]: e });
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
       }
     }
   };
-
+  
   return (
     <>
       {dataLoading ? (
@@ -480,7 +393,7 @@ const BuyMtUnitListPage: React.FC & {
             <div
               className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
               onClick={() => {
-                setActionType("create");
+                setActionType('create');
                 setNewOpen(true);
                 setNewData(newMaterialPriceCUType());
               }}
@@ -491,15 +404,12 @@ const BuyMtUnitListPage: React.FC & {
           <AntdTable
             columns={[
               {
-                title: "No",
-                dataIndex: "no",
-                render: (_: any, __: any, index: number) =>
-                  totalData -
-                  ((pagination.current - 1) * pagination.size + index),
-                align: "center",
+                title: 'No',
+                dataIndex: 'no',
+                render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index),
+                align: 'center',
               },
               {
-<<<<<<< HEAD
                 title: '원자재명',
                 dataIndex: 'material',
                 render: (m: materialType | null) => m?.mtNm ?? '-',
@@ -510,22 +420,10 @@ const BuyMtUnitListPage: React.FC & {
                 dataIndex: 'partner',
                 render: (p: partnerRType | null) => p?.prtNm ?? '-',
                 align: 'center'
-=======
-                title: "원자재명",
-                dataIndex: "material",
-                render: (m: materialType) => m?.mtNm,
-                align: "center",
               },
               {
-                title: "공급처명",
-                dataIndex: "partner",
-                render: (p: partnerRType) => p?.prtNm,
-                align: "center",
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
-              },
-              {
-                title: "가격명",
-                dataIndex: "priceNm",
+                title: '가격명',
+                dataIndex: 'priceNm',
                 render: (_: any, record: any) => (
                   <span
                     className="cursor-pointer"
@@ -536,32 +434,25 @@ const BuyMtUnitListPage: React.FC & {
                     {record.priceNm}
                   </span>
                 ),
-                align: "center",
+                align: 'center'
               },
               {
-                title: "가격",
-                dataIndex: "priceUnit",
-                align: "center",
+                title: '가격',
+                dataIndex: 'priceUnit',
+                align: 'center'
               },
               {
-                title: "적용일",
-                dataIndex: "appDt",
-                render: (date) => dayjs(date).format("YYYY-MM-DD"),
-                align: "center",
+                title: '적용일',
+                dataIndex: 'appDt',
+                render: (date) => dayjs(date).format('YYYY-MM-DD'),
+                align: 'center'
               },
               {
-<<<<<<< HEAD
                 title: '사용여부',
                 dataIndex: 'useYn',
                 render: (value: boolean) => value ? '사용' : '미사용',
                 align: 'center'
               }
-=======
-                title: "사용여부",
-                dataIndex: "useYn",
-                align: "center",
-              },
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
             ]}
             data={data}
           />
@@ -576,21 +467,14 @@ const BuyMtUnitListPage: React.FC & {
         </>
       )}
       <BaseInfoCUDModal
-<<<<<<< HEAD
         title={{ name: `원자재 단가 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
 
-=======
-        title={{
-          name: `원자재 단가 ${newData.id ? "수정" : "등록"}`,
-          icon: <Bag />,
-        }}
->>>>>>> 3c9eabdbd8edce661ab44e9ec16facfe68ad89f7
         data={newData}
         onSubmit={handleSubmitNewData}
         setOpen={setNewOpen}
         open={newOpen}
         onClose={() => setNewOpen(false)}
-        onDelete={() => handleDataDelete(newData.id ?? "")}
+        onDelete={() => handleDataDelete(newData.id ?? '')}
         items={addModalInfoList}
         handleDataChange={handleDataChange}
       />
@@ -598,26 +482,20 @@ const BuyMtUnitListPage: React.FC & {
         open={resultOpen}
         setOpen={setResultOpen}
         title={
-          resultType === "success"
-            ? actionType === "delete"
-              ? "원자재 단가 삭제 성공"
-              : `원자재 단가 ${actionType === "create" ? "등록" : "수정"} 성공`
-            : actionType === "delete"
-            ? "원자재 단가 삭제 실패"
-            : `원자재 단가 ${actionType === "create" ? "등록" : "수정"} 실패`
+          resultType === 'success'
+            ? actionType === 'delete'
+              ? '원자재 단가 삭제 성공'
+              : `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 성공`
+            : actionType === 'delete'
+              ? '원자재 단가 삭제 실패'
+              : `원자재 단가 ${actionType === 'create' ? '등록' : '수정'} 실패`
         }
         contents={
-          resultType === "success" ? (
-            actionType === "delete" ? (
-              <div>삭제가 완료되었습니다.</div>
-            ) : (
-              <div>
-                {actionType === "create" ? "등록" : "수정"}이 완료되었습니다.
-              </div>
-            )
-          ) : (
-            <div>{errMsg}</div>
-          )
+          resultType === 'success'
+            ? actionType === 'delete'
+              ? <div>삭제가 완료되었습니다.</div>
+              : <div>{actionType === 'create' ? '등록' : '수정'}이 완료되었습니다.</div>
+            : <div>{errMsg}</div>
         }
         type={resultType}
         onOk={() => setResultOpen(false)}
@@ -630,12 +508,11 @@ const BuyMtUnitListPage: React.FC & {
 };
 
 BuyMtUnitListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout
-    styles={{ pd: "70px" }}
+  <SettingPageLayout styles={{ pd: '70px' }}
     menu={[
-      { text: "원자재 및 원자재 구매처", link: "/setting/buy/mt/list" },
-      { text: "원자재 불량", link: "/setting/buy/mt/bad" },
-      { text: "원자재 단가", link: "/setting/buy/mt/unit" },
+      { text: '원자재 및 원자재 구매처', link: '/setting/buy/mt/list' },
+      { text: '원자재 불량', link: '/setting/buy/mt/bad' },
+      { text: '원자재 단가', link: '/setting/buy/mt/unit' },
     ]}
   >
     {page}

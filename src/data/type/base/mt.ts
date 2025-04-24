@@ -247,8 +247,28 @@ export type materialSupplierType = {
     createdAt?: string;
     updatedAt?: string;
     deletedAt?: string;
-  };
+  }
+}
 
+// 불량 그룹
+export type materialBadGroupType = {
+  id?: string;
+  badGrpNm?: string; 
+  ordNo?: number;
+  useYn?: boolean;
+  materialGroupBads?: materialBadType[]; 
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string;
+};
+
+// 불량 항목
+export type materialBadType = {
+  id?: string;
+  badNm?: string;  
+  badDesc?: string; 
+  ordNo?: number;
+  useYn?: boolean;
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string;

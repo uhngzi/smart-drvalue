@@ -131,6 +131,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
         width={popWidth || 600}
         setOpen={setOpen}
         onClose={closeModal}
+        draggable
         contents={
           <div className="px-5 pt-25 min-h-[650px] max-h-[900px] h-full flex flex-col gap-30">
             <div className="w-full flex justify-between items-center h-[24px]">
@@ -156,7 +157,7 @@ const BaseTreeCUDModal: React.FC<CardInputListProps> = (
               setOpen={setResultOpen}
               title={resultTitle}
               contents={resultText}
-              type={resultType} 
+              type={resultType}
               onOk={()=>{
                 // refetch();
                 onUpdateDataFunc.setAddList([]);
