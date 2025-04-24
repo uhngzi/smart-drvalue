@@ -46,6 +46,7 @@ export const setDataCompanyType = (data: any): companyType => {
     taxManagerEmail: data.taxManagerEmail,
     taxManagerPhone: data.taxManagerPhone,
     signatureImageId: data.signatureImageId,
+    companyLogoId: data.companyLogoId,
   };
 };
 
