@@ -14,27 +14,47 @@
 
   box-sizing: border-box;
 
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  font-family: "Spoqa Han Sans Neo", "sans-serif";
 
   /* scroll bar */
-  ::-webkit-scrollbar {width: 4px; height:4px;}
-  ::-webkit-scrollbar-button {display:none;}
-  ::-webkit-scrollbar-track {background:none;}
-  ::-webkit-scrollbar-thumb {border-radius:50px; background:#c2c2c2;}
-  ::-webkit-scrollbar-thumb:hover {background:#404040;}
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .scrollbar-hovered::-webkit-scrollbar-track {
+    background-color: #c5cbe410 !important;
+  }
+  .scrollbar-hovered::-webkit-scrollbar-thumb {
+    background-color: #c2c2c230 !important;
+  }
+  .scrollbar-hovered::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    background: #c2c2c292;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #404040;
+  }
 }
-body.no-width{
+body.no-width {
   min-width: unset !important;
 }
 body {
   min-width: 1920px;
 
-  /* overflow-y: hidden; */
-  
   &::-webkit-scrollbar {
     width: 10px;
     height: 10px;
-    background-color: #F5F6FA;
+    background-color: #f5f6fa;
   }
 }
 
@@ -75,7 +95,7 @@ body {
   padding-inline-end: 0 !important;
 }
 
-.ant-pagination-options .ant-select-suffix { 
+.ant-pagination-options .ant-select-suffix {
   color: white;
   display: none;
 }
@@ -116,11 +136,11 @@ body {
 }
 
 .custom-radio-group .ant-radio-button-wrapper-checked {
-  border-color: #038D07 !important;
+  border-color: #038d07 !important;
 }
 
 .custom-radio-group .ant-radio-button-wrapper-checked span {
-  color: #038D07 !important;
+  color: #038d07 !important;
 }
 
 .ant-tooltip-inner {
@@ -141,12 +161,12 @@ body {
 .reference-modal {
   width: 100%;
   display: flex;
-  align-items: center;         /* h-center */
+  align-items: center; /* h-center */
   justify-content: flex-start; /* justify-left */
   text-align: left;
   cursor: pointer;
   transition: text-shadow 0.3s ease-in-out;
-  color: #7B593C;
+  color: #7b593c;
 }
 
 .reference-modal:hover {
@@ -156,15 +176,15 @@ body {
 .reference-detail {
   width: 100%;
   display: flex;
-  align-items: center;               /* h-center */
+  align-items: center; /* h-center */
   cursor: pointer;
-  justify-content: flex-start;       /* justify-left */
+  justify-content: flex-start; /* justify-left */
   text-align: left;
-  transition: color 0.3s ease;       /* transition--colors + duration-300 */
-  color: #2655C0;
+  transition: color 0.3s ease; /* transition--colors + duration-300 */
+  color: #2655c0;
 }
 
 .reference-detail:hover {
   text-decoration: underline;
-  text-decoration-color: #2655C0;    /* hover:decoration-blue-500 */
+  text-decoration-color: #2655c0; /* hover:decoration-blue-500 */
 }

@@ -112,7 +112,7 @@ const MainPageLayout: React.FC<Props> = ({
             <MainHeader login={login} />
 
             <div
-              className="w-full h-[calc(100vh-60px)] overflow-auto pt-10 px-30 pb-20"
+              className="w-full h-[calc(100vh-70px)] overflow-auto pt-10 px-30 pb-20"
               style={{
                 height:
                   typeof window !== "undefined" && window.innerWidth < 1920
