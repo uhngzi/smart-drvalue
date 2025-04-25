@@ -55,6 +55,7 @@ const BuyUnitSpecialListPage: React.FC & {
     queryFn: async () => {
       setDataProcess([]);
 
+      // 공정 데이터 조회
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
@@ -98,7 +99,7 @@ const BuyUnitSpecialListPage: React.FC & {
       setDataLoading(true);
       setData([]);
 
-      // 두께 리스트 조회
+      // 특별사양 리스트 조회
       const result = await getAPI({
         type: 'baseinfo',
         utype: 'tenant/',
@@ -169,27 +170,36 @@ const BuyUnitSpecialListPage: React.FC & {
         const id = data.id;
         delete data.id;
 
-        // 두께 수정
+        // 특별사양 수정
         const result = await patchAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
           url: 'special-specifications',
           jsx: 'jsxcrud'
-        }, id, data);
+        }, id, {
+          ...data,
+          weight: Number(data.weight) * 0.01,  // 가중치 수정 시 백분율 -> 소수점 변환
+          process: {
+            id: data.process
+          },
+          unit: {
+            id: data.unit
+          }
+        });
         console.log(result);
 
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
-          setResultFunc('success', '두께 수정 성공', '두께 수정이 완료되었습니다.');
+          setResultFunc('success', '특별사양 수정 성공', '특별사양 수정이 완료되었습니다.');
         } else {
           setNewOpen(false);
           
-          setResultFunc('error', '두께 수정 실패', '두께 수정을 실패하였습니다.');
+          setResultFunc('error', '특별사양 수정 실패', '특별사양 수정을 실패하였습니다.');
         }
 
       }else{
 
-        // 두께 등록
+        // 특별사양 등록
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
@@ -197,6 +207,7 @@ const BuyUnitSpecialListPage: React.FC & {
           jsx: 'jsxcrud'
         }, {
           ...newData,
+          weight: Number(newData.weight) * 0.01,  // 가중치 등록 시 백분율 -> 소수점 변환
           process: {
             id: newData.process
           },
@@ -205,19 +216,20 @@ const BuyUnitSpecialListPage: React.FC & {
           }
         });
         
-        console.log(result, JSON.stringify(newData), "result 테스트중 post부분");
+        // Debug
+        // console.log(result, JSON.stringify(newData));
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
-          setResultFunc('success', '두께 등록 성공', '두께 등록이 완료되었습니다.');
+          setResultFunc('success', '특별사양 등록 성공', '특별사양 등록이 완료되었습니다.');
         } else {
           setNewOpen(false);
-          setResultFunc('error', '두께 등록 실패', '두께 등록을 실패하였습니다.');
+          setResultFunc('error', '특별사양 등록 실패', '특별사양 등록을 실패하였습니다.');
         }
       }
     } catch(e) {
       setNewOpen(false);
-      setResultFunc('error', '두께 등록 실패', '두께 등록을 실패하였습니다.');
+      setResultFunc('error', '특별사양 등록 실패', '특별사양 등록을 실패하였습니다.');
     }
   }
   // ----------- 신규 데이터 끝 -----------
@@ -225,7 +237,7 @@ const BuyUnitSpecialListPage: React.FC & {
   const handleDataDelete = async (id: string) => {
     try {
 
-      // 두께 삭제
+      // 특별사양 삭제
       const result = await deleteAPI({
         type: 'baseinfo', 
         utype: 'tenant/',
@@ -237,15 +249,15 @@ const BuyUnitSpecialListPage: React.FC & {
 
       if(result.resultCode === 'OK_0000') {
         setNewOpen(false);
-        setResultFunc('success', '삭제 성공', '두께 삭제가 완료되었습니다.');
+        setResultFunc('success', '삭제 성공', '특별사양 삭제가 완료되었습니다.');
       } else {
         setNewOpen(false);
-        setResultFunc('error', '삭제 실패', '두께 삭제를 실패하였습니다.');
+        setResultFunc('error', '삭제 실패', '특별사양 삭제를 실패하였습니다.');
       }
     }
     catch(e) {
       setNewOpen(false);
-      setResultFunc('error', '삭제 실패', '두께 삭제를 실패하였습니다.');
+      setResultFunc('error', '삭제 실패', '특별사양 삭제를 실패하였습니다.');
     }
   }
 
@@ -346,6 +358,11 @@ const BuyUnitSpecialListPage: React.FC & {
               dataIndex: 'weight',
               key: 'weight',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value * 100}  {/* 가중치 -> 백분율 형태로 보여줌 */}
+                </div>
+              )
             },
             {
               title: '최소 범위',
@@ -433,7 +450,7 @@ const BuyUnitSpecialListPage: React.FC & {
       </>}
 
       <BaseInfoCUDModal
-        title={{name: `두께 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        title={{name: `특별사양 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}

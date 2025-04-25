@@ -164,7 +164,8 @@ const BuyUnitModelListPage: React.FC & {
           jsx: 'jsxcrud'
         }, newData);
         
-        console.log(result, JSON.stringify(newData), "result 테스트중 post부분");
+        // Debug
+        // console.log(result, JSON.stringify(newData));
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);

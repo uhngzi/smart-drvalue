@@ -47,7 +47,7 @@ export const setUnitTextureCUType = (data: any):unitTextureCUType => {
     id: data.id,
     texture: data.texture?.id,
     remark: data.remark,
-    weight: data.weight,
+    weight: data.weight * 100, // 수정 modal 가중치 input 값을 백분율 형태로 보여줌
     addCost: data.addCost,
     appDt: data.appDt,
     ordNo: data.ordNo,
