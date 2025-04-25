@@ -295,7 +295,7 @@ const BuyUnitModelListPage: React.FC & {
               key: 'minAmount',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
@@ -307,7 +307,7 @@ const BuyUnitModelListPage: React.FC & {
               key: 'maxAmount',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
@@ -319,7 +319,7 @@ const BuyUnitModelListPage: React.FC & {
               key: 'price',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )

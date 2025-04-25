@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { boardType } from "../type/base/board";
 import { selectType } from "../type/componentStyles";
 import { commonCodeRType } from "../type/base/common";
+import { processRType } from "../type/base/process";
 import { loginCheck } from "@/utils/signUtil";
 
 interface BaseContextType {

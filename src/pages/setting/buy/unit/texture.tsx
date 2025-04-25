@@ -139,7 +139,6 @@ const BuyunitTextureListPage: React.FC & {
           ...data,
           texture: {
             id: data.texture
-
           }
         });
         console.log(result, JSON.stringify(data), "result 테스트중 patch부분");
@@ -236,7 +235,7 @@ const BuyunitTextureListPage: React.FC & {
 
     setAddModalInfoList(arr)
   }, [metarialSelectList]);
-
+  console.log(metarialSelectList, "metarialSelectList 테스트중");
   return (
     <>
       {dataLoading && 
@@ -305,7 +304,7 @@ const BuyunitTextureListPage: React.FC & {
               key: 'addCost',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
