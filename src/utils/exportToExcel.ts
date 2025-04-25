@@ -40,7 +40,6 @@ export const exportToExcelAndPrint = async (
     | "core-d3"
     | "utility"
 ) => {
-  const { selectMenu } = useMenu();
   if (!data || data.length === 0) {
     showToast?.("출력할 데이터가 없습니다.", "error");
     return;
