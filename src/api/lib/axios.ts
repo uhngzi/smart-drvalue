@@ -40,7 +40,7 @@ export const instance = axios.create({
       ? port === "90"
         ? cookie.get("dev-code") || "shinyang-test"
         : port === "3000"
-        ? "shinyang-test"
+        ? "shinyang-dev"
         : // "gpntest-dev"
           cookie.get("x-custom-tenant-code") || "gpntest-sebuk-ver"
       : "gpntest-sebuk-ver",
@@ -59,7 +59,7 @@ instance.interceptors.request.use(
       ? port === "90"
         ? cookie.get("dev-code") || "shinyang-test"
         : port === "3000"
-        ? "shinyang-test"
+        ? "shinyang-dev"
         : // "gpntest-dev"
           cookie.get("x-custom-tenant-code") || "gpntest-sebuk-ver"
       : "gpntest-sebuk-ver";
