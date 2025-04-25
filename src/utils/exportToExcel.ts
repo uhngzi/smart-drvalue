@@ -1,9 +1,16 @@
 import get from "lodash/get";
 import dayjs from "dayjs";
-import { FinalGlbStatus, HotGrade, ModelStatus, ModelTypeEm, SalesOrderStatus } from "@/data/type/enum";
+import {
+  FinalGlbStatus,
+  HotGrade,
+  ModelStatus,
+  ModelTypeEm,
+  SalesOrderStatus,
+} from "@/data/type/enum";
 import { postAPI } from "@/api/post";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
 import { toast } from "react-toastify";
+import { useMenu } from "@/data/context/MenuContext";
 
 export const exportToExcelAndPrint = async (
   columns: {
@@ -17,55 +24,91 @@ export const exportToExcelAndPrint = async (
   pagination: { current: number; size: number },
   menuTitle: string,
   actionType: "excel" | "print",
-  showToast?: (message: string, type?: "success" | "error" | "info", duration?: number) => void,
+  showToast?: (
+    message: string,
+    type?: "success" | "error" | "info",
+    duration?: number
+  ) => void,
   excelUrl?: string,
-  excelType?: "file-mng" | "auth" | "sync" | "baseinfo" | "core-d1" | "core-d2" | "core-d3" | "utility",
+  excelType?:
+    | "file-mng"
+    | "auth"
+    | "sync"
+    | "baseinfo"
+    | "core-d1"
+    | "core-d2"
+    | "core-d3"
+    | "utility"
 ) => {
+  const { selectMenu } = useMenu();
   if (!data || data.length === 0) {
     showToast?.("출력할 데이터가 없습니다.", "error");
     return;
   }
 
-  if(actionType === "excel" && excelUrl && excelType) {
+  if (actionType === "excel" && excelUrl && excelType) {
     const toastId = toast.loading("엑셀 파일을 생성 중입니다...", {
       className: "custom-toast",
     });
 
-    const cal = columns.flatMap((item, index) => {
-      if(item.title.includes("M/K") || item.title.includes("S/M") ||
-        item.title.includes("Pcs/Kit") || item.title.includes("Kit/Pnl") ||
-        item.title.includes("Pcs/Sht") || item.title.includes("Pnl/Sht")) {
-        return {
-          key: item.dataIndex,
-          value: item.title,
-          width: item.width,
-        };
-      } else {
-        const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
-        const values = item.title?.toString().split(/[/|*]/); // value도 같은 방식으로 분리
+    const cal = columns
+      .filter((item) => item.dataIndex !== "memo")
+      .flatMap((item, index) => {
+        if (
+          item.title.includes("M/K") ||
+          item.title.includes("S/M") ||
+          item.title.includes("Pcs/Kit") ||
+          item.title.includes("Kit/Pnl") ||
+          item.title.includes("Pcs/Sht") ||
+          item.title.includes("Pnl/Sht")
+        ) {
+          return {
+            key: item.dataIndex,
+            value: item.title,
+            width: item.width,
+          };
+        } else {
+          const keys = item.dataIndex.split(/[/|*]/); // "/" 또는 "*"로 분리
+          const values = item.title?.toString().split(/[/|*]/); // value도 같은 방식으로 분리
 
-        return keys.map((key:string, i:number) => ({
-          key: key.trim(),
-          value: values?.[i]?.trim() || "",
-          width: item.width,
-        }));
+          return keys.map((key: string, i: number) => ({
+            key: key.trim(),
+            value: values?.[i]?.trim() || "",
+            width: item.width,
+          }));
+        }
+      });
+
+    const result = await postAPI(
+      {
+        type: excelType,
+        utype: "tenant/",
+        jsx: "jsxcrud",
+        url: `${excelUrl}/excel-download/jsxcrud?sort=createdAt,DESC`,
+        etc: true,
+      },
+      {
+        cal: cal
+          .filter((f) => f.key !== "index" && f.key !== "check")
+          .map((item, index) => ({ ...item, order: index + 1 })),
       }
-    });
+    );
+    console.log(
+      JSON.stringify({
+        cal: cal
+          .filter((f) => f.key !== "index" && f.key !== "check")
+          .map((item, index) => ({ ...item, order: index + 1 })),
+      })
+    );
 
-    const result = await postAPI({
-      type: excelType, 
-      utype: 'tenant/',
-      jsx: 'jsxcrud',
-      url: `${excelUrl}/excel-download/jsxcrud?sort=createdAt,DESC`,
-      etc: true,
-    }, {cal: cal.filter(f=>f.key !== 'index' && f.key !== 'check').map((item, index)=>({...item, order:index+1}))});
-    console.log(JSON.stringify({cal: cal.filter(f=>f.key !== 'index' && f.key !== 'check').map((item, index)=>({...item, order:index+1}))}));
-
-    if(result.resultCode === 'OK_0000') {
+    if (result.resultCode === "OK_0000") {
       const fileId = result.data.data as string;
       console.log(fileId);
-      if(fileId) {
-        downloadFileByObjectName(fileId, {uid:fileId, name:`${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`})
+      if (fileId) {
+        downloadFileByObjectName(fileId, {
+          uid: fileId,
+          name: `${menuTitle}_${dayjs().format("YYYYMMDD")}.xlsx`,
+        });
         toast.update(toastId, {
           render: "엑셀 파일 다운로드가 완료되었습니다.",
           type: "success",
@@ -79,7 +122,8 @@ export const exportToExcelAndPrint = async (
       const msg = result.response?.data?.message;
       showToast?.(msg, "error");
       toast.update(toastId, {
-        render: "엑셀 파일 다운로드를 하던 중에 문제가 생겼습니다. 잠시후에 시도해주세요.",
+        render:
+          "엑셀 파일 다운로드를 하던 중에 문제가 생겼습니다. 잠시후에 시도해주세요.",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -91,7 +135,7 @@ export const exportToExcelAndPrint = async (
   }
 
   // "id" 컬럼 제외한 새로운 컬럼 목록
-  const filteredColumns = columns.filter(col => col.dataIndex !== "id");
+  const filteredColumns = columns.filter((col) => col.dataIndex !== "id");
 
   // 데이터 변환 (id 제외)
   const formattedData = data.map((row, rowIndex) => {
@@ -102,26 +146,36 @@ export const exportToExcelAndPrint = async (
 
       if (dataIndex === "index") {
         value = rowIndex + 1;
-      } 
-      else if (dataIndex.includes("/")) {
+      } else if (dataIndex.includes("/")) {
         const keys = dataIndex.split("/");
-        value = keys.map((key) => get(row, key, "")).filter(Boolean).join(" / ");
-      } 
-      else if (dataIndex.includes("*")) {
+        value = keys
+          .map((key) => get(row, key, ""))
+          .filter(Boolean)
+          .join(" / ");
+      } else if (dataIndex.includes("*")) {
         const keys = dataIndex.split("*");
-        value = keys.map((key) => get(row, key, "")).filter(Boolean).join(" * ");
-      }
-      
-      else {
+        value = keys
+          .map((key) => get(row, key, ""))
+          .filter(Boolean)
+          .join(" * ");
+      } else {
         value = get(row, dataIndex, "") || "";
       }
 
-      if (Number.isNaN(value) && (value instanceof Date || (value && dayjs(value).isValid()))) {
+      if (
+        Number.isNaN(value) &&
+        (value instanceof Date || (value && dayjs(value).isValid()))
+      ) {
         value = dayjs(value).format("YYYY-MM-DD");
       }
 
       if (dataIndex.toLowerCase().includes("modelstatus")) {
-        value = value === ModelStatus.MODIFY ? "수정" : value === ModelStatus.REPEAT ? " 반복" : "일반";
+        value =
+          value === ModelStatus.MODIFY
+            ? "수정"
+            : value === ModelStatus.REPEAT
+            ? " 반복"
+            : "일반";
       }
 
       if (dataIndex.toLowerCase().includes("modeltypeem")) {
@@ -129,28 +183,42 @@ export const exportToExcelAndPrint = async (
       }
 
       if (dataIndex.toLowerCase().includes("layerem")) {
-        value = value?.replace("L","");
+        value = value?.replace("L", "");
       }
 
       if (dataIndex.toLowerCase().includes("salesorderstatus")) {
-        value = value === SalesOrderStatus.MODEL_REG_COMPLETED ? "확정" :
-          SalesOrderStatus.MODEL_REG_DISCARDED ? "폐기" :
-          SalesOrderStatus.MODEL_REG_REGISTERING ? "등록중" :
-          SalesOrderStatus.MODEL_REG_WAITING ? "대기" :
-          "양산";
+        value =
+          value === SalesOrderStatus.MODEL_REG_COMPLETED
+            ? "확정"
+            : SalesOrderStatus.MODEL_REG_DISCARDED
+            ? "폐기"
+            : SalesOrderStatus.MODEL_REG_REGISTERING
+            ? "등록중"
+            : SalesOrderStatus.MODEL_REG_WAITING
+            ? "대기"
+            : "양산";
       }
 
       if (dataIndex.toLowerCase().includes("hotgrade")) {
-        value = value === HotGrade.SUPER_URGENT ? "초긴급" : value === HotGrade.URGENT ? "긴급" : "일반";
+        value =
+          value === HotGrade.SUPER_URGENT
+            ? "초긴급"
+            : value === HotGrade.URGENT
+            ? "긴급"
+            : "일반";
       }
 
       if (dataIndex.toLowerCase().includes("finalglbstatus")) {
         const isDiscard = get(row, "isDiscard", "");
-        value = isDiscard ? "폐기" :
-          value === FinalGlbStatus.COMPLETED ? "완료" : 
-          value === FinalGlbStatus.REGISTERING ? "등록중" :
-          value === FinalGlbStatus.WAITING ? "대기" :
-          "폐기";
+        value = isDiscard
+          ? "폐기"
+          : value === FinalGlbStatus.COMPLETED
+          ? "완료"
+          : value === FinalGlbStatus.REGISTERING
+          ? "등록중"
+          : value === FinalGlbStatus.WAITING
+          ? "대기"
+          : "폐기";
       }
 
       newRow[title] = value;
@@ -169,7 +237,7 @@ export const exportToExcelAndPrint = async (
   //   }));
 
   //   worksheet["!rows"] = [
-  //     { hpx: 27 }, 
+  //     { hpx: 27 },
   //     ...formattedData.map(() => ({ hpx: 20 })),
   //   ];
 
@@ -239,18 +307,32 @@ export const exportToExcelAndPrint = async (
       <table>
         <thead>
           <tr>
-            ${filteredColumns.map(col => `<th style="text-align:center;">${col.title}</th>`).join("")}
+            ${filteredColumns
+              .map((col) => `<th style="text-align:center;">${col.title}</th>`)
+              .join("")}
           </tr>
         </thead>
         <tbody>
           ${formattedData
-            .map(row => `<tr>${filteredColumns.map(col => `<td style="text-align:${col.cellAlign || "center"};">${row[col.title] || ""}</td>`).join("")}</tr>`)
+            .map(
+              (row) =>
+                `<tr>${filteredColumns
+                  .map(
+                    (col) =>
+                      `<td style="text-align:${col.cellAlign || "center"};">${
+                        row[col.title] || ""
+                      }</td>`
+                  )
+                  .join("")}</tr>`
+            )
             .join("")}
         </tbody>
       </table>
     `;
 
-    printWindow.document.write("<html><head>" + style + "</head><body>" + tableHTML + "</body></html>");
+    printWindow.document.write(
+      "<html><head>" + style + "</head><body>" + tableHTML + "</body></html>"
+    );
     printWindow.document.close();
     printWindow.print();
   }

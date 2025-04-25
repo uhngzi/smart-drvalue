@@ -80,7 +80,7 @@ const SalesUserPage: React.FC & {
         data,
         totalData,
         pagination,
-        "고객발주",
+        selectMenu?.menuNm ?? "고객발주",
         "excel",
         showToast,
         "sales-orders",
@@ -93,7 +93,7 @@ const SalesUserPage: React.FC & {
         data,
         totalData,
         pagination,
-        "고객발주",
+        selectMenu?.menuNm ?? "고객발주",
         "print",
         showToast
       );

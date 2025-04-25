@@ -87,7 +87,7 @@ const BuyOrderPage: React.FC & {
         data,
         totalData,
         pagination,
-        "구매 및 발주",
+        selectMenu?.menuNm ?? "구매 및 발주",
         "excel",
         showToast,
         "request/material",
@@ -100,7 +100,7 @@ const BuyOrderPage: React.FC & {
         data,
         totalData,
         pagination,
-        "구매 및 발주",
+        selectMenu?.menuNm ?? "구매 및 발주",
         "print",
         showToast
       );

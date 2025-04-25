@@ -78,7 +78,7 @@ const WKStatusOutPage: {
         data,
         totalData,
         pagination,
-        "출고현황",
+        selectMenu?.menuNm ?? "출고현황",
         "excel",
         showToast,
         "worksheet/production-status/input-status",
@@ -91,7 +91,7 @@ const WKStatusOutPage: {
         data,
         totalData,
         pagination,
-        "출고현황",
+        selectMenu?.menuNm ?? "출고현황",
         "print",
         showToast
       );

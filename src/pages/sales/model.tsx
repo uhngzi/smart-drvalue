@@ -71,7 +71,7 @@ const SalesModelPage: React.FC & {
         data,
         totalData,
         pagination,
-        "영업모델현황",
+        selectMenu?.menuNm ?? "영업모델현황",
         "excel",
         showToast,
         "models",
@@ -84,7 +84,7 @@ const SalesModelPage: React.FC & {
         data,
         totalData,
         pagination,
-        "영업모델현황",
+        selectMenu?.menuNm ?? "영업모델현황",
         "print",
         showToast
       );

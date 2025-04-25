@@ -74,7 +74,7 @@ const SalesUserEstimatePage: React.FC & {
         data,
         totalData,
         pagination,
-        "견적",
+        selectMenu?.menuNm ?? "견적",
         "excel",
         showToast,
         "sales-estimate",
@@ -87,7 +87,7 @@ const SalesUserEstimatePage: React.FC & {
         data,
         totalData,
         pagination,
-        "견적",
+        selectMenu?.menuNm ?? "견적",
         "print",
         showToast
       );

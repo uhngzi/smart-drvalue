@@ -90,7 +90,7 @@ const BuyCostWaitPage: React.FC & {
         data,
         totalData,
         pagination,
-        "외주단가등록대기",
+        selectMenu?.menuNm ?? "외주단가등록대기",
         "excel",
         showToast,
         "worksheet/wait-for-production-plan",
@@ -103,7 +103,7 @@ const BuyCostWaitPage: React.FC & {
         data,
         totalData,
         pagination,
-        "외주단가등록대기",
+        selectMenu?.menuNm ?? "외주단가등록대기",
         "print",
         showToast
       );
