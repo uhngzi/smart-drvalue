@@ -261,7 +261,7 @@ const WkProcessVendorPriceListPage: React.FC & {
   }
 
   // 신규 데이터 초기화 함수
-  const [actionType, setActionType] = useState<'등록' | '수정'>('등록');
+  const [actionType, setActionType] = useState<'등록' | '수정' | '삭제'>('등록');
   const handleSubmitNewData = async () => {
     try {
       const val = validReq(newData, processVendorPriceReq());
@@ -356,6 +356,7 @@ const WkProcessVendorPriceListPage: React.FC & {
       }, id);
 
       if (result.resultCode === 'OK_0000') {
+        setActionType('삭제');
         setResultType('success');
         refetch();
       } else {
