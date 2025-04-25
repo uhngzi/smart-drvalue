@@ -31,18 +31,18 @@ const MOCK = {
             { name:'brdExtraInfo',label:'추가정보', widthType:'full', type:'input', },
         ]
     },
-    laminationItems: {
-        tableColumns: [],
-        CUDPopItems: [
-            { name:'lamDtlTypeEm',label:'유형', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
-            { name:'matNm',label:'자재', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
-						{ name:'matNm',label:'자재두께', widthType:'full', type:'input', },
-            { name:'lamDtlThk',label:'Epoxy', widthType:'full', type:'input', inputType:'number', },
-            { name:'copNm',label:'동박', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
-            { name:'copNm',label:'동박두께', widthType:'full', type:'disabled', },
-            { name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
-        ]
-    },
+		laminationItems: {
+			tableColumns: [],
+			CUDPopItems: [
+					{ name:'lamDtlTypeEm',label:'유형', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
+					{ name:'matNm',label:'자재', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
+					{ name:'matNm',label:'자재두께', widthType:'full', type:'input', disabled: true },
+					{ name:'epoxy',label:'Epoxy', widthType:'full', type:'input', inputType:'number', },
+					{ name:'copNm',label:'동박', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
+					{ name:'copNm',label:'동박두께', widthType:'full', type:'input', disabled: true},
+					{ name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
+			]
+	},
     MaterialListPage: {
         tableColumns: [],
         CUDPopItems: [
