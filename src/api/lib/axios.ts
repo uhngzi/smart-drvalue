@@ -38,7 +38,7 @@ export const instance = axios.create({
      */
     "x-tenant-code": isBrowser
       ? port === "90"
-        ? "shinyang-test"
+        ? cookie.get("dev-code") || "shinyang-test"
         : port === "3000"
         ? "shinyang-test"
         : // "gpntest-dev"
@@ -57,7 +57,7 @@ instance.interceptors.request.use(
      */
     config.headers["x-tenant-code"] = isBrowser
       ? port === "90"
-        ? "shinyang-test"
+        ? cookie.get("dev-code") || "shinyang-test"
         : port === "3000"
         ? "shinyang-test"
         : // "gpntest-dev"
