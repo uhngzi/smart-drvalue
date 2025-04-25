@@ -42,13 +42,17 @@ interface Props {
   newFlag: boolean;
   setDeleted: React.Dispatch<SetStateAction<boolean>>;
   inputRef: RefObject<InputRef[]>;
-  handleSubmitOrderModel: (model:salesOrderProcuctCUType) => void;
-  showToast: (message: string, type?: "success" | "error" | "info", duration?: number) => void;
+  handleSubmitOrderModel: (model: salesOrderProcuctCUType) => void;
+  showToast: (
+    message: string,
+    type?: "success" | "error" | "info",
+    duration?: number
+  ) => void;
   partnerId?: string;
   partnerMngId?: string;
 }
 
-const SalesModelTable:React.FC<Props> = ({
+const SalesModelTable: React.FC<Props> = ({
   data,
   setData,
   selectId,
@@ -62,7 +66,7 @@ const SalesModelTable:React.FC<Props> = ({
 }) => {
   const router = useRouter();
   // 베이스 값 가져오기
-  const { 
+  const {
     boardSelectList,
     metarialSelectList,
     unitSelectList,
@@ -83,23 +87,25 @@ const SalesModelTable:React.FC<Props> = ({
   } = useBase();
 
   // ------------ 원판그룹(제조사) ------------ 시작
-  const [boardGroupSelectList, setBoardGroupSelectList] = useState<selectType[]>([]);
+  const [boardGroupSelectList, setBoardGroupSelectList] = useState<
+    selectType[]
+  >([]);
   const [boardGroup, setBoardGroup] = useState<BoardGroupType[]>([]);
-  const { refetch:refetchBoard } = useQuery<apiGetResponseType, Error>({
+  const { refetch: refetchBoard } = useQuery<apiGetResponseType, Error>({
     queryKey: ["board"],
     queryFn: async () => {
       const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'board-group/jsxcrud/many'
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "board-group/jsxcrud/many",
       });
 
       if (result.resultCode === "OK_0000") {
         const bg = (result.data?.data ?? []) as BoardGroupType[];
-        const arr = bg.map((d:BoardGroupType) => ({
+        const arr = bg.map((d: BoardGroupType) => ({
           value: d.id,
           label: d.brdGrpName ?? "",
-        }))
+        }));
         setBoardGroup(bg);
         setBoardGroupSelectList(arr);
       } else {
@@ -111,21 +117,17 @@ const SalesModelTable:React.FC<Props> = ({
   // ------------ 원판그룹(제조사) ------------ 끝
 
   // 테이블에서 값 변경했을 때 실행되는 함수 (모델의 값 변경 시 실행 함수)
-  const handleModelDataChange = (
-    id: string,
-    name: string,
-    value: any
-  ) => {
+  const handleModelDataChange = (id: string, name: string, value: any) => {
     // 데이터를 복사
     const updatedData = data.map((item) => {
       if (item.id === id) {
         const keys = name.split(".");
         let updatedItem = { ...item };
-  
+
         // 마지막 키를 제외한 객체 탐색
         const lastKey = keys.pop()!;
         let targetObject: any = updatedItem;
-  
+
         keys.forEach((key) => {
           // 중간 키가 없거나 null인 경우 초기화
           if (!targetObject[key] || typeof targetObject[key] !== "object") {
@@ -133,37 +135,39 @@ const SalesModelTable:React.FC<Props> = ({
           }
           targetObject = targetObject[key];
         });
-  
+
         // 최종 키에 새 값 할당
         targetObject[lastKey] = value;
 
-        if(name.includes("orderPrdCnt")){
-          const tot = (item.currPrdInfo?.orderUnitPrice ?? 0) * Number(value ?? 0);
+        if (name.includes("orderPrdCnt")) {
+          const tot =
+            (item.currPrdInfo?.orderUnitPrice ?? 0) * Number(value ?? 0);
           targetObject["orderPrdPrice"] = tot;
-        } else if(name.includes("orderUnitPrice")) {
+        } else if (name.includes("orderUnitPrice")) {
           const tot = (item?.orderPrdCnt ?? 0) * Number(value ?? 0);
           updatedItem["orderPrdPrice"] = tot;
           console.log(targetObject, updatedItem);
         }
-  
+
         return updatedItem;
       }
       return item; // 다른 데이터는 그대로 유지
     });
     setData(updatedData); // 상태 업데이트
-  }; 
+  };
 
   // 테이블에서 모델 검색을 통해 모델을 선택했을 경우 실행되는 함수
-  const handleModelChange = (
-    model: modelsType,
-    productId: string,
-  ) => {
+  const handleModelChange = (model: modelsType, productId: string) => {
     const newData = [...data];
-    const index = newData.findIndex(f => f.id === productId);
-    if(index > -1) {
+    const index = newData.findIndex((f) => f.id === productId);
+    if (index > -1) {
       newData[index] = {
         ...newData[index],
-        currPrdInfo: { ...newData[index].currPrdInfo, ...model, modelId: model.id },
+        currPrdInfo: {
+          ...newData[index].currPrdInfo,
+          ...model,
+          modelId: model.id,
+        },
         orderTit: model.prdNm,
         modelId: model.id,
         prdMngNo: model.prdMngNo,
@@ -171,32 +175,36 @@ const SalesModelTable:React.FC<Props> = ({
       setData(newData);
       console.log(newData);
     }
-  }
+  };
 
-  const handleDelete = (model:salesOrderProcuctCUType) => {
-    if(model?.id?.includes("new")) {
-      setData(data.filter(f => f.id !== model.id));
+  const handleDelete = (model: salesOrderProcuctCUType) => {
+    if (model?.id?.includes("new")) {
+      setData(data.filter((f) => f.id !== model.id));
     } else {
       const updateData = data;
-      const index = data.findIndex(f=> f.id === model.id);
-      if(index > -1) {
+      const index = data.findIndex((f) => f.id === model.id);
+      if (index > -1) {
         updateData[index] = { ...updateData[index], disabled: true };
 
         const newArray = [
           ...updateData.slice(0, index),
           updateData[index],
-          ...updateData.slice(index + 1)
+          ...updateData.slice(index + 1),
         ];
         setData(newArray);
         setDeleted(true);
       }
     }
-  }
+  };
 
   // 수정 영역 표시 여부 (모델 단위)
-  const [visibleEdit, setVisibleEdit] = useState<{ [modelId: string]: boolean }>({});
+  const [visibleEdit, setVisibleEdit] = useState<{
+    [modelId: string]: boolean;
+  }>({});
   // 신규 로그들을 배열로 관리 (모델별)
-  const [editLogs, setEditLogs] = useState<{ [modelId: string]: LogEntry[] }>({});
+  const [editLogs, setEditLogs] = useState<{ [modelId: string]: LogEntry[] }>(
+    {}
+  );
 
   // 신규 로그 배열의 특정 인덱스를 업데이트하는 함수
   const updateEditLogEntry = (
@@ -239,18 +247,26 @@ const SalesModelTable:React.FC<Props> = ({
     });
     // 만약 해당 모델의 로그 배열이 없다면 초기화
     if (!editLogs[model.id ?? ""]) {
-      setEditLogs((prev) => ({ ...prev, [model.id ?? ""]: [{ date: dayjs(), content: "", isApproved: false }] }));
+      setEditLogs((prev) => ({
+        ...prev,
+        [model.id ?? ""]: [{ date: dayjs(), content: "", isApproved: false }],
+      }));
     }
   };
 
-  const handleSubmit = async (model: salesOrderProcuctCUType, logs: LogEntry[]) => {
+  const handleSubmit = async (
+    model: salesOrderProcuctCUType,
+    logs: LogEntry[]
+  ) => {
     try {
       if (model?.id) {
         const newLogs = logs.map((log) => ({
-          date: log.date ? dayjs(log.date).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
+          date: log.date
+            ? dayjs(log.date).format("YYYY-MM-DD")
+            : dayjs().format("YYYY-MM-DD"),
           content: log.content,
           isApproved: log.isApproved,
-        }))
+        }));
         const result = await patchAPI(
           {
             type: "core-d1",
@@ -261,10 +277,7 @@ const SalesModelTable:React.FC<Props> = ({
           },
           model.id,
           {
-            logs: [
-              ...(model.glbStatus?.json ?? []),
-              ...newLogs
-            ]
+            logs: [...(model.glbStatus?.json ?? []), ...newLogs],
           }
         );
 
@@ -279,216 +292,275 @@ const SalesModelTable:React.FC<Props> = ({
       console.log("CATCH ERROR :: ", e);
     }
   };
-  
+
   return (
     <div className="gap-40 flex flex-col overflow-auto">
-    { data.length > 0 && data
-      // 삭제되지 않은 모델만 가져오기
-      .filter(f=>f.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_DISCARDED)
-      .map((model:salesOrderProcuctCUType, index:number) => {
-        const modelId = model.id ?? "";
-        // 신규 로그 배열 아무것도 만약 없으면 기본 한 건을 보여줌
-        const logsForModel: LogEntry[] = editLogs[modelId]
-          || model.glbStatus?.json && model.glbStatus?.json?.length < 1 ? [] :
-          [{ date: dayjs(), content: "", isApproved: false }];
+      {data.length > 0 &&
+        data
+          // 삭제되지 않은 모델만 가져오기
+          .filter(
+            (f) =>
+              f.glbStatus?.salesOrderStatus !==
+              SalesOrderStatus.MODEL_REG_DISCARDED
+          )
+          .map((model: salesOrderProcuctCUType, index: number) => {
+            const modelId = model.id ?? "";
+            // 신규 로그 배열 아무것도 만약 없으면 기본 한 건을 보여줌
+            const logsForModel: LogEntry[] =
+              editLogs[modelId] ||
+              (model.glbStatus?.json && model.glbStatus?.json?.length < 1)
+                ? []
+                : [{ date: dayjs(), content: "", isApproved: false }];
 
-      return (
-        <BlueBox 
-          key={model.id} style={router.pathname.includes("sales")?{minWidth:1550}:{}}
-          className="min-w-[1490px]"
-        >
-          {port === '90' || cookie.get('companySY') === 'sy' &&
-          <SalesModelHeadSy
-            model={model}
-            handleModelDataChange={handleModelDataChange}
-            boardGroup={boardGroup}
-            boardGroupSelectList={boardGroupSelectList}
-            boardSelectList={boardSelectList}
-            metarialSelectList={metarialSelectList}
-            selectId={selectId}
-            newFlag={newFlag}
-            inputRef={inputRef}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            handleModelChange={handleModelChange}
-            partnerId={partnerId}
-            partnerMngId={partnerMngId}
-          />
-          }
-          {port === '90' || cookie.get('companySY') !== 'sy' &&
-          <SalesModelHead
-            model={model}
-            handleModelDataChange={handleModelDataChange}
-            boardGroup={boardGroup}
-            boardGroupSelectList={boardGroupSelectList}
-            boardSelectList={boardSelectList}
-            metarialSelectList={metarialSelectList}
-            selectId={selectId}
-            newFlag={newFlag}
-            inputRef={inputRef}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            handleModelChange={handleModelChange}
-            partnerId={partnerId}
-            partnerMngId={partnerMngId}
-          />}
-          <div className="flex flex-col ">
-            <AntdTable
-              columns={
-              port === '90' || cookie.get('companySY') === 'sy' ? 
-              salesOrderModelClmn(
-                data,
-                setData,
-                setDeleted,
-                unitSelectList,
-                vcutSelectList,
-                outSelectList,
-                smPrintSelectList,
-                smColorSelectList,
-                smTypeSelectList,
-                mkPrintSelectList,
-                mkColorSelectList,
-                mkTypeSelectList,
-                spPrintSelectList,
-                spTypeSelectList,
-                surfaceSelectList,
-                ozUnitSelectList,
-                handleModelDataChange,
-                newFlag,
-                selectId,
-                stampColorSelectList,
-                stampTypeSelectList,
-              )?.filter(f=>f.key !== 'dongback' && f.key !== 'sm' && f.key !== 'mk' && f.key !== 'arkit'
-                && f.key !== 'kit' && f.key !== 'pnl' && f.key !== 'kitpcs')
-              :
-              salesOrderModelClmn(
-                data,
-                setData,
-                setDeleted,
-                unitSelectList,
-                vcutSelectList,
-                outSelectList,
-                smPrintSelectList,
-                smColorSelectList,
-                smTypeSelectList,
-                mkPrintSelectList,
-                mkColorSelectList,
-                mkTypeSelectList,
-                spPrintSelectList,
-                spTypeSelectList,
-                surfaceSelectList,
-                ozUnitSelectList,
-                handleModelDataChange,
-                newFlag,
-                selectId,
-              )}
-              data={[model]}
-              styles={{th_bg:'#F9F9FB',th_ht:'30px',th_fw:'bold',td_ht:'170px',td_pd:'15px 3.8px', td_bg:'#FFF', round:'0'}}
-              tableProps={{split:'none'}}
-            />
-          </div>
-          <div className="w-full h-center justify-end pt-5">
-          { model.glbStatus?.salesOrderStatus !== SalesOrderStatus.MODEL_REG_COMPLETED &&
-            <Button
-              className="w-[109px] h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-              onClick={()=>handleSubmitOrderModel(model)}
-            >
-              <Arrow /> 모델 저장
-            </Button>
-          }
-          { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&
-            <FullChip label="확정" className="!w-[109px] !h-32" state="purple" />
-          }
-          </div>
-          { model.glbStatus?.salesOrderStatus === SalesOrderStatus.MODEL_REG_COMPLETED &&
-            visibleEdit[model.id ?? ""] &&
-            <div className="w-full bg-white mb-10 flex flex-col gap-5 px-10 pb-10">
-              { model.glbStatus.json && model.glbStatus.json?.length > 0 && 
-                model.glbStatus.json.map((item, idx) => (
-                <div className="w-full h-40 h-center gap-10" key={idx}>
-                  <div className="w-[110px]">{dayjs(item.date).format("YYYY-MM-DD")}</div>
-                  <div className="flex-1">{item.content}</div>
-                  <div className="w-[110px] h-center gap-5">
-                    <LabelThin label="미승인" />
-                    <Switch
-                      checked={item.isApproved}
-                      onChange={(checked) => {
-                        // 모델의 json 배열에서 idx번째 항목의 isApproved 값을 업데이트
-                        if(model.glbStatus?.json) {
-                          const updatedJson = model.glbStatus.json.map((log, i) =>
-                            i === idx ? { ...log, isApproved: checked } : log
-                          );
-
-                          // 변경된 updatedJson 배열을 해당 모델의 glbStatus.json에 저장
-                          handleModelDataChange(model.id ?? "", "glbStatus.json", updatedJson);
-                        }
-                      }}
-                      size="small"
-                    />
-                    <LabelThin label="승인" />
-                  </div>
-                </div>
-              ))
-              }
-              {/* 신규 로그 입력 블록들 */}
-              {logsForModel.map((log, idx) => (
-                <div key={idx} className="w-full h-40 h-center gap-4">
-                  <AntdDatePicker
-                    value={log.date ?? dayjs()}
-                    onChange={(e) =>
-                      updateEditLogEntry(modelId, idx, { date: dayjs(e) })
-                    }
-                    suffixIcon="cal"
-                    styles={{ bw: "0", bg: "none", pd: "0" }}
-                    className="w-[110px]"
-                    allowClear={false}
+            return (
+              <BlueBox
+                key={model.id}
+                style={
+                  router.pathname.includes("sales") ? { minWidth: 1550 } : {}
+                }
+                className="min-w-[1490px]"
+              >
+                {cookie.get("companySY") === "sy" && (
+                  <SalesModelHeadSy
+                    model={model}
+                    handleModelDataChange={handleModelDataChange}
+                    boardGroup={boardGroup}
+                    boardGroupSelectList={boardGroupSelectList}
+                    boardSelectList={boardSelectList}
+                    metarialSelectList={metarialSelectList}
+                    selectId={selectId}
+                    newFlag={newFlag}
+                    inputRef={inputRef}
+                    handleDelete={handleDelete}
+                    handleEdit={handleEdit}
+                    handleModelChange={handleModelChange}
+                    partnerId={partnerId}
+                    partnerMngId={partnerMngId}
                   />
-                  <div className="flex-1">
-                    <AntdInput
-                      ref={(el) => {
-                        // 첫 번째 입력 필드에 포커스 처리용 참조 저장
-                        if (idx === 0) {
-                          editInputRefs.current[modelId] = el;
-                        }
-                      }}
-                      value={log.content}
-                      onChange={(e) =>
-                        updateEditLogEntry(modelId, idx, { content: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="w-[110px] h-center gap-5">
-                    <LabelThin label="미승인" />
-                    <Switch
-                      checked={log.isApproved}
-                      onChange={(checked) =>
-                        updateEditLogEntry(modelId, idx, { isApproved: checked })
-                      }
-                      size="small"
-                    />
-                    <LabelThin label="승인" />
-                  </div>
+                )}
+                {cookie.get("companySY") !== "sy" && (
+                  <SalesModelHead
+                    model={model}
+                    handleModelDataChange={handleModelDataChange}
+                    boardGroup={boardGroup}
+                    boardGroupSelectList={boardGroupSelectList}
+                    boardSelectList={boardSelectList}
+                    metarialSelectList={metarialSelectList}
+                    selectId={selectId}
+                    newFlag={newFlag}
+                    inputRef={inputRef}
+                    handleDelete={handleDelete}
+                    handleEdit={handleEdit}
+                    handleModelChange={handleModelChange}
+                    partnerId={partnerId}
+                    partnerMngId={partnerMngId}
+                  />
+                )}
+                <div className="flex flex-col ">
+                  <AntdTable
+                    columns={
+                      port === "90" || cookie.get("companySY") === "sy"
+                        ? salesOrderModelClmn(
+                            data,
+                            setData,
+                            setDeleted,
+                            unitSelectList,
+                            vcutSelectList,
+                            outSelectList,
+                            smPrintSelectList,
+                            smColorSelectList,
+                            smTypeSelectList,
+                            mkPrintSelectList,
+                            mkColorSelectList,
+                            mkTypeSelectList,
+                            spPrintSelectList,
+                            spTypeSelectList,
+                            surfaceSelectList,
+                            ozUnitSelectList,
+                            handleModelDataChange,
+                            newFlag,
+                            selectId,
+                            stampColorSelectList,
+                            stampTypeSelectList
+                          )?.filter(
+                            (f) =>
+                              f.key !== "dongback" &&
+                              f.key !== "sm" &&
+                              f.key !== "mk" &&
+                              f.key !== "arkit" &&
+                              f.key !== "kit" &&
+                              f.key !== "pnl" &&
+                              f.key !== "kitpcs"
+                          )
+                        : salesOrderModelClmn(
+                            data,
+                            setData,
+                            setDeleted,
+                            unitSelectList,
+                            vcutSelectList,
+                            outSelectList,
+                            smPrintSelectList,
+                            smColorSelectList,
+                            smTypeSelectList,
+                            mkPrintSelectList,
+                            mkColorSelectList,
+                            mkTypeSelectList,
+                            spPrintSelectList,
+                            spTypeSelectList,
+                            surfaceSelectList,
+                            ozUnitSelectList,
+                            handleModelDataChange,
+                            newFlag,
+                            selectId
+                          )
+                    }
+                    data={[model]}
+                    styles={{
+                      th_bg: "#F9F9FB",
+                      th_ht: "30px",
+                      th_fw: "bold",
+                      td_ht: "170px",
+                      td_pd: "15px 3.8px",
+                      td_bg: "#FFF",
+                      round: "0",
+                    }}
+                    tableProps={{ split: "none" }}
+                  />
                 </div>
-              ))}
-              <div className="w-full v-between-h-center">
-                <Button
-                  onClick={() => addNewLogEntry(modelId)}
-                  className="flex items-center"
-                >
-                  <PlusOutlined /> 추가
-                </Button>
-                <Button
-                  className="h-32 bg-point1 text-white rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                  onClick={() => handleSubmit(model, logsForModel)}
-                ><Arrow /> 저장</Button>
-              </div>
-            </div>
-          }
-        </BlueBox>
-      )})
-    }
+                <div className="w-full h-center justify-end pt-5">
+                  {model.glbStatus?.salesOrderStatus !==
+                    SalesOrderStatus.MODEL_REG_COMPLETED && (
+                    <Button
+                      className="w-[109px] h-32 bg-point1 text-white rounded-6"
+                      style={{ color: "#ffffffE0", backgroundColor: "#4880FF" }}
+                      onClick={() => handleSubmitOrderModel(model)}
+                    >
+                      <Arrow /> 모델 저장
+                    </Button>
+                  )}
+                  {model.glbStatus?.salesOrderStatus ===
+                    SalesOrderStatus.MODEL_REG_COMPLETED && (
+                    <FullChip
+                      label="확정"
+                      className="!w-[109px] !h-32"
+                      state="purple"
+                    />
+                  )}
+                </div>
+                {model.glbStatus?.salesOrderStatus ===
+                  SalesOrderStatus.MODEL_REG_COMPLETED &&
+                  visibleEdit[model.id ?? ""] && (
+                    <div className="w-full bg-white mb-10 flex flex-col gap-5 px-10 pb-10">
+                      {model.glbStatus.json &&
+                        model.glbStatus.json?.length > 0 &&
+                        model.glbStatus.json.map((item, idx) => (
+                          <div
+                            className="w-full h-40 h-center gap-10"
+                            key={idx}
+                          >
+                            <div className="w-[110px]">
+                              {dayjs(item.date).format("YYYY-MM-DD")}
+                            </div>
+                            <div className="flex-1">{item.content}</div>
+                            <div className="w-[110px] h-center gap-5">
+                              <LabelThin label="미승인" />
+                              <Switch
+                                checked={item.isApproved}
+                                onChange={(checked) => {
+                                  // 모델의 json 배열에서 idx번째 항목의 isApproved 값을 업데이트
+                                  if (model.glbStatus?.json) {
+                                    const updatedJson =
+                                      model.glbStatus.json.map((log, i) =>
+                                        i === idx
+                                          ? { ...log, isApproved: checked }
+                                          : log
+                                      );
+
+                                    // 변경된 updatedJson 배열을 해당 모델의 glbStatus.json에 저장
+                                    handleModelDataChange(
+                                      model.id ?? "",
+                                      "glbStatus.json",
+                                      updatedJson
+                                    );
+                                  }
+                                }}
+                                size="small"
+                              />
+                              <LabelThin label="승인" />
+                            </div>
+                          </div>
+                        ))}
+                      {/* 신규 로그 입력 블록들 */}
+                      {logsForModel.map((log, idx) => (
+                        <div key={idx} className="w-full h-40 h-center gap-4">
+                          <AntdDatePicker
+                            value={log.date ?? dayjs()}
+                            onChange={(e) =>
+                              updateEditLogEntry(modelId, idx, {
+                                date: dayjs(e),
+                              })
+                            }
+                            suffixIcon="cal"
+                            styles={{ bw: "0", bg: "none", pd: "0" }}
+                            className="w-[110px]"
+                            allowClear={false}
+                          />
+                          <div className="flex-1">
+                            <AntdInput
+                              ref={(el) => {
+                                // 첫 번째 입력 필드에 포커스 처리용 참조 저장
+                                if (idx === 0) {
+                                  editInputRefs.current[modelId] = el;
+                                }
+                              }}
+                              value={log.content}
+                              onChange={(e) =>
+                                updateEditLogEntry(modelId, idx, {
+                                  content: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="w-[110px] h-center gap-5">
+                            <LabelThin label="미승인" />
+                            <Switch
+                              checked={log.isApproved}
+                              onChange={(checked) =>
+                                updateEditLogEntry(modelId, idx, {
+                                  isApproved: checked,
+                                })
+                              }
+                              size="small"
+                            />
+                            <LabelThin label="승인" />
+                          </div>
+                        </div>
+                      ))}
+                      <div className="w-full v-between-h-center">
+                        <Button
+                          onClick={() => addNewLogEntry(modelId)}
+                          className="flex items-center"
+                        >
+                          <PlusOutlined /> 추가
+                        </Button>
+                        <Button
+                          className="h-32 bg-point1 text-white rounded-6"
+                          style={{
+                            color: "#ffffffE0",
+                            backgroundColor: "#4880FF",
+                          }}
+                          onClick={() => handleSubmit(model, logsForModel)}
+                        >
+                          <Arrow /> 저장
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+              </BlueBox>
+            );
+          })}
     </div>
-  )
-}
+  );
+};
 
 export default SalesModelTable;
