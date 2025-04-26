@@ -40,6 +40,10 @@ import { wkPlanWaitType } from "@/data/type/wk/plan";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
 import { Popup } from "@/layouts/Body/Popup";
 import { DividerH } from "@/components/Divider/Divider";
+import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
+import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
+import { getPrtSupAPI } from "@/api/cache/client";
+import OrderAddLayout from "../buy/order/OrderAdd";
 
 interface Props {
   id: string,
@@ -110,6 +114,13 @@ const Project: React.FC<Props> = ({
   useEffect(()=>{
     if(!isLoading && queryDetailData?.resultCode === "OK_0000") {
       setDetailData(queryDetailData.data.data as wkPlanWaitType);
+      console.log(queryDetailData.data.data + "111111111111111111111111111111111111111111111111111111111111111111")
+      const chartBasicDate = queryDetailData.data.data?.orderProduct?.currPrdInfo ?
+        JSON.parse(queryDetailData.data.data?.orderProduct?.currPrdInfo).orderDt ?
+          dayjs(JSON.parse(queryDetailData.data.data?.orderProduct?.currPrdInfo ?? "").orderDt).subtract(3, 'day').format("YYYY-MM-DD")
+          : dayjs().subtract(3, 'day').format("YYYY-MM-DD")
+        : dayjs().subtract(3, 'day').format("YYYY-MM-DD");
+      setBasicDate(new Date(chartBasicDate));
       setDetailDataLoading(false);
     }
   }, [queryDetailData]);
@@ -532,359 +543,367 @@ function addPopWorkers(data: any) {
     }
       
   }
-  return(
-    <div className="w-full overflow-auto h-[calc(100vh-140px)] pr-20">
-      <section className="flex flex-col w-full h-full">
-        <div className="flex gap-20 h-center pb-10 ">
-          <p className="font-medium text-16 h-40 h-center gap-5">
-            <span>{detailData.specModel?.partner?.prtNm}</span>
-            <span>-</span>
-            <span>{detailData.specModel?.prdNm}</span>
-            <span>{"("}시작일 :
-              { detailData?.orderProduct?.currPrdInfo ?
-                JSON.parse(detailData?.orderProduct?.currPrdInfo).orderDt ?
-                  dayjs(JSON.parse(detailData?.orderProduct?.currPrdInfo ?? "").orderDt).format("YYYY-MM-DD")
-                  : "-"
-                : "-"
-              }
-            </span>
-            <span>납기일 : {detailData?.orderProduct?.orderPrdDueDt ? dayjs(detailData.orderProduct?.orderPrdDueDt).format("YYYY-MM-DD"): "-"}{")"}</span>
-          </p>
-          <div className="flex gap-10 h-center">
-            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() - 1)))}>{"<< 달"}</Button>
-            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() - 7)))}>{"< 주"}</Button>
-            <span>{dayjs(basicDate).format("YYYY년 MM월 DD일")}</span>
-            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() + 7)))}>{"주 >"}</Button>
-            <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() + 1)))}>{"달 >>"}</Button>
-          </div>
-        </div>
 
-        <div className="flex rounded-14" style={{border:'1px solid #D9D9D9'}}>
-          <div>
-            <ProjectTable>
-              <colgroup>
-                <col width="57.2%" />
-                <col width="6.8%" />
-                <col width="18%" />
-                <col width="18%" />
-              </colgroup>
-              <thead>
-                <tr className="!h-55">
-                  <th>공정</th>
-                  <th>
-                    <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다.">
-                      <span>진행일수</span>
-                    </Tooltip>
-                  </th>
-                  <th colSpan={2}>
-                    <div className="flex items-center justify-center gap-30">
-                      <span>시작일</span>
-                      <RightArrow/>
-                      <span>종료일</span>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {schedules.map((schedule, index) => (
-                  <Fragment key={index}>
-                    <tr className="process" key={`process-${index}`}>
-                      <td colSpan={4}>{schedule.process}</td>
+  // ---------------------------발주 관련---------------------------
+  const [prtId, setPrtId] = useState<string | null>(null);
+  const [csList, setCsList] = useState<Array<{ value: any; label: string }>>([]);
+  const { data: cs, refetch: csRefetch } = useQuery({
+    queryKey: ["getClientSup"],
+    queryFn: () => getPrtSupAPI(),
+    enabled: orderOpen
+  });
+  useEffect(() => {
+    if (cs?.data?.data?.length) {
+      setCsList(
+        cs.data?.data.map((cs: partnerRType) => ({
+          value: cs.id,
+          label: cs.prtNm,
+        }))
+      );
+    }
+  }, [cs?.data?.data]);
+  const [csMngList, setCsMngList] = useState<partnerMngRType[]>([]);
+  const [prtMngId, setPrtMngId] = useState<string>("");
+
+  useEffect(() => {
+    // 구매처 변경 시 담당자 세팅 및 초기화
+    if (prtId && prtId !== "" && cs?.data?.data && cs?.data?.data?.length) {
+      setCsMngList(
+        ((cs?.data?.data as partnerRType[]) ?? []).find((f) => f.id === prtId)
+          ?.managers ?? []
+      );
+    } else {
+      setCsMngList([]);
+      setPrtMngId("");
+    }
+  }, [prtId, cs?.data?.data]);
+  console.log(orderOpen)
+  
+  return(
+    <>
+      {orderOpen ? (<OrderAddLayout orderLoca="wk" selectProcId={selectId} onPopClose={() => {setOrderOpen(false); setSelectId(null)}}/>) : (
+
+        <div className="w-full overflow-auto h-[calc(100vh-140px)] pr-20">
+          <section className="flex flex-col w-full h-full">
+            <div className="flex gap-20 h-center pb-10 ">
+              <p className="font-medium text-16 h-40 h-center gap-5">
+                <span>{detailData.specModel?.partner?.prtNm}</span>
+                <span>-</span>
+                <span>{detailData.specModel?.prdNm}</span>
+                <span>{"("}시작일 :
+                  { detailData?.orderProduct?.currPrdInfo ?
+                    JSON.parse(detailData?.orderProduct?.currPrdInfo).orderDt ?
+                      dayjs(JSON.parse(detailData?.orderProduct?.currPrdInfo ?? "").orderDt).format("YYYY-MM-DD")
+                      : "-"
+                    : "-"
+                  }
+                </span>
+                <span>납기일 : {detailData?.orderProduct?.orderPrdDueDt ? dayjs(detailData.orderProduct?.orderPrdDueDt).format("YYYY-MM-DD"): "-"}{")"}</span>
+              </p>
+              <div className="flex gap-10 h-center">
+                <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() - 1)))}>{"<< 달"}</Button>
+                <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() - 7)))}>{"< 주"}</Button>
+                <span>{dayjs(basicDate).format("YYYY년 MM월 DD일")}</span>
+                <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setDate(basicDate.getDate() + 7)))}>{"주 >"}</Button>
+                <Button className="w-48 text-12" onClick={() => setBasicDate(new Date(basicDate.setMonth(basicDate.getMonth() + 1)))}>{"달 >>"}</Button>
+              </div>
+            </div>
+
+            <div className="flex rounded-14" style={{border:'1px solid #D9D9D9'}}>
+              <div>
+                <ProjectTable>
+                  <colgroup>
+                    <col width="57.2%" />
+                    <col width="6.8%" />
+                    <col width="18%" />
+                    <col width="18%" />
+                  </colgroup>
+                  <thead>
+                    <tr className="!h-55">
+                      <th>공정</th>
+                      <th>
+                        <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다.">
+                          <span>진행일수</span>
+                        </Tooltip>
+                      </th>
+                      <th colSpan={2}>
+                        <div className="flex items-center justify-center gap-30">
+                          <span>시작일</span>
+                          <RightArrow/>
+                          <span>종료일</span>
+                        </div>
+                      </th>
                     </tr>
-                    {schedule.task.map((task: Task, index) => (
-                      <Fragment key={task.id}>
-                        <tr>
-                          <td className="flex flex-row justify-between items-center h-40 px-10 cursor-pointer hover:bg-[#0000000a]" onClick={() => task.from ? setBasicDate(new Date(task.from)) : false}>
-                            <div className="flex items-center gap-20 " >
-                              <div className="w-18 h-18 rounded-4" style={{backgroundColor: "#E9EDF5"}}>{index+1}</div>
-                              <span className="text-left">{task.name}</span>
-                            </div>
-                            <div className="flex items-center gap-5">
-                              <div className="w-36 h-20 rounded-4 text-center text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
-                              <div className="flex items-center w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}><WorkerFill/>{task?.workers?.length || 0}</div>
-                              <Dropdown trigger={["click"]} menu={{ items:[
-                                ( detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? {
-                                  label: <div className="h-center gap-5">
-                                            <p className="w-16 h-16"><Load /></p>
-                                            진행관리
-                                          </div>,
-                                  key: 0,
-                                  onClick:()=>{setSelectId(task.id), setProcessOpen(true)}
-                                } : null,
-                                {
-                                  label: <div className="h-center gap-5">
-                                            <p className="w-16 h-16"><Reg /></p>
-                                            발주등록
-                                          </div>,
-                                  key: 1,
-                                  onClick:()=>{setSelectId(task.id), setOrderOpen(true)}
-                                },
-                                (!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) ? {
-                                  label: <div className="h-center gap-5">
-                                            <p className="w-16 h-16"><WorkerOutline /></p>
-                                            인력계획
-                                          </div>,
-                                  key: 2,
-                                  onClick:()=>{
-                                    setWorkerPlanList(task?.workers || []);
-                                    setWorkerPlan({id: task.id, date: `${schedule.process} > ${task.name}(${dayjs(task.from).format("YYYY-MM-DD")} ~ ${dayjs(task.to).format("YYYY-MM-DD")})`});
-                                    setWorkerPlanOpen(true);
-                                    }
-                                } : null,
-                              ].filter((item): item is Exclude<typeof item, null> => item !== null)}}>
-                                <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
-                                  <p className="w-16 h-16"><Edit/></p>
-                                </Button>
-                              </Dropdown>
-                            </div>
-                          </td>
-                          <td>
-                            {/* <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top"> */}
-                              <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
-                                ref={(el) => { progDateRefObj.current[task.id] = el; }}
-                                onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task.id, procDateObj[task.id]?.from, e);}}/>
-                            {/* </Tooltip> */}
-                          </td>
-                          <td colSpan={2}>
-                            <div className="flex items-center gap-5">
-                              <MemoizedDatePicker
-                                value={procDateObj[task.id]?.from ? dayjs(procDateObj[task.id]?.from) : null} 
-                                onChange={(date) => changeDate(date, task.id, "from", procDateObj[task.id]?.to)} 
-                                disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                              <p className="w-24 flex justify-center"><RightArrow/></p>
-                              <MemoizedDatePicker //<Calendar/>
-                                value={procDateObj[task.id]?.to ? dayjs(procDateObj[task.id]?.to) : null} 
-                                onChange={(date) => changeDate(date, task.id, "to", procDateObj[task.id]?.from)} 
-                                disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                            </div>
-                          </td>
-                          
+                  </thead>
+                  <tbody>
+                    {schedules.map((schedule, index) => (
+                      <Fragment key={index}>
+                        <tr className="process" key={`process-${index}`}>
+                          <td colSpan={4}>{schedule.process}</td>
                         </tr>
-                        {task.workers && task.workers.length > 0 && task.workers.map((worker, index) => (
-                          <tr key={`${task.id}-worker-${index}`}>
-                            <td className="flex items-center gap-5 px-10">
-                              <div className="flex items-center ">
-                                <div className="w-24 h-24 justify-center items-center flex"><TopArrow/></div>
-                                <div className="w-24 h-24 justify-center items-center flex"><WorkerFill2/></div>
-                                <span>{worker.name}</span>
-                              </div>
-                            </td>
-                            <td>{worker.workPlanStart && worker.workPlanEnd ? getDaysBetween(worker.workPlanStart, worker.workPlanEnd) : ""}</td>
-                            <td colSpan={2}>
-                              <div className="flex items-center gap-5">
-                                <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
-                                  value={dayjs(worker.workPlanStart).isValid() ? dayjs(worker.workPlanStart) : null} 
-                                  open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                                <p className="w-24 flex justify-center"><RightArrow/></p>
-                                <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
-                                  value={dayjs(worker.workPlanEnd).isValid() ? dayjs(worker.workPlanEnd) : null} 
-                                open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
-                              </div>
-                            </td>
-                            
-                          </tr>
+                        {schedule.task.map((task: Task, index) => (
+                          <Fragment key={task.id}>
+                            <tr>
+                              <td className="flex flex-row justify-between items-center h-40 px-10 cursor-pointer hover:bg-[#0000000a]" onClick={() => task.from ? setBasicDate(new Date(task.from)) : false}>
+                                <div className="flex items-center gap-20 " >
+                                  <div className="w-18 h-18 rounded-4" style={{backgroundColor: "#E9EDF5"}}>{index+1}</div>
+                                  <span className="text-left">{task.name}</span>
+                                </div>
+                                <div className="flex items-center gap-5">
+                                  <div className="w-36 h-20 rounded-4 text-center text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}>{task?.progress ? task.progress : 0}%</div>
+                                  <div className="flex items-center w-36 h-20 rounded-4 px-5 text-12" style={{border:'1px solid #D9D9D9', color:'#00000073'}}><WorkerFill/>{task?.workers?.length || 0}</div>
+                                  <Dropdown trigger={["click"]} menu={{ items:[
+                                    ( detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? {
+                                      label: <div className="h-center gap-5">
+                                                <p className="w-16 h-16"><Load /></p>
+                                                진행관리
+                                              </div>,
+                                      key: 0,
+                                      onClick:()=>{setSelectId(task.id), setProcessOpen(true)}
+                                    } : null,
+                                    {
+                                      label: <div className="h-center gap-5">
+                                                <p className="w-16 h-16"><Reg /></p>
+                                                발주등록
+                                              </div>,
+                                      key: 1,
+                                      onClick:()=>{setSelectId(task.id), setOrderOpen(true)}
+                                    },
+                                    (!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) ? {
+                                      label: <div className="h-center gap-5">
+                                                <p className="w-16 h-16"><WorkerOutline /></p>
+                                                인력계획
+                                              </div>,
+                                      key: 2,
+                                      onClick:()=>{
+                                        setWorkerPlanList(task?.workers || []);
+                                        setWorkerPlan({id: task.id, date: `${schedule.process} > ${task.name}(${dayjs(task.from).format("YYYY-MM-DD")} ~ ${dayjs(task.to).format("YYYY-MM-DD")})`});
+                                        setWorkerPlanOpen(true);
+                                        }
+                                    } : null,
+                                  ].filter((item): item is Exclude<typeof item, null> => item !== null)}}>
+                                    <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
+                                      <p className="w-16 h-16"><Edit/></p>
+                                    </Button>
+                                  </Dropdown>
+                                </div>
+                              </td>
+                              <td>
+                                {/* <Tooltip title="진행일수를 입력하면 시작, 종료일이 자동 저장됩니다." open={progDateHint[task.id]} placement="top"> */}
+                                  <Input key={getDaysBetween(task.from, task.to)} defaultValue={task.from && task.to ? getDaysBetween(task.from, task.to) : ""} className="!border-0 !text-center"
+                                    ref={(el) => { progDateRefObj.current[task.id] = el; }}
+                                    onFocus={() => setProgDateHint(prev => ({...prev, [task.id] : true}))} 
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        (e.target as HTMLInputElement).blur();
+                                      }
+                                    }}
+                                    onBlur={(e) => {setProgDateHint(prev => ({...prev, [task.id] : false})); changeProgDate(task.id, procDateObj[task.id]?.from, e);}}/>
+                                {/* </Tooltip> */}
+                              </td>
+                              <td colSpan={2}>
+                                <div className="flex items-center gap-5">
+                                  <MemoizedDatePicker
+                                    value={procDateObj[task.id]?.from ? dayjs(procDateObj[task.id]?.from) : null} 
+                                    onChange={(date) => changeDate(date, task.id, "from", procDateObj[task.id]?.to)} 
+                                    disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
+                                  <p className="w-24 flex justify-center"><RightArrow/></p>
+                                  <MemoizedDatePicker //<Calendar/>
+                                    value={procDateObj[task.id]?.to ? dayjs(procDateObj[task.id]?.to) : null} 
+                                    onChange={(date) => changeDate(date, task.id, "to", procDateObj[task.id]?.from)} 
+                                    disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
+                                </div>
+                              </td>
+                              
+                            </tr>
+                            {task.workers && task.workers.length > 0 && task.workers.map((worker, index) => (
+                              <tr key={`${task.id}-worker-${index}`}>
+                                <td className="flex items-center gap-5 px-10">
+                                  <div className="flex items-center ">
+                                    <div className="w-24 h-24 justify-center items-center flex"><TopArrow/></div>
+                                    <div className="w-24 h-24 justify-center items-center flex"><WorkerFill2/></div>
+                                    <span>{worker.name}</span>
+                                  </div>
+                                </td>
+                                <td>{worker.workPlanStart && worker.workPlanEnd ? getDaysBetween(worker.workPlanStart, worker.workPlanEnd) : ""}</td>
+                                <td colSpan={2}>
+                                  <div className="flex items-center gap-5">
+                                    <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
+                                      value={dayjs(worker.workPlanStart).isValid() ? dayjs(worker.workPlanStart) : null} 
+                                      open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
+                                    <p className="w-24 flex justify-center"><RightArrow/></p>
+                                    <CustomDatePicker size="small" suffixIcon={null} allowClear={false} 
+                                      value={dayjs(worker.workPlanEnd).isValid() ? dayjs(worker.workPlanEnd) : null} 
+                                    open={false} disabled={(detailData?.isWorkPlanFixed && detailData?.isPlanDtFixed) ? true : false}/>
+                                  </div>
+                                </td>
+                                
+                              </tr>
+                            ))}
+                          </Fragment>
                         ))}
                       </Fragment>
                     ))}
-                  </Fragment>
-                ))}
-              </tbody>
-            </ProjectTable>
-          </div>
-          <GanttChart schedules={schedules} basicDate={basicDate}/>
-        </div>
-        {(!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) && (
-          <div className="w-full flex justify-end p-20">
-            <Button
-              className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-              onClick={()=>{
-                submitConfirm();
-              }}
-            >
-              <Arrow /> 확정 저장
-            </Button>
-          </div>
-        )}
-        <AntdDrawer open={orderOpen} close={()=>setOrderOpen(false)} width={760}>
-          <section className="p-20 flex flex-col gap-20">
-            <div className="flex justify-between items-center">
-              <span className="text-16 font-medium" style={{color:'#000000D9'}}>발주 등록</span>
-              <div className="flex cursor-pointer" onClick={() => setOrderOpen(false)}><Close/></div>
+                  </tbody>
+                </ProjectTable>
+              </div>
+              <GanttChart schedules={schedules} basicDate={basicDate}/>
             </div>
-            <CardInputList
-              items={[
-                {value:'', label: '생산제품', name: 'orderNo', type: 'input', widthType: 'half' },
-                {value:'', label: '결제조건', name: 'orderDate', type: 'input', widthType: 'half' },
-                {value:'', label: '구매처', name: 'orderCompany', type: 'input', widthType: 'third' },
-                {value:'', label: '담당자', name: 'orderPrice', type: 'input', widthType: 'third' },
-                {value:'', label: '구매담당', name: 'orderContent', type: 'input', widthType: 'third' },
-                {value:'', label: '발주확정일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '발주예정일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '발주일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '납품요구일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '도착일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '승인일', name: 'orderContent', type: 'date', widthType: 'third' },
-                {value:'', label: '비고', name: 'orderContent', type: 'input', widthType: 'full' },
-              ]}
-              handleDataChange={(e, name, type) => {}}
-              innerBtnContents={
-                <Button 
-                  className="w-109 h-32 bg-point1 text-white rounded-6"
-                  style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                  onClick={()=>{}}>
-                  <Arrow />등록
+            {(!detailData?.isWorkPlanFixed && !detailData?.isPlanDtFixed) && (
+              <div className="w-full flex justify-end p-20">
+                <Button
+                  className="h-32 rounded-6" style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                  onClick={()=>{
+                    submitConfirm();
+                  }}
+                >
+                  <Arrow /> 확정 저장
                 </Button>
-              }
-              />
-          </section>
-        </AntdDrawer>
-        <ProjectDrawer 
-          open={processOpen} 
-          selectId={selectId}
-          schedules={schedules} 
-          setSchedules={setSchedules} 
-          refetch={pmsRefetch}
-          close={()=>{setSelectId(null), setProcessOpen(false), pmsRefetch()}} 
-        />
-        <AntdDrawer open={workerPlanOpen} close={()=>{setWorkerPlanList([]); setWorkerPlanOpen(false)}} width={720}>
-          <section className="p-20 flex flex-col gap-20">
-            <div className="flex justify-between items-center">
-              <span className="text-16 font-medium" style={{color:'#000000D9'}}>{workerPlan?.date} 인력투입계획</span>
-              <div className="flex cursor-pointer" onClick={() => {setWorkerPlanList([]); setWorkerPlanOpen(false)}}><Close/></div>
-            </div>
-            <CardInputList items={[]} handleDataChange={()=>{}} innerBtnContents={
-              <Button 
-                className="w-109 h-32 bg-point1 text-white rounded-6"
-                style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
-                onClick={()=> {
-                  if(workerPlanList.some((item) => {
-                    if(item?.delYn) return false;
-                    else if(!item?.workPlanStart || !item?.workPlanEnd) return true;
-                    else return false;
-                  })) {
-                    showToast("투입일과 종료일을 선택해주세요.", "error");
-                    return;
+              </div>
+            )}
+            <ProjectDrawer 
+              open={processOpen} 
+              selectId={selectId}
+              schedules={schedules} 
+              setSchedules={setSchedules} 
+              refetch={pmsRefetch}
+              close={()=>{setSelectId(null), setProcessOpen(false), pmsRefetch()}} 
+            />
+            <AntdDrawer open={workerPlanOpen} close={()=>{setWorkerPlanList([]); setWorkerPlanOpen(false)}} width={720}>
+              <section className="p-20 flex flex-col gap-20">
+                <div className="flex justify-between items-center">
+                  <span className="text-16 font-medium" style={{color:'#000000D9'}}>{workerPlan?.date} 인력투입계획</span>
+                  <div className="flex cursor-pointer" onClick={() => {setWorkerPlanList([]); setWorkerPlanOpen(false)}}><Close/></div>
+                </div>
+                <CardInputList items={[]} handleDataChange={()=>{}} innerBtnContents={
+                  <Button 
+                    className="w-109 h-32 bg-point1 text-white rounded-6"
+                    style={{color:"#ffffffE0", backgroundColor:"#4880FF"}}
+                    onClick={()=> {
+                      if(workerPlanList.some((item) => {
+                        if(item?.delYn) return false;
+                        else if(!item?.workPlanStart || !item?.workPlanEnd) return true;
+                        else return false;
+                      })) {
+                        showToast("투입일과 종료일을 선택해주세요.", "error");
+                        return;
+                      }
+                      addWorkerPlan(workerPlanList, workerPlan?.id);
+                      // setSchedules(schedules.map(process => ({
+                      //   ...process,
+                      //   task: process.task.map(task => {
+                      //     if (task.id === workerPlan?.id) {
+                      //       return { ...task, workers: workerPlanList };
+                      //     }
+                      //     return task;
+                      //   }),
+                      // })));
+                      // showToast("인력투입 계획이 생성되었습니다.", "success");
+                      // setWorkerPlanOpen(false);
+                    }}>
+                    <Arrow />등록
+                  </Button>
                   }
-                  addWorkerPlan(workerPlanList, workerPlan?.id);
-                  // setSchedules(schedules.map(process => ({
-                  //   ...process,
-                  //   task: process.task.map(task => {
-                  //     if (task.id === workerPlan?.id) {
-                  //       return { ...task, workers: workerPlanList };
-                  //     }
-                  //     return task;
-                  //   }),
-                  // })));
-                  // showToast("인력투입 계획이 생성되었습니다.", "success");
-                  // setWorkerPlanOpen(false);
-                }}>
-                <Arrow />등록
-              </Button>
-              }
-              >
-                {workerPlanList.length > 0 && workerPlanList.filter(filter => !filter.delYn).map((worker, index) => {
-                  const workerData = projectWorkers.find((item) => item.empId === worker.empId);
-                  return (
-                    <div className="flex gap-10 items-center" id={workerData?.empId} key={index}>
-                      <div className="w-40 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{workerData?.jobType}</div>
-                      <span className="w-54 text-center">{workerData?.workType}</span>
-                      <span className="w-40 text-center">{workerData?.name}</span>
-                      <span className="w-54 text-center">{workerData?.empTit}</span>
-                      <span className="w-[128px] text-center">{workerData?.empRemarks}</span>
-                      <div className="flex items-center gap-3 w-[230px] py-5 px-2 border border-[#D9D9D9]">
-                        <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
-                          value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
-                          onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
-                        <p className="w-32 flex justify-center"><RightArrow/></p>
-                        <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
-                          value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
-                          onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
-                      </div>
-                      <Dropdown trigger={["click"]} menu={{ items:[
-                        // {
-                        //   label: <div className="h-center gap-5">
-                        //             <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
-                        //           </div>,
-                        //   key: 0,
-                        //   onClick:()=>{}
-                        // },
-                        {
-                          label: <div className="h-center gap-5">
-                                    <p className="w-16 h-16"><Trash /></p>삭제
-                                  </div>,
-                          key: 1,
-                          onClick:()=> setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId !== worker.empId ? item : {...item, delYn: true}))
-                        },
-                      ]}}>
-                        <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
-                          <p className="w-16 h-16"><Edit/></p>
-                        </Button>
-                      </Dropdown>
-                    </div>
-                  )
-                })}
-              </CardInputList>
-              <AntdTableEdit
-                columns={[
-                  { title: '', width:50, dataIndex: 'empId', key: 'empId', align: 'center', 
-                    render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => (item.empId === record.empId && !item?.delYn )) ? true : false} onChange={()=>addPopWorkers(record)} />)
-                  },
-                  { title: '업무구분', width:80, dataIndex: 'jobType', key: 'jobType', align: 'center' },
-                  { title: '근무형태', width:80, dataIndex: 'workType', key: 'workType', align: 'center'},
-                  { title: '이름', width:75, dataIndex: 'name', key: 'name', align: 'center'},
-                  { title: '직함', width:75, dataIndex: 'empTit', key: 'empTit', align: 'center'},
-                  { title: '특이사항', width:250, dataIndex: 'empRemarks', key: 'empRemarks'},
-                ]}
-                data={projectWorkers}
-                styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px'}}
-              />
-          </section>
-        </AntdDrawer>
-        <ToastContainer />
+                  >
+                    {workerPlanList.length > 0 && workerPlanList.filter(filter => !filter.delYn).map((worker, index) => {
+                      const workerData = projectWorkers.find((item) => item.empId === worker.empId);
+                      return (
+                        <div className="flex gap-10 items-center" id={workerData?.empId} key={index}>
+                          <div className="w-40 h-25 bg-[#D8BFD8] flex justify-center items-center text-12" style={{color:'#800080'}}>{workerData?.jobType}</div>
+                          <span className="w-54 text-center">{workerData?.workType}</span>
+                          <span className="w-40 text-center">{workerData?.name}</span>
+                          <span className="w-54 text-center">{workerData?.empTit}</span>
+                          <span className="w-[128px] text-center">{workerData?.empRemarks}</span>
+                          <div className="flex items-center gap-3 w-[230px] py-5 px-2 border border-[#D9D9D9]">
+                            <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
+                              value={worker.workPlanStart ? dayjs(worker.workPlanStart) : null} 
+                              onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanStart: dayjs(date).format("YYYY-MM-DD")} : item))} />
+                            <p className="w-32 flex justify-center"><RightArrow/></p>
+                            <CustomDatePicker style={{fontSize:'12px'}} size="small" suffixIcon={null} allowClear={false} 
+                              value={worker.workPlanEnd ? dayjs(worker.workPlanEnd) : null} 
+                              onChange={(date: any) => setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId === worker.empId ? {...item, workPlanEnd: dayjs(date).format("YYYY-MM-DD")} : item))} />
+                          </div>
+                          <Dropdown trigger={["click"]} menu={{ items:[
+                            // {
+                            //   label: <div className="h-center gap-5">
+                            //             <p className="w-16 h-16"><SmallCalendar /></p>투입일 추가
+                            //           </div>,
+                            //   key: 0,
+                            //   onClick:()=>{}
+                            // },
+                            {
+                              label: <div className="h-center gap-5">
+                                        <p className="w-16 h-16"><Trash /></p>삭제
+                                      </div>,
+                              key: 1,
+                              onClick:()=> setWorkerPlanList((prev:any[]) => prev.map((item) => item?.empId !== worker.empId ? item : {...item, delYn: true}))
+                            },
+                          ]}}>
+                            <Button type="text" className="!w-24 !h-24 cursor-pointer v-h-center !p-0">
+                              <p className="w-16 h-16"><Edit/></p>
+                            </Button>
+                          </Dropdown>
+                        </div>
+                      )
+                    })}
+                  </CardInputList>
+                  <AntdTableEdit
+                    columns={[
+                      { title: '', width:50, dataIndex: 'empId', key: 'empId', align: 'center', 
+                        render:(value, record) => (<Checkbox checked={workerPlanList.find((item) => (item.empId === record.empId && !item?.delYn )) ? true : false} onChange={()=>addPopWorkers(record)} />)
+                      },
+                      { title: '업무구분', width:80, dataIndex: 'jobType', key: 'jobType', align: 'center' },
+                      { title: '근무형태', width:80, dataIndex: 'workType', key: 'workType', align: 'center'},
+                      { title: '이름', width:75, dataIndex: 'name', key: 'name', align: 'center'},
+                      { title: '직함', width:75, dataIndex: 'empTit', key: 'empTit', align: 'center'},
+                      { title: '특이사항', width:250, dataIndex: 'empRemarks', key: 'empRemarks'},
+                    ]}
+                    data={projectWorkers}
+                    styles={{th_bg:'#F9F9FB',td_ht:'40px',th_ht:'40px',round:'0px'}}
+                  />
+              </section>
+            </AntdDrawer>
+            <ToastContainer />
 
-        <AntdAlertModal
-          open={resultOpen}
-          setOpen={setResultOpen}
-          title={
-            resultType === "cf"? "확정 완료" :
-            resultType === "error"? "요청 실패" :
-            ""
-          }
-          contents={
-            resultType === "cf" ? <div className="h-40">확정에 성공하였습니다.</div> :
-            resultType === "error" ? <div className="h-40">{resultMsg}</div> :
-            <div className="h-40"></div>
-          }
-          type={
-            resultType === "cf" ? "success" :
-            resultType === "error" ? "error" :
-            "success"
-          }
-          onOk={()=>{
-            setResultOpen(false);
-            if(resultType === "cf") {
-              router.push('/wk/plan/wait');
-            }
-          }}
-          onCancel={()=>{
-            setResultOpen(false);
-          }}
-          hideCancel={true}
-          okText={
-            resultType === "cf" ? "목록으로 이동" :
-            resultType === "error" ? "확인" :
-            "목록으로 이동"
-          }
-          cancelText={""}
-        />
-      </section>
-    </div>
+            <AntdAlertModal
+              open={resultOpen}
+              setOpen={setResultOpen}
+              title={
+                resultType === "cf"? "확정 완료" :
+                resultType === "error"? "요청 실패" :
+                ""
+              }
+              contents={
+                resultType === "cf" ? <div className="h-40">확정에 성공하였습니다.</div> :
+                resultType === "error" ? <div className="h-40">{resultMsg}</div> :
+                <div className="h-40"></div>
+              }
+              type={
+                resultType === "cf" ? "success" :
+                resultType === "error" ? "error" :
+                "success"
+              }
+              onOk={()=>{
+                setResultOpen(false);
+                if(resultType === "cf") {
+                  router.push('/wk/plan/wait');
+                }
+              }}
+              onCancel={()=>{
+                setResultOpen(false);
+              }}
+              hideCancel={true}
+              okText={
+                resultType === "cf" ? "목록으로 이동" :
+                resultType === "error" ? "확인" :
+                "목록으로 이동"
+              }
+              cancelText={""}
+            />
+          </section>
+        </div>
+      )}
+    </>
   )
 }
 
