@@ -280,7 +280,7 @@ const BuyMtBadListPage: React.FC & {
     <section>
       <div className="h-center justify-end pb-20">
         <div
-          className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+          className="w-90 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
           onClick={()=>setBadPopOpen(true)}
         >
           불량 관리

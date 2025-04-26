@@ -392,7 +392,7 @@ saveMngData();
         <div className="h-center justify-between">
           <p>총 {totalData}건</p>
           <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer mb-10"
+            className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer mb-10"
             onClick={()=>{setNewOpen(true)}}
           >
             등록

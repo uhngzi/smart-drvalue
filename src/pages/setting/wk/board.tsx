@@ -317,8 +317,8 @@ const WkBoardListPage: React.FC & {
           <p>총 {totalData}건</p>
 
           <div className="flex gap-10">
-            <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setBdGroupOpen(true)}}>원판 그룹 관리</div>
-            <div className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setAddOpen(true)}}>등록</div>
+            <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer" onClick={()=>{setBdGroupOpen(true)}}>원판 그룹 관리</div>
+            <div className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer" onClick={()=>{setAddOpen(true)}}>등록</div>
           </div>
         </div>
         
