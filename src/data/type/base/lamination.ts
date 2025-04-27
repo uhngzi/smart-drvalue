@@ -5,16 +5,16 @@ import { LamDtlTypeEm } from "../enum";
 
 //--------------------copper.tsx------------------------------------------------//
 export type laminationCopperList = {
-  id?: string,
-  name?: string,
-  copThk?: string,
-  ordNo?: number,
-  useYn?: boolean,
+  id?: string;
+  name?: string;
+  copThk?: string;
+  ordNo?: number;
+  useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-}
+};
 
-export const setlaminationCopperList = (data: any):laminationCopperList => {
+export const setlaminationCopperList = (data: any): laminationCopperList => {
   return {
     id: data.id,
     name: data.name,
@@ -23,22 +23,20 @@ export const setlaminationCopperList = (data: any):laminationCopperList => {
     useYn: data.useYn,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
-  }
-}
+  };
+};
 
-export const newlaminationCopperList  = ():laminationCopperList => {
+export const newlaminationCopperList = (): laminationCopperList => {
   return {
-    name: '',
-    copThk: '',
+    name: "",
+    copThk: "",
     ordNo: 0,
     useYn: true,
     createdAt: null,
     updatedAt: null,
-  }
-}
+  };
+};
 //--------------------copper.tsx------------------------------------------------// 끝
-
-
 
 export type laminationMaterialType = {
   id?: string;
@@ -50,9 +48,11 @@ export type laminationMaterialType = {
   useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-}
+};
 
-export const setLaminationMaterialType = (data: any):laminationMaterialType => {
+export const setLaminationMaterialType = (
+  data: any
+): laminationMaterialType => {
   return {
     id: data.id,
     matNm: data.matNm,
@@ -63,26 +63,28 @@ export const setLaminationMaterialType = (data: any):laminationMaterialType => {
     useYn: data.useYn,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
-  }
-}
+  };
+};
 
-export const newLaminationMaterialType  = ():laminationMaterialType => {
+export const newLaminationMaterialType = (): laminationMaterialType => {
   return {
     lamDtlTypeEm: null,
-    matNm: '',
+    matNm: "",
     epoxy: 0,
-    code: '',
+    code: "",
     ordNo: 0,
     useYn: true,
     createdAt: null,
     updatedAt: null,
-  }
-}
+  };
+};
 //--------------------source.tsx------------------------------------------------//
 
 export type laminationSourceList = {
   id?: string;
   copNm?: string;
+  copThk?: number;
+  lamDtlRealThk?: number;
   matNm?: string;
   epoxy?: number;
   code?: string;
@@ -91,9 +93,9 @@ export type laminationSourceList = {
   useYn?: true;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-}
+};
 
-export const setLaminationSourceList = (data: any):laminationSourceList => {
+export const setLaminationSourceList = (data: any): laminationSourceList => {
   return {
     id: data.id,
     copNm: data.id,
@@ -105,24 +107,23 @@ export const setLaminationSourceList = (data: any):laminationSourceList => {
     useYn: data.useYn,
     createdAt: null,
     updatedAt: null,
-  }
-}
+  };
+};
 
-export const newLaminationSourceList  = ():laminationSourceList => {
+export const newLaminationSourceList = (): laminationSourceList => {
   return {
-    matNm: '',
-    copNm: '',
+    matNm: "",
+    copNm: "",
     epoxy: 0,
-    code: '',
+    code: "",
     lamDtlTypeEm: null,
     ordNo: 0,
     useYn: true,
     createdAt: null,
     updatedAt: null,
-  }
-}
+  };
+};
 //--------------------source.tsx------------------------------------------------//끝
-
 
 export type laminationCUType = {
   id?: string;
@@ -134,9 +135,9 @@ export type laminationCUType = {
   lamDtlThk: number;
   lamDtlRealThk: number;
   useYn: boolean;
-}
+};
 
-export const setLaminationCUType = (data: any):laminationCUType => {
+export const setLaminationCUType = (data: any): laminationCUType => {
   return {
     id: data.id,
     lamDtlTypeEm: data.lamDtlTypeEm,
@@ -147,18 +148,18 @@ export const setLaminationCUType = (data: any):laminationCUType => {
     lamDtlThk: data.lamDtlThk,
     lamDtlRealThk: data.lamDtlRealThk,
     useYn: data.useYn,
-  }
-}
+  };
+};
 
-export const newLaminationCUType  = ():laminationCUType => {
+export const newLaminationCUType = (): laminationCUType => {
   return {
     lamDtlTypeEm: null,
-    matCd: '',
+    matCd: "",
     matThk: 0,
-    copOut: '',
-    copIn: '',
+    copOut: "",
+    copIn: "",
     lamDtlThk: 0,
     lamDtlRealThk: 0,
     useYn: true,
-  }
-}
+  };
+};

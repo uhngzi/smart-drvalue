@@ -983,7 +983,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
             time={1000}
           >
             <div className="h-40 bg-back v-between-h-center">
-              <p className="w-70 v-h-center">재질</p>
+              <p className="flex-1 w-70 v-h-center">재질</p>
               <p className="w-56 v-h-center">동박</p>
               <p className="w-56 v-h-center">두께</p>
               <p className="w-56 v-h-center">실두께</p>

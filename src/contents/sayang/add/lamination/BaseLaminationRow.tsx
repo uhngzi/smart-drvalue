@@ -51,14 +51,16 @@ const BaseLaminationRow: React.FC<BaseLaminationRowProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
     >
-      <div className="w-70 h-40 v-h-center">{item.matNm}</div>
-      <div className="w-56 px-8 py-8">{item.code}</div>
-      <div className="w-56 px-8 py-8">{item.epoxy}</div>
-      {/* <div className="w-56 px-8 py-8">{item.}</div> */}
+      <div className="flex-1 h-40 v-h-center">{item.matNm}</div>
+      <div className="min-w-56 max-w-56 !w-56 px-8 py-8">{item.copNm}</div>
+      <div className="min-w-56 max-w-56 !w-56 px-8 py-8">{item.copThk}</div>
+      <div className="min-w-56 max-w-56 !w-56 px-8 py-8">
+        {item.lamDtlRealThk}
+      </div>
       {disabled ? (
-        <></>
+        <div className="min-w-34 max-w-34 !w-34 v-h-center"></div>
       ) : (
-        <div className="w-34 v-h-center cursor-pointer">
+        <div className="min-w-34 max-w-34 !w-34 v-h-center cursor-pointer">
           <Dropdown
             trigger={["click"]}
             menu={{ items: items, onClick: (e) => onMenuClick(e, item) }}
