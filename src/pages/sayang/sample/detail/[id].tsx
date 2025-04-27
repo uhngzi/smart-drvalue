@@ -665,7 +665,7 @@ const SayangSampleAddPage: React.FC & {
                       </div>
                     </div>
                     <div className="h-center gap-20">
-                      {(!view || cookie.get("companySY") !== "sy") && (
+                      {!(view || cookie.get("companySY") === "sy") && (
                         <Button
                           className="!text-point1 !border-point1"
                           icon={<Models className="w-16 h-16" />}
