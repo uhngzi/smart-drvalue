@@ -583,7 +583,7 @@ const ProcessSelection: React.FC<Props> = ({
                   />
                 )}
                 <div
-                  className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10"
+                  className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10 cursor-move"
                   draggable={!view ? true : false}
                   onDragStart={() => handleDragStart(index)}
                   onDragOver={(e) => {
@@ -596,7 +596,7 @@ const ProcessSelection: React.FC<Props> = ({
                   }}
                   onDragEnd={handleDragEnd}
                 >
-                  <p className="w-16 h-16">
+                  <p className="w-24 h-24">
                     <Star />
                   </p>
                   <div className="flex-1 h-full h-center gap-50">

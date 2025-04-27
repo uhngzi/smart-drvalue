@@ -152,13 +152,13 @@ const MtList: React.FC<Props> = ({
           </div>
         }
       >
-        {step > 1 && orderDetails.length < 1 && (
+        {step > 1 && orderDetails?.length < 1 && (
           <div className="w-full h-full min-h-100 v-h-center">
             입력한 발주 품목이 없습니다.
           </div>
         )}
-        {orderDetails.length > 0 &&
-          orderDetails.map((item, index) => (
+        {orderDetails?.length > 0 &&
+          orderDetails?.map((item, index) => (
             <BlueBox key={index}>
               <BoxHead>
                 <div className="w-24 h-24 bg-back rounded-4 v-h-center">

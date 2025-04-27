@@ -448,7 +448,7 @@ const OrderAddLayout: React.FC<OrderAddProps> = ({
             ? dayjs(order?.orderRoot?.approvalDt).format("YYYY-MM-DD")
             : null,
         },
-        orderDetail: orderDetails.map((item, index) => ({
+        orderDetail: orderDetails?.map((item, index) => ({
           id: item?.id?.includes("new") ? undefined : item.id,
           mtNm: item.mtNm,
           materialIdx: item?.materialIdx,
@@ -541,11 +541,11 @@ const OrderAddLayout: React.FC<OrderAddProps> = ({
   const [tot, setTot] = useState<number>(0);
   useEffect(() => {
     let tot = 0;
-    orderDetails.map((row) => {
+    orderDetails?.map((row) => {
       tot += (row.mtOrderQty ?? 0) * (row.mtOrderInputPrice ?? 0);
     });
     setTot(tot);
-  }, [orderDetails.map((row) => row.mtOrderAmount).join(",")]);
+  }, [orderDetails?.map((row) => row.mtOrderAmount).join(",")]);
 
   // 발주 품목 내 수량, 단가 변경 시 금액 자동 입력
   useEffect(() => {
@@ -559,8 +559,8 @@ const OrderAddLayout: React.FC<OrderAddProps> = ({
       return updatedProcs;
     });
   }, [
-    orderDetails.map((row) => row.mtOrderInputPrice).join(","),
-    orderDetails.map((row) => row.mtOrderQty).join(","),
+    orderDetails?.map((row) => row.mtOrderInputPrice).join(","),
+    orderDetails?.map((row) => row.mtOrderQty).join(","),
   ]);
 
   // 발주 품목 내 품목 삭제
