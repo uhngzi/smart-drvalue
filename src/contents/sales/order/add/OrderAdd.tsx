@@ -434,7 +434,6 @@ const OrderAddLayout = () => {
           handleEditOrderMain(true);
 
           if (port === "90" || cookie.get("companySY") === "sy") {
-            console.log(result.data);
             if (model.modelStatus === ModelStatus.NEW) {
               setTimeout(() => handleSubmit(model.id ?? "", model), 500);
             } else {

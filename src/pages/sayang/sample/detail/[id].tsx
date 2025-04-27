@@ -193,9 +193,8 @@ const SayangSampleAddPage: React.FC & {
       setPrcNotice(rdata.prcNotice ?? "");
       setCamNotice(rdata.camNotice ?? "");
       if (
-        port === "90" ||
-        (cookie.get("companySY") === "sy" &&
-          (rdata.brdArrStorageKey ?? "").length > 0)
+        (port === "90" || cookie.get("companySY") === "sy") &&
+        (rdata.brdArrStorageKey ?? "").length > 0
       ) {
         setFileIdList((rdata.brdArrStorageKey ?? "").split(","));
         setDetailChk(true);
@@ -557,8 +556,8 @@ const SayangSampleAddPage: React.FC & {
 
   useEffect(() => {
     if (
-      port === "90" ||
-      (cookie.get("companySY") === "sy" && fileIdList.length > 0)
+      (port === "90" || cookie.get("companySY") === "sy") &&
+      fileIdList.length > 0
     ) {
       setDetailData({
         ...detailData,
@@ -577,8 +576,8 @@ const SayangSampleAddPage: React.FC & {
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={() => {
             if (
-              port === "90" ||
-              (cookie.get("companySY") === "sy" && !fileSubmitFlag)
+              (port === "90" || cookie.get("companySY") === "sy") &&
+              !fileSubmitFlag
             ) {
               setResultType("fileClose");
               setResultOpen(true);
@@ -666,7 +665,7 @@ const SayangSampleAddPage: React.FC & {
                       </div>
                     </div>
                     <div className="h-center gap-20">
-                      {!view && cookie.get("companySY") !== "sy" && (
+                      {(!view || cookie.get("companySY") !== "sy") && (
                         <Button
                           className="!text-point1 !border-point1"
                           icon={<Models className="w-16 h-16" />}
