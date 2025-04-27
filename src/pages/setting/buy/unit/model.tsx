@@ -10,6 +10,9 @@ import { apiGetResponseType } from "@/data/type/apiResponse";``
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { validReq } from "@/utils/valid"
+import useToast from "@/utils/useToast";
+import dayjs from "dayjs";
 
 // 기초 타입 import
 import {
@@ -17,7 +20,8 @@ import {
   unitModelCUType,
   setUnitModelType,
   setUnitModelCUType,
-  newUnitModelCUType
+  newUnitModelCUType,
+  unitModelReq
 } from "@/data/type/base/unit";
 
 // 레이어 유형 enum import
@@ -36,6 +40,7 @@ const BuyUnitModelListPage: React.FC & {
   const router = useRouter();
   const { type } = router.query;
   const { metarialSelectList } = useBase();
+   const { showToast, ToastContainer } = useToast();
 
   // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
   const layerEmList = Object.keys(LayerEm).map((key) => ({
@@ -129,57 +134,62 @@ const BuyUnitModelListPage: React.FC & {
     }
   }
     //등록 버튼 함수
-  const handleSubmitNewData = async (data: any) => {
-    try {
-      console.log(data);
-      if(data?.id){
-        const id = data.id;
-        delete data.id;
-
-        // 모델 단가 수정
-        const result = await patchAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'model-base-price',
-          jsx: 'jsxcrud'
-        }, id, data);
-        console.log(result);
-
-        if(result.resultCode === 'OK_0000') {
-          setNewOpen(false);
-          setResultFunc('success', '모델 단가 수정 성공', '모델 단가 수정이 완료되었습니다.');
-        } else {
-          setNewOpen(false);
-          
-          setResultFunc('error', '모델 단가 수정 실패', '모델 단가 수정을 실패하였습니다.');
+    const handleSubmitNewData = async (data: any) => {
+      try {
+        const val = validReq(data, unitModelReq());
+        if (!val.isValid) {
+          showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+          return;
         }
-
-      }else{
-
-        // 모델 단가 등록
-        const result = await postAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'model-base-price',
-          jsx: 'jsxcrud'
-        }, newData);
-        
-        // Debug
-        // console.log(result, JSON.stringify(newData));
-  
-        if(result.resultCode === 'OK_0000') {
-          setNewOpen(false);
-          setResultFunc('success', '모델 단가 등록 성공', '모델 단가 등록이 완료되었습니다.');
+    
+        console.log(data);
+    
+        if (data?.id) {
+          const id = data.id;
+          delete data.id;
+          delete data.appOriginDt;
+          // 모델 단가 수정
+          const result = await patchAPI({
+            type: 'baseinfo',
+            utype: 'tenant/',
+            url: 'model-base-price',
+            jsx: 'jsxcrud',
+          }, id, data);
+    
+          console.log(result);
+    
+          if (result.resultCode === 'OK_0000') {
+            setNewOpen(false);
+            setResultFunc('success', '모델 단가 수정 성공', '모델 단가 수정이 완료되었습니다.');
+          } else {
+            setNewOpen(false);
+            setResultFunc('error', '모델 단가 수정 실패', '모델 단가 수정을 실패하였습니다.');
+          }
+    
         } else {
-          setNewOpen(false);
-          setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
+          // 모델 단가 등록
+          const result = await postAPI({
+            type: 'baseinfo',
+            utype: 'tenant/',
+            url: 'model-base-price',
+            jsx: 'jsxcrud',
+          }, newData);
+    
+          console.log(result);
+    
+          if (result.resultCode === 'OK_0000') {
+            setNewOpen(false);
+            setResultFunc('success', '모델 단가 등록 성공', '모델 단가 등록이 완료되었습니다.');
+          } else {
+            setNewOpen(false);
+            setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
+          }
         }
+      } catch (e) {
+        setNewOpen(false);
+        setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
       }
-    } catch(e) {
-      setNewOpen(false);
-      setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
-    }
-  }
+    };
   // ----------- 신규 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
@@ -217,23 +227,40 @@ const BuyUnitModelListPage: React.FC & {
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
   useEffect(() => {
     if (!layerEmList || layerEmList.length < 1) return;
-
-    const arr = MOCK.unitModelItems.CUDPopItems.map((item) => {
+  
+    const today = dayjs();
+    const isPastOrToday = newData.appOriginDt && dayjs(newData.appOriginDt).isValid() && (
+      dayjs(newData.appOriginDt).isBefore(today, 'day') ||
+      dayjs(newData.appOriginDt).isSame(today, 'day')
+    );
+  
+    const updatedItems = MOCK.unitModelItems.CUDPopItems.map((item) => {
+      let disabled = false;
+  
+      if (isPastOrToday) {
+        if (item.name !== 'price') {
+          disabled = true;
+        }
+      }
+  
       if (item.name === 'layerEm') {
         return {
           key: 'id',
           ...item,
-          option: layerEmList
+          option: layerEmList,
+          disabled,
         };
       }
-
+  
       return {
         ...item,
+        disabled,
       };
     });
-
-    setAddModalInfoList(arr)
-  }, [metarialSelectList]);
+  
+    setAddModalInfoList(updatedItems);
+  }, [metarialSelectList, newData.appOriginDt]);
+  
 
   return (
     <>
@@ -404,8 +431,10 @@ const BuyUnitModelListPage: React.FC & {
         hideCancel={true}
         theme="base"
       />
+      <ToastContainer />
     </>
   )
+  
 }
 
 BuyUnitModelListPage.layout = (page: React.ReactNode) => (
@@ -420,5 +449,6 @@ BuyUnitModelListPage.layout = (page: React.ReactNode) => (
     {page}
   </SettingPageLayout>
 )
+
 
 export default BuyUnitModelListPage;
