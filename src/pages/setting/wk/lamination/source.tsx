@@ -132,12 +132,23 @@ const WkLaminationSourceListPage: React.FC & {
         }
 
       }else{
+        const payload = {
+          ...data,
+          matNm: data.matNm,
+          epoxy: Number(data.epoxy),
+        };
+        delete payload.id;
+        delete payload.createdAt;
+        delete payload.updatedAt;
+        delete payload.copperFoil;
+        delete payload.copThk;
+
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
           url: 'lamination-source',
           jsx: 'jsxcrud'
-        }, newData);
+        }, payload);
         console.log(result);
   
         if(result.resultCode === 'OK_0000') {
@@ -259,8 +270,8 @@ const WkLaminationSourceListPage: React.FC & {
             {
               title: '자재두께',
               width: 130,
-              dataIndex: 'matThk',
-              key: 'matThk',
+              dataIndex: 'matNm',
+              key: 'matNm',
               align: 'center',
             },
             {
@@ -280,8 +291,8 @@ const WkLaminationSourceListPage: React.FC & {
             {
               title: '동박두께',
               width: 130,
-              dataIndex: 'copIn',
-              key: 'copIn',
+              dataIndex: 'copNm',
+              key: 'copNm',
               align: 'center',
             },
             {

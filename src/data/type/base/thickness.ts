@@ -51,7 +51,7 @@ export const setUnitThicknessCUType = (data: any):unitThicknessCUType => {
     minThickness: data.minThickness,
     maxThickness: data.maxThickness,
     remark: data.remark,
-    weight: data.weight,
+    weight: data.weight * 100, // 수정 modal 가중치 input 값을 백분율 형태로 보여줌
     addCost: data.addCost,
     ordNo: data.ordNo,
     useYn: data.useYn,

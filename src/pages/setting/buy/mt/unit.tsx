@@ -388,7 +388,7 @@ const BuyMtUnitListPage: React.FC & {
         </div>
       ) : (
         <>
-          <div className="v-between-h-center">
+          <div className="v-between-h-center pb-10">
             <p>총 {totalData}건</p>
             <div
               className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"

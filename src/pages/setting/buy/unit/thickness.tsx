@@ -142,7 +142,10 @@ const BuyUnitThicknessListPage: React.FC & {
           utype: 'tenant/',
           url: 'add-thickness-price',
           jsx: 'jsxcrud'
-        }, id, data);
+        }, id, {
+          ...data,
+          weight: Number(data.weight) * 0.01,  // 가중치 수정 시 백분율 -> 소수점 변환
+        });
         console.log(result);
 
         if(result.resultCode === 'OK_0000') {
@@ -155,16 +158,19 @@ const BuyUnitThicknessListPage: React.FC & {
         }
 
       }else{
-
         // 두께 등록
         const result = await postAPI({
           type: 'baseinfo', 
           utype: 'tenant/',
           url: 'add-thickness-price',
           jsx: 'jsxcrud'
-        }, newData);
+        }, {
+          ...newData,
+          weight: Number(newData.weight) * 0.01,  // 가중치 등록 시 백분율 -> 소수점 변환
+        });
         
-        console.log(result, JSON.stringify(newData), "result 테스트중 post부분");
+        // Debug
+        // console.log(result, JSON.stringify(newData));
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
@@ -289,13 +295,25 @@ const BuyUnitThicknessListPage: React.FC & {
               )
             },
             {
+              title: '가중치(%)',
+              width: 130,
+              dataIndex: 'weight',
+              key: 'weight',
+              align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value * 100}  {/* 가중치 -> 백분율 형태로 보여줌 */}
+                </div>
+              )
+            },
+            {
               title: '최소 두께',
               width: 130,
               dataIndex: 'minThickness',
               key: 'minThickness',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
@@ -307,17 +325,10 @@ const BuyUnitThicknessListPage: React.FC & {
               key: 'maxThickness',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
-            },
-            {
-              title: '가중치(%)',
-              width: 130,
-              dataIndex: 'weight',
-              key: 'weight',
-              align: 'center',
             },
             {
               title: '추가 비용',
@@ -326,7 +337,7 @@ const BuyUnitThicknessListPage: React.FC & {
               key: 'addCost',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )
@@ -398,7 +409,7 @@ const BuyUnitThicknessListPage: React.FC & {
 BuyUnitThicknessListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout styles={{pd:'70px'}}
     menu={[
-      { text: '두께', link: '/setting/buy/unit/model' },
+      { text: '모델 단가', link: '/setting/buy/unit/model' },
       { text: '추가비용(두께)', link: '/setting/buy/unit/thickness' },
       { text: '재질', link: '/setting/buy/unit/texture' },
       { text: '특별사양', link: '/setting/buy/unit/special' },

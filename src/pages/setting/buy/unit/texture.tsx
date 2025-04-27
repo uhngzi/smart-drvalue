@@ -76,7 +76,6 @@ const BuyunitTextureListPage: React.FC & {
 
       setDataLoading(false);
       console.log(result.data);
-      console.log(result, "result 테스트중 get부분");
       return result;
     },
   });
@@ -137,12 +136,11 @@ const BuyunitTextureListPage: React.FC & {
           jsx: 'jsxcrud'
         }, id,{
           ...data,
+          weight: Number(data.weight) * 0.01,  // 가중치 수정 시 백분율 -> 소수점 변환
           texture: {
             id: data.texture
-
           }
         });
-        console.log(result, JSON.stringify(data), "result 테스트중 patch부분");
 
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
@@ -162,12 +160,14 @@ const BuyunitTextureListPage: React.FC & {
           jsx: 'jsxcrud'
         }, {
           ...newData,
+          weight: Number(newData.weight) * 0.01,  // 가중치 등록 시 백분율 -> 소수점 변환
           texture: {
             id: newData.texture
           },
         });
 
-        console.log(result, JSON.stringify(newData), "result 테스트중 post부분");
+        // Debug
+        // console.log(result, JSON.stringify(newData));
   
         if(result.resultCode === 'OK_0000') {
           setNewOpen(false);
@@ -297,6 +297,11 @@ const BuyunitTextureListPage: React.FC & {
               dataIndex: 'weight',
               key: 'weight',
               align: 'center',
+              render: (value: number) => (
+                <div>
+                  {value * 100}  {/* 가중치 -> 백분율 형태로 보여줌 */}
+                </div>
+              )
             },
             {
               title: '추가 비용',
@@ -305,7 +310,7 @@ const BuyunitTextureListPage: React.FC & {
               key: 'addCost',
               align: 'center',
               render: (value: number) => (
-                <div>
+                <div className="text-right">
                   {value.toLocaleString()}
                 </div>
               )

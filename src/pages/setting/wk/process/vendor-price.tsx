@@ -261,6 +261,7 @@ const WkProcessVendorPriceListPage: React.FC & {
   }
 
   // 신규 데이터 초기화 함수
+  const [actionType, setActionType] = useState<'등록' | '수정' | '삭제'>('등록');
   const handleSubmitNewData = async () => {
     try {
       const val = validReq(newData, processVendorPriceReq());
@@ -271,6 +272,7 @@ const WkProcessVendorPriceListPage: React.FC & {
 
       console.log(newData);
       if (newData.id) {
+        setActionType('수정');
         const result = await patchAPI({
           type: 'baseinfo',
           utype: 'tenant/',
@@ -302,6 +304,7 @@ const WkProcessVendorPriceListPage: React.FC & {
           setResultOpen(true);
         }
       } else {
+        setActionType('등록');
         const result = await postAPI({
           type: 'baseinfo',
           utype: 'tenant/',
@@ -353,6 +356,7 @@ const WkProcessVendorPriceListPage: React.FC & {
       }, id);
 
       if (result.resultCode === 'OK_0000') {
+        setActionType('삭제');
         setResultType('success');
         refetch();
       } else {
@@ -577,10 +581,18 @@ const WkProcessVendorPriceListPage: React.FC & {
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
-        title={resultType === "success" ? "공정 외주처 가격 등록 성공" : "공정 외주처 가격 등록 실패"}
-        contents={resultType === "success" ? <div>공정 외주처 가격 등록이 완료되었습니다.</div> : <div>공정 외주처 가격 등록이 실패하였습니다.</div>}
-        type={resultType} 
-        onOk={()=>{
+        title={
+          resultType === "success"
+            ? `공정 외주처 가격 ${actionType} 성공`
+            : `공정 외주처 가격 ${actionType} 실패`
+        }
+        contents={
+          resultType === "success"
+            ? <div>공정 외주처 가격 {actionType}이 완료되었습니다.</div>
+            : <div>공정 외주처 가격 {actionType}에 실패하였습니다.</div>
+        }
+        type={resultType}
+        onOk={() => {
           refetch();
           setResultOpen(false);
         }}
