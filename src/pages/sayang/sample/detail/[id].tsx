@@ -752,46 +752,45 @@ const SayangSampleAddPage: React.FC & {
                   </div>
                 </Popup>
               )}
-              {port === "90" ||
-                (cookie.get("companySY") === "sy" && (
-                  <div className="flex gap-40 flex-row">
-                    <Popup className="!w-[300px] flex-grow-[20]">
-                      <TitleIcon title="설계도면 첨부" icon={<Box />} />
-                      <AntdDragger
-                        fileIdList={fileIdList}
-                        fileList={fileList}
-                        setFileIdList={setFileIdList}
-                        setFileList={setFileList}
-                        mult
-                        max={5}
-                      />
-                    </Popup>
+              {(port === "90" || cookie.get("companySY") === "sy") && (
+                <div className="flex gap-40 flex-row">
+                  <Popup className="!w-[300px] flex-grow-[20]">
+                    <TitleIcon title="설계도면 첨부" icon={<Box />} />
+                    <AntdDragger
+                      fileIdList={fileIdList}
+                      fileList={fileList}
+                      setFileIdList={setFileIdList}
+                      setFileList={setFileList}
+                      mult
+                      max={5}
+                    />
+                  </Popup>
 
-                    <Popup className="!w-[300px] flex-grow-[20]">
-                      <TitleIcon title="설계 전달사항" icon={<MessageOn />} />
-                      <textarea
-                        className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
-                        value={camNotice}
-                        onChange={(e) => {
-                          setCamNotice(e.target.value);
-                        }}
-                        disabled={view ? true : false}
-                      />
-                    </Popup>
+                  <Popup className="!w-[300px] flex-grow-[20]">
+                    <TitleIcon title="설계 전달사항" icon={<MessageOn />} />
+                    <textarea
+                      className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+                      value={camNotice}
+                      onChange={(e) => {
+                        setCamNotice(e.target.value);
+                      }}
+                      disabled={view ? true : false}
+                    />
+                  </Popup>
 
-                    <Popup className="!w-[300px] flex-grow-[20]">
-                      <TitleIcon title="제조 전달사항" icon={<MessageOn />} />
-                      <textarea
-                        className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
-                        value={prcNotice}
-                        onChange={(e) => {
-                          setPrcNotice(e.target.value);
-                        }}
-                        disabled={view ? true : false}
-                      />
-                    </Popup>
-                  </div>
-                ))}
+                  <Popup className="!w-[300px] flex-grow-[20]">
+                    <TitleIcon title="제조 전달사항" icon={<MessageOn />} />
+                    <textarea
+                      className="w-full min-h-[120px] h-full rounded-14 bg-back border-1 border-line text-12 p-20 flex flex-col gap-10"
+                      value={prcNotice}
+                      onChange={(e) => {
+                        setPrcNotice(e.target.value);
+                      }}
+                      disabled={view ? true : false}
+                    />
+                  </Popup>
+                </div>
+              )}
               {cookie.get("companySY") !== "sy" && (
                 <div className="flex gap-40 flex-row">
                   <Popup className="!w-[300px] flex-grow-[20]">
