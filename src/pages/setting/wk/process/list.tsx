@@ -202,51 +202,6 @@ const WkProcessGroupListPage: React.FC & {
             addEdits={addEdits}
           />
         </div>
-
-        {/* <div className="v-between-h-center">
-          <p>총 {totalData}건</p>
-          <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
-          >
-            등록
-          </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '공정그룹명',
-              dataIndex: 'prcGrpNm',
-              key: 'prcGrpNm',
-              align: 'center',
-            },
-            {
-              title: '사용여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-            },
-          ]}
-          data={data}
-        /> */}
-
-        {/* <div className="w-full h-100 v-h-center">
-          <AntdPagination
-            current={pagination.current}
-            total={totalData}
-            size={pagination.size}
-            onChange={handlePageChange}
-          />
-        </div> */}
       </>}
         
       <ToastContainer />

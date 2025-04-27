@@ -375,6 +375,9 @@ const WkProcessVendorListPage: React.FC & {
             />
           </div>
           <div className="w-[70%] flex flex-col gap-15">
+            <div className="flex justify-end pt-10">
+              <Button type="primary" className="bg-[#038D07] text-white" onClick={vendorSave}><p className="w-16 h-16"><Arrow/></p>저장</Button>
+            </div>
             <div className="flex flex-col">
               <AntdTableEdit
                 columns={[
@@ -450,9 +453,7 @@ const WkProcessVendorListPage: React.FC & {
                 ]}
                 data={data}
               />
-              <div className="flex justify-end pt-10">
-                <Button type="primary" className="bg-[#038D07] text-white" onClick={vendorSave}><p className="w-16 h-16"><Arrow/></p>저장</Button>
-              </div>
+              
             </div>
             <div className="v-between-h-center">
               <p>총 {totalData}건</p>

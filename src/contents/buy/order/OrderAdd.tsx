@@ -53,7 +53,13 @@ import { Popup } from "@/layouts/Body/Popup";
 import CsMngContent from "@/contents/sales/order/add/CsMngContent";
 import PurchaseDocumentForm from "@/contents/documentForm/PurchaseDocumentForm";
 
-const OrderAddLayout = () => {
+interface OrderAddProps {
+  orderLoca?: string;
+  selectProcId? : string | undefined | null;
+  onPopClose?: () => void;
+}
+
+const OrderAddLayout: React.FC<OrderAddProps> = ({orderLoca="buy", selectProcId = null, onPopClose = () => false}) => {
   const router = useRouter();
   const { id } = router.query;
   const { me } = useUser();
@@ -66,7 +72,7 @@ const OrderAddLayout = () => {
 
   // 수정일 경우 id 값 넣어줌 => order의 id 값이 변경될 경우 하단에 있는 detail query 실행되어 order가 세팅됨
   useEffect(() => {
-    if (id && typeof id === "string" && !id.includes("new"))
+    if (id && typeof id === "string" && !id.includes("new") && !orderLoca.includes("wk"))
       setOrder({ id: id });
   }, [id]);
 
@@ -205,7 +211,7 @@ const OrderAddLayout = () => {
       const result = await getAPI({
         type: "core-d2",
         utype: "tenant/",
-        url: `worksheet/production-status/process-status/detail/jsxcrud/one/${order?.orderRoot?.worksheetIdxNoForgKey}`,
+        url: `worksheet/production-status/process-status/detail/jsxcrud/one/${orderLoca === "wk" ? id : order?.orderRoot?.worksheetIdxNoForgKey}`,
       });
 
       if (result.resultCode === "OK_0000") {
@@ -221,7 +227,7 @@ const OrderAddLayout = () => {
 
       return result;
     },
-    enabled: !!order?.orderRoot?.worksheetIdxNoForgKey,
+    enabled: orderLoca === "wk" ? !!id : !!order?.orderRoot?.worksheetIdxNoForgKey,
   });
 
   // 원자재 그룹 목록
@@ -681,7 +687,7 @@ const OrderAddLayout = () => {
         <p
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={() => {
-            router.push("/buy/order");
+            {orderLoca === "wk" ? onPopClose() : router.push("/buy/order")}
           }}
         >
           <Close />
@@ -733,7 +739,7 @@ const OrderAddLayout = () => {
                       <LabelItem label="생산제품">
                         <AntdSelect
                           options={wkSelect}
-                          value={order?.orderRoot?.worksheetIdxNoForgKey}
+                          value={orderLoca === "wk" ? id : order?.orderRoot?.worksheetIdxNoForgKey}
                           onChange={(e) => {
                             const value = e + "";
                             setOrder({
@@ -746,11 +752,12 @@ const OrderAddLayout = () => {
                             });
                           }}
                           placeholder="생산제품 선택"
+                          disabled={orderLoca === "wk" ? true : false}
                         />
                       </LabelItem>
                       <LabelItem label="생산제품 공정">
-                        {!order?.orderRoot?.worksheetIdxNoForgKey ||
-                        order?.orderRoot?.worksheetIdxNoForgKey === "" ? (
+                        {!(orderLoca ==="wk" && !!id ) && (!order?.orderRoot?.worksheetIdxNoForgKey ||
+                        order?.orderRoot?.worksheetIdxNoForgKey === "") ? (
                           <div className="pl-10 text-[#00000040]">
                             생산제품을 선택해주세요.
                           </div>
@@ -758,7 +765,7 @@ const OrderAddLayout = () => {
                           <AntdSelect
                             options={procs}
                             value={
-                              order?.orderRoot?.worksheetProcessIdxNoForgKey
+                              orderLoca ==="wk" ? selectProcId : order?.orderRoot?.worksheetProcessIdxNoForgKey
                             }
                             onChange={(e) => {
                               const value = e + "";

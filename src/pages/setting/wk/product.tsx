@@ -245,7 +245,7 @@ const WkProductListPage: React.FC & {
       <section className="w=full">
         <div className="h-center justify-between pb-20">
           <div
-            className="w-90 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
+            className="w-90 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
             onClick={()=>setProdGroupOpen(true)}
           >
             제품군 관리

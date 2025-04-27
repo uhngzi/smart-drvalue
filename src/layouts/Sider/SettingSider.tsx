@@ -375,7 +375,7 @@ const SiderStyled = styled.div<{}>`
   }
 
   .ant-menu-item-selected {
-    background: #03c75a;
+    background: #038D07;
     color: white !important;
   }
 
