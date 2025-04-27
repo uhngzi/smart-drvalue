@@ -792,50 +792,49 @@ const SayangSampleAddPage: React.FC & {
                     </Popup>
                   </div>
                 ))}
-              {port === "90" ||
-                (cookie.get("companySY") !== "sy" && (
-                  <div className="flex gap-40 flex-row">
-                    <Popup className="!w-[300px] flex-grow-[20]">
-                      {/* 적층 구조 */}
-                      <LaminationContents
-                        defaultLayerEm={detailData.specModels?.[0]?.layerEm}
-                        detailData={detailData}
-                        setDetailData={setDetailData}
-                        handleSumbitTemp={() => {
-                          handleSumbitTemp();
-                        }}
-                        view={view}
-                      />
-                    </Popup>
-                    <Popup className="!w-[400px] flex-grow-[40]">
-                      {/* 배열 도면 */}
-                      <ArrayContents
-                        board={board}
-                        handleSumbitTemp={handleSumbitTemp}
-                        detailData={detailData}
-                        setDetailData={setDetailData}
-                        view={view}
-                      />
-                    </Popup>
-                    {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
-                    {/* 재단 사이즈 */}
-                    {/* <CutSizeContents
+              {cookie.get("companySY") !== "sy" && (
+                <div className="flex gap-40 flex-row">
+                  <Popup className="!w-[300px] flex-grow-[20]">
+                    {/* 적층 구조 */}
+                    <LaminationContents
+                      defaultLayerEm={detailData.specModels?.[0]?.layerEm}
+                      detailData={detailData}
+                      setDetailData={setDetailData}
+                      handleSumbitTemp={() => {
+                        handleSumbitTemp();
+                      }}
+                      view={view}
+                    />
+                  </Popup>
+                  <Popup className="!w-[400px] flex-grow-[40]">
+                    {/* 배열 도면 */}
+                    <ArrayContents
+                      board={board}
+                      handleSumbitTemp={handleSumbitTemp}
+                      detailData={detailData}
+                      setDetailData={setDetailData}
+                      view={view}
+                    />
+                  </Popup>
+                  {/* <Popup className="!w-[300px] flex-grow-[20]"> */}
+                  {/* 재단 사이즈 */}
+                  {/* <CutSizeContents
               specNo={resultOpen && resultType === "cf" && detailData.specNo ? detailData.specNo : ""}
               detailData={detailData}
             />
           </Popup> */}
-                    <Popup className="!w-[300px] flex-grow-[20]">
-                      {/* 전달 사항 */}
-                      <MessageContents
-                        prcNotice={prcNotice}
-                        setPrcNotice={setPrcNotice}
-                        camNotice={camNotice}
-                        setCamNotice={setCamNotice}
-                        view={view}
-                      />
-                    </Popup>
-                  </div>
-                ))}
+                  <Popup className="!w-[300px] flex-grow-[20]">
+                    {/* 전달 사항 */}
+                    <MessageContents
+                      prcNotice={prcNotice}
+                      setPrcNotice={setPrcNotice}
+                      camNotice={camNotice}
+                      setCamNotice={setCamNotice}
+                      view={view}
+                    />
+                  </Popup>
+                </div>
+              )}
 
               <div className="v-between-h-center px-30">
                 {detailData?.specPrdGroupPrcs &&

@@ -1593,7 +1593,7 @@ export const sayangSampleWaitAddClmn = (
     key: "cnt",
     align: "center",
     render: (_, record: specModelType) =>
-      port === "90" || cookie.get("companySY") !== "sy" ? (
+      cookie.get("companySY") !== "sy" ? (
         <div className={divTopClass}>
           <AutoHideTooltip title="수주량" className="w-full">
             <div className={divClass + " !w-full !justify-end gap-5"}>
@@ -1603,9 +1603,7 @@ export const sayangSampleWaitAddClmn = (
                 ).toLocaleString()}
               </div>
               <div className="!min-w-25 !w-25 !text-12">
-                {port === "90" || cookie.get("companySY") !== "sy"
-                  ? "PCS"
-                  : "EA"}
+                {cookie.get("companySY") !== "sy" ? "PCS" : "EA"}
               </div>
             </div>
           </AutoHideTooltip>

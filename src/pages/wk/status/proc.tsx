@@ -587,59 +587,58 @@ const WKStatusProcPage: {
                       </DescriptionItems>
                     </Description>
                   ))}
-                {port === "90" ||
-                  (cookie.get("companySY") !== "sy" && (
-                    <Description separatorColor="#e7e7ed">
-                      <DescriptionItems3
-                        height="20"
-                        title1="모델명"
-                        children1={select?.specModel?.prdNm}
-                        title2="코드/업체명"
-                        children2={
-                          <div className="w-full h-center text-left gap-5">
-                            <FullChip
-                              label={
-                                select?.specModel?.partner?.prtRegCd?.toString() ??
-                                ""
-                              }
-                              state="line"
-                              className="!font-normal"
-                            />
-                            {select?.specModel?.partner?.prtNm ?? ""}
-                          </div>
-                        }
-                        title3="관리번호"
-                        children3={select?.specModel?.prdMngNo}
-                      />
-                      <DescriptionItems3
-                        height="20"
-                        title1="두께"
-                        children1={select?.specModel?.thk}
-                        title2="층"
-                        children2={select?.specModel?.layerEm?.replace("L", "")}
-                        title3="Film No"
-                        children3={select?.specModel?.fpNo}
-                      />
-                      <DescriptionItems3
-                        height="20"
-                        title1="판넬수"
-                        children1={select?.specModel?.prdCnt}
-                        title2="매수"
-                        children2={select?.m2}
-                        title3="납기일"
-                        children3={
-                          select?.orderProduct?.orderPrdDueDt
-                            ? dayjs(select?.orderProduct?.orderPrdDueDt).format(
-                                "YYYY-MM-DD"
-                              )
-                            : null
-                        }
-                      />
-                      <DescriptionItems height="20" title="비고">
-                        <div>{select?.wsRemark}</div>
-                      </DescriptionItems>
-                    </Description>
-                  ))}
+                {cookie.get("companySY") !== "sy" && (
+                  <Description separatorColor="#e7e7ed">
+                    <DescriptionItems3
+                      height="20"
+                      title1="모델명"
+                      children1={select?.specModel?.prdNm}
+                      title2="코드/업체명"
+                      children2={
+                        <div className="w-full h-center text-left gap-5">
+                          <FullChip
+                            label={
+                              select?.specModel?.partner?.prtRegCd?.toString() ??
+                              ""
+                            }
+                            state="line"
+                            className="!font-normal"
+                          />
+                          {select?.specModel?.partner?.prtNm ?? ""}
+                        </div>
+                      }
+                      title3="관리번호"
+                      children3={select?.specModel?.prdMngNo}
+                    />
+                    <DescriptionItems3
+                      height="20"
+                      title1="두께"
+                      children1={select?.specModel?.thk}
+                      title2="층"
+                      children2={select?.specModel?.layerEm?.replace("L", "")}
+                      title3="Film No"
+                      children3={select?.specModel?.fpNo}
+                    />
+                    <DescriptionItems3
+                      height="20"
+                      title1="판넬수"
+                      children1={select?.specModel?.prdCnt}
+                      title2="매수"
+                      children2={select?.m2}
+                      title3="납기일"
+                      children3={
+                        select?.orderProduct?.orderPrdDueDt
+                          ? dayjs(select?.orderProduct?.orderPrdDueDt).format(
+                              "YYYY-MM-DD"
+                            )
+                          : null
+                      }
+                    />
+                    <DescriptionItems height="20" title="비고">
+                      <div>{select?.wsRemark}</div>
+                    </DescriptionItems>
+                  </Description>
+                )}
               </div>
 
               <AntdTableEdit

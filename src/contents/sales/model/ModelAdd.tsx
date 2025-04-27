@@ -462,458 +462,447 @@ const ModelAddLayout = () => {
                         />
                       </div>
                     </div>
-                    {port === "90" ||
-                      (cookie.get("companySY") === "sy" && (
-                        <div className="h-center gap-15">
-                          <Items2
-                            label1="고객"
-                            children1={
-                              <CustomAutoComplete
-                                option={csList}
-                                value={model?.partner?.id}
-                                onChange={(value) => {
+                    {cookie.get("companySY") === "sy" && (
+                      <div className="h-center gap-15">
+                        <Items2
+                          label1="고객"
+                          children1={
+                            <CustomAutoComplete
+                              option={csList}
+                              value={model?.partner?.id}
+                              onChange={(value) => {
+                                setModel({
+                                  ...model,
+                                  partner: { id: value ?? "" },
+                                });
+                              }}
+                              handleAddData={() => setAddPartner(true)}
+                              addLabel="고객 추가하기"
+                              className="!h-32 !rounded-2"
+                              inputClassName="!h-32 !rounded-2"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                        />
+
+                        <Items2
+                          label1="모델명"
+                          size1={3}
+                          children1={
+                            <CustomAutoCompleteLabel
+                              option={modelSelectList}
+                              label={model?.prdNm}
+                              onInputChange={(value) => {
+                                if (value.length < 3) {
+                                  setModelSelectList([]);
+                                  setModelNoSelectList([]);
+                                }
+                                setModel({ ...model, prdNm: value });
+                              }}
+                              value={model?.id}
+                              onChange={(value) => {
+                                const m = modelList.find((f) => f.id === value);
+                                if (m && model?.id) {
+                                  console.log(m);
                                   setModel({
-                                    ...model,
-                                    partner: { id: value ?? "" },
+                                    ...m,
+                                    id: model.id,
+                                    usedYn: false,
                                   });
-                                }}
-                                handleAddData={() => setAddPartner(true)}
-                                addLabel="고객 추가하기"
-                                className="!h-32 !rounded-2"
-                                inputClassName="!h-32 !rounded-2"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                          />
+                                }
+                              }}
+                              inputClassName="!h-32 !rounded-2"
+                              className="!h-32 !rounded-2"
+                              placeholder="모델명 검색 또는 입력 (3글자 이상)"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="모델명"
-                            size1={3}
-                            children1={
-                              <CustomAutoCompleteLabel
-                                option={modelSelectList}
-                                label={model?.prdNm}
-                                onInputChange={(value) => {
-                                  if (value.length < 3) {
-                                    setModelSelectList([]);
-                                    setModelNoSelectList([]);
-                                  }
-                                  setModel({ ...model, prdNm: value });
-                                }}
-                                value={model?.id}
-                                onChange={(value) => {
-                                  const m = modelList.find(
-                                    (f) => f.id === value
-                                  );
-                                  if (m && model?.id) {
-                                    console.log(m);
-                                    setModel({
-                                      ...m,
-                                      id: model.id,
-                                      usedYn: false,
-                                    });
-                                  }
-                                }}
-                                inputClassName="!h-32 !rounded-2"
-                                className="!h-32 !rounded-2"
-                                placeholder="모델명 검색 또는 입력 (3글자 이상)"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                          />
-
-                          <Items2
-                            label1="관리번호"
-                            children1={
-                              <CustomAutoCompleteLabel
-                                option={modelNoSelectList}
-                                label={model?.prdMngNo}
-                                onInputChange={(value) => {
-                                  if (value.length < 3) {
-                                    setModelSelectList([]);
-                                    setModelNoSelectList([]);
-                                  }
+                        <Items2
+                          label1="관리번호"
+                          children1={
+                            <CustomAutoCompleteLabel
+                              option={modelNoSelectList}
+                              label={model?.prdMngNo}
+                              onInputChange={(value) => {
+                                if (value.length < 3) {
+                                  setModelSelectList([]);
+                                  setModelNoSelectList([]);
+                                }
+                                setModel({
+                                  ...model,
+                                  prdNm: "",
+                                  prdMngNo: value,
+                                });
+                              }}
+                              value={model?.id}
+                              onChange={(value) => {
+                                const m = modelList.find((f) => f.id === value);
+                                if (m && model?.id) {
+                                  console.log(m);
                                   setModel({
-                                    ...model,
-                                    prdNm: "",
-                                    prdMngNo: value,
+                                    ...m,
+                                    id: model.id,
+                                    usedYn: false,
                                   });
-                                }}
-                                value={model?.id}
-                                onChange={(value) => {
-                                  const m = modelList.find(
-                                    (f) => f.id === value
-                                  );
-                                  if (m && model?.id) {
-                                    console.log(m);
-                                    setModel({
-                                      ...m,
-                                      id: model.id,
-                                      usedYn: false,
-                                    });
-                                  }
-                                }}
-                                inputClassName="!h-32 !rounded-2"
-                                className="!h-32 !rounded-2"
-                                placeholder="관리번호 검색"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                          />
-
-                          <Items2
-                            label1="Rev"
-                            children1={
-                              <AntdInput
-                                value={model?.prdRevNo}
-                                onChange={(e) =>
-                                  handleModelDataChange(
-                                    "prdRevNo",
-                                    e.target.value
-                                  )
                                 }
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                                memoView
-                              />
-                            }
-                          />
+                              }}
+                              inputClassName="!h-32 !rounded-2"
+                              className="!h-32 !rounded-2"
+                              placeholder="관리번호 검색"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="도면번호"
-                            children1={
-                              <AntdInput
-                                value={model?.drgNo}
-                                onChange={(e) =>
-                                  handleModelDataChange("drgNo", e.target.value)
-                                }
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                                memoView
-                              />
-                            }
-                          />
+                        <Items2
+                          label1="Rev"
+                          children1={
+                            <AntdInput
+                              value={model?.prdRevNo}
+                              onChange={(e) =>
+                                handleModelDataChange(
+                                  "prdRevNo",
+                                  e.target.value
+                                )
+                              }
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                              memoView
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="재질"
-                            children1={
-                              <AntdSelectFill
-                                options={metarialSelectList}
-                                value={
-                                  model?.material?.id ??
-                                  metarialSelectList?.[0]?.value
+                        <Items2
+                          label1="도면번호"
+                          children1={
+                            <AntdInput
+                              value={model?.drgNo}
+                              onChange={(e) =>
+                                handleModelDataChange("drgNo", e.target.value)
+                              }
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                              memoView
+                            />
+                          }
+                        />
+
+                        <Items2
+                          label1="재질"
+                          children1={
+                            <AntdSelectFill
+                              options={metarialSelectList}
+                              value={
+                                model?.material?.id ??
+                                metarialSelectList?.[0]?.value
+                              }
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  material: { id: e + "" },
+                                });
+                              }}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                              dropWidth="180px"
+                              readonly={model?.usedYn}
+                            />
+                          }
+                        />
+
+                        <Items2
+                          label1="제조사"
+                          children1={
+                            <AntdSelectFill
+                              options={boardGroupSelectList}
+                              value={
+                                model?.boardGroup?.id ??
+                                boardGroupSelectList?.[0]?.value
+                              }
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  boardGroup: { id: e + "" },
+                                });
+                              }}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                              readonly={model?.usedYn}
+                            />
+                          }
+                        />
+
+                        <Items2
+                          label1="두께"
+                          size1={1}
+                          children1={
+                            <AntdInput
+                              value={model?.thk}
+                              onChange={(e) =>
+                                handleModelDataChange("thk", e.target.value)
+                              }
+                              type="number"
+                              maxPoint={2}
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                            />
+                          }
+                        />
+                      </div>
+                    )}
+                    {cookie.get("companySY") !== "sy" && (
+                      <div className="h-center gap-15">
+                        <Items2
+                          size1={1}
+                          children1={
+                            <AntdSelect
+                              options={[
+                                { value: ModelTypeEm.SAMPLE, label: "샘플" },
+                                {
+                                  value: ModelTypeEm.PRODUCTION,
+                                  label: "양산",
+                                },
+                              ]}
+                              value={model?.modelTypeEm ?? ModelTypeEm.SAMPLE}
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  modelTypeEm:
+                                    ModelTypeEm.SAMPLE === e + ""
+                                      ? ModelTypeEm.SAMPLE
+                                      : ModelTypeEm.PRODUCTION,
+                                });
+                              }}
+                              styles={{ ht: "32px", bw: "0", pd: "0" }}
+                              readonly={model?.usedYn}
+                            />
+                          }
+                          label2="고객"
+                          children2={
+                            <CustomAutoComplete
+                              option={csList}
+                              value={model?.partner?.id}
+                              onChange={(value) => {
+                                setModel({
+                                  ...model,
+                                  partner: { id: value ?? "" },
+                                });
+                              }}
+                              handleAddData={() => setAddPartner(true)}
+                              addLabel="고객 추가하기"
+                              className="!h-32 !rounded-2"
+                              inputClassName="!h-32 !rounded-2"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                        />
+
+                        <Items2
+                          label1="모델명"
+                          size1={3}
+                          children1={
+                            <CustomAutoCompleteLabel
+                              option={modelSelectList}
+                              label={model?.prdNm}
+                              onInputChange={(value) => {
+                                if (value.length < 3) {
+                                  setModelSelectList([]);
+                                  setModelNoSelectList([]);
                                 }
-                                onChange={(e) => {
+                                setModel({ ...model, prdNm: value });
+                              }}
+                              value={model?.id}
+                              onChange={(value) => {
+                                const m = modelList.find((f) => f.id === value);
+                                if (m && model?.id) {
+                                  console.log(m);
                                   setModel({
-                                    ...model,
-                                    material: { id: e + "" },
+                                    ...m,
+                                    id: model.id,
+                                    usedYn: false,
+                                    orderPrtNo: noreset.current.orderPrtNo,
+                                    remarks: noreset.current.remarks,
                                   });
-                                }}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                                dropWidth="180px"
-                                readonly={model?.usedYn}
-                              />
-                            }
-                          />
+                                }
+                              }}
+                              inputClassName="!h-32 !rounded-2"
+                              className="!h-32 !rounded-2"
+                              placeholder="모델명 검색 또는 입력 (3글자 이상)"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                          label2="Rev"
+                          size2={3}
+                          children2={
+                            <AntdInput
+                              value={model?.prdRevNo}
+                              onChange={(e) =>
+                                handleModelDataChange(
+                                  "prdRevNo",
+                                  e.target.value
+                                )
+                              }
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                              memoView
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="제조사"
-                            children1={
-                              <AntdSelectFill
-                                options={boardGroupSelectList}
-                                value={
-                                  model?.boardGroup?.id ??
-                                  boardGroupSelectList?.[0]?.value
+                        <Items2
+                          label1="관리번호"
+                          children1={
+                            <CustomAutoCompleteLabel
+                              option={modelNoSelectList}
+                              label={model?.prdMngNo}
+                              onInputChange={(value) => {
+                                if (value.length < 3) {
+                                  setModelSelectList([]);
+                                  setModelNoSelectList([]);
                                 }
-                                onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  prdNm: "",
+                                  prdMngNo: value,
+                                });
+                              }}
+                              value={model?.id}
+                              onChange={(value) => {
+                                const m = modelList.find((f) => f.id === value);
+                                if (m && model?.id) {
+                                  console.log(m);
                                   setModel({
-                                    ...model,
-                                    boardGroup: { id: e + "" },
+                                    ...m,
+                                    id: model.id,
+                                    usedYn: false,
                                   });
-                                }}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                                readonly={model?.usedYn}
-                              />
-                            }
-                          />
+                                }
+                              }}
+                              inputClassName="!h-32 !rounded-2"
+                              className="!h-32 !rounded-2"
+                              placeholder="관리번호 검색"
+                              readonly={model?.usedYn}
+                              clear={false}
+                            />
+                          }
+                          label2="Tool No"
+                          children2={
+                            <AntdInput
+                              value={model?.fpNo}
+                              disabled
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="두께"
-                            size1={1}
-                            children1={
-                              <AntdInput
-                                value={model?.thk}
-                                onChange={(e) =>
-                                  handleModelDataChange("thk", e.target.value)
-                                }
-                                type="number"
-                                maxPoint={2}
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                              />
-                            }
-                          />
-                        </div>
-                      ))}
-                    {port === "90" ||
-                      (cookie.get("companySY") !== "sy" && (
-                        <div className="h-center gap-15">
-                          <Items2
-                            size1={1}
-                            children1={
-                              <AntdSelect
-                                options={[
-                                  { value: ModelTypeEm.SAMPLE, label: "샘플" },
-                                  {
-                                    value: ModelTypeEm.PRODUCTION,
-                                    label: "양산",
-                                  },
-                                ]}
-                                value={model?.modelTypeEm ?? ModelTypeEm.SAMPLE}
-                                onChange={(e) => {
-                                  setModel({
-                                    ...model,
-                                    modelTypeEm:
-                                      ModelTypeEm.SAMPLE === e + ""
-                                        ? ModelTypeEm.SAMPLE
-                                        : ModelTypeEm.PRODUCTION,
-                                  });
-                                }}
-                                styles={{ ht: "32px", bw: "0", pd: "0" }}
-                                readonly={model?.usedYn}
-                              />
-                            }
-                            label2="고객"
-                            children2={
-                              <CustomAutoComplete
-                                option={csList}
-                                value={model?.partner?.id}
-                                onChange={(value) => {
-                                  setModel({
-                                    ...model,
-                                    partner: { id: value ?? "" },
-                                  });
-                                }}
-                                handleAddData={() => setAddPartner(true)}
-                                addLabel="고객 추가하기"
-                                className="!h-32 !rounded-2"
-                                inputClassName="!h-32 !rounded-2"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                          />
+                        <Items2
+                          label1="도면번호"
+                          children1={
+                            <AntdInput
+                              value={model?.drgNo}
+                              onChange={(e) =>
+                                handleModelDataChange("drgNo", e.target.value)
+                              }
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                              memoView
+                            />
+                          }
+                          label2="재질"
+                          children2={
+                            <AntdSelectFill
+                              options={metarialSelectList}
+                              value={
+                                model?.material?.id ??
+                                metarialSelectList?.[0]?.value
+                              }
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  material: { id: e + "" },
+                                });
+                              }}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                              dropWidth="180px"
+                              readonly={model?.usedYn}
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="모델명"
-                            size1={3}
-                            children1={
-                              <CustomAutoCompleteLabel
-                                option={modelSelectList}
-                                label={model?.prdNm}
-                                onInputChange={(value) => {
-                                  if (value.length < 3) {
-                                    setModelSelectList([]);
-                                    setModelNoSelectList([]);
-                                  }
-                                  setModel({ ...model, prdNm: value });
-                                }}
-                                value={model?.id}
-                                onChange={(value) => {
-                                  const m = modelList.find(
-                                    (f) => f.id === value
-                                  );
-                                  if (m && model?.id) {
-                                    console.log(m);
-                                    setModel({
-                                      ...m,
-                                      id: model.id,
-                                      usedYn: false,
-                                      orderPrtNo: noreset.current.orderPrtNo,
-                                      remarks: noreset.current.remarks,
-                                    });
-                                  }
-                                }}
-                                inputClassName="!h-32 !rounded-2"
-                                className="!h-32 !rounded-2"
-                                placeholder="모델명 검색 또는 입력 (3글자 이상)"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                            label2="Rev"
-                            size2={3}
-                            children2={
-                              <AntdInput
-                                value={model?.prdRevNo}
-                                onChange={(e) =>
-                                  handleModelDataChange(
-                                    "prdRevNo",
-                                    e.target.value
-                                  )
-                                }
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                                memoView
-                              />
-                            }
-                          />
+                        <Items2
+                          label1="원판"
+                          children1={
+                            <AntdSelectFill
+                              options={boardSelectList}
+                              value={
+                                model?.board?.id ?? boardSelectList?.[0]?.value
+                              }
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  board: { id: e + "" },
+                                });
+                              }}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                              readonly={model?.usedYn}
+                            />
+                          }
+                          label2="제조사"
+                          children2={
+                            <AntdSelectFill
+                              options={boardGroupSelectList}
+                              value={
+                                model?.boardGroup?.id ??
+                                boardGroupSelectList?.[0]?.value
+                              }
+                              onChange={(e) => {
+                                setModel({
+                                  ...model,
+                                  boardGroup: { id: e + "" },
+                                });
+                              }}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                              readonly={model?.usedYn}
+                            />
+                          }
+                        />
 
-                          <Items2
-                            label1="관리번호"
-                            children1={
-                              <CustomAutoCompleteLabel
-                                option={modelNoSelectList}
-                                label={model?.prdMngNo}
-                                onInputChange={(value) => {
-                                  if (value.length < 3) {
-                                    setModelSelectList([]);
-                                    setModelNoSelectList([]);
-                                  }
-                                  setModel({
-                                    ...model,
-                                    prdNm: "",
-                                    prdMngNo: value,
-                                  });
-                                }}
-                                value={model?.id}
-                                onChange={(value) => {
-                                  const m = modelList.find(
-                                    (f) => f.id === value
-                                  );
-                                  if (m && model?.id) {
-                                    console.log(m);
-                                    setModel({
-                                      ...m,
-                                      id: model.id,
-                                      usedYn: false,
-                                    });
-                                  }
-                                }}
-                                inputClassName="!h-32 !rounded-2"
-                                className="!h-32 !rounded-2"
-                                placeholder="관리번호 검색"
-                                readonly={model?.usedYn}
-                                clear={false}
-                              />
-                            }
-                            label2="Tool No"
-                            children2={
-                              <AntdInput
-                                value={model?.fpNo}
-                                disabled
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                              />
-                            }
-                          />
-
-                          <Items2
-                            label1="도면번호"
-                            children1={
-                              <AntdInput
-                                value={model?.drgNo}
-                                onChange={(e) =>
-                                  handleModelDataChange("drgNo", e.target.value)
-                                }
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                                memoView
-                              />
-                            }
-                            label2="재질"
-                            children2={
-                              <AntdSelectFill
-                                options={metarialSelectList}
-                                value={
-                                  model?.material?.id ??
-                                  metarialSelectList?.[0]?.value
-                                }
-                                onChange={(e) => {
-                                  setModel({
-                                    ...model,
-                                    material: { id: e + "" },
-                                  });
-                                }}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                                dropWidth="180px"
-                                readonly={model?.usedYn}
-                              />
-                            }
-                          />
-
-                          <Items2
-                            label1="원판"
-                            children1={
-                              <AntdSelectFill
-                                options={boardSelectList}
-                                value={
-                                  model?.board?.id ??
-                                  boardSelectList?.[0]?.value
-                                }
-                                onChange={(e) => {
-                                  setModel({
-                                    ...model,
-                                    board: { id: e + "" },
-                                  });
-                                }}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                                readonly={model?.usedYn}
-                              />
-                            }
-                            label2="제조사"
-                            children2={
-                              <AntdSelectFill
-                                options={boardGroupSelectList}
-                                value={
-                                  model?.boardGroup?.id ??
-                                  boardGroupSelectList?.[0]?.value
-                                }
-                                onChange={(e) => {
-                                  setModel({
-                                    ...model,
-                                    boardGroup: { id: e + "" },
-                                  });
-                                }}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                                readonly={model?.usedYn}
-                              />
-                            }
-                          />
-
-                          <Items2
-                            label1="층"
-                            size1={1}
-                            children1={
-                              <AntdSelectFill
-                                options={generateFloorOptions()}
-                                value={model?.layerEm ?? "L1"}
-                                onChange={(e) =>
-                                  handleModelDataChange("layerEm", e)
-                                }
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF" }}
-                              />
-                            }
-                            label2="두께"
-                            size2={1}
-                            children2={
-                              <AntdInput
-                                value={model?.thk}
-                                onChange={(e) =>
-                                  handleModelDataChange("thk", e.target.value)
-                                }
-                                type="number"
-                                maxPoint={2}
-                                readonly={model?.usedYn}
-                                styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
-                              />
-                            }
-                          />
-                        </div>
-                      ))}
+                        <Items2
+                          label1="층"
+                          size1={1}
+                          children1={
+                            <AntdSelectFill
+                              options={generateFloorOptions()}
+                              value={model?.layerEm ?? "L1"}
+                              onChange={(e) =>
+                                handleModelDataChange("layerEm", e)
+                              }
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF" }}
+                            />
+                          }
+                          label2="두께"
+                          size2={1}
+                          children2={
+                            <AntdInput
+                              value={model?.thk}
+                              onChange={(e) =>
+                                handleModelDataChange("thk", e.target.value)
+                              }
+                              type="number"
+                              maxPoint={2}
+                              readonly={model?.usedYn}
+                              styles={{ ht: "32px", bg: "#FFF", br: "2px" }}
+                            />
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="w-85">
                     <Items2
