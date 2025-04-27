@@ -19,22 +19,29 @@ interface Props {
   mainCheck?: boolean;
   childCheck?: boolean;
   childCheckId?: string | null;
+  mainCheckId?: string | null;
   setChildCheckId?: (id: string) => void;
+  setMainCheckId?: (id: string) => void;
   onChange?: (e: CheckboxChangeEvent) => void;
   notCollapsed?: boolean;
+  onItemSelected?: (item: treeType | null) => void;
 }
 
 const CustomTreeSelect:React.FC<Props> = ({
   data,
   mainCheck = false,
   childCheck = false,
+  mainCheckId,
   childCheckId,
   setChildCheckId,
+  setMainCheckId,
   onChange,
   notCollapsed,
+  onItemSelected,
 }) => {
   const [ collapsedAll, setCollapsedAll ] = useState<boolean>(false);
   const [ list, setList ] = useState<treeType[]>([]);
+  const [ selectedItem, setSelectedItem ] = useState<treeType | null>(null);
 
   const [hoverId, setHoverId] = useState<string | null>(null);
 
@@ -46,6 +53,13 @@ const CustomTreeSelect:React.FC<Props> = ({
       setList(data);
     }
   }, [data])
+
+  // 선택 아이템이 변경될 때 부모 컴포넌트에 알림
+  useEffect(() => {
+    if (onItemSelected) {
+      onItemSelected(selectedItem);
+    }
+  }, [selectedItem, onItemSelected]);
 
   const treeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -81,14 +95,42 @@ const CustomTreeSelect:React.FC<Props> = ({
   const handleSelect = (item: any) => {
     const selectId = item.id;
     if (setChildCheckId) {
-      setChildCheckId(childCheckId === selectId ? null : selectId);
+      // 자식 항목을 선택할 때는 부모 선택 해제
+      if (mainCheckId && setMainCheckId) {
+        setMainCheckId("");
+      }
+      setChildCheckId(childCheckId === selectId ? "" : selectId);
     }
-    // const selectId = [{id: item.id, type:'main'}, ...item.children?.map((child: any) => ({id: child.id, type:'child'})) || []];
-    // setSelectId(prev =>
-    //   prev.some(selectedId => selectId.some(v => v.id.includes(selectedId.id)))
-    //     ? prev.filter(selectedId => !selectId.some(v => v.id.includes(selectedId.id)))
-    //     : [...prev, ...selectId]
-    // );
+    
+    // 선택된 아이템 설정
+    if (childCheckId === selectId) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(item);
+    }
+  };
+
+  const handleMainItemClick = (item: treeType) => {
+    // 부모 항목 클릭 처리
+    handleShowList(item.id);
+    if (mainCheck) {
+      // 메인 체크 기능이 있는 경우
+      if (setMainCheckId) {
+        // 부모 항목을 선택할 때는 자식 선택 해제
+        if (childCheckId && setChildCheckId) {
+          setChildCheckId("");
+        }
+        
+        // 이미 선택된 항목이면 해제, 아니면 선택
+        if (mainCheckId === item.id) {
+          setMainCheckId("");
+          setSelectedItem(null);
+        } else {
+          setMainCheckId(item.id);
+          setSelectedItem(item);
+        }
+      }
+    }
   };
 
   return (
@@ -127,7 +169,7 @@ const CustomTreeSelect:React.FC<Props> = ({
           list.map((item) => (
             <div
               key={item.id}
-              className={mainCheck && childCheckId === item.id ? '!bg-[#f3faff]' : ''}
+              className={mainCheck && mainCheckId === item.id ? '!bg-[#f3faff]' : ''}
             >
               <div
                 className={`w-full h-30 h-center pl-5 gap-10 cursor-pointer h-45`}
@@ -135,21 +177,14 @@ const CustomTreeSelect:React.FC<Props> = ({
                 onMouseLeave={() => setHoverId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleShowList(item.id);
-                  if(mainCheck) {
-                    if(childCheckId === item.id) {
-                      setChildCheckId?.("");
-                    } else {
-                      setChildCheckId?.(item.id);
-                    }
-                  }
+                  handleMainItemClick(item);
                 }}
               >
                 <SettingFill/>
                 <span className="flex text-left">{item.label}</span>
                 <div className="h-1 flex-1 bg-[#D9D9D9]"/>
                 <span className="flex font-medium text-[#444444A6]">{item.children?.length}</span>
-                {mainCheck && childCheckId === item.id && (
+                {mainCheck && mainCheckId === item.id && (
                   <BlueCheck/>
                 )}
               </div>
@@ -160,7 +195,11 @@ const CustomTreeSelect:React.FC<Props> = ({
                 key={item.id+'child'}
               >
                 {item.children?.map((child) => (
-                  <div key={child.id} className={`w-full h-40 h-center gap-10 pl-20 cursor-pointer ${childCheckId === child.id ? '!bg-[#f3faff]' : ''}`} onClick={() => handleSelect(child)}>
+                  <div 
+                    key={child.id} 
+                    className={`w-full h-40 h-center gap-10 pl-20 cursor-pointer ${childCheckId === child.id ? '!bg-[#f3faff]' : ''}`} 
+                    onClick={() => handleSelect(child)}
+                  >
                     <div className="w-5 h-5 bg-[#ddd] rounded-50" />
                     <div className="relative flex-1 flex h-center text-left gap-8">
                       {child?.isInternal === false ? <FullChip label="외주" state="mint"/>: <></>}
