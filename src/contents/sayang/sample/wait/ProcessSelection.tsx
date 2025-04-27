@@ -596,7 +596,9 @@ const ProcessSelection: React.FC<Props> = ({
                   }}
                   onDragEnd={handleDragEnd}
                 >
-                  <Star />
+                  <p className="w-16 h-16">
+                    <Star />
+                  </p>
                   <div className="flex-1 h-full h-center gap-50">
                     <div
                       className="w-[200px] flex flex-col font-medium"
