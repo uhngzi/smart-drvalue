@@ -176,7 +176,7 @@ const SayangSampleAddPage: React.FC & {
   useEffect(() => {
     if (!isLoading && queryData?.resultCode === "OK_0000") {
       const rdata = queryData?.data?.data as specType;
-      const models = rdata.specModels?.map(
+      const models = rdata?.specModels?.map(
         (model: specModelType, index: number) => ({
           ...model,
           index: index + 1,
@@ -190,13 +190,13 @@ const SayangSampleAddPage: React.FC & {
         ...rdata,
         specModels: models,
       });
-      setPrcNotice(rdata.prcNotice ?? "");
-      setCamNotice(rdata.camNotice ?? "");
+      setPrcNotice(rdata?.prcNotice ?? "");
+      setCamNotice(rdata?.camNotice ?? "");
       if (
         (port === "90" || cookie.get("companySY") === "sy") &&
-        (rdata.brdArrStorageKey ?? "").length > 0
+        (rdata?.brdArrStorageKey ?? "").length > 0
       ) {
-        setFileIdList((rdata.brdArrStorageKey ?? "").split(","));
+        setFileIdList((rdata?.brdArrStorageKey ?? "").split(","));
         setDetailChk(true);
       }
       setTimeout(() => {

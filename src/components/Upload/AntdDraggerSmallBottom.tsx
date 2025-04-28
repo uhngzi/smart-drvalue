@@ -30,7 +30,7 @@ interface Props {
   mult?: boolean;
   divRef?: RefObject<HTMLDivElement | null>;
   changeHeight?: { width: number; height: number } | null;
-  defaultHeight?: number;
+  defaultHeight?: number | string;
 
   max?: number;
 }
@@ -55,7 +55,7 @@ const CustomDragger = styled(Dragger)`
   }
 `;
 
-const AntdDraggerSmall: React.FC<Props> = ({
+const AntdDraggerSmallBottom: React.FC<Props> = ({
   fileList,
   setFileList,
   fileIdList,
@@ -114,15 +114,15 @@ const AntdDraggerSmall: React.FC<Props> = ({
     );
   };
 
-  const [height, setHeight] = useState<number>(0);
+  const [height, setHeight] = useState<number | string>(0);
   useEffect(() => {
-    if (height < 1) setHeight(defaultHeight ?? 100);
+    if (!height) setHeight(defaultHeight ?? 100);
   }, [defaultHeight]);
 
   useEffect(() => {
     if (divRef?.current?.clientHeight) {
       const divHeight =
-        Number(divRef?.current?.clientHeight) - (defaultHeight ?? 0);
+        Number(divRef?.current?.clientHeight) - Number(defaultHeight ?? 0);
       if (divHeight > 0) setHeight(divHeight);
       else setHeight(172);
     }
@@ -130,13 +130,41 @@ const AntdDraggerSmall: React.FC<Props> = ({
 
   return (
     <>
-      <div
-        className="flex flex-col mt-20 overflow-y-auto"
-        // style={{ height: fileList && fileList.length > 0 && divRef?.current?.clientHeight ? height : "auto" }}
-        style={{ height: height }}
+      <CustomDragger
+        {...UploadProp}
+        className="bg-white"
+        disabled={disabled}
+        name="files"
+        headers={{
+          "x-tenant-code":
+            port === "90" || cookie.get("companySY") === "sy"
+              ? "shinyang-test"
+              : cookie.get("x-custom-tenant-code")
+              ? cookie.get("x-custom-tenant-code").toString()
+              : "gpntest-sebuk-ver",
+          Authorization: `bearer ${cookie.get(cookieName)}`,
+        }}
+        action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}
       >
-        {fileList &&
-          fileList?.map((file, idx) => (
+        <div
+          className={`h-40 flex-col v-h-center bg-point1 rounded-2 text-white ${
+            disabled ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
+        >
+          <div className="h-center gap-5">
+            <p className="w-24 h-24 v-h-center">
+              <UploadIcon />
+            </p>
+            파일 등록
+          </div>
+        </div>
+      </CustomDragger>
+      {fileList && fileList?.length > 0 && (
+        <div
+          className="flex flex-col overflow-y-auto"
+          style={{ height: height }}
+        >
+          {fileList.map((file, idx) => (
             <div className="h-center" key={idx}>
               <p className="w-16 h-16 mr-8 min-w-16 min-h-16">
                 <Klip />
@@ -167,39 +195,11 @@ const AntdDraggerSmall: React.FC<Props> = ({
               )}
             </div>
           ))}
-      </div>
-      <CustomDragger
-        {...UploadProp}
-        className="bg-white"
-        disabled={disabled}
-        name="files"
-        headers={{
-          "x-tenant-code":
-            port === "90" || cookie.get("companySY") === "sy"
-              ? "shinyang-test"
-              : cookie.get("x-custom-tenant-code")
-              ? cookie.get("x-custom-tenant-code").toString()
-              : "gpntest-sebuk-ver",
-          Authorization: `bearer ${cookie.get(cookieName)}`,
-        }}
-        action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}
-      >
-        <div
-          className={`h-40 flex-col v-h-center bg-point1 rounded-2 text-white ${
-            disabled ? "cursor-not-allowed" : "cursor-pointer"
-          }`}
-        >
-          <div className="h-center gap-5">
-            <p className="w-24 h-24 v-h-center">
-              <UploadIcon />
-            </p>
-            파일 등록
-          </div>
         </div>
-      </CustomDragger>
+      )}
       <ToastContainer />
     </>
   );
 };
 
-export default AntdDraggerSmall;
+export default AntdDraggerSmallBottom;

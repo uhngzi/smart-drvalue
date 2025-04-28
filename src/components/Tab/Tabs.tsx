@@ -65,7 +65,8 @@ interface PropsLarge {
   noLine?: boolean;
   bookmarks?: {
     index?: number;
-    name?: string;
+    label?: string;
+    url?: string;
   }[];
   handleSubmitBookmark?: (label: string, url: string) => void;
 }
@@ -104,7 +105,7 @@ export const TabLarge: React.FC<PropsLarge> = ({
             <p
               className="ml-5 w-16 h-16 cursor-pointer text-[#00000065]"
               style={
-                bookmarks?.some((b) => b.name === i.link)
+                bookmarks?.some((b) => b.url === i.link)
                   ? { color: "#FBE158" }
                   : {}
               }
@@ -114,7 +115,7 @@ export const TabLarge: React.FC<PropsLarge> = ({
             >
               <Star
                 fill={
-                  bookmarks?.some((b) => b.name === i.link) ? "#FBE158" : "none"
+                  bookmarks?.some((b) => b.url === i.link) ? "#FBE158" : "none"
                 }
               />
             </p>

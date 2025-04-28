@@ -108,7 +108,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(entity);
         console.log(entity.detail?.metaData);
       } else {
-        console.log("MODELS ERROR:", result.response);
+        console.log("CATCH ERROR:", result.response);
       }
       return result;
     },
@@ -117,6 +117,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleSubmitBookmarkAPI = async (label: string, url: string) => {
     try {
+      if (!label || !url || label.includes("undefined")) {
+        return;
+      }
+
+      let meta: any[] = (user?.detail?.metaData?.[0]?.bookMarkMenu ?? []).map(
+        (item: any, index: number) => ({
+          index: index + 1,
+          label: item.label,
+          url: item.url,
+        })
+      );
+      if (meta && meta.some((b: any) => b.url === url)) {
+        meta = meta.filter((f) => f.url !== url);
+      } else {
+        meta = [
+          ...meta,
+          {
+            index: meta.length + 1,
+            label: label,
+            url: url,
+          },
+        ];
+      }
+
       const result = await patchAPI(
         {
           type: "auth",
@@ -129,22 +153,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         {
           metaData: [
             {
-              bookMarkMenu: [
-                ...(user?.detail?.metaData?.[0]?.bookMarkMenu ?? []).map(
-                  (item: any, index: number) => ({
-                    index: index + 1,
-                    label: item.label,
-                    url: item.url,
-                  })
-                ),
-                {
-                  index:
-                    (user?.detail?.metaData?.[0]?.bookMarkMenu?.length ?? 0) +
-                    1,
-                  label: label,
-                  url: url,
-                },
-              ],
+              bookMarkMenu: meta,
             },
           ],
         }

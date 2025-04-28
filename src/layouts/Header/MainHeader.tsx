@@ -107,10 +107,10 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
         {!selectMenu?.children ||
           (selectMenu?.children?.length < 2 && (
             <p
-              className="ml-5 w-18 h-18 cursor-pointer text-[#00000065]"
+              className="ml-5 w-16 h-16 cursor-pointer text-[#00000065]"
               style={
                 user?.detail?.metaData?.[0]?.bookMarkMenu?.some(
-                  (b: any) => b.name === router.pathname
+                  (b: any) => b.url === router.asPath
                 )
                   ? { color: "#FBE158" }
                   : {}
@@ -118,14 +118,14 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
               onClick={() => {
                 handleSubmitBookmark(
                   selectMenu.parentsNm + " > " + selectMenu.menuNm,
-                  router.pathname
+                  router.asPath
                 );
               }}
             >
               <Star
                 fill={
                   user?.detail?.metaData?.[0]?.bookMarkMenu?.some(
-                    (b: any) => b.name === router.pathname
+                    (b: any) => b.url === router.asPath
                   )
                     ? "#FBE158"
                     : "none"
