@@ -44,7 +44,7 @@ export const certificationReq = () => {
     { field: "certificationAuthority", label: "발급처" },
     { field: "issuedAt", label: "발급일" },
     { field: "expiredAt", label: "만료일" },
-    { field: "appliedAt", label: "변경 적용일" },
+    // { field: "appliedAt", label: "변경 적용일" },
     { field: "file", label: "첨부파일" },
   ];
 };

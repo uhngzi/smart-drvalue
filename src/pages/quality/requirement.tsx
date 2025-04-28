@@ -41,6 +41,7 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
+import Hint from "@/assets/svg/icons/hint.svg";
 
 const QualityRequirementsPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -205,12 +206,41 @@ const QualityRequirementsPage: React.FC & {
   // 내용 글자수 체크
   const [leng, setLeng] = useState<number>(0);
 
-  // 삭제 시 저장하는 서브 아이디
-  const [selectSubId, setSelectSubId] = useState<string>("");
+  const [deleted, setDeleted] = useState<{
+    id: string;
+    type: "main" | "sub";
+  }>();
+
+  const [prtCheck, setPrtCheck] = useState<boolean>(false);
+  const handlePrtCheck = async () => {
+    try {
+      if (!detail?.prt?.id) {
+        return;
+      }
+
+      const result = await getAPI({
+        type: "core-d3",
+        utype: "tenant/",
+        url: `quality-requirements/default/validate-prt/${detail?.prt?.id}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setPrtCheck(result.data?.data ?? false);
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  };
+  useEffect(() => {
+    // 거래처 값이 있고 신규일 때만 조회
+    if (!edit && detail?.prt && detail.prt.id) {
+      handlePrtCheck();
+    }
+  }, [detail?.prt]);
 
   // 루트 요구사항 등록, 루트 요구사항 등급 수정, 서브 요구사항 등록, 서브 요구사항 취소/복구, 서브 요구사항 삭제
   const handleSubmit = async (
-    type?: "main_update" | "sub_cancel" | "sub_delete",
+    type?: "main_update" | "sub_cancel",
     grade?: "BEST" | "GOOD" | "NORMAL",
     subCancelId?: string,
     cancel?: boolean
@@ -280,34 +310,6 @@ const QualityRequirementsPage: React.FC & {
             setResultMsg(msg);
             setResultOpen(true);
           }
-        } else if (type === "sub_delete") {
-          // 서브 요구사항 삭제
-          if (!selectSubId || selectSubId === "") {
-            showToast(
-              "취소 중 에러가 발생했습니다. 잠시후에 시도해주세요.",
-              "error"
-            );
-            return;
-          }
-          const result = await deleteAPI(
-            {
-              type: "core-d3",
-              utype: "tenant/",
-              jsx: "jsxcrud",
-              url: "quality-requirements-detail",
-            },
-            selectSubId
-          );
-
-          if (result.resultCode === "OK_0000") {
-            detailRefetch();
-            showToast("삭제 완료", "success");
-          } else {
-            const msg = result?.response?.data?.message;
-            setResultType("error");
-            setResultMsg(msg);
-            setResultOpen(true);
-          }
         } else {
           // 서브 요구사항 등록
           const jsonData = {
@@ -315,7 +317,9 @@ const QualityRequirementsPage: React.FC & {
               id: detail.id,
             },
             content: detailContentsNew?.content,
-            appliedAt: dayjs(detailContentsNew?.appliedAt).format("YYYY-MM-DD"),
+            appliedAt: detailContentsNew?.appliedAt
+              ? dayjs(detailContentsNew?.appliedAt).format("YYYY-MM-DD")
+              : dayjs().format("YYYY-MM-DD"),
           };
           console.log(JSON.stringify(jsonData));
 
@@ -354,7 +358,9 @@ const QualityRequirementsPage: React.FC & {
             id: me?.id ?? "1",
           },
           content: detail?.content,
-          appliedAt: dayjs(detail?.appliedAt).format("YYYY-MM-DD"),
+          appliedAt: detail?.appliedAt
+            ? dayjs(detail?.appliedAt).format("YYYY-MM-DD")
+            : dayjs().format("YYYY-MM-DD"),
           qualityGrade: detail?.qualityGrade,
         };
         console.log(JSON.stringify(jsonData));
@@ -387,13 +393,61 @@ const QualityRequirementsPage: React.FC & {
     }
   };
 
-  useEffect(() => {
-    if (!open)
-      setDetail({
-        ...detail,
-        content: undefined,
-      });
-  }, [open]);
+  const handleDelete = async () => {
+    try {
+      if (!deleted?.id || deleted?.id === "") {
+        showToast(
+          "삭제 중 에러가 발생했습니다. 잠시후에 시도해주세요.",
+          "error"
+        );
+        return;
+      }
+      if (deleted.type === "main") {
+        const result = await deleteAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-requirements",
+          },
+          deleted.id
+        );
+
+        if (result.resultCode === "OK_0000") {
+          refetch();
+          setDetail(null);
+          showToast("삭제 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      } else {
+        const result = await deleteAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-requirements-detail",
+          },
+          deleted.id
+        );
+
+        if (result.resultCode === "OK_0000") {
+          detailRefetch();
+          showToast("삭제 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  };
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
@@ -414,6 +468,8 @@ const QualityRequirementsPage: React.FC & {
           handleSubmitNew={() => {
             setEdit(false);
             setOpen(true);
+            setDetail(null);
+            setPrtCheck(false);
             setDetailContentsNew({
               content: "",
               appliedAt: null,
@@ -492,6 +548,58 @@ const QualityRequirementsPage: React.FC & {
                 width: 150,
                 dataIndex: "lastUpdatedAt",
                 key: "lastUpdatedAt",
+              },
+              {
+                title: "",
+                width: 40,
+                dataIndex: "delete",
+                key: "delete",
+                render: (_, record: requirementType) => (
+                  <div className="w-full v-h-center">
+                    <Dropdown
+                      trigger={["click"]}
+                      getPopupContainer={(triggerNode) =>
+                        triggerNode.parentElement!
+                      }
+                      menu={{
+                        items: [
+                          {
+                            label: (
+                              <div className="w-50 h-center gap-5 text-[red]">
+                                <p className="w-16 h-16">
+                                  <Trash />
+                                </p>
+                                삭제
+                              </div>
+                            ),
+                            key: 0,
+                            onClick: () => {
+                              setDeleted({
+                                id: record.id ?? "",
+                                type: "main",
+                              });
+                              setResultMsg(
+                                "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
+                              );
+                              setResultType("delete");
+                              setResultOpen(true);
+                            },
+                          },
+                        ],
+                      }}
+                    >
+                      <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          <div className="w-24 h-24 cursor-pointer v-h-center">
+                            <p className="w-16 h-16">
+                              <Edit />
+                            </p>
+                          </div>
+                        </Space>
+                      </a>
+                    </Dropdown>
+                  </div>
+                ),
               },
             ]}
             data={data}
@@ -585,9 +693,9 @@ const QualityRequirementsPage: React.FC & {
                 {leng}/2000
               </div>
               <div className="w-full flex justify-between items-end">
-                <LabelItemH label="변경 적용일 ">
+                <LabelItemH label="변경 적용일">
                   <AntdDatePicker
-                    value={detailContentsNew?.appliedAt}
+                    value={detailContentsNew?.appliedAt ?? dayjs()}
                     onChange={(value) => {
                       setDetailContentsNew({
                         ...detailContentsNew,
@@ -662,7 +770,7 @@ const QualityRequirementsPage: React.FC & {
                           ),
                           key: 1,
                           onClick: () => {
-                            setSelectSubId(item.id ?? "");
+                            setDeleted({ id: item.id ?? "", type: "sub" });
                             setResultMsg(
                               "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
                             );
@@ -722,6 +830,14 @@ const QualityRequirementsPage: React.FC & {
                   className="!h-32 !rounded-2"
                   placeholder="고객명 검색 후 선택"
                 />
+                {prtCheck && (
+                  <div className="text-[red] h-center gap-5">
+                    <p className="w-15 h-15">
+                      <Hint />
+                    </p>
+                    이미 존재하는 고객사입니다.
+                  </div>
+                )}
               </LabelItem>
               <div className="h-center gap-20 w-full">
                 <LabelItem label="품질 등급" className="w-1/2">
@@ -743,7 +859,7 @@ const QualityRequirementsPage: React.FC & {
                 </LabelItem>
                 <LabelItem label="변경 적용일" className="w-1/2">
                   <AntdDatePicker
-                    value={detail?.appliedAt}
+                    value={detail?.appliedAt ?? dayjs()}
                     onChange={(value) => {
                       setDetail({
                         ...detail,
@@ -785,6 +901,7 @@ const QualityRequirementsPage: React.FC & {
                 onClick={() => {
                   handleSubmit();
                 }}
+                disabled={!edit && detail?.prt?.id && prtCheck ? true : false}
               >
                 <Arrow /> 요구 등록
               </Button>
@@ -800,7 +917,7 @@ const QualityRequirementsPage: React.FC & {
           resultType === "error"
             ? "오류 발생"
             : resultType === "delete"
-            ? "삭제하시겠습니까?"
+            ? "정말 삭제하시겠습니까?"
             : ""
         }
         contents={<div>{resultMsg}</div>}
@@ -814,7 +931,7 @@ const QualityRequirementsPage: React.FC & {
         onOk={() => {
           setResultOpen(false);
           if (resultType === "delete") {
-            handleSubmit("sub_delete");
+            handleDelete();
           }
         }}
         onCancel={() => {

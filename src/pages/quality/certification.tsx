@@ -46,13 +46,15 @@ import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
 import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
-import Back from "@/assets/svg/icons/back.svg";
+import Memo from "@/assets/svg/icons/memo.svg";
 import Clock from "@/assets/svg/icons/clock_back.svg";
 import Upload from "@/assets/svg/icons/upload.svg";
 import Download from "@/assets/svg/icons/s_download.svg";
 import Print from "@/assets/svg/icons/print.svg";
 import Open from "@/assets/svg/icons/s_open_window.svg";
 import BlueCheck from "@/assets/svg/icons/blue_check.svg";
+import { deleteAPI } from "@/api/delete";
+import { patchAPI } from "@/api/patch";
 
 const QualityCertificationPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -166,36 +168,15 @@ const QualityCertificationPage: React.FC & {
   >([]);
 
   const [open, setOpen] = useState<boolean>(false);
-  const [edit, setEdit] = useState<boolean>(false);
+  // new - 등록 , update - 수정, re - 갱신
+  const [edit, setEdit] = useState<"new" | "update" | "re" | "">("");
+  // 변경사항 모달
   const [historyOpen, setHistoryOpen] = useState<boolean>(false);
+  // 인증서 이미지 아이디
   const [selectImage, setSelectImage] = useState<string>("");
 
   // ------------ 디테일 데이터 세팅 ------------ 시작
-  const { data: queryDetailData, refetch: detailRefetch } = useQuery({
-    queryKey: ["quality-certification/jsxcrud/many", detail?.id],
-    queryFn: async () => {
-      const result = await getAPI(
-        {
-          type: "core-d3",
-          utype: "tenant/",
-          url: "quality-certification-history/jsxcrud/many",
-        },
-        {
-          anykeys: { qualityCertificationId: detail?.id },
-          sort: "appliedAt,DESC",
-        }
-      );
-
-      if (result.resultCode === "OK_0000") {
-        setSelectImage(result.data?.data?.[0]?.file);
-        setDetailContents(result.data?.data ?? []);
-      }
-
-      return result;
-    },
-    enabled: !!detail?.id,
-  });
-  const handleSelectCertification = async (record: certificationType) => {
+  const handleDetail = async (record: certificationType) => {
     try {
       const result = await getAPI(
         {
@@ -210,24 +191,23 @@ const QualityCertificationPage: React.FC & {
       );
 
       if (result.resultCode === "OK_0000") {
-        setEdit(true);
+        setEdit("re");
         setDetail(record);
 
         const list: certificationDetailType[] = result.data?.data ?? [];
 
-        // 1. 오늘이 지나지 않은 것만 필터링
+        // 이미지 자동 선택 조건 1. 변경 적용일이 아직 지나지 않은 것
         const today = dayjs().startOf("day");
         const validList = list.filter((item) => {
           return dayjs(item.appliedAt).isSameOrBefore(today, "day");
         });
 
         if (validList.length === 0) {
-          setSelectImage(""); // 조건에 맞는 게 없으면 초기화
-          setDetailContents(list);
+          setSelectImage(result.data?.data?.[0]?.file); // 조건에 맞는 게 없으면 0번째로 선택
           return;
         }
 
-        // 2. expiredAt가 가장 먼 것 찾기
+        // 이미지 자동 선택 조건 2. 만료일이 가장 많이 남은 것
         const selected = validList.reduce((prev, current) => {
           return dayjs(prev.expiredAt).isAfter(dayjs(current.expiredAt))
             ? prev
@@ -235,6 +215,7 @@ const QualityCertificationPage: React.FC & {
         });
 
         setSelectImage(selected.file ?? "");
+        setDetailContents(list);
       } else {
         showToast("인증서 상세 조회 실패", "error");
       }
@@ -278,9 +259,10 @@ const QualityCertificationPage: React.FC & {
   });
   // --------------- 파일 세팅 --------------- 끝
 
+  // ------------ 등록 / 수정 함수 ------------ 시작
   const handleSubmit = async () => {
     try {
-      if (edit && detail?.id) {
+      if (edit === "re" && detail?.id) {
         // 인증서 갱신 (세부 변경사항 등록)
         const req = validReq(detail, certificationReq());
         if (!req.isValid) {
@@ -293,7 +275,9 @@ const QualityCertificationPage: React.FC & {
           },
           issuedAt: dayjs(detail?.issuedAt).format("YYYY-MM-DD"),
           expiredAt: dayjs(detail?.expiredAt).format("YYYY-MM-DD"),
-          appliedAt: dayjs(detail?.appliedAt).format("YYYY-MM-DD"),
+          appliedAt: detail?.appliedAt
+            ? dayjs(detail?.appliedAt).format("YYYY-MM-DD")
+            : dayjs().format("YYYY-MM-DD"),
           content: detail?.remark,
           file: detail?.file,
         };
@@ -310,8 +294,37 @@ const QualityCertificationPage: React.FC & {
         );
 
         if (result.resultCode === "OK_0000") {
-          detailRefetch();
+          handleDetail(detail);
           showToast("갱신 완료", "success");
+          setOpen(false);
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      } else if (edit === "update" && detail?.id) {
+        const jsonData = {
+          name: detail?.name,
+          certificationAuthority: detail?.certificationAuthority,
+          remark: detail?.remark,
+        };
+        console.log(JSON.stringify(jsonData));
+
+        const result = await patchAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-certification",
+          },
+          detail.id,
+          jsonData
+        );
+
+        if (result.resultCode === "OK_0000") {
+          refetch();
+          showToast("수정 완료", "success");
           setOpen(false);
         } else {
           const msg = result?.response?.data?.message;
@@ -331,7 +344,9 @@ const QualityCertificationPage: React.FC & {
           certificationAuthority: detail?.certificationAuthority,
           issuedAt: dayjs(detail?.issuedAt).format("YYYY-MM-DD"),
           expiredAt: dayjs(detail?.expiredAt).format("YYYY-MM-DD"),
-          appliedAt: dayjs(detail?.appliedAt).format("YYYY-MM-DD"),
+          appliedAt: detail?.appliedAt
+            ? dayjs(detail?.appliedAt).format("YYYY-MM-DD")
+            : dayjs().format("YYYY-MM-DD"),
           remark: detail?.remark,
           file: detail?.file,
         };
@@ -362,8 +377,72 @@ const QualityCertificationPage: React.FC & {
       console.log("CATCH ERROR :: ", e);
     }
   };
+  // ------------ 등록 / 수정 함수 ------------ 끝
 
-  // 초기화
+  // --------------- 삭제 함수 --------------- 시작
+  const [deleted, setDeleted] = useState<{
+    id: string;
+    type: "main" | "sub";
+  }>();
+
+  const handleDelete = async () => {
+    try {
+      if (!deleted?.id || deleted?.id === "") {
+        showToast(
+          "삭제 중 에러가 발생했습니다. 잠시후에 시도해주세요.",
+          "error"
+        );
+        return;
+      }
+      if (deleted.type === "main") {
+        const result = await deleteAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-certification",
+          },
+          deleted.id
+        );
+
+        if (result.resultCode === "OK_0000") {
+          refetch();
+          setDetail(null);
+          showToast("삭제 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      } else {
+        const result = await deleteAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-certification-history",
+          },
+          deleted.id
+        );
+
+        if (result.resultCode === "OK_0000") {
+          handleDetail(detail ?? {});
+          showToast("삭제 완료", "success");
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  };
+  // --------------- 삭제 함수 --------------- 끝
+
+  // 값 초기화
   useEffect(() => {
     if (!open) {
       if (!edit) setDetail(null);
@@ -464,8 +543,9 @@ const QualityCertificationPage: React.FC & {
           handleSearchs={handleSearchs}
           handleSubmitNew={() => {
             setDetail(null);
+            setHistoryOpen(false);
             setOpen(true);
-            setEdit(false);
+            setEdit("");
           }}
         />
 
@@ -492,9 +572,8 @@ const QualityCertificationPage: React.FC & {
                   <div
                     className="reference-detail"
                     onClick={() => {
-                      // setEdit(true);
-                      // setDetail(record);
-                      handleSelectCertification(record);
+                      setHistoryOpen(false);
+                      handleDetail(record);
                     }}
                   >
                     {value}
@@ -524,6 +603,75 @@ const QualityCertificationPage: React.FC & {
                 width: 200,
                 dataIndex: "remark",
                 key: "remark",
+              },
+              {
+                title: "",
+                width: 40,
+                dataIndex: "delete",
+                key: "delete",
+                render: (_, record: certificationType) => (
+                  <div className="w-full v-h-center">
+                    <Dropdown
+                      trigger={["click"]}
+                      placement="bottomLeft"
+                      getPopupContainer={(triggerNode) =>
+                        triggerNode.parentElement!
+                      }
+                      menu={{
+                        items: [
+                          {
+                            label: (
+                              <div className="w-50 h-center gap-5">
+                                <p className="w-16 h-16">
+                                  <Memo />
+                                </p>
+                                수정
+                              </div>
+                            ),
+                            key: 0,
+                            onClick: () => {
+                              setEdit("update");
+                              setDetail(record);
+                              setOpen(true);
+                            },
+                          },
+                          {
+                            label: (
+                              <div className="w-50 h-center gap-5 text-[red]">
+                                <p className="w-16 h-16">
+                                  <Trash />
+                                </p>
+                                삭제
+                              </div>
+                            ),
+                            key: 1,
+                            onClick: () => {
+                              setDeleted({
+                                id: record.id ?? "",
+                                type: "main",
+                              });
+                              setResultMsg(
+                                "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
+                              );
+                              setResultType("delete");
+                              setResultOpen(true);
+                            },
+                          },
+                        ],
+                      }}
+                    >
+                      <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          <div className="w-24 h-24 cursor-pointer v-h-center">
+                            <p className="w-16 h-16">
+                              <Edit />
+                            </p>
+                          </div>
+                        </Space>
+                      </a>
+                    </Dropdown>
+                  </div>
+                ),
               },
             ]}
             data={data}
@@ -578,7 +726,7 @@ const QualityCertificationPage: React.FC & {
                 <p>{detail.name}</p>
                 <Button
                   onClick={() => {
-                    setEdit(true);
+                    setEdit("re");
                     setDetail({
                       ...detail,
                       issuedAt: null,
@@ -700,34 +848,85 @@ const QualityCertificationPage: React.FC & {
                     detailContents.map((item) => (
                       <div className="w-full bg-white rounded-8 px-10 py-10 border-1 border-bdDefault flex flex-col">
                         <div
-                          className="h-center gap-5 p-5 rounded-6"
+                          className="v-between-h-center p-5 rounded-6"
                           style={{
                             background:
                               item.file === selectImage ? "#2161dc15" : "",
                           }}
                         >
-                          <p>
-                            ver {item.version}.{" "}
-                            {dayjs(item.updatedAt).format("YYYY-MM-DD")}
-                          </p>
-                          <p
-                            className="cursor-pointer"
-                            onClick={() => {
-                              setSelectImage(item.file ?? "");
-                            }}
-                          >
-                            {item.file === selectImage ? (
-                              <BlueCheck />
-                            ) : (
-                              <Open />
-                            )}
-                          </p>
+                          <div className="h-center gap-5">
+                            <p>
+                              ver {item.version}.{" "}
+                              {dayjs(item.updatedAt).format("YYYY-MM-DD")}
+                            </p>
+                            <p
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setSelectImage(item.file ?? "");
+                              }}
+                            >
+                              {item.file === selectImage ? (
+                                <BlueCheck />
+                              ) : (
+                                <Open />
+                              )}
+                            </p>
+                          </div>
+                          <div>
+                            <Dropdown
+                              trigger={["click"]}
+                              placement="bottomLeft"
+                              getPopupContainer={(triggerNode) =>
+                                triggerNode.parentElement!
+                              }
+                              menu={{
+                                items: [
+                                  {
+                                    label: (
+                                      <div className="w-50 h-center gap-5 text-[red]">
+                                        <p className="w-16 h-16">
+                                          <Trash />
+                                        </p>
+                                        삭제
+                                      </div>
+                                    ),
+                                    key: 0,
+                                    onClick: () => {
+                                      setDeleted({
+                                        id: item.id ?? "",
+                                        type: "sub",
+                                      });
+                                      setResultMsg(
+                                        "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
+                                      );
+                                      setResultType("delete");
+                                      setResultOpen(true);
+                                    },
+                                  },
+                                ],
+                              }}
+                            >
+                              <a onClick={(e) => e.preventDefault()}>
+                                <Space>
+                                  <div className="w-24 h-24 cursor-pointer v-h-center">
+                                    <p className="w-16 h-16">
+                                      <Edit />
+                                    </p>
+                                  </div>
+                                </Space>
+                              </a>
+                            </Dropdown>
+                          </div>
                         </div>
                         <div className="whitespace-pre-wrap text-[#00000085] px-5">
                           {item.content}
                         </div>
                         <div className="text-12 text-[#00000045] px-5">
-                          적용일 : {dayjs(item.appliedAt).format("YYYY-MM-DD")}
+                          {"("}적용일 :{" "}
+                          {dayjs(item.appliedAt).format("YYYY-MM-DD")}
+                          {" / "}
+                          만료일 : {dayjs(item.expiredAt).format("YYYY-MM-DD")}
+                          {")"}
                         </div>
                       </div>
                     ))}
@@ -741,13 +940,53 @@ const QualityCertificationPage: React.FC & {
       <AntdModal
         open={open}
         setOpen={setOpen}
-        title="인증서 등록"
+        title={
+          edit === "update"
+            ? "인증서 수정"
+            : edit === "re"
+            ? "인증서 갱신"
+            : "인증서 등록"
+        }
         width={600}
         bgColor="#fff"
         draggable
         contents={
           <>
-            {edit ? (
+            {edit === "update" ? (
+              <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
+                <LabelItem label="인증서 이름">
+                  <AntdInput
+                    value={detail?.name}
+                    onChange={(e) => {
+                      setDetail({ ...detail, name: e.target.value });
+                    }}
+                  />
+                </LabelItem>
+                <LabelItem label="발급처">
+                  <AntdInput
+                    value={detail?.certificationAuthority}
+                    onChange={(e) => {
+                      setDetail({
+                        ...detail,
+                        certificationAuthority: e.target.value,
+                      });
+                    }}
+                  />
+                </LabelItem>
+                <LabelItem label="비고">
+                  <TextArea
+                    className="min-h-55 rounded-0"
+                    value={detail?.remark}
+                    onChange={(e) => {
+                      setDetail({
+                        ...detail,
+                        remark: e.target.value,
+                      });
+                    }}
+                  />
+                </LabelItem>
+              </div>
+            ) : edit === "re" ? (
               <>
                 <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
                   <LabelItem label="유효일자">
@@ -782,7 +1021,7 @@ const QualityCertificationPage: React.FC & {
                   </LabelItem>
                   <LabelItem label="변경 적용일">
                     <AntdDatePicker
-                      value={detail?.appliedAt ?? null}
+                      value={detail?.appliedAt ?? dayjs()}
                       onChange={(value) => {
                         setDetail({
                           ...detail,
@@ -870,7 +1109,7 @@ const QualityCertificationPage: React.FC & {
                   </LabelItem>
                   <LabelItem label="변경 적용일">
                     <AntdDatePicker
-                      value={detail?.appliedAt ?? null}
+                      value={detail?.appliedAt ?? dayjs()}
                       onChange={(value) => {
                         setDetail({
                           ...detail,
@@ -912,7 +1151,8 @@ const QualityCertificationPage: React.FC & {
                   handleSubmit();
                 }}
               >
-                <Arrow /> 인증서 {edit ? "갱신" : "등록"}
+                <Arrow /> 인증서{" "}
+                {edit === "update" ? "수정" : edit === "re" ? "갱신" : "등록"}
               </Button>
             </div>
           </>
@@ -939,6 +1179,9 @@ const QualityCertificationPage: React.FC & {
         }
         onOk={() => {
           setResultOpen(false);
+          if (resultType === "delete") {
+            handleDelete();
+          }
         }}
         onCancel={() => {
           setResultOpen(false);
