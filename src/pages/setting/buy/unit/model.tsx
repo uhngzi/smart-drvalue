@@ -65,7 +65,7 @@ const BuyUnitModelListPage: React.FC & {
     apiGetResponseType, Error
   >({
     //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['model-base-price/jsxcrud/many'],
+    queryKey: ['model-base-price/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

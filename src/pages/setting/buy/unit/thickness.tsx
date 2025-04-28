@@ -52,6 +52,11 @@ const BuyUnitThicknessListPage: React.FC & {
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
+
+    /*const start = (page - 1) * pagination.size;
+    const end = start + pagination.size;
+    const slicedData = allData.slice(start, end);
+    setList(slicedData);*/
   };
 
   // --------- 리스트 데이터 시작 ---------
@@ -60,7 +65,7 @@ const BuyUnitThicknessListPage: React.FC & {
     apiGetResponseType, Error
   >({
     //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['add-thickness-price/jsxcrud/many'],
+    queryKey: ['add-thickness-price/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

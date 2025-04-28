@@ -51,7 +51,7 @@ const BuyunitTextureListPage: React.FC & {
     apiGetResponseType, Error
   >({
     // queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['bp-texture/jsxcrud/many'],
+    queryKey: ['bp-texture/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

@@ -94,7 +94,7 @@ const BuyUnitSpecialListPage: React.FC & {
     apiGetResponseType, Error
   >({
     //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['special-specifications/jsxcrud/many'],
+    queryKey: ['special-specifications/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

@@ -183,11 +183,12 @@ const MOCK = {
         { name:'weight', label:'가중치', widthType:'half', type:'input', inputType:'number' },
         { name:'minRange', label:'최소 범위', widthType:'half', type:'input', inputType:'number' },
         { name:'maxRange', label:'최대 범위', widthType:'half', type:'input', inputType:'number' },
+        { name:'addCost', label:'추가 비용', widthType:'half', type:'input', inputType:'number' },
         { name:'unit', label:'단위', widthType:'half', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}] },
         //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
         { name:'useYn', label:'사용 여부', widthType:'half', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}] },
         { name:'remark', label:'비고', widthType:'half', type:'input' },
-        { name:'appDt', label:'적용일', widthType:'half', type:'date' },
+        { name:'appDt', label:'적용일', widthType:'full', type:'date' },
       ]
     },
       
