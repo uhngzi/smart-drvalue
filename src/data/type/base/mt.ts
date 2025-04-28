@@ -123,6 +123,8 @@ export type materialPriceType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
+  applyPrice?: number;
+  applyPricedt?: Date | Dayjs | null;
 }
 
 export type materialPriceCUType = {
@@ -150,6 +152,8 @@ export type materialPriceCUType = {
   materialIdx?: string;
   partnerIdx?: string;
   appOriginDt?: Date | Dayjs | null;
+  applyPrice?: number;
+  applyPricedt?: Date | Dayjs | null;
   partner?: { id: string };
 };
 
@@ -172,6 +176,8 @@ export const newMaterialPriceCUType = (): materialPriceCUType => ({
   safeInv: 0,
   appDt: dayjs(),
   useYn: true,
+  applyPrice: 0,
+  applyPricedt: dayjs(),
 });
 
 
