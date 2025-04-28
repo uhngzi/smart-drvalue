@@ -243,7 +243,7 @@ const { data:queryData, refetch } = useQuery<
       </>}
 
       <BaseInfoCUDModal
-        title={{ name: `적층구조 ${newData?.id ? '수정' : '등록'}`, icon: <Bag /> }}
+        title={{ name: `적층구조 동박 ${newData?.id ? '수정' : '등록'}`, icon: <Bag /> }}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}

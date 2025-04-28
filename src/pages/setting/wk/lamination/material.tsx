@@ -306,7 +306,7 @@ import test from "node:test";
       </>}
 
       <BaseInfoCUDModal
-        title={{ name: `적층구조 ${newData?.id ? '수정' : '등록'}`, icon: <Bag /> }}
+        title={{ name: `적층구조 자재 ${newData?.id ? '수정' : '등록'}`, icon: <Bag /> }}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}
