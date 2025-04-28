@@ -334,6 +334,7 @@ const QualityCertificationPage: React.FC & {
         const req = validReq(detail, certificationReq());
         if (!req.isValid) {
           showToast(req.missingLabels + "은(는) 필수 입력입니다.", "error");
+          return;
         }
 
         const jsonData = {
