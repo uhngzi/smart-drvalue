@@ -1,51 +1,46 @@
+import dayjs from "dayjs";
+import { HolderOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Dropdown, Space } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdModal from "@/components/Modal/AntdModal";
 import AntdSelect from "@/components/Select/AntdSelect";
 import LabelItem from "@/components/Text/LabelItem";
+import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
+import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import FullChip from "@/components/Chip/FullChip";
+import { LabelMedium } from "@/components/Text/Label";
+import LabelItemH from "@/components/Text/LabelItemH";
+
 import { useMenu } from "@/data/context/MenuContext";
 import { useUser } from "@/data/context/UserContext";
-import {
-  newDataPartnerType,
-  partnerCUType,
-  partnerMngRType,
-  partnerRType,
-} from "@/data/type/base/partner";
+import { partnerRType } from "@/data/type/base/partner";
+import { selectType } from "@/data/type/componentStyles";
 import {
   requirementContentsType,
   requirementType,
 } from "@/data/type/quality/requitrment";
+
 import { List } from "@/layouts/Body/List";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
 import useToast from "@/utils/useToast";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Dropdown, Space, UploadFile } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
-
-import { selectType } from "@/data/type/componentStyles";
-import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
-import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import FullChip from "@/components/Chip/FullChip";
-import PrtDrawer from "@/contents/partner/PrtDrawer";
-import dayjs from "dayjs";
-import { CloseOutlined, HolderOutlined } from "@ant-design/icons";
-import { LabelMedium } from "@/components/Text/Label";
-import LabelItemH from "@/components/Text/LabelItemH";
-import { patchAPI } from "@/api/patch";
-import { isCancel } from "axios";
-import { deleteAPI } from "@/api/delete";
 
 const QualityRequirementsPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -78,21 +73,6 @@ const QualityRequirementsPage: React.FC & {
   };
   // ------------- 페이지네이션 세팅 ------------ 끝
 
-  // --------- 구매처 드로워 데이터 세팅 ---------- 시작
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [partnerData, setPartnerData] = useState<partnerRType | null>(null);
-  const [partnerMngData, setPartnerMngData] = useState<partnerMngRType | null>(
-    null
-  );
-  // 드로워 닫힐 때 값 초기화
-  useEffect(() => {
-    if (!drawerOpen) {
-      setPartnerData(null);
-      setPartnerMngData(null);
-    }
-  }, [drawerOpen]);
-  // --------- 구매처 드로워 데이터 세팅 ---------- 끝
-
   // ------------ 구매처 데이터 세팅 ------------ 시작
   const [csList, setCsList] = useState<selectType[]>([]);
   const { data: cs, refetch: csRefetch } = useQuery({
@@ -110,9 +90,6 @@ const QualityRequirementsPage: React.FC & {
     }
   }, [cs?.data?.data]);
   // ------------ 구매처 데이터 세팅 ------------ 끝
-
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [fileIdList, setFileIdList] = useState<string[]>([]);
 
   // ------------ 리스트 데이터 세팅 ------------ 시작
   const [dataLoading, setDataLoading] = useState<boolean>(false);
@@ -221,11 +198,17 @@ const QualityRequirementsPage: React.FC & {
   };
   // ------------ 드래그 핸들러 세팅 ------------ 끝
 
+  // 루트 요구사항 모달창
   const [open, setOpen] = useState<boolean>(false);
+  // 루트 선택 시 edit은 true, 신규 버튼 클릭 시 edit은 false
   const [edit, setEdit] = useState<boolean>(false);
+  // 내용 글자수 체크
   const [leng, setLeng] = useState<number>(0);
 
+  // 삭제 시 저장하는 서브 아이디
   const [selectSubId, setSelectSubId] = useState<string>("");
+
+  // 루트 요구사항 등록, 루트 요구사항 등급 수정, 서브 요구사항 등록, 서브 요구사항 취소/복구, 서브 요구사항 삭제
   const handleSubmit = async (
     type?: "main_update" | "sub_cancel" | "sub_delete",
     grade?: "BEST" | "GOOD" | "NORMAL",
@@ -238,7 +221,6 @@ const QualityRequirementsPage: React.FC & {
         return;
       }
       if (edit) {
-        // 수정
         if (!detail.id) {
           showToast(
             "등록 중 에러가 발생했습니다. 잠시후에 시도해주세요.",
@@ -354,6 +336,7 @@ const QualityRequirementsPage: React.FC & {
               content: "",
               appliedAt: null,
             });
+            setLeng(0);
           } else {
             const msg = result?.response?.data?.message;
             setResultType("error");
@@ -389,6 +372,7 @@ const QualityRequirementsPage: React.FC & {
 
         if (result.resultCode === "OK_0000") {
           refetch();
+          setLeng(0);
           showToast("등록 완료", "success");
           setOpen(false);
         } else {
@@ -551,7 +535,7 @@ const QualityRequirementsPage: React.FC & {
       >
         {!detail?.id && (
           <div className="w-full min-h-[calc(85vh-60px)] h-full v-h-center">
-            업체를 선택해주세요.
+            업체를 선택하시면 상세 내용을 볼 수 있어요
           </div>
         )}
         {detail?.id && (
@@ -705,6 +689,7 @@ const QualityRequirementsPage: React.FC & {
         )}
       </div>
 
+      {/* 루트 요구사항 신규 등록 */}
       <AntdModal
         open={open}
         setOpen={setOpen}
@@ -807,50 +792,6 @@ const QualityRequirementsPage: React.FC & {
           </>
         }
       />
-
-      {/* 거래처 등록 */}
-      <PrtDrawer
-        open={drawerOpen}
-        setOpen={setDrawerOpen}
-        partnerId={partnerData?.id ?? ""}
-        partnerData={partnerData}
-        partnerMngData={partnerMngData}
-      />
-
-      {/* <AntdModal
-        open={open}
-        setOpen={setOpen}
-        title="인증서 등록"
-        width={600}
-        bgColor="#fff"
-        draggable
-        contents={
-          <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
-            <LabelItem label="인증서 이름">
-              <AntdInput 
-                value={detail?.qualityRequirementsDetails.}
-              />
-            </LabelItem>
-            <LabelItem label="발급처">
-              <AntdInput />
-            </LabelItem>
-            <LabelItem label="유효일자">
-              <></>
-            </LabelItem>
-            <LabelItem label="비고">
-              <TextArea className="min-h-55 rounded-0" />
-            </LabelItem>
-            <AntdDraggerSmallBottom
-              fileList={fileList}
-              setFileList={setFileList}
-              fileIdList={fileIdList}
-              setFileIdList={setFileIdList}
-              defaultHeight={"auto"}
-              max={1}
-            />
-          </div>
-        }
-      /> */}
 
       <AntdAlertModal
         open={resultOpen}

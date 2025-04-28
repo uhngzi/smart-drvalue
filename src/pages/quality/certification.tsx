@@ -1,12 +1,58 @@
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { useMenu } from "@/data/context/MenuContext";
-import { useUser } from "@/data/context/UserContext";
-import { List } from "@/layouts/Body/List";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import useToast from "@/utils/useToast";
+import { port } from "../_app";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore);
+
+import { Button, Dropdown, Space } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowRightOutlined,
+  CloseOutlined,
+  HolderOutlined,
+} from "@ant-design/icons";
+import cookie from "cookiejs";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
+import { baseURL, cookieName } from "@/api/lib/config";
+
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+import { List } from "@/layouts/Body/List";
+import { ListPagination } from "@/layouts/Body/Pagination";
+
+import useToast from "@/utils/useToast";
+import { validReq } from "@/utils/valid";
+
+import { useMenu } from "@/data/context/MenuContext";
+import { useUser } from "@/data/context/UserContext";
+import {
+  certificationDetailType,
+  certificationReq,
+  certificationType,
+} from "@/data/type/quality/certification";
+
+import AntdModal from "@/components/Modal/AntdModal";
+import LabelItem from "@/components/Text/LabelItem";
+import AntdInput from "@/components/Input/AntdInput";
+import AntdDraggerSmallBottom from "@/components/Upload/AntdDraggerSmallBottom";
+import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
+
+import Edit from "@/assets/svg/icons/edit.svg";
+import Trash from "@/assets/svg/icons/trash.svg";
+import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
+import Back from "@/assets/svg/icons/back.svg";
+import Clock from "@/assets/svg/icons/clock_back.svg";
+import Upload from "@/assets/svg/icons/upload.svg";
+import Download from "@/assets/svg/icons/s_download.svg";
+import Print from "@/assets/svg/icons/print.svg";
+import Open from "@/assets/svg/icons/s_open_window.svg";
+import BlueCheck from "@/assets/svg/icons/blue_check.svg";
 
 const QualityCertificationPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -49,34 +95,42 @@ const QualityCertificationPage: React.FC & {
   const handlePageChange = (page: number, size: number) => {
     setPagination({ current: page, size: size });
   };
-  const [data, setData] = useState<any[]>([]);
-  // const { data:queryData, isLoading, refetch } = useQuery({
-  //   queryKey: ['sales-order/product/worksheet/jsxcrud/many', pagination, sQueryJson],
-  //   queryFn: async () => {
-  //     return getAPI({
-  //       type: 'core-d1',
-  //       utype: 'tenant/',
-  //       url: 'sales-order/product/worksheet/jsxcrud/many'
-  //     },{
-  //       limit: pagination.size,
-  //       page: pagination.current,
-  //       s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
-  //     });
-  //   }
-  // });
+  const [data, setData] = useState<certificationType[]>([]);
+  const {
+    data: queryData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["quality-certification/jsxcrud/many", pagination, sQueryJson],
+    queryFn: async () => {
+      return getAPI(
+        {
+          type: "core-d3",
+          utype: "tenant/",
+          url: "quality-certification/jsxcrud/many",
+        },
+        {
+          limit: pagination.size,
+          page: pagination.current,
+          s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+        }
+      );
+    },
+  });
 
-  // useEffect(()=>{
-  //   setDataLoading(true);
-  //   if(!isLoading) {
-  //     const arr = (queryData?.data?.data ?? []).map((item:salesOrderWorkSheetType) => ({
-  //       ...item,
-  //       m2: Math.floor(((item.worksheet?.specModel?.spec?.wksizeH ?? 0) * (item.worksheet?.specModel?.spec?.wksizeW ?? 0)) / 1000000 * (item.worksheet?.specModel?.prdCnt ?? 0) * 100) / 100,
-  //     }))
-  //     setData(arr);
-  //     setTotalData(queryData?.data?.total ?? 0);
-  //     setDataLoading(false);
-  //   }
-  // }, [queryData]);
+  useEffect(() => {
+    setDataLoading(true);
+    if (!isLoading) {
+      const arr = (queryData?.data?.data ?? []).map(
+        (item: certificationType) => ({
+          ...item,
+        })
+      );
+      setData(arr);
+      setTotalData(queryData?.data?.total ?? 0);
+      setDataLoading(false);
+    }
+  }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
   // ------------ 드래그 핸들러 세팅 ------------ 시작
@@ -106,10 +160,300 @@ const QualityCertificationPage: React.FC & {
   };
   // ------------ 드래그 핸들러 세팅 ------------ 끝
 
+  const [detail, setDetail] = useState<certificationType | null>(null);
+  const [detailContents, setDetailContents] = useState<
+    certificationDetailType[]
+  >([]);
+
+  const [open, setOpen] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+  const [historyOpen, setHistoryOpen] = useState<boolean>(false);
+  const [selectImage, setSelectImage] = useState<string>("");
+
+  // ------------ 디테일 데이터 세팅 ------------ 시작
+  const { data: queryDetailData, refetch: detailRefetch } = useQuery({
+    queryKey: ["quality-certification/jsxcrud/many", detail?.id],
+    queryFn: async () => {
+      const result = await getAPI(
+        {
+          type: "core-d3",
+          utype: "tenant/",
+          url: "quality-certification-history/jsxcrud/many",
+        },
+        {
+          anykeys: { qualityCertificationId: detail?.id },
+          sort: "appliedAt,DESC",
+        }
+      );
+
+      if (result.resultCode === "OK_0000") {
+        setSelectImage(result.data?.data?.[0]?.file);
+        setDetailContents(result.data?.data ?? []);
+      }
+
+      return result;
+    },
+    enabled: !!detail?.id,
+  });
+  const handleSelectCertification = async (record: certificationType) => {
+    try {
+      const result = await getAPI(
+        {
+          type: "core-d3",
+          utype: "tenant/",
+          url: "quality-certification-history/jsxcrud/many",
+        },
+        {
+          anykeys: { qualityCertificationId: record.id },
+          sort: "appliedAt,DESC",
+        }
+      );
+
+      if (result.resultCode === "OK_0000") {
+        setEdit(true);
+        setDetail(record);
+
+        const list: certificationDetailType[] = result.data?.data ?? [];
+
+        // 1. 오늘이 지나지 않은 것만 필터링
+        const today = dayjs().startOf("day");
+        const validList = list.filter((item) => {
+          return dayjs(item.appliedAt).isSameOrBefore(today, "day");
+        });
+
+        if (validList.length === 0) {
+          setSelectImage(""); // 조건에 맞는 게 없으면 초기화
+          setDetailContents(list);
+          return;
+        }
+
+        // 2. expiredAt가 가장 먼 것 찾기
+        const selected = validList.reduce((prev, current) => {
+          return dayjs(prev.expiredAt).isAfter(dayjs(current.expiredAt))
+            ? prev
+            : current;
+        });
+
+        setSelectImage(selected.file ?? "");
+      } else {
+        showToast("인증서 상세 조회 실패", "error");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("인증서 상세 조회 중 오류가 발생했습니다.", "error");
+    }
+  };
+  // ------------ 디테일 데이터 세팅 ------------ 끝
+
+  // --------------- 파일 세팅 --------------- 시작
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileIdList, setFileIdList] = useState<string[]>([]);
+  useEffect(() => {
+    if (fileIdList.length > 0)
+      setDetail({
+        ...detail,
+        file: fileIdList[0],
+      });
+  }, [fileIdList]);
+
+  useEffect(() => {
+    console.log(fileList);
+  }, [fileList]);
+
+  const { data: queryFileData } = useQuery({
+    queryKey: ["quality-certification/jsxcrud/many", selectImage],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "file-mng",
+        url: `every/file-manager/default/info/${selectImage}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setFileList([{ ...result?.data?.fileEntity }]);
+      }
+
+      return result;
+    },
+    enabled: !!selectImage && selectImage !== "",
+  });
+  // --------------- 파일 세팅 --------------- 끝
+
+  const handleSubmit = async () => {
+    try {
+      if (edit && detail?.id) {
+        // 인증서 갱신 (세부 변경사항 등록)
+        const req = validReq(detail, certificationReq());
+        if (!req.isValid) {
+          showToast(req.missingLabels + "은(는) 필수 입력입니다.", "error");
+        }
+
+        const jsonData = {
+          qualityCertification: {
+            id: detail.id,
+          },
+          issuedAt: dayjs(detail?.issuedAt).format("YYYY-MM-DD"),
+          expiredAt: dayjs(detail?.expiredAt).format("YYYY-MM-DD"),
+          appliedAt: dayjs(detail?.appliedAt).format("YYYY-MM-DD"),
+          content: detail?.remark,
+          file: detail?.file,
+        };
+        console.log(JSON.stringify(jsonData));
+
+        const result = await postAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-certification-history",
+          },
+          jsonData
+        );
+
+        if (result.resultCode === "OK_0000") {
+          detailRefetch();
+          showToast("갱신 완료", "success");
+          setOpen(false);
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      } else {
+        // 인증서 등록
+        const req = validReq(detail, certificationReq());
+        if (!req.isValid) {
+          showToast(req.missingLabels + "은(는) 필수 입력입니다.", "error");
+        }
+
+        const jsonData = {
+          name: detail?.name,
+          certificationAuthority: detail?.certificationAuthority,
+          issuedAt: dayjs(detail?.issuedAt).format("YYYY-MM-DD"),
+          expiredAt: dayjs(detail?.expiredAt).format("YYYY-MM-DD"),
+          appliedAt: dayjs(detail?.appliedAt).format("YYYY-MM-DD"),
+          remark: detail?.remark,
+          file: detail?.file,
+        };
+        console.log(JSON.stringify(jsonData));
+
+        const result = await postAPI(
+          {
+            type: "core-d3",
+            utype: "tenant/",
+            jsx: "jsxcrud",
+            url: "quality-certification",
+          },
+          jsonData
+        );
+
+        if (result.resultCode === "OK_0000") {
+          refetch();
+          showToast("등록 완료", "success");
+          setOpen(false);
+        } else {
+          const msg = result?.response?.data?.message;
+          setResultType("error");
+          setResultMsg(msg);
+          setResultOpen(true);
+        }
+      }
+    } catch (e) {
+      console.log("CATCH ERROR :: ", e);
+    }
+  };
+
+  // 초기화
+  useEffect(() => {
+    if (!open) {
+      if (!edit) setDetail(null);
+      setFileIdList([]);
+      setFileList([]);
+    }
+  }, [open]);
+
+  // 인쇄
+  const handlePrint = async () => {
+    if (!selectImage) {
+      showToast("인쇄할 이미지가 없습니다.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `bearer ${cookie.get(cookieName)}`,
+            "x-tenant-code": String(
+              port === "90"
+                ? cookie.get("dev-code") || "shinyang-test"
+                : port === "3000"
+                ? "gpntest-dev"
+                : cookie.get("x-custom-tenant-code") || "gpntest-sebuk-ver"
+            ),
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("파일을 불러오는 데 실패했습니다.");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>${fileList?.[0]?.originalName ?? "(QA)시스템"}</title>
+              <style>
+                @page {
+                  size: A4 portrait;
+                  margin: 0;
+                }
+                body, html {
+                  margin: 0;
+                  padding: 0;
+                  height: 297mm;
+                  width: 210mm;
+                  background: #fff;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                }
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                  page-break-inside: avoid;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${blobUrl}" onload="window.print(); window.close();" />
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("파일 인쇄 중 오류가 발생했습니다.", "error");
+    }
+  };
+
+  // 결과창
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<"error" | "delete" | "">("");
+  const [resultMsg, setResultMsg] = useState<string>("");
+
   return (
-    <div className="flex gap-20">
-      {/* 리스트 보여주는 부분 */}
-      <div className="flex flex-col flex-1 h-full pr-2">
+    <div className="flex items-start gap-10 w-full h-full">
+      <div className="flex-1">
         <ListPagination
           pagination={pagination}
           totalData={totalData}
@@ -119,7 +463,9 @@ const QualityCertificationPage: React.FC & {
           setSearchs={setSearchs}
           handleSearchs={handleSearchs}
           handleSubmitNew={() => {
-            console.log("handleSubmitNew");
+            setDetail(null);
+            setOpen(true);
+            setEdit(false);
           }}
         />
 
@@ -139,33 +485,45 @@ const QualityCertificationPage: React.FC & {
               },
               {
                 title: "인증서 이름",
-                minWidth: 200,
-                dataIndex: "nm",
-                key: "nm",
+                width: 200,
+                dataIndex: "name",
+                key: "name",
+                render: (value: string, record: certificationType) => (
+                  <div
+                    className="reference-detail"
+                    onClick={() => {
+                      // setEdit(true);
+                      // setDetail(record);
+                      handleSelectCertification(record);
+                    }}
+                  >
+                    {value}
+                  </div>
+                ),
               },
               {
                 title: "발급처",
-                minWidth: 200,
-                dataIndex: "in",
-                key: "in",
+                width: 150,
+                dataIndex: "certificationAuthority",
+                key: "certificationAuthority",
               },
               {
                 title: "유효일자",
-                width: 100,
-                dataIndex: "dt",
-                key: "dt",
+                width: 200,
+                dataIndex: "issuedAt",
+                key: "issuedAt",
+                render: (_, record: certificationType) => (
+                  <div>
+                    {dayjs(record.issuedAt).format("YYYY-MM-DD")}~
+                    {dayjs(record.expiredAt).format("YYYY-MM-DD")}
+                  </div>
+                ),
               },
               {
                 title: "비고",
-                width: 80,
-                dataIndex: "remarks",
-                key: "remarks",
-              },
-              {
-                title: "히스토리",
-                width: 80,
-                dataIndex: "history",
-                key: "history",
+                width: 200,
+                dataIndex: "remark",
+                key: "remark",
               },
             ]}
             data={data}
@@ -192,19 +550,410 @@ const QualityCertificationPage: React.FC & {
 
       {/* 드래그 핸들 */}
       <div
-        className="w-3 cursor-col-resize bg-[#ccc] hover:bg-[#bbb]"
+        className="w-14 min-h-[85vh] h-full cursor-col-resize h-center justify-center"
         onMouseDown={handleDragMouseDown}
-      />
+      >
+        <HolderOutlined />
+      </div>
 
       {/* 인증서 미리보기 부분 */}
       <div
-        className="flex min-w-[595px] w-[595px] min-h-[842px] h-full px-20 py-30 bg-[#EEE]"
+        className="flex flex-col min-w-[595px] w-[595px] h-full overflow-auto"
         style={{
           width: `${previewWidth}px`,
           minWidth: `${previewMin}px`,
           maxWidth: `${previewMax}px`,
         }}
-      ></div>
+      >
+        {!detail?.id && (
+          <div className="w-full !h-[calc(85vh-60px)] v-h-center bg-[#EEE] mt-50">
+            인증서를 선택하시면 미리 볼 수 있어요
+          </div>
+        )}
+        {detail?.id && (
+          <div>
+            {/* 헤더 부분 */}
+            <div className="flex-none h-50 v-between-h-center">
+              <div className="h-center gap-10">
+                <p>{detail.name}</p>
+                <Button
+                  onClick={() => {
+                    setEdit(true);
+                    setDetail({
+                      ...detail,
+                      issuedAt: null,
+                      expiredAt: null,
+                      appliedAt: null,
+                      remark: "",
+                    });
+                    setFileList([]);
+                    setFileIdList([]);
+                    setOpen(true);
+                  }}
+                >
+                  <Upload /> 인증서 갱신
+                </Button>
+              </div>
+              <div className="h-center gap-10">
+                <div
+                  className="w-24 h-26 rounded-2 cursor-pointer hover:bg-[#F5F6FA] hover:shadow-md transition-all duration-300 v-h-center"
+                  onClick={() => setHistoryOpen(true)}
+                >
+                  <p className="w-16 h-16">
+                    <Clock />
+                  </p>
+                </div>
+                <div>
+                  <Dropdown
+                    trigger={["click"]}
+                    getPopupContainer={(triggerNode) =>
+                      triggerNode.parentElement!
+                    }
+                    menu={{
+                      items: [
+                        {
+                          label: (
+                            <div className="h-center gap-5">
+                              <p className="w-16 h-16">
+                                <Download />
+                              </p>
+                              다운로드
+                            </div>
+                          ),
+                          key: 0,
+                          onClick: () => {
+                            console.log(fileList);
+                            if (
+                              fileList.length > 0 &&
+                              selectImage &&
+                              selectImage !== ""
+                            )
+                              downloadFileByObjectName(selectImage, {
+                                ...fileList[0],
+                                name: fileList[0].originalName,
+                              });
+                            else
+                              showToast(
+                                "파일 다운로드 중 오류가 발생하였습니다. 잠시후에 다시 시도해주세요.",
+                                "error"
+                              );
+                          },
+                        },
+                        {
+                          label: (
+                            <div className="h-center gap-5">
+                              <p className="w-16 h-16">
+                                <Print />
+                              </p>
+                              인쇄
+                            </div>
+                          ),
+                          key: 1,
+                          onClick: handlePrint,
+                        },
+                      ],
+                    }}
+                  >
+                    <a onClick={(e) => e.preventDefault()}>
+                      <Space>
+                        <div className="w-24 h-26 rounded-2 cursor-pointer v-h-center bg-back hover:shadow-md transition-all duration-300">
+                          <p className="w-16 h-16">
+                            <Edit />
+                          </p>
+                        </div>
+                      </Space>
+                    </a>
+                  </Dropdown>
+                </div>
+              </div>
+            </div>
+            {/* 이미지 부분 */}
+            <div
+              className="relative bg-[#EEE] flex-1"
+              style={{
+                width: `${previewWidth}px`,
+                minWidth: `${previewMin}px`,
+                maxWidth: `${previewMax}px`,
+                height: "calc(85vh - 60px)", // 높이 고정
+              }}
+            >
+              {detailContents && detailContents.length > 0 && (
+                <Image
+                  src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
+                  fill
+                  sizes={`${previewWidth}px`}
+                  style={{ objectFit: "contain" }}
+                  alt={""}
+                />
+              )}
+              {historyOpen && (
+                <div className="bg-[#00000050] w-1/2 h-full absolute top-0 right-0 z-10 px-10 gap-10 flex flex-col">
+                  <div className="h-40 v-between-h-center">
+                    <div className="text-16">변경 이력</div>
+                    <CloseOutlined
+                      style={{ color: "white" }}
+                      className="cursor-pointer"
+                      onClick={() => setHistoryOpen(false)}
+                    />
+                  </div>
+                  {detailContents.length > 0 &&
+                    detailContents.map((item) => (
+                      <div className="w-full bg-white rounded-8 px-10 py-10 border-1 border-bdDefault flex flex-col">
+                        <div
+                          className="h-center gap-5 p-5 rounded-6"
+                          style={{
+                            background:
+                              item.file === selectImage ? "#2161dc15" : "",
+                          }}
+                        >
+                          <p>
+                            ver {item.version}.{" "}
+                            {dayjs(item.updatedAt).format("YYYY-MM-DD")}
+                          </p>
+                          <p
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setSelectImage(item.file ?? "");
+                            }}
+                          >
+                            {item.file === selectImage ? (
+                              <BlueCheck />
+                            ) : (
+                              <Open />
+                            )}
+                          </p>
+                        </div>
+                        <div className="whitespace-pre-wrap text-[#00000085] px-5">
+                          {item.content}
+                        </div>
+                        <div className="text-12 text-[#00000045] px-5">
+                          적용일 : {dayjs(item.appliedAt).format("YYYY-MM-DD")}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <AntdModal
+        open={open}
+        setOpen={setOpen}
+        title="인증서 등록"
+        width={600}
+        bgColor="#fff"
+        draggable
+        contents={
+          <>
+            {edit ? (
+              <>
+                <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
+                  <LabelItem label="유효일자">
+                    <div className="border-1 border-bdDefault rounded-2 w-full h-32 bg-white gap-5 h-center">
+                      <AntdDatePicker
+                        value={detail?.issuedAt ?? null}
+                        onChange={(value) => {
+                          setDetail({
+                            ...detail,
+                            issuedAt: value,
+                          });
+                        }}
+                        className="w-full min-w-[245px]"
+                        styles={{ bw: "0" }}
+                        placeholder="발급일"
+                      />
+                      <ArrowRightOutlined style={{ color: "#00000025" }} />
+                      <AntdDatePicker
+                        value={detail?.expiredAt ?? null}
+                        onChange={(value) => {
+                          setDetail({
+                            ...detail,
+                            expiredAt: value,
+                          });
+                        }}
+                        className="w-full min-w-[245px]"
+                        styles={{ bw: "0" }}
+                        suffixIcon={"cal"}
+                        placeholder="만료일"
+                      />
+                    </div>
+                  </LabelItem>
+                  <LabelItem label="변경 적용일">
+                    <AntdDatePicker
+                      value={detail?.appliedAt ?? null}
+                      onChange={(value) => {
+                        setDetail({
+                          ...detail,
+                          appliedAt: value,
+                        });
+                      }}
+                      className="w-full h-32"
+                      styles={{ bc: "#D9D9D9", br: "2px" }}
+                      suffixIcon={"cal"}
+                    />
+                  </LabelItem>
+                  <LabelItem label="갱신 내용">
+                    <TextArea
+                      className="min-h-55 rounded-0"
+                      value={detail?.remark}
+                      onChange={(e) => {
+                        setDetail({
+                          ...detail,
+                          remark: e.target.value,
+                        });
+                      }}
+                    />
+                  </LabelItem>
+                  <AntdDraggerSmallBottom
+                    fileList={fileList}
+                    setFileList={setFileList}
+                    fileIdList={fileIdList}
+                    setFileIdList={setFileIdList}
+                    defaultHeight={"auto"}
+                    max={1}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
+                  <LabelItem label="인증서 이름">
+                    <AntdInput
+                      value={detail?.name}
+                      onChange={(e) => {
+                        setDetail({ ...detail, name: e.target.value });
+                      }}
+                    />
+                  </LabelItem>
+                  <LabelItem label="발급처">
+                    <AntdInput
+                      value={detail?.certificationAuthority}
+                      onChange={(e) => {
+                        setDetail({
+                          ...detail,
+                          certificationAuthority: e.target.value,
+                        });
+                      }}
+                    />
+                  </LabelItem>
+                  <LabelItem label="유효일자">
+                    <div className="border-1 border-bdDefault rounded-2 w-full h-32 bg-white gap-5 h-center">
+                      <AntdDatePicker
+                        value={detail?.issuedAt ?? null}
+                        onChange={(value) => {
+                          setDetail({
+                            ...detail,
+                            issuedAt: value,
+                          });
+                        }}
+                        className="w-full min-w-[245px]"
+                        styles={{ bw: "0" }}
+                        placeholder="발급일"
+                      />
+                      <ArrowRightOutlined style={{ color: "#00000025" }} />
+                      <AntdDatePicker
+                        value={detail?.expiredAt ?? null}
+                        onChange={(value) => {
+                          setDetail({
+                            ...detail,
+                            expiredAt: value,
+                          });
+                        }}
+                        className="w-full min-w-[245px]"
+                        styles={{ bw: "0" }}
+                        suffixIcon={"cal"}
+                        placeholder="만료일"
+                      />
+                    </div>
+                  </LabelItem>
+                  <LabelItem label="변경 적용일">
+                    <AntdDatePicker
+                      value={detail?.appliedAt ?? null}
+                      onChange={(value) => {
+                        setDetail({
+                          ...detail,
+                          appliedAt: value,
+                        });
+                      }}
+                      className="w-full h-32"
+                      styles={{ bc: "#D9D9D9", br: "2px" }}
+                      suffixIcon={"cal"}
+                    />
+                  </LabelItem>
+                  <LabelItem label="비고">
+                    <TextArea
+                      className="min-h-55 rounded-0"
+                      value={detail?.remark}
+                      onChange={(e) => {
+                        setDetail({
+                          ...detail,
+                          remark: e.target.value,
+                        });
+                      }}
+                    />
+                  </LabelItem>
+                  <AntdDraggerSmallBottom
+                    fileList={fileList}
+                    setFileList={setFileList}
+                    fileIdList={fileIdList}
+                    setFileIdList={setFileIdList}
+                    defaultHeight={"auto"}
+                    max={1}
+                  />
+                </div>
+              </>
+            )}
+            <div className="mt-10 w-full h-center justify-end">
+              <Button
+                className="text-white bg-point1"
+                onClick={() => {
+                  handleSubmit();
+                }}
+              >
+                <Arrow /> 인증서 {edit ? "갱신" : "등록"}
+              </Button>
+            </div>
+          </>
+        }
+      />
+
+      <AntdAlertModal
+        open={resultOpen}
+        setOpen={setResultOpen}
+        title={
+          resultType === "error"
+            ? "오류 발생"
+            : resultType === "delete"
+            ? "삭제하시겠습니까?"
+            : ""
+        }
+        contents={<div>{resultMsg}</div>}
+        type={
+          resultType === "error"
+            ? "error"
+            : resultType === "delete"
+            ? "warning"
+            : "success"
+        }
+        onOk={() => {
+          setResultOpen(false);
+        }}
+        onCancel={() => {
+          setResultOpen(false);
+        }}
+        theme="main"
+        hideCancel={resultType === "error" ? true : false}
+        okText={
+          resultType === "error"
+            ? "확인"
+            : resultType === "delete"
+            ? "네 삭제할래요"
+            : ""
+        }
+        cancelText={resultType === "delete" ? "아니요 삭제 안할래요" : ""}
+      />
 
       <ToastContainer />
     </div>

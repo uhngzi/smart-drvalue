@@ -34,36 +34,36 @@ const AntdEditModal: React.FC<Props> = ({
   draggable,
 }) => {
   const useStyle = createStyles(({ token }) => ({
-    'my-modal-body': {
-      overflow: 'hidden',
-      maxHeight: full ? '100vh' : '90vh',
-      display: 'flex',
-      flexDirection: 'column',
+    "my-modal-body": {
+      overflow: "hidden",
+      maxHeight: full ? "100vh" : "90vh",
+      display: "flex",
+      flexDirection: "column",
     },
-    'my-modal-content': {
-      background: '#F5F6FA',
-      borderRadius: '14px',
+    "my-modal-content": {
+      background: "#F5F6FA",
+      borderRadius: "14px",
       padding: 0,
-      maxHeight: full ? '100vh' : '90vh',
+      maxHeight: full ? "100vh" : "90vh",
     },
   }));
-  
+
   const { styles } = useStyle();
 
   const classNames = {
-    body: styles['my-modal-body'],
-    content: styles['my-modal-content'],
+    body: styles["my-modal-body"],
+    content: styles["my-modal-content"],
   };
 
   const modalStyles = {
     body: {
-      maxHeight: full ? '100vh' : '90vh',
+      maxHeight: full ? "100vh" : "90vh",
     },
     content: {
-      background: '#F5F6FA',
-      borderRadius: '14px',
+      background: "#F5F6FA",
+      borderRadius: "14px",
       padding: 0,
-      maxHeight: full ? '100vh' : '90vh'
+      maxHeight: full ? "100vh" : "90vh",
     },
   };
 
@@ -81,14 +81,14 @@ const AntdEditModal: React.FC<Props> = ({
         if (el) {
           const modalW = el.offsetWidth;
           const modalH = el.offsetHeight;
-  
+
           const centerX = window.innerWidth / 2 - modalW / 2;
           const centerY = window.innerHeight / 2 - modalH / 2;
-  
+
           setPosition({ x: centerX, y: centerY });
         }
       }, 0); // 0ms라도 timeout으로 렌더 이후 실행 보장
-  
+
       return () => clearTimeout(timer);
     }
   }, [open, draggable]);
@@ -105,18 +105,18 @@ const AntdEditModal: React.FC<Props> = ({
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragging || !modalRef.current) return;
-    
+
       const el = modalRef.current;
       const modalW = el.offsetWidth;
       const modalH = el.offsetHeight;
-    
+
       let nextX = e.clientX - offset.current.x;
       let nextY = e.clientY - offset.current.y;
-    
+
       // 화면 바깥으로 안 나가게 clamp
       nextX = Math.max(0, Math.min(nextX, window.innerWidth - modalW));
       nextY = Math.max(0, Math.min(nextY, window.innerHeight - modalH));
-    
+
       setPosition({ x: nextX, y: nextY });
       setDragFlag(true);
     };
@@ -133,61 +133,72 @@ const AntdEditModal: React.FC<Props> = ({
   }, [dragging]);
 
   return (
-    <Modal 
+    <Modal
       classNames={classNames}
       styles={modalStyles}
       open={open}
       closeIcon={null}
       destroyOnClose={false}
-      width={full ? '100%' : width}
-      footer={footer||null}
+      width={full ? "100%" : width}
+      footer={footer || null}
       zIndex={1999}
-      centered={!draggable ? dragFlag : true}
-      maskClosable={maskClosable} mask={mask}
-      modalRender={draggable ? (modal) => (
-        <div
-          ref={modalRef}
-          onMouseDown={handleMouseDown}
-          style={dragFlag ? {
-            position: "fixed",
-            top: `${position.y}px`,
-            left: `${position.x}px`,
-            width: full ? '100%' : width || 600,
-            minWidth: 320,
-            maxWidth: "100vw",
-            transform: "none",
-            cursor: "grab",
-          } : {
-            width: full ? '100%' : width || 600,
-            minWidth: 320,
-            maxWidth: "100vw",
-            cursor: "grab",
-          }}
-        >
-          {modal}
-        </div>
-      ) : (modal) => (<div>{modal}</div>)}
+      centered={!draggable ? !dragFlag : true}
+      maskClosable={maskClosable}
+      mask={mask}
+      modalRender={
+        draggable
+          ? (modal) => (
+              <div
+                ref={modalRef}
+                onMouseDown={handleMouseDown}
+                style={
+                  dragFlag
+                    ? {
+                        position: "fixed",
+                        top: `${position.y}px`,
+                        left: `${position.x}px`,
+                        width: full ? "100%" : width || 600,
+                        minWidth: 320,
+                        maxWidth: "100vw",
+                        transform: "none",
+                        cursor: "grab",
+                      }
+                    : {
+                        width: full ? "100%" : width || 600,
+                        minWidth: 320,
+                        maxWidth: "100vw",
+                        cursor: "grab",
+                      }
+                }
+              >
+                {modal}
+              </div>
+            )
+          : (modal) => <div>{modal}</div>
+      }
     >
       <div className="w-full flex-1 px-20 pb-20 overflow-y-auto relative">
         <div
           className="w-24 h-24 cursor-pointer absolute"
-          style={{right: 30, top: 20}}
-          onClick={onClose ? () => {
-            setDragFlag(false);
-            onClose();
-          } :
-          (()=>{
-            setDragFlag(false);
-            setOpen(false);
-          })}
+          style={{ right: 30, top: 20 }}
+          onClick={
+            onClose
+              ? () => {
+                  setDragFlag(false);
+                  onClose();
+                }
+              : () => {
+                  setDragFlag(false);
+                  setOpen(false);
+                }
+          }
         >
           <DeleteCircle />
         </div>
         {contents}
       </div>
     </Modal>
-  )
-}
+  );
+};
 
 export default AntdEditModal;
-
