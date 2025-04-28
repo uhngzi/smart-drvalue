@@ -107,31 +107,8 @@ const WkLaminationSourceListPage: React.FC & {
     }
   }
     //등록 버튼 함수
-  const handleSubmitNewData = async (data: any) => {
-    try {
-      console.log(data);
-      if(data?.id){
-        const id = data.id;
-        delete data.id;
-
-        const result = await patchAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'lamination-source',
-          jsx: 'jsxcrud'
-        },id, data);
-        console.log(result);
-
-        if(result.resultCode === 'OK_0000') {
-          setNewOpen(false);
-          setResultFunc('success', '적층 구조 수정 성공', '적층 구조 수정이 완료되었습니다.');
-        } else {
-          setNewOpen(false);
-          
-          setResultFunc('error', '적층 구조 수정 실패', '적층 구조 수정을 실패하였습니다.');
-        }
-
-      }else{
+    const handleSubmitNewData = async (data: any) => {
+      try {
         const payload = {
           ...data,
           matNm: data.matNm,
@@ -140,8 +117,37 @@ const WkLaminationSourceListPage: React.FC & {
         delete payload.id;
         delete payload.createdAt;
         delete payload.updatedAt;
-        delete payload.copperFoil;
-        delete payload.copThk;
+  
+        console.log(data);
+        if(data?.id){
+          const id = data.id;
+    
+          const result = await patchAPI({
+            type: 'baseinfo', 
+            utype: 'tenant/',
+            url: 'lamination-source/',
+            jsx: 'jsxcrud'
+          },id, payload);
+          console.log(result);
+  
+          if(result.resultCode === 'OK_0000') {
+            setNewOpen(false);
+            setResultFunc('success', '적층 구조 수정 성공', '적층 구조 수정이 완료되었습니다.');
+          } else {
+            setNewOpen(false);
+            
+            setResultFunc('error', '적층 구조 수정 실패', '적층 구조 수정을 실패하였습니다.');
+          }
+  
+        }else{
+        const payload = {
+          ...data,
+          matNm: data.matNm,
+          epoxy: Number(data.epoxy),
+        };
+        delete payload.id;
+        delete payload.createdAt;
+        delete payload.updatedAt;
 
         const result = await postAPI({
           type: 'baseinfo', 
@@ -252,8 +258,8 @@ const WkLaminationSourceListPage: React.FC & {
             {
               title: '자재',
               width: 130,
-              dataIndex: 'matCd',
-              key: 'matCd',
+              dataIndex: 'matNm',
+              key: 'matNm',
               align: 'center',
               render: (_, record) => (
                 <div
@@ -263,7 +269,7 @@ const WkLaminationSourceListPage: React.FC & {
                     setNewOpen(true);
                   }}
                 >
-                  {record.matCd}
+                  {record.matNm}
                 </div>
               )
             },
@@ -319,7 +325,7 @@ const WkLaminationSourceListPage: React.FC & {
       </>}
 
       <BaseInfoCUDModal
-        title={{name: `적층구조 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        title={{name: `적층구조 요소${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}

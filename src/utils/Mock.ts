@@ -47,7 +47,7 @@ const MOCK = {
         tableColumns: [],
         CUDPopItems: [
             { name:'lamDtlTypeEm',label:'유형', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
-            { name:'material',label:'재질', widthType:'full', type:'select', option:[{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}], },
+            { name:'matNm',label:'재질', widthType:'full', type:'input', inputType:'string', },
             { name:'epoxy',label:'Epoxy', widthType:'full', type:'input', inputType:'number', },
             { name:'code',label:'코드', widthType:'full', type:'input', },
         ]   
