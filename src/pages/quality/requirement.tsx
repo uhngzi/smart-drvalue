@@ -361,7 +361,7 @@ const QualityRequirementsPage: React.FC & {
           appliedAt: detail?.appliedAt
             ? dayjs(detail?.appliedAt).format("YYYY-MM-DD")
             : dayjs().format("YYYY-MM-DD"),
-          qualityGrade: detail?.qualityGrade,
+          qualityGrade: detail?.qualityGrade ?? "NORMAL",
         };
         console.log(JSON.stringify(jsonData));
 
@@ -660,7 +660,7 @@ const QualityRequirementsPage: React.FC & {
                   { value: "NORMAL", label: "보통" },
                 ]}
                 styles={{ bg: "#FFF" }}
-                value={detail?.qualityGrade}
+                value={detail?.qualityGrade ?? "NORMAL"}
                 className="!w-80"
                 onChange={(e) => {
                   const value = (e + "") as "BEST" | "GOOD" | "NORMAL";
