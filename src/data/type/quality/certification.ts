@@ -40,7 +40,7 @@ export type certificationDetailType = {
 
 export const certificationReq = () => {
   return [
-    { field: "name", label: "이름" },
+    { field: "name", label: "인증서명" },
     { field: "certificationAuthority", label: "발급처" },
     { field: "issuedAt", label: "발급일" },
     { field: "expiredAt", label: "만료일" },

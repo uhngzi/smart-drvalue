@@ -17,6 +17,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { deleteAPI } from "@/api/delete";
+import { patchAPI } from "@/api/patch";
 import { baseURL, cookieName } from "@/api/lib/config";
 
 import MainPageLayout from "@/layouts/Main/MainPageLayout";
@@ -53,8 +55,6 @@ import Download from "@/assets/svg/icons/s_download.svg";
 import Print from "@/assets/svg/icons/print.svg";
 import Open from "@/assets/svg/icons/s_open_window.svg";
 import BlueCheck from "@/assets/svg/icons/blue_check.svg";
-import { deleteAPI } from "@/api/delete";
-import { patchAPI } from "@/api/patch";
 
 const QualityCertificationPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -195,6 +195,7 @@ const QualityCertificationPage: React.FC & {
         setDetail(record);
 
         const list: certificationDetailType[] = result.data?.data ?? [];
+        setDetailContents(list);
 
         // 이미지 자동 선택 조건 1. 변경 적용일이 아직 지나지 않은 것
         const today = dayjs().startOf("day");
@@ -215,7 +216,6 @@ const QualityCertificationPage: React.FC & {
         });
 
         setSelectImage(selected.file ?? "");
-        setDetailContents(list);
       } else {
         showToast("인증서 상세 조회 실패", "error");
       }
@@ -236,10 +236,6 @@ const QualityCertificationPage: React.FC & {
         file: fileIdList[0],
       });
   }, [fileIdList]);
-
-  useEffect(() => {
-    console.log(fileList);
-  }, [fileList]);
 
   const { data: queryFileData } = useQuery({
     queryKey: ["quality-certification/jsxcrud/many", selectImage],
@@ -451,7 +447,7 @@ const QualityCertificationPage: React.FC & {
     }
   }, [open]);
 
-  // 인쇄
+  // ----------------- 인쇄 ----------------- 시작
   const handlePrint = async () => {
     if (!selectImage) {
       showToast("인쇄할 이미지가 없습니다.", "error");
@@ -524,6 +520,7 @@ const QualityCertificationPage: React.FC & {
       showToast("파일 인쇄 중 오류가 발생했습니다.", "error");
     }
   };
+  // ----------------- 인쇄 ----------------- 끝
 
   // 결과창
   const [resultOpen, setResultOpen] = useState<boolean>(false);
@@ -564,10 +561,12 @@ const QualityCertificationPage: React.FC & {
                   ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
               },
               {
-                title: "인증서 이름",
+                title: "인증서명",
                 width: 200,
                 dataIndex: "name",
                 key: "name",
+                tooltip:
+                  "인증서명을 클릭하면 해당 인증서의 상세 내용을 볼 수 있어요",
                 render: (value: string, record: certificationType) => (
                   <div
                     className="reference-detail"
@@ -954,7 +953,7 @@ const QualityCertificationPage: React.FC & {
           <>
             {edit === "update" ? (
               <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
-                <LabelItem label="인증서 이름">
+                <LabelItem label="인증서명">
                   <AntdInput
                     value={detail?.name}
                     onChange={(e) => {
@@ -1058,7 +1057,7 @@ const QualityCertificationPage: React.FC & {
             ) : (
               <>
                 <div className="w-full p-20 border-1 border-bdDefault rounded-8 bg-back flex flex-col gap-24">
-                  <LabelItem label="인증서 이름">
+                  <LabelItem label="인증서명">
                     <AntdInput
                       value={detail?.name}
                       onChange={(e) => {
