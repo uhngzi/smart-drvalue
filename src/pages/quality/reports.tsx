@@ -294,6 +294,8 @@ const QualityReportsPage: React.FC & {
           handleDetail(detail);
           showToast("갱신 완료", "success");
           setOpen(false);
+          setFileIdList([]);
+          setFileList([]);
         } else {
           const msg = result?.response?.data?.message;
           setResultType("error");
@@ -324,6 +326,8 @@ const QualityReportsPage: React.FC & {
           refetch();
           showToast("수정 완료", "success");
           setOpen(false);
+          setFileIdList([]);
+          setFileList([]);
         } else {
           const msg = result?.response?.data?.message;
           setResultType("error");
@@ -335,6 +339,7 @@ const QualityReportsPage: React.FC & {
         const req = validReq(detail, reportsReq());
         if (!req.isValid) {
           showToast(req.missingLabels + "은(는) 필수 입력입니다.", "error");
+          return;
         }
 
         const jsonData = {
@@ -364,6 +369,8 @@ const QualityReportsPage: React.FC & {
           refetch();
           showToast("등록 완료", "success");
           setOpen(false);
+          setFileIdList([]);
+          setFileList([]);
         } else {
           const msg = result?.response?.data?.message;
           setResultType("error");
@@ -407,6 +414,8 @@ const QualityReportsPage: React.FC & {
           refetch();
           setDetail(null);
           showToast("삭제 완료", "success");
+          setFileIdList([]);
+          setFileList([]);
         } else {
           const msg = result?.response?.data?.message;
           setResultType("error");
@@ -546,6 +555,8 @@ const QualityReportsPage: React.FC & {
             setHistoryOpen(false);
             setOpen(true);
             setEdit("");
+            setFileIdList([]);
+            setFileList([]);
           }}
         />
 
@@ -1082,7 +1093,7 @@ const QualityReportsPage: React.FC & {
                       placeholder="고객명 검색 후 선택"
                     />
                   </LabelItem>
-                  <LabelItem label="성적서 명칭">
+                  <LabelItem label="성적서명">
                     <AntdInput
                       value={detail?.name}
                       onChange={(e) => {

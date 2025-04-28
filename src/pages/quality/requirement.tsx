@@ -661,7 +661,7 @@ const QualityRequirementsPage: React.FC & {
                 ]}
                 styles={{ bg: "#FFF" }}
                 value={detail?.qualityGrade ?? "NORMAL"}
-                className="!w-80"
+                className="!w-90"
                 onChange={(e) => {
                   const value = (e + "") as "BEST" | "GOOD" | "NORMAL";
                   setDetail({
