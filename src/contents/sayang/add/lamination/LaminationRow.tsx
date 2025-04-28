@@ -38,10 +38,15 @@ const LaminationRow: React.FC<LaminationRowProps> = memo(
             item.lamDtlTypeEm?.toUpperCase() +
             ") " +
             item.matNm +
-            "T " +
+            " " +
             item.epoxy +
             "/" +
-            item.code}
+            item.code +
+            " (" +
+            item.copNm +
+            " " +
+            item.copThk +
+            "T) "}
         </p>
         {lamination && (
           <div

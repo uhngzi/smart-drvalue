@@ -90,6 +90,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
   const [selectSpecLamiFilter, setSelectSpecLamiFilter] = useState<{
     layer?: LayerEm | "";
     oz?: "cf" | "pp" | "ccl";
+    code?: string;
     thk?: number;
     cf?: number | boolean;
   }>({ cf: true });
@@ -683,7 +684,7 @@ const AddLaminationModalContents: React.FC<Props> = ({
             }}
             className="w-82"
           />
-          <AntdSelectRound
+          {/* <AntdSelectRound
             options={
               baseLamination
                 .filter((f) => f.lamDtlTypeEm === "cf")
@@ -700,6 +701,17 @@ const AddLaminationModalContents: React.FC<Props> = ({
               })
             }
             placeholder={"OZ선택"}
+            className="w-88"
+          /> */}
+          <AntdInputRound
+            value={selectSpecLamiFilter.code}
+            onChange={(e) =>
+              setSelectSpecLamiFilter({
+                ...selectSpecLamiFilter,
+                code: e.target.value,
+              })
+            }
+            placeholder={"코드"}
             className="w-88"
           />
           <AntdInputRound
@@ -760,8 +772,8 @@ const AddLaminationModalContents: React.FC<Props> = ({
               ))}
         </div>
       </Popup>
-      <Popup className="!min-w-[298px] !h-[612px] !v-h-center">
-        <div className="v-between-h-center h-40 w-full mb-20">
+      <Popup className="!min-w-[298px] !h-[612px] !v-h-center gap-0">
+        <div className="v-between-h-center h-40 w-full">
           <div style={{ position: "relative", zIndex: 9999 }}>
             <AutoHideTooltip
               title={
@@ -796,6 +808,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
               </p>
             </AutoHideTooltip>
           </div>
+        </div>
+        <div className="w-full h-center mb-20 justify-end">
+          {lamination.length > 0 && (
+            <div className="px-10 py-4 border-1 border-bdDefault rounded-6">
+              {lamination.reduce((acc, item) => {
+                const thk = Number(item.lamDtlRealThk);
+                return acc + thk;
+              }, 0)}
+              T
+            </div>
+          )}
+          {lamination.length < 1 && <></>}
         </div>
         <div
           className="w-full h-[440px] overflow-y-auto"
@@ -871,6 +895,18 @@ const AddLaminationModalContents: React.FC<Props> = ({
               )}
             </div>
           </div>
+        </div>
+        <div className="w-full h-center mb-20 justify-end">
+          {lamination.length > 0 && (
+            <div className="px-10 py-4 border-1 border-bdDefault rounded-6">
+              {lamination.reduce((acc, item) => {
+                const thk = Number(item.copThk);
+                return acc + thk;
+              }, 0)}
+              T
+            </div>
+          )}
+          {lamination.length < 1 && <></>}
         </div>
         <div className="w-full v-h-center gap-10">
           {selectSpecLamiFilter.cf ? (
