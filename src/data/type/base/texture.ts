@@ -26,7 +26,7 @@ export const setUnitTextureType = (data: any):unitTextureType => {
     appDt: data.appDt,
     ordNo: data.ordNo,
     useYn: data.useYn,
-    createdAt: data.createAt,
+    createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }
 }
