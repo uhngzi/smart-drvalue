@@ -175,24 +175,35 @@ const ProjectDrawer: React.FC<Props> = ({
     processData.current = {...processData.current, [name]: data};
   }
 
-  async function onProgressUpdate() {
+  async function onProgressUpdate(type: string, fileId?: string) {
     console.log(lastProg)
+    let data = lastProg;
     const date = dayjs(lastProg.wkProcDailyDt).format("YYYY-MM-DD");
-    delete lastProg.wkProcDailyDt;
+    if(type === "prog"){
+      data = {...data, wkProcDailyPer: Number(lastProg.wkProcDailyPer)/100};
+    }else if(type === "file") {
+      data = {...data, wkProcDailyPer:Number(data.wkProcDailyPer)/100, files: (data?.files ?? []).filter((file:any) => file !== fileId)};
+    }
+    delete data.wkProcDailyDt;
+
     const result = await patchAPI({
       type: 'core-d3',
       utype: 'tenant/',
       url: `pms/daily/default/update/${selectId}/${date}`,
       jsx: 'default',
       etc: true,
-    }, "", {...lastProg, wkProcDailyPer: Number(lastProg?.wkProcDailyPer)/100});
+    }, "", data);
 
     if(result.resultCode === 'OK_0000') {
-      showToast("진행률이 수정되었습니다.", "success");
+      if(type === "file") {
+        showToast("파일이 삭제되었습니다.", "success");
+      }else{
+        showToast("진행률이 수정되었습니다.", "success");
+      }
       procDailyRefetch();
       refetch();
     }else{
-      showToast("진행률 수정중 문제가 발생했습니다.", "error");
+      showToast("수정중 문제가 발생했습니다.", "error");
       return;
     }
   }
@@ -572,7 +583,7 @@ const ProjectDrawer: React.FC<Props> = ({
         url: `pms/daily/default/create/${selectId}/${dayjs(processData.current.wkProcDailyDt).format("YYYY-MM-DD")}`,
         etc: true,
       }, data);
-      console.log(result);
+      // console.log(result);
       if(result.resultCode === 'OK_0000') {
         showToast("저장되었습니다.", "success");
         procDailyRefetch();
@@ -806,7 +817,7 @@ const ProjectDrawer: React.FC<Props> = ({
                     <span className="text-[#00000073] cursor-pointer">전체 접기</span>
                   </div>
                   <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
-                    {procDailyData.map((data, idx) => {
+                    {procDailyData.map((data, procIdx) => {
                       const colors = {
                         "green": {bg: "#A8E4C0", text: "#666666"},
                         "orange": {bg: "#FFA75633", text: "#FFA756"},
@@ -817,7 +828,7 @@ const ProjectDrawer: React.FC<Props> = ({
 
                       return(
                         <>
-                          <div className="flex py-12 px-16 gap-12 items-center" key={idx}>
+                          <div className="flex py-12 px-16 gap-12 items-center" key={procIdx}>
                             <p className="w-24 h-24 flex justify-center pt-3 cursor-pointer" onClick={()=>setProcDailyData((prev) => prev.map((prevData) => prevData.id === data.id ? {...prevData, open: !prevData.open} : prevData))}>
                               {data.open ? <ArrowDown/> : <Arrowright/>}
                             </p>
@@ -825,7 +836,7 @@ const ProjectDrawer: React.FC<Props> = ({
                             <div className={`h-24 w-35 text-center rounded-4 flex justify-center items-center`} style={{backgroundColor:progColor.bg}}>
                               <p className={`text-bold text-12 text-[${progColor.text}]`}>{data.wkProcDailyPer*100}%</p>
                             </div>
-                            {!idx && (
+                            {!procIdx && (
                               <>
                                 <p>|</p>
                                 <Button size="small" type="text" onClick={(e) => e.stopPropagation()} className="!p-0 !w-24">
@@ -834,7 +845,7 @@ const ProjectDrawer: React.FC<Props> = ({
                                     dropdownRender={() => (
                                     <div className="w-[215px] h-[75px] bg-white rounded-4 p-10 gap-5 flex flex-col" style={{boxShadow: "0px 2px 10px 0px #0000004D"}}>
                                       <div className="flex gap-5"><Input className="w-[50px]" value={lastProg.wkProcDailyPer || 0} onChange={({target}) => setLastProg(prev => ({...prev, wkProcDailyPer: target.value})) }/>
-                                        <Button onClick={onProgressUpdate}>수정</Button>
+                                        <Button onClick={() => onProgressUpdate("prog")}>수정</Button>
                                       </div>
                                       <span className="text-12 text-[#666666]">수정할 진행율을 숫자만 입력해 주세요.</span>
                                     </div>)}
@@ -862,9 +873,11 @@ const ProjectDrawer: React.FC<Props> = ({
                                             onClick={() =>{setImgOpen(true); setImgSrc(`${baseURL}file-mng/v1/every/file-manager/download/${file}`)}}>
                                             <p className="w-16 h-16 flex justify-center h-center"><PlusRg/></p>
                                           </Button>
-                                          <Button type="text" className="!w-24 !h-24 !p-0 bg-[#DDDDDD73] flex justify-center h-center">
-                                            <p className="w-16 h-16 flex justify-center h-center"><WhiteTrash/></p>
-                                          </Button>
+                                          {!procIdx && (
+                                            <Button type="text" className="!w-24 !h-24 !p-0 bg-[#DDDDDD73] flex justify-center h-center" onClick={() => onProgressUpdate("file", file)}>
+                                              <p className="w-16 h-16 flex justify-center h-center"><WhiteTrash/></p>
+                                            </Button>
+                                          )}
                                         </div>
                                     </div>
                                   ))}
@@ -873,7 +886,7 @@ const ProjectDrawer: React.FC<Props> = ({
                               </div>
                             </>
                           )}
-                          {procDailyData.length != idx+1 &&<Divider style={{margin:0}}/>}
+                          {procDailyData.length != procIdx+1 &&<Divider style={{margin:0}}/>}
                         </>
                       )
                     })}
