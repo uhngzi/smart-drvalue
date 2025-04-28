@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { validReq } from "@/utils/valid"
 import useToast from "@/utils/useToast";
 import dayjs from "dayjs";
+import { isValidNumber } from "@/utils/formatNumber"; 
 
 // 기초 타입 import
 import {
@@ -65,7 +66,7 @@ const BuyUnitModelListPage: React.FC & {
     apiGetResponseType, Error
   >({
     //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['model-base-price/jsxcrud/many'],
+    queryKey: ['model-base-price/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -132,6 +133,8 @@ const BuyUnitModelListPage: React.FC & {
         setNewData({...newData, [name]: e});
       }
     }
+
+    
   }
     //등록 버튼 함수
     const handleSubmitNewData = async (data: any) => {
@@ -146,19 +149,33 @@ const BuyUnitModelListPage: React.FC & {
     
         if (data?.id) {
           const id = data.id;
-          delete data.id;
-          delete data.appOriginDt;
+          // 적용일이 오늘 또는 이전인지 확인
+          const isPastOrToday = data.appOriginDt && dayjs(data.appOriginDt).isValid() && (
+            dayjs(data.appOriginDt).isBefore(dayjs(), 'day') ||
+            dayjs(data.appOriginDt).isSame(dayjs(), 'day')
+          );
+    
+          // 적용일이 지났으면 가격만 업데이트
+          const patchData = isPastOrToday ? {
+            price: data.price
+          } : data;
+          
+          // 필요없는 필드 제거
+          delete patchData.id;
+          delete patchData.appOriginDt;
+
           // 모델 단가 수정
           const result = await patchAPI({
             type: 'baseinfo',
             utype: 'tenant/',
             url: 'model-base-price',
             jsx: 'jsxcrud',
-          }, id, data);
+          }, id, patchData);
     
           console.log(result);
     
           if (result.resultCode === 'OK_0000') {
+            refetch();
             setNewOpen(false);
             setResultFunc('success', '모델 단가 수정 성공', '모델 단가 수정이 완료되었습니다.');
           } else {
@@ -178,6 +195,7 @@ const BuyUnitModelListPage: React.FC & {
           console.log(result);
     
           if (result.resultCode === 'OK_0000') {
+            refetch();
             setNewOpen(false);
             setResultFunc('success', '모델 단가 등록 성공', '모델 단가 등록이 완료되었습니다.');
           } else {

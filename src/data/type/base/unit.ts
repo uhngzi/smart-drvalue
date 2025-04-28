@@ -30,7 +30,7 @@ export const setUnitModelType = (data: any):unitModelType => {
     appDt: data.appDt,
     ordNo: data.ordNo,
     useYn: data.useYn,
-    createdAt: data.createAt,
+    createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }
 }

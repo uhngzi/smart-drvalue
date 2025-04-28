@@ -33,7 +33,7 @@ export const setUnitSpecialType = (data: any):unitSpecialType => {
     appDt: data.appDt,
     ordNo: data.ordNo,
     useYn: data.useYn,
-    createdAt: data.createAt,
+    createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }
 }

@@ -201,11 +201,12 @@ const { data:queryData, refetch } = useQuery<
               align: 'center',
               render: (_, record) => (
                 <div
-                className="w-full h-full justify-center h-center cursor-pointer"
-                onClick={()=>{
-                  setNewData(setlaminationCopperList(record));
-                  setNewOpen(true);
-                }}
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                  className="w-full h-full cursor-pointer reference-detail"
+                  onClick={() => {
+                    setNewData(setlaminationCopperList(record));
+                    setNewOpen(true);
+                  }}
                 >
                   {record.name}
                 </div>
@@ -217,6 +218,17 @@ const { data:queryData, refetch } = useQuery<
               dataIndex: 'copThk',
               key: 'copThk',
               align: 'center',
+              render: (_, record) => (
+                <div
+                className="w-full h-full justify-center h-center cursor-pointer reference-detail"
+                onClick={()=>{
+                  setNewData(setlaminationCopperList(record));
+                  setNewOpen(true);
+                }}
+                >
+                  {record.copThk}
+                </div>
+              )
               
             },
             {
@@ -225,7 +237,13 @@ const { data:queryData, refetch } = useQuery<
               dataIndex: 'useYn',
               key: 'useYn',
               align: 'center',
-              render: (value: boolean) => value ? "사용" : "미사용",
+              render: (value: boolean) => (
+                <div
+                  className={"w-full h-full h-center justify-center cursor-pointer reference-detail"}
+                >
+                  {value ? "사용" : "미사용"}
+                </div>
+              ),
               
             },
           ]}
