@@ -12,19 +12,25 @@ import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Bag from "@/assets/svg/icons/bag.svg";
 import { MOCK } from "@/utils/Mock";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
+import { useBase } from "@/data/context/BaseContext";
+import { selectType } from "@/data/type/componentStyles";
 
 const WkLaminationSourceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-  const { type } = router.query;
+  const [ type, setType ] = useState<'cf' | 'pp' | 'ccl' | ''>('');
+
+  const { metarialSelectList } = useBase();
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.MaterialListPage.CUDPopItems);
+  const [addModalCopper, setaddModalCopper] = useState<any[]>(MOCK.MaterialListPage.CUDPopItems);
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -52,7 +58,7 @@ const WkLaminationSourceListPage: React.FC & {
       },{
         limit: pagination.size,
         page: pagination.current,
-        anykeys: {lamDtlTypeEm: type}
+        anykeys: type === '' ? {} : {lamDtlTypeEm: type}
       });
 
       if (result.resultCode === 'OK_0000') {
@@ -66,7 +72,53 @@ const WkLaminationSourceListPage: React.FC & {
       console.log(result.data);
       return result;
     },
-  });
+    
+  });// --------------------------meterial API-----------------------------`
+  const [materialOptions, setMaterialOptions] = useState<selectType[]>([]); 
+  const [dataGroup, setDataGroup] = useState<Array<laminationSourceList>>([]);
+    const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
+      queryKey: ['lamination-material/jsxcrud/many'],
+      queryFn: async () => {
+        setDataGroup([]);
+        const result = await getAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'lamination-material/jsxcrud/many'
+        });
+  
+        if (result.resultCode === 'OK_0000') {
+          setDataGroup(result.data?.data ?? []);
+          console.log('group : ', result.data?.data);
+        } else {
+          console.log('error:', result.response);
+        };
+        return result;
+      },
+    });
+// --------------------------meterial API----------------------------- 끝
+// --------------------------Copper API-------------------------------
+    const [copperList, setCopperList] = useState<selectType[]>([]); 
+  const [dataCopper, setDataCopper] = useState<Array<laminationSourceList>>([]);
+    const { data: queryDataCopper } = useQuery<apiGetResponseType, Error>({
+      queryKey: ['lamination-copper-foil/jsxcrud/many'],
+      queryFn: async () => {
+        setDataCopper([]);
+        const result = await getAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'lamination-copper-foil/jsxcrud/many'
+        });
+  
+        if (result.resultCode === 'OK_0000') {
+          setDataCopper(result.data?.data ?? []);
+          console.log('group : ', result.data?.data);
+        } else {
+          console.log('error:', result.response);
+        };
+        return result;
+      },
+    });
+// -----------------------------Copper API----------------------------끝
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
@@ -112,11 +164,13 @@ const WkLaminationSourceListPage: React.FC & {
         const payload = {
           ...data,
           matNm: data.matNm,
+          copNm: data.name,
           epoxy: Number(data.epoxy),
         };
         delete payload.id;
         delete payload.createdAt;
         delete payload.updatedAt;
+        delete payload.name;
   
         console.log(data);
         if(data?.id){
@@ -143,11 +197,13 @@ const WkLaminationSourceListPage: React.FC & {
         const payload = {
           ...data,
           matNm: data.matNm,
+          copNm: data.name,
           epoxy: Number(data.epoxy),
         };
         delete payload.id;
         delete payload.createdAt;
         delete payload.updatedAt;
+        delete payload.name;
 
         const result = await postAPI({
           type: 'baseinfo', 
@@ -170,8 +226,46 @@ const WkLaminationSourceListPage: React.FC & {
       setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
     }
   }
-  // ----------- 신규 데이터 끝 -----------
+//----------------------------------material API 설정   ---------------------------------------------------
+useEffect(() => {
+  if (dataGroup.length > 0) {
+    setMaterialOptions(
+      dataGroup.map((material) => ({
+        value: material.id,
+        label: material.matNm ?? "",
+      }))
+    );
+  }
 
+  if (dataCopper.length > 0) {
+    setCopperList(
+      dataCopper.map((copper) => ({
+        value: copper.id,
+        label: copper.name ?? "",
+      }))
+    );
+  }
+}, [dataGroup, dataCopper]);
+
+useEffect(() => {
+  if (materialOptions.length > 0 || copperList.length > 0) {
+    const updatedItems = MOCK.laminationItems.CUDPopItems.map((item) => {
+      if (item.optionSource === 'materialOptions' && materialOptions.length > 0) {
+        return { ...item, option: materialOptions };
+      }
+      if (item.optionSource === 'copperList' && copperList.length > 0) {
+        return { ...item, option: copperList };
+      }
+      return item;
+    });
+
+    setAddModalInfoList(updatedItems);
+  }
+}, [materialOptions, copperList]);
+
+
+  //----------------------------------copper API 설정  끝 ---------------------------------------------------
+  // ----------- 신규 데이터 끝 -----------
   const handleDataDelete = async (id: string) => {
     try {
       const result = await deleteAPI({
@@ -201,7 +295,6 @@ const WkLaminationSourceListPage: React.FC & {
     setNewOpen(false);
     setNewData(newLaminationSourceList);
   }
-
   return (
     <>
       {dataLoading && 
@@ -215,10 +308,10 @@ const WkLaminationSourceListPage: React.FC & {
           <div className="flex gap-10">
             <p>총 {totalData}건</p>
             <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
+              <Radio.Button value="" onClick={() => setType('')}>전체</Radio.Button>
+              <Radio.Button value="cf" onClick={() => setType('cf')}>C/F</Radio.Button>
+              <Radio.Button value="pp" onClick={() => setType('pp')}>P/P</Radio.Button>
+              <Radio.Button value="ccl" onClick={() => setType('ccl')}>CCL</Radio.Button>
             </Radio.Group>
           </div>
           <div
@@ -245,7 +338,7 @@ const WkLaminationSourceListPage: React.FC & {
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full justify-center h-center cursor-pointer"
+                  className="w-full h-full justify-center h-center cursor-pointer reference-detail"
                   onClick={()=>{
                     setNewData(setLaminationSourceList(record));
                     setNewOpen(true);
@@ -263,7 +356,7 @@ const WkLaminationSourceListPage: React.FC & {
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full h-center justify-center cursor-pointer"
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                   onClick={()=>{
                     setNewData(setLaminationSourceList(record));
                     setNewOpen(true);
@@ -279,6 +372,17 @@ const WkLaminationSourceListPage: React.FC & {
               dataIndex: 'matNm',
               key: 'matNm',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationSourceList(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.matNm}
+                </div>
+              )
             },
             {
               title: 'Epoxy',
@@ -286,6 +390,17 @@ const WkLaminationSourceListPage: React.FC & {
               dataIndex: 'epoxy',
               key: 'epoxy',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationSourceList(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.epoxy}
+                </div>
+              )
             },
             {
               title: '동박',
@@ -293,6 +408,17 @@ const WkLaminationSourceListPage: React.FC & {
               dataIndex: 'copNm',
               key: 'copNm',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationSourceList(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.copNm}
+                </div>
+              )
             },
             {
               title: '동박두께',
@@ -300,6 +426,17 @@ const WkLaminationSourceListPage: React.FC & {
               dataIndex: 'copNm',
               key: 'copNm',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationSourceList(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.copNm}
+                </div>
+              )
             },
             {
               title: '사용여부',
@@ -307,7 +444,13 @@ const WkLaminationSourceListPage: React.FC & {
               dataIndex: 'useYn',
               key: 'useYn',
               align: 'center',
-              render: (value: boolean) => value ? "사용" : "미사용", 
+              render: (value: boolean) => (
+                <div
+                  className={"w-full h-full h-center justify-center cursor-pointer reference-detail"}
+                >
+                  {value ? "사용" : "미사용"}
+                </div>
+              ),
             },
             
           ]}
@@ -325,14 +468,15 @@ const WkLaminationSourceListPage: React.FC & {
       </>}
 
       <BaseInfoCUDModal
-        title={{name: `적층구조 요소${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
+        title={{name: `적층구조 요소 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}
-        items={MOCK.laminationItems.CUDPopItems} 
+        items={addModalInfoList} 
         data={newData}
         onSubmit={handleSubmitNewData}
-        onDelete={handleDataDelete}/>
+        onDelete={handleDataDelete}
+      />
         
       {/* <AntdModal
         title={"거래처 등록"}

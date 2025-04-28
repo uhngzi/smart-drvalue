@@ -23,7 +23,6 @@ import test from "node:test";
   } = () => {
     const { metarialSelectList } = useBase();
 
-
   //등록 모달창을 위한 변수
   const [ newOpen, setNewOpen ] = useState<boolean>(false);
     //등록 모달창 데이터
@@ -37,6 +36,9 @@ import test from "node:test";
     current: 1,
     size: 10,
   });
+  const handlePageChange = (page: number) => {
+    setPagination({ ...pagination, current: page });
+  };
   const [ resultOpen, setResultOpen ] = useState<boolean>(false);
   const [ resultType, setResultType ] = useState<AlertType>('info');
   const [ resultTitle, setResultTitle ] = useState<string>('');
@@ -51,7 +53,7 @@ import test from "node:test";
   const [ type, setType ] = useState<'cf' | 'pp' | 'ccl' | ''>('');
   const [ data, setData ] = useState<Array<laminationMaterialType>>([]);
   const { data: queryData, refetch } = useQuery({
-    queryKey: ['lamination-material/jsxcrud/many', type],
+    queryKey: ['lamination-material/jsxcrud/many', type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -78,9 +80,7 @@ import test from "node:test";
       return result;
     },
   });
-  const handlePageChange = (page: number) => {
-    setPagination({ ...pagination, current: page });
-  };
+  
 
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
@@ -203,7 +203,6 @@ import test from "node:test";
 
     setAddModalInfoList(arr)
   }, [metarialSelectList]);
-  
   return (
     <>
       {dataLoading && 
@@ -248,7 +247,7 @@ import test from "node:test";
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full justify-center h-center cursor-pointer"
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                   onClick={()=>{
                     setNewData(setLaminationMaterialType(record));
                     setNewOpen(true);
@@ -265,11 +264,11 @@ import test from "node:test";
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full justify-center h-center cursor-pointer"
-                  onClick={()=>{
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                  className="w-full h-full cursor-pointer reference-detail"
+                  onClick={() => {
                     setNewData(setLaminationMaterialType(record));
                     setNewOpen(true);
-
                   }}
                 >
                   {record.matNm}
@@ -283,6 +282,17 @@ import test from "node:test";
               dataIndex: 'epoxy',
               key: 'epoxy',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationMaterialType(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.epoxy}
+                </div>
+              )
             },
             {
               title: '코드',
@@ -290,6 +300,17 @@ import test from "node:test";
               dataIndex: 'code',
               key: 'code',
               align: 'center',
+              render: (_, record) => (
+                <div
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationMaterialType(record));
+                    setNewOpen(true);
+                  }}
+                >
+                  {record.code}
+                </div>
+              )
             },
           ]}
           data={data}

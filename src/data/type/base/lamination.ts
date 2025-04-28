@@ -84,6 +84,7 @@ export const newLaminationMaterialType = (): laminationMaterialType => {
 //--------------------source.tsx------------------------------------------------//
 export type laminationSourceList = {
   id?: string;
+  name?: string;
   copNm?: string;
   lamDtlRealThk?: number;
   matNm?: string;
@@ -102,6 +103,7 @@ export type laminationSourceList = {
 export const setLaminationSourceList = (data: any): laminationSourceList => {
   return {
     id: data.id,
+    name: data.name,
     copperFoil: { copNm: data.copperFoil?.copNm || "" },
     material: { matNm: data.material?.matNm || "" },
     copThk: data.copperFoil?.copThk || "",
@@ -116,6 +118,7 @@ export const setLaminationSourceList = (data: any): laminationSourceList => {
 };
 
 export const newLaminationSourceList: laminationSourceList = {
+  name: " ",
   copperFoil: { copNm: "" },
   material: { matNm: "" },
   copThk: "",
