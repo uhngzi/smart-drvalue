@@ -719,8 +719,11 @@ const QualityRequirementsPage: React.FC & {
             </div>
             {detailContents &&
               detailContents.length > 0 &&
-              detailContents.map((item) => (
-                <div className="w-full bg-white rounded-8 px-15 py-10 border-1 border-bdDefault h-center">
+              detailContents.map((item, index) => (
+                <div
+                  className="w-full bg-white rounded-8 px-15 py-10 border-1 border-bdDefault h-center"
+                  key={index + ":" + item.id}
+                >
                   <div className="flex-1">
                     <div
                       className={`whitespace-pre-wrap ${

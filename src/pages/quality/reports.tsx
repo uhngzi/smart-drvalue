@@ -860,8 +860,11 @@ const QualityReportsPage: React.FC & {
                     />
                   </div>
                   {detailContents.length > 0 &&
-                    detailContents.map((item) => (
-                      <div className="w-full bg-white rounded-8 px-10 py-10 border-1 border-bdDefault flex flex-col">
+                    detailContents.map((item, index) => (
+                      <div
+                        className="w-full bg-white rounded-8 px-10 py-10 border-1 border-bdDefault flex flex-col"
+                        key={index + ":" + item.id}
+                      >
                         <div
                           className="v-between-h-center p-5 rounded-6"
                           style={{
