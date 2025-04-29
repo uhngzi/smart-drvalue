@@ -425,64 +425,6 @@ const WkLaminationSourceListPage: React.FC & {
                     }}
                   >
                     {record.matNm}
-      }
-      {!dataLoading &&
-      <>
-        <div className="v-between-h-center pb-20">
-          <div className="flex gap-10">
-            <p>총 {totalData}건</p>
-            <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => setType('')}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => setType('cf')}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => setType('pp')}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => setType('ccl')}>CCL</Radio.Button>
-            </Radio.Group>
-          </div>
-          <div
-            className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
-          >
-            등록
-          </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '유형',
-              dataIndex: 'lamDtlTypeEm',
-              key: 'lamDtlTypeEm',
-              align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full justify-center h-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.lamDtlTypeEm}
-                </div>
-              )
-            },
-            {
-              title: '자재',
-              width: 130,
-              dataIndex: 'matNm',
-              key: 'matNm',
-              align: 'center',
-              render: (_, record) => {
-                const material = materialOptions.find(option => option.value === record.matNm);
-                return (
-                  <div >
-                    {material?.label ?? '-'}
                   </div>
                 ),
               },
@@ -501,21 +443,6 @@ const WkLaminationSourceListPage: React.FC & {
                     }}
                   >
                     {record.matNm}
-                );
-              }
-              
-            },
-            {
-              title: '자재두께',
-              width: 130,
-              dataIndex: 'matNm',
-              key: 'matNm',
-              align: 'center',
-              render: (_, record) => {
-                const material = materialOptions.find(option => option.value === record.matNm);
-                return (
-                  <div>
-                    {material?.label ?? '-'}
                   </div>
                 ),
               },
@@ -552,32 +479,6 @@ const WkLaminationSourceListPage: React.FC & {
                     }}
                   >
                     {record.copNm}
-                );
-              }
-            },
-            {
-              title: 'Epoxy',
-              width: 130,
-              dataIndex: 'epoxy',
-              key: 'epoxy',
-              align: 'center',
-              render: (_, record) => (
-                <div>
-                  {record.epoxy}
-                </div>
-              )
-            },
-            {
-              title: '동박',
-              width: 130,
-              dataIndex: 'copNm',
-              key: 'copNm',
-              align: 'center',
-              render: (_, record) => {
-                const copper = copperList.find(option => option.value === record.copNm);
-                return (
-                  <div>
-                    {copper?.label ?? '-'}
                   </div>
                 ),
               },
@@ -596,20 +497,6 @@ const WkLaminationSourceListPage: React.FC & {
                     }}
                   >
                     {record.copNm}
-                );
-              }
-            },
-            {
-              title: '동박두께',
-              width: 130,
-              dataIndex: 'copNm',
-              key: 'copNm',
-              align: 'center',
-              render: (_, record) => {
-                const copper = copperList.find(option => option.value === record.copNm);
-                return (
-                  <div>
-                    {copper?.label ?? '-'}
                   </div>
                 ),
               },
@@ -632,25 +519,6 @@ const WkLaminationSourceListPage: React.FC & {
             ]}
             data={data}
           />
-                );
-              }
-            },
-            {
-              title: '사용여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-              render: (value: boolean) => (
-                <div>
-                  {value ? "사용" : "미사용"}      
-                </div>
-                
-              ),
-            },     
-          ]}
-          data={data}
-        />
 
           <div className="w-full h-100 h-center justify-end">
             <AntdSettingPagination
