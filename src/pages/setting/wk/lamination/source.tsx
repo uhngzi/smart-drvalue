@@ -41,7 +41,6 @@ const WkLaminationSourceListPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
-
   // --------- 리스트 데이터 시작 ---------
   const [ data, setData ] = useState<Array<laminationSourceList>>([]);
   const { data:queryData, refetch } = useQuery<
@@ -85,7 +84,6 @@ const WkLaminationSourceListPage: React.FC & {
           utype: 'tenant/',
           url: 'lamination-material/jsxcrud/many'
         });
-  
         if (result.resultCode === 'OK_0000') {
           setDataGroup(result.data?.data ?? []);
           console.log('group : ', result.data?.data);
@@ -226,7 +224,7 @@ const WkLaminationSourceListPage: React.FC & {
       setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
     }
   }
-//----------------------------------material API 설정   ---------------------------------------------------
+//----------------------------------copper,material API 설정 ---------------------------------------------------
 useEffect(() => {
   if (dataGroup.length > 0) {
     setMaterialOptions(
@@ -264,7 +262,7 @@ useEffect(() => {
 }, [materialOptions, copperList]);
 
 
-  //----------------------------------copper API 설정  끝 ---------------------------------------------------
+  //----------------------------------copper,material API 설정  끝 ---------------------------------------------------
   // ----------- 신규 데이터 끝 -----------
   const handleDataDelete = async (id: string) => {
     try {
@@ -354,17 +352,15 @@ useEffect(() => {
               dataIndex: 'matNm',
               key: 'matNm',
               align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.matNm}
-                </div>
-              )
+              render: (_, record) => {
+                const material = materialOptions.find(option => option.value === record.matNm);
+                return (
+                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                    {material?.label ?? '-'}
+                  </div>
+                );
+              }
+              
             },
             {
               title: '자재두께',
@@ -372,17 +368,14 @@ useEffect(() => {
               dataIndex: 'matNm',
               key: 'matNm',
               align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.matNm}
-                </div>
-              )
+              render: (_, record) => {
+                const material = materialOptions.find(option => option.value === record.matNm);
+                return (
+                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                    {material?.label ?? '-'}
+                  </div>
+                );
+              }
             },
             {
               title: 'Epoxy',
@@ -408,17 +401,14 @@ useEffect(() => {
               dataIndex: 'copNm',
               key: 'copNm',
               align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.copNm}
-                </div>
-              )
+              render: (_, record) => {
+                const copper = copperList.find(option => option.value === record.copNm);
+                return (
+                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                    {copper?.label ?? '-'}
+                  </div>
+                );
+              }
             },
             {
               title: '동박두께',
@@ -426,17 +416,14 @@ useEffect(() => {
               dataIndex: 'copNm',
               key: 'copNm',
               align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.copNm}
-                </div>
-              )
+              render: (_, record) => {
+                const copper = copperList.find(option => option.value === record.copNm);
+                return (
+                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                    {copper?.label ?? '-'}
+                  </div>
+                );
+              }
             },
             {
               title: '사용여부',
@@ -448,11 +435,11 @@ useEffect(() => {
                 <div
                   className={"w-full h-full h-center justify-center cursor-pointer reference-detail"}
                 >
-                  {value ? "사용" : "미사용"}
+                   {value === true ? "사용" : value === false ? "미사용" : "-"}      
                 </div>
+                
               ),
-            },
-            
+            },     
           ]}
           data={data}
         />
