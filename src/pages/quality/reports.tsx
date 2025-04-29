@@ -196,7 +196,7 @@ const QualityReportsPage: React.FC & {
         },
         {
           anykeys: { qualityReportId: record.id },
-          sort: "appliedAt,DESC",
+          sort: "version,DESC",
         }
       );
 
@@ -291,6 +291,7 @@ const QualityReportsPage: React.FC & {
         );
 
         if (result.resultCode === "OK_0000") {
+          refetch();
           handleDetail(detail);
           showToast("갱신 완료", "success");
           setOpen(false);
@@ -759,6 +760,7 @@ const QualityReportsPage: React.FC & {
                       ...detail,
                       appliedAt: null,
                       content: "",
+                      file: "",
                     });
                     setFileList([]);
                     setFileIdList([]);
@@ -921,6 +923,13 @@ const QualityReportsPage: React.FC & {
                                     ),
                                     key: 0,
                                     onClick: () => {
+                                      if (detailContents.length < 2) {
+                                        showToast(
+                                          "최소 1개의 항목이 존재해야 합니다.",
+                                          "error"
+                                        );
+                                        return;
+                                      }
                                       setDeleted({
                                         id: item.id ?? "",
                                         type: "sub",

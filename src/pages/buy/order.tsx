@@ -1,12 +1,13 @@
 import { useRouter } from "next/router";
-import { List, Spin } from "antd";
-import { useEffect, useState } from "react";
+import { Button, List, Spin } from "antd";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import cookie from "cookiejs";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { getPrtSupAPI } from "@/api/cache/client";
 import { port } from "../_app";
+import domtoimage from "dom-to-image";
 
 import AntdTableEdit from "@/components/List/AntdTableEdit";
 import AntdAlertModal from "@/components/Modal/AntdAlertModal";
@@ -20,7 +21,7 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { useUser } from "@/data/context/UserContext";
 import { companyType } from "@/data/type/base/company";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { buyOrderType } from "@/data/type/buy/cost";
+import { buyOrderDetailType, buyOrderType } from "@/data/type/buy/cost";
 import { BuyOrderClmn } from "@/data/columns/Buy";
 import {
   newDataPartnerType,
@@ -38,6 +39,13 @@ import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import { inputTel, isValidTel } from "@/utils/formatPhoneNumber";
 
 import Bag from "@/assets/svg/icons/bag.svg";
+import AntdModal from "@/components/Modal/AntdModal";
+import PurchaseDocumentForm from "@/contents/documentForm/PurchaseDocumentForm";
+import {
+  changeDataOrder,
+  changeDataOrderDetails,
+} from "@/data/type/buy/changeData";
+import dayjs from "dayjs";
 
 const BuyOrderPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -73,7 +81,13 @@ const BuyOrderPage: React.FC & {
   };
 
   const handlePageMenuClick = (key: number) => {
-    const clmn = BuyOrderClmn(totalData, pagination, router).map((item) => ({
+    const clmn = BuyOrderClmn(
+      totalData,
+      pagination,
+      router,
+      setOrder,
+      setOrderDocumentFormOpen
+    ).map((item) => ({
       title: item.title?.toString() as string,
       dataIndex: item.dataIndex,
       width: Number(item.width ?? item.minWidth ?? 0),
@@ -304,6 +318,89 @@ const BuyOrderPage: React.FC & {
   }, [queryData]);
   // ------------ 리스트 데이터 세팅 ------------ 끝
 
+  // ------------ 디테일 데이터 세팅 ------------ 시작
+  // order의 id 값이 변경될 경우마다 실행됨
+  const { data: queryDetailData } = useQuery({
+    queryKey: ["request/material/detail/jsxcrud/one", order?.id],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "core-d2",
+        utype: "tenant/",
+        url: `request/material/detail/jsxcrud/one/${order?.id}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const entity = result.data.data as buyOrderType;
+        const detailEntity = changeDataOrderDetails(entity);
+        const orderEntity = changeDataOrder(entity, order, detailEntity);
+
+        setOrder(orderEntity);
+        setOrderDetails(detailEntity);
+      }
+
+      return result;
+    },
+    enabled: !!order?.id,
+  });
+  // ------------ 디테일 데이터 세팅 ------------ 끝
+
+  // --------------- 발주서 모달 -------------- 시작
+  // 발주 품목
+  const [orderDetails, setOrderDetails] = useState<buyOrderDetailType[]>([]);
+
+  const [orderDocumentFormOpen, setOrderDocumentFormOpen] =
+    useState<boolean>(false);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = async () => {
+    const node = document.getElementById("print-area");
+    if (!node) return;
+
+    try {
+      const dataUrl = await domtoimage.toPng(node, {
+        quality: 1,
+        height: node.offsetHeight * 2,
+        width: node.offsetWidth * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+        },
+      });
+
+      const win = window.open("");
+      win?.document.write(`
+          <html>
+            <head>
+              <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+              <style>
+                @page {
+                  size: A4 landscape;
+                  margin: 0;
+                }
+                body { margin: 0; }
+                img { width: 100%; height: auto; }
+              </style>
+            </head>
+            <body>
+              <img src="${dataUrl}" />
+              <script>
+                window.onload = function() {
+                  window.print();
+                  window.onafterprint = function() {
+                    window.close();
+                  };
+                }
+              </script>
+            </body>
+          </html>
+        `);
+      win?.document.close();
+    } catch (error) {
+      console.error("캡처 실패", error);
+    }
+  };
+  // --------------- 발주서 모달 -------------- 끝
+
   // 결과 모달창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<"success" | "error" | "">("");
@@ -330,7 +427,13 @@ const BuyOrderPage: React.FC & {
         <AntdTableEdit
           columns={
             port === "90" || cookie.get("companySY") === "sy"
-              ? BuyOrderClmn(totalData, pagination, router).filter(
+              ? BuyOrderClmn(
+                  totalData,
+                  pagination,
+                  router,
+                  setOrder,
+                  setOrderDocumentFormOpen
+                ).filter(
                   (f) =>
                     !f.key?.toString().includes("layerEm") &&
                     !f.key?.toString().includes("sm") &&
@@ -344,7 +447,13 @@ const BuyOrderPage: React.FC & {
                     !f.key?.toString().includes("rein") &&
                     !f.key?.toString().includes("m2")
                 )
-              : BuyOrderClmn(totalData, pagination, router)
+              : BuyOrderClmn(
+                  totalData,
+                  pagination,
+                  router,
+                  setOrder,
+                  setOrderDocumentFormOpen
+                )
           }
           data={data}
           styles={{
@@ -397,6 +506,37 @@ const BuyOrderPage: React.FC & {
           setCsMngList([...csMngList, { ...entity }]);
           setPrtMngId(entity.id);
         }}
+      />
+
+      {/* 발주서 */}
+      <AntdModal
+        open={orderDocumentFormOpen}
+        setOpen={setOrderDocumentFormOpen}
+        title={"발주서 미리보기"}
+        width={1163}
+        draggable
+        contents={
+          <>
+            <div
+              id="print-area"
+              ref={componentRef}
+              className="px-[20px] py-[30px] w-[1123px] bg-white"
+            >
+              <PurchaseDocumentForm
+                formData={order}
+                products={orderDetails}
+                prtNm={csList.find((f: any) => f.id === prtId)?.label ?? ""}
+                prtMng={
+                  csMngList.filter((f: any) => f.id === prtMngId)?.[0] ?? null
+                }
+              />
+            </div>
+            <div className="v-h-center gap-5 mt-20">
+              <Button onClick={handlePrint}>인쇄</Button>
+              <Button type="primary">발주서 발송</Button>
+            </div>
+          </>
+        }
       />
 
       <AntdAlertModal

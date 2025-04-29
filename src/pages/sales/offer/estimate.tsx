@@ -6,8 +6,8 @@ import Edit from "@/assets/svg/icons/edit.svg";
 import SplusIcon from "@/assets/svg/icons/s_plus.svg";
 import Close from "@/assets/svg/icons/s_close.svg";
 
-import { Checkbox, List, TableProps } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Checkbox, List, TableProps } from "antd";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useMenu } from "@/data/context/MenuContext";
 import useToast from "@/utils/useToast";
@@ -15,7 +15,10 @@ import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import { getAPI } from "@/api/get";
 import { useQuery } from "@tanstack/react-query";
 import { partnerMngRType, partnerRType } from "@/data/type/base/partner";
-import { salesEstimateType } from "@/data/type/sales/order";
+import {
+  salesEstimateProductType,
+  salesEstimateType,
+} from "@/data/type/sales/order";
 import ListTitleBtn from "@/layouts/Body/ListTitleBtn";
 import { ListPagination } from "@/layouts/Body/Pagination";
 import AntdTableEdit from "@/components/List/AntdTableEdit";
@@ -23,6 +26,10 @@ import cookie from "cookiejs";
 import PrtDrawer from "@/contents/partner/PrtDrawer";
 import { salesEstimateClmn } from "@/data/columns/Sales";
 import { port } from "@/pages/_app";
+import domtoimage from "dom-to-image";
+import dayjs from "dayjs";
+import AntdModal from "@/components/Modal/AntdModal";
+import EstimateDocumentForm from "@/contents/documentForm/EstimateDocumentForm";
 
 const SalesUserEstimatePage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -59,7 +66,9 @@ const SalesUserEstimatePage: React.FC & {
       setPartnerData,
       setPartnerMngData,
       pagination,
-      router
+      router,
+      setFormData,
+      setDocumentOpen
     ).map((item, index) => ({
       title: item.title?.toString() as string,
       dataIndex: item.dataIndex,
@@ -161,6 +170,100 @@ const SalesUserEstimatePage: React.FC & {
   }, [drawerOpen]);
   // ---------------- 거래처  ---------------- 끝
 
+  // ------------ 디테일 데이터 세팅 ------------ 시작
+  // 견적 메인
+  const [formData, setFormData] = useState<salesEstimateType | null>(null);
+  // 견적 모델
+  const [products, setProducts] = useState<salesEstimateProductType[]>([]);
+
+  // id 값이 변경될 경우마다 실행됨
+  const { data: queryDetailData } = useQuery({
+    queryKey: ["sales-estimate/jsxcrud/one", formData?.id],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "core-d1",
+        utype: "tenant/",
+        url: `sales-estimate/jsxcrud/one/${formData?.id}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const entity = result.data.data as salesEstimateType;
+        const product = (entity.products ?? [])
+          .sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0))
+          .map((model, index) => ({
+            ...model,
+            ordNo: model.ordNo ? model.ordNo : index,
+          }));
+        setFormData(entity);
+        setProducts(product);
+      }
+
+      return result;
+    },
+    enabled: !!formData?.id && !formData.id.includes("new"),
+  });
+  // ------------ 디테일 데이터 세팅 ------------ 끝
+
+  const [documentOpen, setDocumentOpen] = useState<boolean>(false);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = async () => {
+    const node = document.getElementById("print-area");
+    if (!node) return;
+
+    try {
+      const dataUrl = await domtoimage.toPng(node, {
+        quality: 1,
+        height: node.offsetHeight * 2,
+        width: node.offsetWidth * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+        },
+      });
+
+      const win = window.open("");
+      win?.document.write(`
+          <html>
+            <head>
+              <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+              <style>
+                @page {
+                  size: A4;
+                  margin: 0;
+                }
+                @media print {
+                  table {
+                    table-layout: fixed;
+                    width: 100%;
+                  }
+                  td {
+                    word-wrap: break-word;
+                  }
+                }
+                body { margin: 0; }
+                img { width: 100%; height: auto; }
+              </style>
+            </head>
+            <body>
+              <img src="${dataUrl}" />
+              <script>
+                window.onload = function() {
+                  window.print();
+                  window.onafterprint = function() {
+                    window.close();
+                  };
+                }
+              </script>
+            </body>
+          </html>
+        `);
+      win?.document.close();
+    } catch (error) {
+      console.error("캡처 실패", error);
+    }
+  };
+
   return (
     <>
       <ListPagination
@@ -185,14 +288,18 @@ const SalesUserEstimatePage: React.FC & {
                   setPartnerData,
                   setPartnerMngData,
                   pagination,
-                  router
+                  router,
+                  setFormData,
+                  setDocumentOpen
                 ).filter((f) => f.key !== "orderRepDt")
               : salesEstimateClmn(
                   totalData,
                   setPartnerData,
                   setPartnerMngData,
                   pagination,
-                  router
+                  router,
+                  setFormData,
+                  setDocumentOpen
                 )
           }
           data={data}
@@ -214,6 +321,25 @@ const SalesUserEstimatePage: React.FC & {
         searchs={searchs}
         setSearchs={setSearchs}
         handleSearchs={handleSearchs}
+      />
+
+      <AntdModal
+        open={documentOpen}
+        setOpen={setDocumentOpen}
+        title={"견적서 미리보기"}
+        draggable
+        contents={
+          <>
+            <div id="print-area" ref={componentRef}>
+              <EstimateDocumentForm formData={formData} products={products} />
+            </div>
+            <div className="v-h-center gap-5 mt-20">
+              <Button onClick={handlePrint}>인쇄</Button>
+              <Button type="primary">견적서 발송</Button>
+            </div>
+          </>
+        }
+        width={635}
       />
 
       <PrtDrawer

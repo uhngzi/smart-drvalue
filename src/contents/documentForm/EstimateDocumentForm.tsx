@@ -134,13 +134,13 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
       <div className="flex flex-col w-[555px] gap-[15px]">
         {/* 견적서 */}
         <div
-          className="flex w-full h-[42px] pb-[20px] items-center justify-center gap-[10px]
+          className="flex w-full h-30 pb-[20px] items-center justify-center gap-[10px]
             font-[Spoqa Han Sans Neo] font-[20px] font-style:normal"
         >
           견적서
         </div>
         {/* 상단 바디 */}
-        <div className="flex w-full h-[200px] items-end gap-[20px]">
+        <div className="flex w-full gap-[20px]">
           {/* 좌측 화면 */}
           <div className="flex w-[200px] h-[200px] flex-col items-center justify-space-between">
             {/* 좌측 Table */}
@@ -238,26 +238,26 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             <table className="table-auto w-full border-t border-[#D9D9D9]">
               <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     회사명
                   </td>
                   <td
-                    colSpan={3}
+                    // colSpan={3}
                     className="min-w-[90px] w-[90px] pl-[8px] pt-[5px]"
                   >
                     {company?.companyName}
                   </td>
                   <td
                     rowSpan={3}
-                    className="h-[75px] !w-[157px] !max-w-[157px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]"
+                    className="h-[75px] !w-[158px] !max-w-[158px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]"
                   >
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center !max-w-[157px]">
                       {logoBase64 && (
                         <img
                           src={logoBase64}
                           alt="logo"
-                          width={100}
-                          height={40}
+                          width={90}
+                          height={30}
                           style={{ objectFit: "contain", display: "block" }}
                         />
                       )}
@@ -266,24 +266,21 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     사업자등록번호
                   </td>
-                  <td
-                    colSpan={3}
-                    className="max-w-[75px] w-[90px]  pl-[8px] pt-[5px]"
-                  >
+                  <td className="w-[102px] pl-[8px] pt-[5px]">
                     {company?.businessRegNo}
                   </td>
                 </tr>
 
                 <tr className="h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     대표명
                   </td>
                   <td
-                    colSpan={3}
-                    className="max-w-[75px] w-[75px]  pl-[8px] pt-[5px] relative"
+                    // colSpan={3}
+                    className="w-[102px] pl-[8px] pt-[5px] relative"
                   >
                     {company?.ceoName}
                     <div className="absolute top-[-12px] right-[-5px]">
@@ -308,62 +305,66 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                   <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     업태
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
-                    {company?.bizCondition}
+                  <td className="w-[103px] pl-[8px] whitespace-pre-line">
+                    {company?.bizCondition}1111111
                   </td>
                   <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     업종
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="w-[95px] pl-[8px] whitespace-pre-line">
                     {company?.bizType}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     전화번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.ceoPhone}
                   </td>
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     팩스번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="pl-[8px] whitespace-pre-line">
                     {company?.ceoFax}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">주소</td>
+                  <td className="max-w-[75px] w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                    주소
+                  </td>
                   <td
                     colSpan={3}
-                    className="flex max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap"
+                    className="flex pl-[8px] pt-[5px] whitespace-pre-line"
                   >
                     {company?.address}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     담당자
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.taxManagerName}
                   </td>
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     휴대번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.taxManagerPhone}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">E-Mail</td>
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                    E-Mail
+                  </td>
                   <td
                     colSpan={3}
-                    className="flex max-w-[75px] pl-[8px] pt-[5px]"
+                    className="flex pl-[8px] pt-[5px] whitespace-pre-line"
                   >
                     {company?.ceoEmail}
                   </td>
@@ -391,31 +392,31 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             {/* 테이블 제목 */}
             <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
               <tr className="border-b border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
-                <td className="border-r border-[#D9D9D9] w-[20px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[20px] h-[25px] px-3 ">
                   No
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[195px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[195px] h-[25px] px-3 ">
                   견적 모델명
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-3 ">
                   Array
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[80px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-3 ">
                   재질
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[65px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[100px] h-[25px] px-3 ">
                   사이즈 x 두께
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[25px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[25px] h-[25px] px-3 ">
                   단위
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-3 ">
                   수량
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-3 ">
                   단가 <span className="text-[7px]">(VAT 포함)</span>
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[60px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[60px] h-[25px] px-3 ">
                   금액
                 </td>
               </tr>
@@ -424,34 +425,35 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal text-center align-middle">
               {/* 맵 입력 값 */}
               {products.map((item, index) => (
-                <tr key={index} className="border-b border-[#D9D9D9] h-[30px]">
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                <tr key={index} className="border-b border-[#D9D9D9] h-30">
+                  <td className="border-r border-[#D9D9D9] px-3">
                     {index + 1}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.estimateModelNm}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.estimateModelNm}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.array}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.array}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.surfaceTreatment}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.surfaceTreatment}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.sizeW} x {products[index]?.sizeH} x{" "}
-                    {products[index]?.thickness}T
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.sizeW} x {item?.sizeH} x {item?.thickness}T
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.quantity}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.quantity}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.quantity}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(item?.quantity ?? 0).toLocaleString()}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.autoCalculatedUnitPrice}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(
+                      item?.autoCalculatedUnitPrice ?? 0
+                    ).toLocaleString()}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.cost}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(item?.cost ?? 0).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -462,12 +464,12 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                 (_, index) => (
                   <tr
                     key={`empty-${index}`}
-                    className="border-b border-[#D9D9D9] h-[30px]"
+                    className="border-b border-[#D9D9D9] h-30"
                   >
                     {Array.from({ length: 9 }).map((_, colIdx) => (
                       <td
                         key={colIdx}
-                        className="border-r border-[#D9D9D9] px-[8px]"
+                        className="border-r border-[#D9D9D9] px-3"
                       >
                         &nbsp;
                       </td>
@@ -478,17 +480,15 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
 
               {/* 총 합계 */}
               <tr className="border-b border-[#D9D9D9] h-[25px] bg-[rgba(238,238,238,0.5)]">
-                <td colSpan={5} className="border-r border-[#D9D9D9] px-[8px]">
+                <td colSpan={5} className="border-r border-[#D9D9D9] px-3">
                   총 합계
                 </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">LOT</td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
+                <td className="border-r border-[#D9D9D9] px-3">LOT</td>
+                <td className="border-r border-[#D9D9D9] px-3">
                   {products.length}
                 </td>
-                <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                  합계 금액
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px] text-right">
+                <td className="border-r border-[#D9D9D9] px-3">합계 금액</td>
+                <td className="border-r border-[#D9D9D9] px-3 text-right">
                   {formatNumber(totalCost)}
                 </td>
               </tr>
@@ -497,11 +497,11 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
 
           {/* 하단 푸터 시작 */}
           <div className="flex w-full font-[Spoqa Han Sans Neo] font-style:normal border-t border-b border-[#D9D9D9] mt-[-1px]">
-            <div className="flex w-[40px] h-full p-[8px] items-center justify-center text-[10px] border-r border-[#D9D9D9]">
+            <div className="flex w-[40px] h-full p-[8px] items-center justify-center text-[10px]">
               비고
             </div>
-            <div className="w-full h-full p-[8px] text-[8px] leading-[10px]">
-              <div className="h-full whitespace-pre-line">
+            <div className="w-full h-full text-[8px] leading-[10px]">
+              <div className="h-full whitespace-pre-line border-l border-[#D9D9D9] pl-8 py-8">
                 {formData?.estimateTxt}
               </div>
             </div>

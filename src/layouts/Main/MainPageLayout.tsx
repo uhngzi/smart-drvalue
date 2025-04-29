@@ -13,7 +13,13 @@ import { loginCheck } from "@/utils/signUtil";
 import { useMenu } from "@/data/context/MenuContext";
 
 import Close from "@/assets/svg/icons/s_close.svg";
+import Menu from "@/assets/svg/icons/l_menu.svg";
 import Plus from "@/assets/svg/icons/l_plus.svg";
+import News from "@/assets/svg/icons/news.svg";
+import Bell from "@/assets/svg/icons/bell.svg";
+import Todo from "@/assets/svg/icons/todo.svg";
+import Memo from "@/assets/svg/icons/mymemo.svg";
+import Star from "@/assets/svg/icons/star.svg";
 
 import MyMemo from "@/contents/footerBtn/MyMemo";
 
@@ -45,6 +51,45 @@ interface Props {
 }
 
 const Sider = dynamic(() => import("../Sider/Sider"), { ssr: false });
+
+const menuItems = [
+  {
+    key: "memo",
+    icon: (
+      <p className="w-24 h-24">
+        <Memo />
+      </p>
+    ),
+    label: "나의 메모",
+  },
+  {
+    key: "todo",
+    icon: (
+      <p className="w-24 h-24">
+        <Todo />
+      </p>
+    ),
+    label: "나의 할일",
+  },
+  {
+    key: "alert",
+    icon: (
+      <p className="w-24 h-24">
+        <Bell />
+      </p>
+    ),
+    label: "알림",
+  },
+  {
+    key: "news",
+    icon: (
+      <p className="w-24 h-24">
+        <News />
+      </p>
+    ),
+    label: "회사소식",
+  },
+];
 
 const MainPageLayout: React.FC<Props> = ({
   children,
@@ -89,6 +134,10 @@ const MainPageLayout: React.FC<Props> = ({
     else setWidth(240);
   }, [collapsed]);
 
+  const [open, setOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
+  const [activePopup, setActivePopup] = useState<null | string>(null); // 모달 키
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -97,6 +146,100 @@ const MainPageLayout: React.FC<Props> = ({
 
   return (
     <div className="flex max-h-[100vh]" key="mainPageLayout">
+      <AntdFooterBtnStyled>
+        <FloatButton
+          className="w-48 h-48"
+          icon={
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={open ? "close" : "menu"}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.15 }}
+              >
+                {open ? <Close /> : <MenuOutlined />}
+              </motion.div>
+            </AnimatePresence>
+            // !open ?
+            //   <MenuOutlined /> : <p><Close /></p>
+          }
+          type="primary"
+          style={{ right: 24, bottom: 24 }}
+          onClick={() => setOpen(!open)}
+        />
+
+        {/* 팝업들 */}
+        {menuItems.map((item, idx) => (
+          <AntdModal
+            key={idx}
+            open={activePopup === item.key}
+            setOpen={() => {}}
+            draggable={true}
+            title={
+              item.key === "news" ? (
+                <>회사 소식</>
+              ) : item.key === "alert" ? (
+                <>알림</>
+              ) : item.key === "todo" ? (
+                <>나의 할일</>
+              ) : item.key === "memo" ? (
+                <p
+                  className="w-20 h-20 text-[#00000065] cursor-pointer"
+                  onClick={() => setNewOpen(true)}
+                >
+                  <Plus />
+                </p>
+              ) : (
+                <></>
+              )
+            }
+            bgColor="#FFFFFF"
+            contents={
+              item.key === "news" ? (
+                <></>
+              ) : item.key === "alert" ? (
+                <></>
+              ) : item.key === "todo" ? (
+                <></>
+              ) : item.key === "memo" ? (
+                <MyMemo login={login} open={newOpen} setOpen={setNewOpen} />
+              ) : (
+                <></>
+              )
+            }
+            width={"450px"}
+            onClose={() => setActivePopup(null)}
+          />
+        ))}
+
+        {/* 확장 메뉴 버튼들 */}
+        <AnimatePresence>
+          {open &&
+            menuItems.map((item, idx) => (
+              <motion.div
+                key={item.key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: 0.05 * idx, duration: 0.25 }}
+              >
+                <FloatButton
+                  className="w-48 h-48 v-h-center"
+                  icon={item.icon}
+                  tooltip={<Tooltip title={item.label}>{item.label}</Tooltip>}
+                  style={{
+                    right: 24,
+                    bottom: 90 + idx * 65,
+                    zIndex: 999,
+                  }}
+                  onClick={() => setActivePopup(item.key)}
+                />
+              </motion.div>
+            ))}
+        </AnimatePresence>
+      </AntdFooterBtnStyled>
+
       <div>
         <Sider collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
@@ -185,5 +328,25 @@ const MainPageLayout: React.FC<Props> = ({
     </div>
   );
 };
+
+const AntdFooterBtnStyled = styled.div`
+  & .ant-float-btn {
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  & .ant-float-btn-content {
+    padding: 0px !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  & .ant-float-btn-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+`;
 
 export default MainPageLayout;
