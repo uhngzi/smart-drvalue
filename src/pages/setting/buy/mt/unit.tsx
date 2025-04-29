@@ -35,6 +35,7 @@ import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination
 import useToast from "@/utils/useToast";
 import { validReq } from "@/utils/valid";
 import { MOCK } from "@/utils/Mock";
+import { isValidNumber } from "@/utils/formatNumber"; 
 
 // 아이콘
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -62,7 +63,7 @@ const BuyMtUnitListPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
-
+  
   // --------- 필요 데이터 시작 ----------
   // 원자재 데이터 조회
   useQuery<apiGetResponseType>({
@@ -170,35 +171,35 @@ const BuyMtUnitListPage: React.FC & {
   });
 
   // 적용일이 지난 경우 가격만 수정 불가능하도록 처리
-  const getUpdatedCUDPopItems = () => {
-    return MOCK.materialPriceItems.CUDPopItems.map((item) => {
-      // priceUnit만 disabled 처리
+  const getUpdatedCUDPopItems = (items = addModalInfoList) => {
+    return items.map((item) => {
       let disabled = false;
+  
+      const targetDate = newData.applyPricedt || newData.appDt; // ★ 적용단가 날짜 우선
       if (
         newData.id &&
-        newData.appDt &&
-        dayjs(newData.appDt).isValid() &&
-        (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
-        dayjs(newData.appDt).isSame(dayjs(), 'day')) &&
-        item.name !== 'priceUnit'  // priceUnit만 비활성화
+        targetDate &&
+        dayjs(targetDate).isValid() &&
+        (dayjs(targetDate).isBefore(dayjs(), 'day') || dayjs(targetDate).isSame(dayjs(), 'day'))
       ) {
-        disabled = true;
+        if (item.name !== 'priceUnit' && item.name !== 'applyPricedt') {
+          disabled = true;
+        }
       }
-      
+  
       if (item.name === 'materialIdx') {
         return {
           ...item,
           option: dataMaterial.map((m) => ({ value: m.id, label: m.mtNm })),
-          disabled: disabled,
+          disabled,
         };
       }
-      
-      return {
-        ...item,
-        disabled: disabled,
-      };
+  
+      return { ...item, disabled };
     });
   };
+  
+  
 
   useEffect(() => {
     setAddModalInfoList(getUpdatedCUDPopItems());
@@ -226,6 +227,8 @@ const BuyMtUnitListPage: React.FC & {
     materialIdx: record.material?.id,
     partnerIdx: record.partner?.id,
     appOriginDt: record.appDt,
+    applyPrice: record.applyPrice,       
+    applyPricedt: record.applyPricedt, 
   });
 
   const handleSubmitNewData = async () => {
@@ -262,12 +265,10 @@ const BuyMtUnitListPage: React.FC & {
       // 수정인 경우
       else {
         setActionType('update');
-        
+        const today = dayjs();
         // 적용일이 지난 경우, 가격을 제외한 나머지 필드만 변경 가능
         if (newData.appOriginDt && (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
         dayjs(newData.appDt).isSame(dayjs(), 'day'))) {
-          // 원본 데이터에서 priceUnit을 제외
-          
           const result = await patchAPI(
             { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
             newData?.id ?? '', 
@@ -320,10 +321,22 @@ const BuyMtUnitListPage: React.FC & {
   };
 
   const handleEditClick = (record: materialPriceType) => {
-    setActionType('update');
-    setNewData(convertToCUType(record));
-    setNewOpen(true);
-  }; 
+  setActionType('update');
+  setNewData(convertToCUType(record));
+
+  const today = dayjs();
+  
+  if (record.appDt && (dayjs(record.appDt).isSame(today, 'day') || dayjs(record.appDt).isBefore(today, 'day'))) {
+    // 적용일이 오늘이거나 과거면 → 적용단가(Apply) 폼 보여줌
+    setAddModalInfoList(MOCK.ApplymaterialPriceItems.CUDPopItems);
+  } else {
+    // 아직 적용 전이면 → 기본 materialPriceItems 폼 보여줌
+    setAddModalInfoList(MOCK.materialPriceItems.CUDPopItems);
+  }
+
+  setNewOpen(true);
+};
+
 
   const handleDataDelete = async (id: string) => {
     try {
@@ -345,33 +358,69 @@ const BuyMtUnitListPage: React.FC & {
       setNewOpen(false);
     }
   };
-
+  
   const handleDataChange = (
     e: any,
     name: string,
     type: 'input' | 'select' | 'date' | 'other',
     key?: string
   ) => {
+      const value = typeof e === 'string' ? e : e?.target?.value ?? '';
+
+      if (name === 'priceUnit') {
+        setNewData({
+          ...newData,
+          priceUnit: value, 
+          applyPrice: value  
+        });
+        return;
+      }
+
+    if (name === 'applyPricedt') {
+      setNewData({
+        ...newData,
+        applyPricedt: value,
+      });
+      return;
+    }
+    
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
-      setNewData({ ...newData, [name]: value });
+      const findLabelByName = (name: string): string => {
+        const item = addModalInfoList.find((i) => i.name === name);
+        return item?.label || name;
+      };
+      
+      // 숫자 필드에 대한 유효성 검사
+      if (['priceUnit', 'thicMin', 'thicMax', 'sizeW', 'sizeH', 'cntMin', 'cntMax', 'wgtMin', 'wgtMax', 'safeInv'].includes(name)) {
+        // 빈 문자열이거나 숫자인 경우만 허용
+        if (value === '' || isValidNumber(value)) {
+          setNewData({ ...newData, [name]: value });
+        } else {
+          showToast(`${findLabelByName(name)}은(는) 숫자만 입력 가능합니다.`, 'error');
+          return;
+        }
+      } else {
+        // 일반 텍스트 필드는 그대로 처리
+        setNewData({ ...newData, [name]: value });
+      }
     } else if (type === "select") {
       if (key) {
         setNewData({
           ...newData, [name]: {
-            ...((newData as any)[name] || {}), // 기존 객체 값 유지
-            [key]: e?.toString(), // 새로운 key 값 업데이트
+            ...((newData as any)[name] || {}),
+            [key]: e?.toString(),
           }
         });
-      }else {
+      } else {
         // 원자재가 바뀌었을 때 관련 종속 값들 초기화
         if (name === 'materialIdx') {
           setNewData({
             ...newData,
             [name]: e,
-            partnerIdx: undefined, // 공급처 초기화
-            priceNm: '', // 가격명 초기화
-            priceUnit: 0, // 가격 초기화
+            partnerIdx: undefined,
+            priceNm: '',
+            priceUnit: 0,
           });
         } else {
           setNewData({ ...newData, [name]: e });

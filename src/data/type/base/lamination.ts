@@ -116,19 +116,21 @@ export const setLaminationSourceList = (data: any): laminationSourceList => {
     updatedAt: null,
   };
 };
-
-export const newLaminationSourceList: laminationSourceList = {
-  name: " ",
-  copperFoil: { copNm: "" },
-  material: { matNm: "" },
-  copThk: "",
-  epoxy: 0,
-  code: "0",
-  lamDtlTypeEm: null,
-  ordNo: 0,
-  useYn: true,
-  createdAt: null,
-  updatedAt: null,
+//
+export const newLaminationSourceList= (): laminationSourceList => {
+  return { 
+    name: " ",
+    copperFoil: { copNm: "" },
+    material: { matNm: "" },
+    copThk: "",
+    epoxy: 0,
+    code: "0",
+    lamDtlTypeEm: null,
+    ordNo: 0,
+    useYn: true,
+    createdAt: null,
+    updatedAt: null,
+  };
 };
 
 //--------------------source.tsx------------------------------------------------//끝
