@@ -759,6 +759,7 @@ const QualityReportsPage: React.FC & {
                       ...detail,
                       appliedAt: null,
                       content: "",
+                      file: "",
                     });
                     setFileList([]);
                     setFileIdList([]);
