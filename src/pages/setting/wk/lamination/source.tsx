@@ -74,6 +74,8 @@ const WkLaminationSourceListPage: React.FC & {
     
   });// --------------------------meterial API-----------------------------`
   const [materialOptions, setMaterialOptions] = useState<selectType[]>([]); 
+  const [materialEpoxy, setMaterialEpoxy] = useState<selectType[]>([]); 
+  const [materialCode, setMaterialCode] = useState<selectType[]>([]); 
   const [dataGroup, setDataGroup] = useState<Array<laminationSourceList>>([]);
     const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
       queryKey: ['lamination-material/jsxcrud/many'],
@@ -95,7 +97,8 @@ const WkLaminationSourceListPage: React.FC & {
     });
 // --------------------------meterial API----------------------------- 끝
 // --------------------------Copper API-------------------------------
-    const [copperList, setCopperList] = useState<selectType[]>([]); 
+  const [copperList, setCopperList] = useState<selectType[]>([]); 
+  const [copperListCopThk, setCopperListCopThk] = useState<selectType[]>([]); 
   const [dataCopper, setDataCopper] = useState<Array<laminationSourceList>>([]);
     const { data: queryDataCopper } = useQuery<apiGetResponseType, Error>({
       queryKey: ['lamination-copper-foil/jsxcrud/many'],
@@ -228,9 +231,27 @@ const WkLaminationSourceListPage: React.FC & {
 useEffect(() => {
   if (dataGroup.length > 0) {
     setMaterialOptions(
-      dataGroup.map((material) => ({
-        value: material.id,
-        label: material.matNm ?? "",
+      dataGroup.map((materialMatNm) => ({
+        value: materialMatNm.id,
+        label: materialMatNm.matNm ?? "",
+      }))
+    );
+  }
+
+  if (dataGroup.length > 0) {
+    setMaterialEpoxy(
+      dataGroup.map((materialEpoxyGap) => ({
+        value: materialEpoxyGap.id,
+        label: materialEpoxyGap.epoxy ?? "",
+      }))
+    );
+  }
+
+  if (dataGroup.length > 0) {
+    setMaterialCode(
+      dataGroup.map((materialCodeGap) => ({
+        value: materialCodeGap.id,
+        label: materialCodeGap.code ?? "",
       }))
     );
   }
@@ -243,25 +264,42 @@ useEffect(() => {
       }))
     );
   }
+
+  if (dataCopper.length > 0) {
+    setCopperListCopThk(
+      dataCopper.map((copperCopThk) => ({
+        value: copperCopThk.id,
+        label: copperCopThk.copThk ?? "",
+      }))
+    );
+  }
 }, [dataGroup, dataCopper]);
 
 useEffect(() => {
-  if (materialOptions.length > 0 || copperList.length > 0) {
+  if (materialOptions.length > 0 || copperList.length > 0 || materialEpoxy.length > 0 || materialCode.length > 0 || copperListCopThk.length > 0) {
     const updatedItems = MOCK.laminationItems.CUDPopItems.map((item) => {
+      
       if (item.optionSource === 'materialOptions' && materialOptions.length > 0) {
         return { ...item, option: materialOptions };
       }
       if (item.optionSource === 'copperList' && copperList.length > 0) {
         return { ...item, option: copperList };
       }
+      if (item.optionSource === 'materialEpoxy' && materialEpoxy.length > 0) {
+        return { ...item, option: materialEpoxy };
+      }
+      if (item.optionSource === 'materialCode' && materialCode.length > 0) {
+        return { ...item, option: materialCode };
+      }
+      if (item.optionSource === 'copperListCopThk' && copperListCopThk.length > 0) {
+        return { ...item, option: copperListCopThk };
+      }
       return item;
     });
 
     setAddModalInfoList(updatedItems);
   }
-}, [materialOptions, copperList]);
-
-
+}, [materialOptions, copperList, materialEpoxy, materialCode, copperListCopThk]);
   //----------------------------------copper,material API 설정  끝 ---------------------------------------------------
   // ----------- 신규 데이터 끝 -----------
   const handleDataDelete = async (id: string) => {
@@ -335,13 +373,7 @@ useEffect(() => {
               key: 'lamDtlTypeEm',
               align: 'center',
               render: (_, record) => (
-                <div
-                  className="w-full h-full justify-center h-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
+                <div>
                   {record.lamDtlTypeEm}
                 </div>
               )
@@ -353,29 +385,18 @@ useEffect(() => {
               key: 'matNm',
               align: 'center',
               render: (_, record) => {
-                const material = materialOptions.find(option => option.value === record.matNm);
+                const materialMatNm = materialOptions.find(option => option.value === record.matNm);
                 return (
-                  <div >
-                    {material?.label ?? '-'}
+                  <div className="w-full h-full justify-center h-center cursor-pointer reference-detail"
+                  onClick={()=>{
+                    setNewData(setLaminationSourceList(record));
+                    setNewOpen(true);
+                  }}>
+                    {materialMatNm?.label ?? '-'}
                   </div>
                 );
               }
               
-            },
-            {
-              title: '자재두께',
-              width: 130,
-              dataIndex: 'matNm',
-              key: 'matNm',
-              align: 'center',
-              render: (_, record) => {
-                const material = materialOptions.find(option => option.value === record.matNm);
-                return (
-                  <div>
-                    {material?.label ?? '-'}
-                  </div>
-                );
-              }
             },
             {
               title: 'Epoxy',
@@ -383,11 +404,29 @@ useEffect(() => {
               dataIndex: 'epoxy',
               key: 'epoxy',
               align: 'center',
-              render: (_, record) => (
-                <div>
-                  {record.epoxy}
-                </div>
-              )
+              render: (_, record) => {
+                const materialEpoxyGap = materialEpoxy.find(option => option.value === record.matNm);
+                return (
+                  <div >
+                    {materialEpoxyGap?.label ?? '-'}
+                  </div>
+                );
+              }
+            },
+            {
+              title: '코드',
+              width: 130,
+              dataIndex: 'code',
+              key: 'code',
+              align: 'center',
+              render: (_, record) => {
+                const materialCodeGap = materialCode.find(option => option.value === record.matNm);
+                return (
+                  <div >
+                    {materialCodeGap?.label ?? '-'}
+                  </div>
+                );
+              }
             },
             {
               title: '동박',
@@ -407,14 +446,14 @@ useEffect(() => {
             {
               title: '동박두께',
               width: 130,
-              dataIndex: 'copNm',
-              key: 'copNm',
+              dataIndex: 'copThk',
+              key: 'copThk',
               align: 'center',
               render: (_, record) => {
-                const copper = copperList.find(option => option.value === record.copNm);
+                const copperCopThk = copperListCopThk.find(option => option.value === record.copNm);
                 return (
                   <div>
-                    {copper?.label ?? '-'}
+                    {copperCopThk?.label ?? '-'}
                   </div>
                 );
               }
