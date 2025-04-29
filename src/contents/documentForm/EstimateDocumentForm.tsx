@@ -134,7 +134,7 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
       <div className="flex flex-col w-[555px] gap-[15px]">
         {/* 견적서 */}
         <div
-          className="flex w-full h-[42px] pb-[20px] items-center justify-center gap-[10px]
+          className="flex w-full h-30 pb-[20px] items-center justify-center gap-[10px]
             font-[Spoqa Han Sans Neo] font-[20px] font-style:normal"
         >
           견적서
@@ -391,31 +391,31 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             {/* 테이블 제목 */}
             <tbody className="mb-0 font-[Spoqa Han Sans Neo] text-[9px] font-style:normal bg-[rgba(238,238,238,0.5)]">
               <tr className="border-b border-[#D9D9D9] h-[25px] text-center align-middle whitespace-nowrap">
-                <td className="border-r border-[#D9D9D9] w-[20px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[20px] h-[25px] px-3 ">
                   No
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[195px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[195px] h-[25px] px-3 ">
                   견적 모델명
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-3 ">
                   Array
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[80px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-3 ">
                   재질
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[65px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[100px] h-[25px] px-3 ">
                   사이즈 x 두께
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[25px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[25px] h-[25px] px-3 ">
                   단위
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[30px] h-[25px] px-3 ">
                   수량
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[50px] h-[25px] px-3 ">
                   단가 <span className="text-[7px]">(VAT 포함)</span>
                 </td>
-                <td className="border-r border-[#D9D9D9] w-[60px] h-[25px] px-[8px] ">
+                <td className="border-r border-[#D9D9D9] w-[60px] h-[25px] px-3 ">
                   금액
                 </td>
               </tr>
@@ -424,34 +424,35 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal text-center align-middle">
               {/* 맵 입력 값 */}
               {products.map((item, index) => (
-                <tr key={index} className="border-b border-[#D9D9D9] h-[30px]">
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
+                <tr key={index} className="border-b border-[#D9D9D9] h-30">
+                  <td className="border-r border-[#D9D9D9] px-3">
                     {index + 1}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.estimateModelNm}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.estimateModelNm}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.array}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.array}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.surfaceTreatment}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.surfaceTreatment}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.sizeW} x {products[index]?.sizeH} x{" "}
-                    {products[index]?.thickness}T
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.sizeW} x {item?.sizeH} x {item?.thickness}T
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.quantity}
+                  <td className="border-r border-[#D9D9D9] px-3">
+                    {item?.quantity}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.quantity}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(item?.quantity ?? 0).toLocaleString()}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.autoCalculatedUnitPrice}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(
+                      item?.autoCalculatedUnitPrice ?? 0
+                    ).toLocaleString()}
                   </td>
-                  <td className="border-r border-[#D9D9D9] px-[8px]">
-                    {products[index]?.cost}
+                  <td className="border-r border-[#D9D9D9] px-3 text-right">
+                    {Number(item?.cost ?? 0).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -462,12 +463,12 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                 (_, index) => (
                   <tr
                     key={`empty-${index}`}
-                    className="border-b border-[#D9D9D9] h-[30px]"
+                    className="border-b border-[#D9D9D9] h-30"
                   >
                     {Array.from({ length: 9 }).map((_, colIdx) => (
                       <td
                         key={colIdx}
-                        className="border-r border-[#D9D9D9] px-[8px]"
+                        className="border-r border-[#D9D9D9] px-3"
                       >
                         &nbsp;
                       </td>
@@ -478,17 +479,15 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
 
               {/* 총 합계 */}
               <tr className="border-b border-[#D9D9D9] h-[25px] bg-[rgba(238,238,238,0.5)]">
-                <td colSpan={5} className="border-r border-[#D9D9D9] px-[8px]">
+                <td colSpan={5} className="border-r border-[#D9D9D9] px-3">
                   총 합계
                 </td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">LOT</td>
-                <td className="border-r border-[#D9D9D9] px-[8px]">
+                <td className="border-r border-[#D9D9D9] px-3">LOT</td>
+                <td className="border-r border-[#D9D9D9] px-3">
                   {products.length}
                 </td>
-                <td className="border-r border-[#D9D9D9] px-[8px] text-right">
-                  합계 금액
-                </td>
-                <td className="border-r border-[#D9D9D9] px-[8px] text-right">
+                <td className="border-r border-[#D9D9D9] px-3">합계 금액</td>
+                <td className="border-r border-[#D9D9D9] px-3 text-right">
                   {formatNumber(totalCost)}
                 </td>
               </tr>
@@ -497,11 +496,11 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
 
           {/* 하단 푸터 시작 */}
           <div className="flex w-full font-[Spoqa Han Sans Neo] font-style:normal border-t border-b border-[#D9D9D9] mt-[-1px]">
-            <div className="flex w-[40px] h-full p-[8px] items-center justify-center text-[10px] border-r border-[#D9D9D9]">
+            <div className="flex w-[40px] h-full p-[8px] items-center justify-center text-[10px]">
               비고
             </div>
-            <div className="w-full h-full p-[8px] text-[8px] leading-[10px]">
-              <div className="h-full whitespace-pre-line">
+            <div className="w-full h-full text-[8px] leading-[10px] py-8">
+              <div className="h-full whitespace-pre-line border-l border-[#D9D9D9] pl-8">
                 {formData?.estimateTxt}
               </div>
             </div>
