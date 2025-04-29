@@ -140,7 +140,7 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
           견적서
         </div>
         {/* 상단 바디 */}
-        <div className="flex w-full h-[200px] items-end gap-[20px]">
+        <div className="flex w-full gap-[20px]">
           {/* 좌측 화면 */}
           <div className="flex w-[200px] h-[200px] flex-col items-center justify-space-between">
             {/* 좌측 Table */}
@@ -238,18 +238,18 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             <table className="table-auto w-full border-t border-[#D9D9D9]">
               <tbody className="font-[Spoqa Han Sans Neo] text-[9px] font-style:normal">
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     회사명
                   </td>
                   <td
-                    colSpan={3}
-                    className="min-w-[90px] !max-w-[100px] w-[90px] pl-[8px] pt-[5px]"
+                    // colSpan={3}
+                    className="min-w-[90px] w-[90px] pl-[8px] pt-[5px]"
                   >
                     {company?.companyName}
                   </td>
                   <td
                     rowSpan={3}
-                    className="h-[75px] !w-[157px] !max-w-[157px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]"
+                    className="h-[75px] !w-[158px] !max-w-[158px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]"
                   >
                     <div className="flex items-center justify-center !max-w-[157px]">
                       {logoBase64 && (
@@ -266,24 +266,21 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     사업자등록번호
                   </td>
-                  <td
-                    colSpan={3}
-                    className="max-w-[75px] w-[90px] !max-w-[90px]  pl-[8px] pt-[5px]"
-                  >
+                  <td className="w-[102px] pl-[8px] pt-[5px]">
                     {company?.businessRegNo}
                   </td>
                 </tr>
 
                 <tr className="h-[25px]">
-                  <td className="!w-[75px] !min-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                  <td className="!w-[75px] !min-w-[75px] !max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
                     대표명
                   </td>
                   <td
-                    colSpan={3}
-                    className="max-w-[75px] w-[75px]  pl-[8px] pt-[5px] relative"
+                    // colSpan={3}
+                    className="w-[102px] pl-[8px] pt-[5px] relative"
                   >
                     {company?.ceoName}
                     <div className="absolute top-[-12px] right-[-5px]">
@@ -308,62 +305,66 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                   <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     업태
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
-                    {company?.bizCondition}
+                  <td className="w-[103px] pl-[8px] whitespace-pre-line">
+                    {company?.bizCondition}1111111
                   </td>
                   <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     업종
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="w-[95px] pl-[8px] whitespace-pre-line">
                     {company?.bizType}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     전화번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.ceoPhone}
                   </td>
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     팩스번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="pl-[8px] whitespace-pre-line">
                     {company?.ceoFax}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">주소</td>
+                  <td className="max-w-[75px] w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                    주소
+                  </td>
                   <td
                     colSpan={3}
-                    className="flex max-w-[75px] pl-[8px] pt-[5px] whitespace-nowrap"
+                    className="flex pl-[8px] pt-[5px] whitespace-pre-line"
                   >
                     {company?.address}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     담당자
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.taxManagerName}
                   </td>
-                  <td className="pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] whitespace-nowrap">
                     휴대번호
                   </td>
-                  <td className="max-w-[75px] pl-[8px] whitespace-nowrap">
+                  <td className="max-w-[102px] pl-[8px] whitespace-pre-line">
                     {company?.taxManagerPhone}
                   </td>
                 </tr>
 
                 <tr className="border-b border-[#D9D9D9] h-[25px]">
-                  <td className="w-[75px] pl-[8px] bg-[#E9EDF5] ">E-Mail</td>
+                  <td className="max-w-[75px] pl-[8px] bg-[#E9EDF5] ">
+                    E-Mail
+                  </td>
                   <td
                     colSpan={3}
-                    className="flex max-w-[75px] pl-[8px] pt-[5px]"
+                    className="flex pl-[8px] pt-[5px] whitespace-pre-line"
                   >
                     {company?.ceoEmail}
                   </td>
