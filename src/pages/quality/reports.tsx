@@ -923,6 +923,13 @@ const QualityReportsPage: React.FC & {
                                     ),
                                     key: 0,
                                     onClick: () => {
+                                      if (detailContents.length < 2) {
+                                        showToast(
+                                          "최소 1개의 항목이 존재해야 합니다.",
+                                          "error"
+                                        );
+                                        return;
+                                      }
                                       setDeleted({
                                         id: item.id ?? "",
                                         type: "sub",
