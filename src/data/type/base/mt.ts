@@ -124,7 +124,6 @@ export type materialPriceType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   applyPrice?: number;
-  applyPricedt?: Date | Dayjs | null;
 }
 
 export type materialPriceCUType = {
@@ -152,8 +151,8 @@ export type materialPriceCUType = {
   materialIdx?: string;
   partnerIdx?: string;
   appOriginDt?: Date | Dayjs | null;
-  applyPrice?: number;
-  applyPricedt?: Date | Dayjs | null;
+  applyPrice?: number;       // 적용 단가
+  applyPricedt?: Date | Dayjs | null;  // 단가 적용일
   partner?: { id: string };
 };
 

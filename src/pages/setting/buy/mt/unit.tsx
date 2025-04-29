@@ -45,6 +45,7 @@ const BuyMtUnitListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const [newData, setNewData] = useState<materialPriceCUType>(newMaterialPriceCUType());
+  const [newApplyData, setApplyData] = useState<materialPriceCUType>(newMaterialPriceCUType());
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.materialPriceItems.CUDPopItems);
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
@@ -65,6 +66,17 @@ const BuyMtUnitListPage: React.FC & {
   };
   
   // --------- 필요 데이터 시작 ----------
+  const fetchApplyPriceData = async (targetId: string) => {
+  const result = await getAPI({
+    type: 'core-d2',
+    utype: 'tenant/',
+    url: `cbiz-apply-price-data/default/one/MATERIAL_PRICE/${targetId}` 
+  });
+  return result;
+};
+
+  
+
   // 원자재 데이터 조회
   useQuery<apiGetResponseType>({
     queryKey: ['material/jsxcrud/many'],
@@ -74,7 +86,7 @@ const BuyMtUnitListPage: React.FC & {
       return result;
     },
   });
-
+  
   // 공급처 데이터를 조회하는 API
   const { data: supplierData, isLoading: supplierLoading, refetch: supplierRefetch } = useQuery<apiGetResponseType>({
     queryKey: ["material-suppliers"],
@@ -143,10 +155,11 @@ const BuyMtUnitListPage: React.FC & {
           )
         );
       }
-    };
-  
+    };    
     fetchPartnersByMaterial();
   }, [newData.materialIdx]);
+
+  
   // --------- 필요 데이터 끝 ----------
 
   const { refetch } = useQuery<apiGetResponseType>({
@@ -175,12 +188,11 @@ const BuyMtUnitListPage: React.FC & {
     return items.map((item) => {
       let disabled = false;
   
-      const targetDate = newData.applyPricedt || newData.appDt; // ★ 적용단가 날짜 우선
       if (
         newData.id &&
-        targetDate &&
-        dayjs(targetDate).isValid() &&
-        (dayjs(targetDate).isBefore(dayjs(), 'day') || dayjs(targetDate).isSame(dayjs(), 'day'))
+        newData.appDt &&
+        dayjs(newData.appDt).isValid() &&
+        (dayjs(newData.appDt).isBefore(dayjs(), 'day') || dayjs(newData.appDt).isSame(dayjs(), 'day'))
       ) {
         if (item.name !== 'priceUnit' && item.name !== 'applyPricedt') {
           disabled = true;
@@ -227,25 +239,26 @@ const BuyMtUnitListPage: React.FC & {
     materialIdx: record.material?.id,
     partnerIdx: record.partner?.id,
     appOriginDt: record.appDt,
-    applyPrice: record.applyPrice,       
-    applyPricedt: record.applyPricedt, 
+    applyPrice: record.applyPrice,
+    applyPricedt: record.appDt,      
   });
 
   const handleSubmitNewData = async () => {
     const val = validReq(newData, materialPriceReq());
-      if (!val.isValid) {
-        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
-        return;
-     }
-
+    if (!val.isValid) {
+      showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+      return;
+    }
+  
     try {
-      // 새로운 등록인 경우
+      // 신규 등록인 경우
       if (!newData.id) {
         setActionType('create');
+        const {appOriginDt, applyPrice, applyPricedt, ...payloadWithoutId } = newData;
         const result = await postAPI(
           { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
           {
-            ...newData,
+            ...payloadWithoutId,
             material: { id: newData.materialIdx ?? '' },
             partner: { id: newData.partnerIdx ?? '' },
             materialIdx: undefined,
@@ -261,20 +274,16 @@ const BuyMtUnitListPage: React.FC & {
           setResultType('error');
           setErrMsg(result?.response?.data?.message || '처리 중 오류가 발생했습니다.');
         }
-      } 
-      // 수정인 경우
-      else {
+      } else {
+        // 수정인 경우
         setActionType('update');
         const today = dayjs();
-        // 적용일이 지난 경우, 가격을 제외한 나머지 필드만 변경 가능
-        if (newData.appOriginDt && (dayjs(newData.appDt).isBefore(dayjs(), 'day') ||
-        dayjs(newData.appDt).isSame(dayjs(), 'day'))) {
+        
+        if (newData.appOriginDt && (dayjs(newData.appDt).isBefore(today, 'day') || dayjs(newData.appDt).isSame(today, 'day'))) {
+          // 과거 적용일인 경우: 적용단가만 수정 (priceUnit은 건드리지 않음)
           const result = await patchAPI(
-            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
+            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' },
             newData?.id ?? '', 
-            {
-              priceUnit: newData?.priceUnit ?? 0
-            }
           );
           
           if (result.resultCode === 'OK_0000') {
@@ -285,13 +294,12 @@ const BuyMtUnitListPage: React.FC & {
             setResultType('error');
             setErrMsg(result?.response?.data?.message || '처리 중 오류가 발생했습니다.');
           }
-        } 
-        // 적용일이 지나지 않은 경우 모든 필드 변경 가능
-        else {
-          const { id, appOriginDt, ...payloadWithoutId } = newData;
+        } else {
+          // 적용일이 지나지 않은 경우 모든 필드 변경 가능
+          const { id, appOriginDt, applyPrice, applyPricedt, ...payloadWithoutId } = newData;
           const result = await patchAPI(
-            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' }, 
-            id ?? '', 
+            { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' },
+            id ?? '',
             {
               ...payloadWithoutId,
               material: { id: newData.materialIdx ?? '' },
@@ -320,22 +328,59 @@ const BuyMtUnitListPage: React.FC & {
     }
   };
 
-  const handleEditClick = (record: materialPriceType) => {
-  setActionType('update');
-  setNewData(convertToCUType(record));
-
-  const today = dayjs();
+  const handleEditClick = async (record: materialPriceType) => {
+    setActionType('update');
+    const applyDataResult = await fetchApplyPriceData(record.id);
+    const converted = convertToCUType(record);
+    
+    // 기본값으로 현재 단가 설정
+    let currentData = {
+      ...converted,
+      applyPrice: record.priceUnit, // 기본값으로 현재 단가 설정
+    };
   
-  if (record.appDt && (dayjs(record.appDt).isSame(today, 'day') || dayjs(record.appDt).isBefore(today, 'day'))) {
-    // 적용일이 오늘이거나 과거면 → 적용단가(Apply) 폼 보여줌
-    setAddModalInfoList(MOCK.ApplymaterialPriceItems.CUDPopItems);
-  } else {
-    // 아직 적용 전이면 → 기본 materialPriceItems 폼 보여줌
-    setAddModalInfoList(MOCK.materialPriceItems.CUDPopItems);
-  }
+    if (applyDataResult.resultCode === 'OK_0000' && applyDataResult.data) {
+      const applyData = applyDataResult.data;
+      const applyDate = dayjs(applyData.applyDate);
+      const today = dayjs();
+  
+      // 단가적용일이 오늘이거나 과거면 적용단가 정보 설정
+      if (applyDate.isBefore(today, 'day') || applyDate.isSame(today, 'day')) {
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.mapping?.priceUnit ?? record.priceUnit,  // 적용 단가로 설정
+        };
+      }
 
-  setNewOpen(true);
-};
+      if (applyDataResult.resultCode === 'OK_0000' && applyDataResult.data) {
+        const applyData = applyDataResult.data;
+      
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.mapping?.priceUnit ?? record.priceUnit,
+          applyPricedt: applyData.applyDate ?? record.appDt, // 직접 넣어줘야 함
+        };
+      }
+
+    }
+  
+    setNewData(currentData);
+  
+    const today = dayjs();
+    // 적용일 기준으로 다른 모달 아이템 표시
+    if (record.appDt && (dayjs(record.appDt).isSame(today, 'day') || dayjs(record.appDt).isBefore(today, 'day'))) {
+      // 과거/오늘이면 적용단가 수정 폼 (적용가격만 수정 가능)
+      const applyItems = getUpdatedCUDPopItems(MOCK.ApplymaterialPriceItems.CUDPopItems);
+      setAddModalInfoList(applyItems);
+    } else {
+      // 미래면 기본 폼 (모든 필드 수정 가능)
+      const standardItems = getUpdatedCUDPopItems(MOCK.materialPriceItems.CUDPopItems);
+      setAddModalInfoList(standardItems);
+    }
+  
+    setNewOpen(true);
+  };
+  
 
 
   const handleDataDelete = async (id: string) => {
@@ -365,25 +410,27 @@ const BuyMtUnitListPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string
   ) => {
-      const value = typeof e === 'string' ? e : e?.target?.value ?? '';
-
-      if (name === 'priceUnit') {
-        setNewData({
-          ...newData,
-          priceUnit: value, 
-          applyPrice: value  
-        });
-        return;
-      }
-
-    if (name === 'applyPricedt') {
+    // 단가(priceUnit)와 적용단가(applyPrice)를 독립적으로 처리
+    if (name === 'priceUnit' && typeof e !== "string") {
+      const { value } = e.target;
       setNewData({
         ...newData,
-        applyPricedt: value,
+        priceUnit: value
+        // 적용단가는 자동으로 설정하지 않음
       });
       return;
     }
     
+    // 적용단가(applyPrice) 별도 처리
+    if (name === 'applyPrice' && typeof e !== "string") {
+      const { value } = e.target;
+      setNewData({
+        ...newData,
+        applyPrice: value
+      });
+      return;
+    }
+  
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
       const findLabelByName = (name: string): string => {
@@ -392,7 +439,7 @@ const BuyMtUnitListPage: React.FC & {
       };
       
       // 숫자 필드에 대한 유효성 검사
-      if (['priceUnit', 'thicMin', 'thicMax', 'sizeW', 'sizeH', 'cntMin', 'cntMax', 'wgtMin', 'wgtMax', 'safeInv'].includes(name)) {
+      if (['priceUnit', 'applyPrice', 'thicMin', 'thicMax', 'sizeW', 'sizeH', 'cntMin', 'cntMax', 'wgtMin', 'wgtMax', 'safeInv'].includes(name)) {
         // 빈 문자열이거나 숫자인 경우만 허용
         if (value === '' || isValidNumber(value)) {
           setNewData({ ...newData, [name]: value });
@@ -421,6 +468,7 @@ const BuyMtUnitListPage: React.FC & {
             partnerIdx: undefined,
             priceNm: '',
             priceUnit: 0,
+            applyPrice: 0, // 적용단가도 초기화
           });
         } else {
           setNewData({ ...newData, [name]: e });
@@ -428,6 +476,11 @@ const BuyMtUnitListPage: React.FC & {
       }
     }
   };
+  
+
+  useEffect(() => {
+    console.log('[newData 변경 감지]', newData);
+  }, [newData]);
   
   return (
     <>
@@ -445,6 +498,7 @@ const BuyMtUnitListPage: React.FC & {
                 setActionType('create');
                 setNewOpen(true);
                 setNewData(newMaterialPriceCUType());
+                setAddModalInfoList(MOCK.materialPriceItems.CUDPopItems);
               }}
             >
               등록
