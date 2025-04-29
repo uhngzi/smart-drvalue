@@ -355,7 +355,7 @@ useEffect(() => {
               render: (_, record) => {
                 const material = materialOptions.find(option => option.value === record.matNm);
                 return (
-                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                  <div >
                     {material?.label ?? '-'}
                   </div>
                 );
@@ -371,7 +371,7 @@ useEffect(() => {
               render: (_, record) => {
                 const material = materialOptions.find(option => option.value === record.matNm);
                 return (
-                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                  <div>
                     {material?.label ?? '-'}
                   </div>
                 );
@@ -384,13 +384,7 @@ useEffect(() => {
               key: 'epoxy',
               align: 'center',
               render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationSourceList(record));
-                    setNewOpen(true);
-                  }}
-                >
+                <div>
                   {record.epoxy}
                 </div>
               )
@@ -404,7 +398,7 @@ useEffect(() => {
               render: (_, record) => {
                 const copper = copperList.find(option => option.value === record.copNm);
                 return (
-                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                  <div>
                     {copper?.label ?? '-'}
                   </div>
                 );
@@ -419,7 +413,7 @@ useEffect(() => {
               render: (_, record) => {
                 const copper = copperList.find(option => option.value === record.copNm);
                 return (
-                  <div className="w-full h-full h-center justify-center cursor-pointer reference-detail">
+                  <div>
                     {copper?.label ?? '-'}
                   </div>
                 );
@@ -432,10 +426,8 @@ useEffect(() => {
               key: 'useYn',
               align: 'center',
               render: (value: boolean) => (
-                <div
-                  className={"w-full h-full h-center justify-center cursor-pointer reference-detail"}
-                >
-                   {value === true ? "사용" : value === false ? "미사용" : "-"}      
+                <div>
+                  {value ? "사용" : "미사용"}      
                 </div>
                 
               ),

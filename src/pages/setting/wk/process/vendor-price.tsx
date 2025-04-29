@@ -518,7 +518,7 @@ const WkProcessVendorPriceListPage: React.FC & {
                 align: 'center',
                 render: (_: any, record: any) => (
                   <div
-                    className="cursor-pointer"
+                    className="cursor-pointer reference-detail"
                     onClick={() => {
                       setNewData(setDataProcessVendorPriceType(record));
                       setNewOpen(true);
