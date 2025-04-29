@@ -21,6 +21,7 @@ import { CustomColumn } from "@/components/List/AntdTableEdit";
 import { partnerMngRType, partnerRType } from "../type/base/partner";
 
 import Trash from "@/assets/svg/icons/s_trash.svg";
+import Print from "@/assets/svg/icons/print.svg";
 import { SetStateAction } from "react";
 import { NextRouter } from "next/router";
 import { Tooltip } from "antd";
@@ -749,7 +750,9 @@ export const salesEstimateClmn = (
     React.SetStateAction<partnerMngRType | null>
   >,
   pagination: { current: number; size: number },
-  router: NextRouter
+  router: NextRouter,
+  setFormData: React.Dispatch<SetStateAction<salesEstimateType | null>>,
+  setDocumentOpen: React.Dispatch<SetStateAction<boolean>>
 ): CustomColumn[] => [
   {
     title: "No",
@@ -883,6 +886,30 @@ export const salesEstimateClmn = (
         ) : (
           <></>
         )}
+      </div>
+    ),
+  },
+  {
+    title: "견적서",
+    width: 70,
+    dataIndex: "orderNo",
+    key: "orderNo",
+    align: "center",
+    rightPin: true,
+    render: (_, record) => (
+      <div className="w-full v-h-center">
+        <div
+          className="bg-back rounded-6 w-40 h-40 v-h-center cursor-pointer"
+          onClick={() => {
+            setFormData(record);
+
+            setDocumentOpen(true);
+          }}
+        >
+          <p className="w-24 h-24">
+            <Print />
+          </p>
+        </div>
       </div>
     ),
   },

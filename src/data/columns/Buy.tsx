@@ -932,7 +932,9 @@ export const BuyCostOutStatusClmn = (
 export const BuyOrderClmn = (
   totalData: number,
   pagination: { current: number; size: number },
-  router: NextRouter
+  router: NextRouter,
+  setOrder: React.Dispatch<SetStateAction<buyOrderType | null>>,
+  setOrderDocumentFormOpen: React.Dispatch<SetStateAction<boolean>>
 ): CustomColumn[] => [
   {
     title: "No",
@@ -1098,29 +1100,29 @@ export const BuyOrderClmn = (
   //     return (<div className="text-left w-full h-center">{value && value.length > 6 ? value.slice(0, 6) + "..." : value}</div>)
   //   }
   // },
-  // {
-  //   title: "발주서",
-  //   width: 70,
-  //   dataIndex: "orderNo",
-  //   key: "orderNo",
-  //   align: "center",
-  //   rightPin: true,
-  //   render: (_, record) => (
-  //     <div className="w-full v-h-center">
-  //       <div
-  //         className="bg-back rounded-6 w-40 h-40 v-h-center cursor-pointer"
-  //         onClick={() => {
-  //           setOrder(record);
-  //           setOrderDocumentFormOpen(true);
-  //         }}
-  //       >
-  //         <p className="w-24 h-24">
-  //           <Print />
-  //         </p>
-  //       </div>
-  //     </div>
-  //   ),
-  // },
+  {
+    title: "발주서",
+    width: 70,
+    dataIndex: "orderNo",
+    key: "orderNo",
+    align: "center",
+    rightPin: true,
+    render: (_, record) => (
+      <div className="w-full v-h-center">
+        <div
+          className="bg-back rounded-6 w-40 h-40 v-h-center cursor-pointer"
+          onClick={() => {
+            setOrder(record);
+            setOrderDocumentFormOpen(true);
+          }}
+        >
+          <p className="w-24 h-24">
+            <Print />
+          </p>
+        </div>
+      </div>
+    ),
+  },
   {
     title: "메모",
     width: 80,
