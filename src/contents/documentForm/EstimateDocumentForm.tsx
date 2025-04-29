@@ -499,8 +499,8 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
             <div className="flex w-[40px] h-full p-[8px] items-center justify-center text-[10px]">
               비고
             </div>
-            <div className="w-full h-full text-[8px] leading-[10px] py-8">
-              <div className="h-full whitespace-pre-line border-l border-[#D9D9D9] pl-8">
+            <div className="w-full h-full text-[8px] leading-[10px]">
+              <div className="h-full whitespace-pre-line border-l border-[#D9D9D9] pl-8 py-8">
                 {formData?.estimateTxt}
               </div>
             </div>
