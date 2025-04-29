@@ -634,7 +634,7 @@ const QualityRequirementsPage: React.FC & {
 
       {/* 상세 */}
       <div
-        className="flex min-w-[595px] w-[595px] min-h-[85vh] max-h-[85vh] px-20 py-30 bg-[#EEE] overflow-auto"
+        className="flex min-w-[595px] w-[595px] min-h-[calc(85vh-50px)] max-h-[calc(85vh-50px)] px-20 py-30 bg-[#EEE] overflow-auto mt-50"
         style={{
           width: `${previewWidth}px`,
           minWidth: `${previewMin}px`,
@@ -642,7 +642,7 @@ const QualityRequirementsPage: React.FC & {
         }}
       >
         {!detail?.id && (
-          <div className="w-full min-h-[calc(85vh-60px)] h-full v-h-center">
+          <div className="w-full min-h-[calc(85vh-110px)] h-full v-h-center">
             업체를 선택하시면 상세 내용을 볼 수 있어요
           </div>
         )}

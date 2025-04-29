@@ -243,7 +243,7 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                   </td>
                   <td
                     colSpan={3}
-                    className="min-w-[90px] w-[90px] pl-[8px] pt-[5px]"
+                    className="min-w-[90px] !max-w-[100px] w-[90px] pl-[8px] pt-[5px]"
                   >
                     {company?.companyName}
                   </td>
@@ -251,13 +251,13 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                     rowSpan={3}
                     className="h-[75px] !w-[157px] !max-w-[157px] border-l border-[#D9D9D9] pl-[8px] pt-[5px]"
                   >
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center !max-w-[157px]">
                       {logoBase64 && (
                         <img
                           src={logoBase64}
                           alt="logo"
-                          width={100}
-                          height={40}
+                          width={90}
+                          height={30}
                           style={{ objectFit: "contain", display: "block" }}
                         />
                       )}
@@ -271,7 +271,7 @@ const EstimateDocumentForm: React.FC<Props> = ({ formData, products }) => {
                   </td>
                   <td
                     colSpan={3}
-                    className="max-w-[75px] w-[90px]  pl-[8px] pt-[5px]"
+                    className="max-w-[75px] w-[90px] !max-w-[90px]  pl-[8px] pt-[5px]"
                   >
                     {company?.businessRegNo}
                   </td>
