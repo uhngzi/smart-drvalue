@@ -13,6 +13,7 @@ import News from "@/assets/svg/icons/news.svg";
 import Todo from "@/assets/svg/icons/todo.svg";
 import Memo from "@/assets/svg/icons/mymemo.svg";
 import Star from "@/assets/svg/icons/star.svg";
+import Logout from "@/assets/svg/icons/logout.svg";
 
 import { useUser } from "@/data/context/UserContext";
 import { useMenu } from "@/data/context/MenuContext";
@@ -20,6 +21,7 @@ import { useMenu } from "@/data/context/MenuContext";
 import AntdModal from "@/components/Modal/AntdModal";
 
 import MyMemo from "@/contents/footerBtn/MyMemo";
+import { logout } from "@/utils/signUtil";
 
 interface Props {
   title?: string;
@@ -34,17 +36,17 @@ const menuItems = [
         <Memo />
       </p>
     ),
-    label: "나의 메모",
+    label: "메모",
   },
-  {
-    key: "todo",
-    icon: (
-      <p className="w-24 h-24">
-        <Todo />
-      </p>
-    ),
-    label: "나의 할일",
-  },
+  // {
+  //   key: "todo",
+  //   icon: (
+  //     <p className="w-24 h-24">
+  //       <Todo />
+  //     </p>
+  //   ),
+  //   label: "나의 할일",
+  // },
   {
     key: "alert",
     icon: (
@@ -55,14 +57,23 @@ const menuItems = [
     label: "알림",
   },
   {
-    key: "news",
+    key: "logout",
     icon: (
-      <p className="w-24 h-24">
-        <News />
+      <p className="w-24 h-24 text-[#718ebf]">
+        <Logout />
       </p>
     ),
-    label: "회사소식",
+    label: "로그아웃",
   },
+  // {
+  //   key: "news",
+  //   icon: (
+  //     <p className="w-24 h-24">
+  //       <News />
+  //     </p>
+  //   ),
+  //   label: "회사소식",
+  // },
 ];
 
 const MainHeader: React.FC<Props> = ({ title, login }) => {
@@ -103,36 +114,37 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
   return (
     <div className="!h-70 min-h-70 w-full v-between-h-center px-30 gap-15">
       <div className="flex-1 h-center text-18 font-medium text-[#222]">
-        <p>{selectMenu?.menuNm}</p>
-        {!selectMenu?.children ||
-          (selectMenu?.children?.length < 2 && (
-            <p
-              className="ml-5 w-16 h-16 cursor-pointer text-[#00000065]"
-              style={
-                user?.detail?.metaData?.[0]?.bookMarkMenu?.some(
-                  (b: any) => b.url === router.asPath
-                )
-                  ? { color: "#FBE158" }
-                  : {}
-              }
-              onClick={() => {
-                handleSubmitBookmark(
-                  selectMenu.parentsNm + " > " + selectMenu.menuNm,
-                  router.asPath
-                );
-              }}
-            >
-              <Star
-                fill={
+        <p>{router.asPath === "/" ? "" : selectMenu?.menuNm}</p>
+        {router.asPath !== "/" &&
+          (!selectMenu?.children ||
+            (selectMenu?.children?.length < 2 && (
+              <p
+                className="ml-5 w-16 h-16 cursor-pointer text-[#00000065]"
+                style={
                   user?.detail?.metaData?.[0]?.bookMarkMenu?.some(
                     (b: any) => b.url === router.asPath
                   )
-                    ? "#FBE158"
-                    : "none"
+                    ? { color: "#FBE158" }
+                    : {}
                 }
-              />
-            </p>
-          ))}
+                onClick={() => {
+                  handleSubmitBookmark(
+                    selectMenu.parentsNm + " > " + selectMenu.menuNm,
+                    router.asPath
+                  );
+                }}
+              >
+                <Star
+                  fill={
+                    user?.detail?.metaData?.[0]?.bookMarkMenu?.some(
+                      (b: any) => b.url === router.asPath
+                    )
+                      ? "#FBE158"
+                      : "none"
+                  }
+                />
+              </p>
+            )))}
       </div>
       <div className="h-center gap-15">
         <div
@@ -183,12 +195,8 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
               setOpen={() => {}}
               draggable={true}
               title={
-                item.key === "news" ? (
-                  <>회사 소식</>
-                ) : item.key === "alert" ? (
+                item.key === "alert" ? (
                   <>알림</>
-                ) : item.key === "todo" ? (
-                  <>나의 할일</>
                 ) : item.key === "memo" ? (
                   <p
                     className="w-20 h-20 text-[#00000065] cursor-pointer"
@@ -202,13 +210,13 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
               }
               bgColor="#FFFFFF"
               contents={
-                item.key === "news" ? (
+                // item.key === "news" ? (
+                //   <></>
+                item.key === "alert" ? (
                   <></>
-                ) : item.key === "alert" ? (
-                  <></>
-                ) : item.key === "todo" ? (
-                  <></>
-                ) : item.key === "memo" ? (
+                ) : // ) : item.key === "todo" ? (
+                //   <></>
+                item.key === "memo" ? (
                   <MyMemo
                     login={login ?? false}
                     open={newOpen}
@@ -240,7 +248,14 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
                       top: 65 + idx * 50,
                       zIndex: 999,
                     }}
-                    onClick={() => setActivePopup(item.key)}
+                    onClick={() => {
+                      if (item.key === "logout") {
+                        logout();
+                        router.push("/sign/in");
+                      } else {
+                        setActivePopup(item.key);
+                      }
+                    }}
                   />
                 </motion.div>
               ))}

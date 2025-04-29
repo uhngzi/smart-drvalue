@@ -196,7 +196,7 @@ const QualityReportsPage: React.FC & {
         },
         {
           anykeys: { qualityReportId: record.id },
-          sort: "appliedAt,DESC",
+          sort: "version,DESC",
         }
       );
 
@@ -291,6 +291,7 @@ const QualityReportsPage: React.FC & {
         );
 
         if (result.resultCode === "OK_0000") {
+          refetch();
           handleDetail(detail);
           showToast("갱신 완료", "success");
           setOpen(false);
