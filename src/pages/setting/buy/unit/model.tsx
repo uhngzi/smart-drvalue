@@ -1,39 +1,46 @@
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
+// React 및 라이브러리 훅
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { useBase } from "@/data/context/BaseContext";
+import dayjs from "dayjs";
+
+// API 모듈
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
+
+// 공통 컴포넌트
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import { apiGetResponseType } from "@/data/type/apiResponse";``
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { validReq } from "@/utils/valid"
+
+// 유틸
 import useToast from "@/utils/useToast";
-import dayjs from "dayjs";
+import { validReq } from "@/utils/valid"
+import { MOCK } from "@/utils/Mock";
 import { isValidNumber } from "@/utils/formatNumber"; 
 
-// 기초 타입 import
+// 타입 정의
+import { LayerEm } from "@/data/type/enum";
+import { apiGetResponseType } from "@/data/type/apiResponse";
 import {
   unitModelType,
   unitModelCUType,
   setUnitModelType,
   setUnitModelCUType,
   newUnitModelCUType,
+  unitModelApplyType,
   unitModelReq
 } from "@/data/type/base/unit";
 
-// 레이어 유형 enum import
-import { LayerEm } from "@/data/type/enum";
-
+// 아이콘
 import Bag from "@/assets/svg/icons/bag.svg";
-import { MOCK } from "@/utils/Mock";
-import { patchAPI } from "@/api/patch";
-import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
-import { useBase } from "@/data/context/BaseContext";
 
 const BuyUnitModelListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -41,13 +48,7 @@ const BuyUnitModelListPage: React.FC & {
   const router = useRouter();
   const { type } = router.query;
   const { metarialSelectList } = useBase();
-   const { showToast, ToastContainer } = useToast();
-
-  // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
-  const layerEmList = Object.keys(LayerEm).map((key) => ({
-    value: key,
-    label: LayerEm[key as keyof typeof LayerEm],
-  }));
+  const { showToast, ToastContainer } = useToast();
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -55,6 +56,12 @@ const BuyUnitModelListPage: React.FC & {
     current: 1,
     size: 10,
   });
+
+  // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
+  const layerEmList = Object.keys(LayerEm).map((key) => ({
+    value: key,
+    label: LayerEm[key as keyof typeof LayerEm],
+  }));
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
@@ -120,6 +127,7 @@ const BuyUnitModelListPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string,
   ) => {
+    
     if(type === "input" && typeof e !== "string") {
       const { value } = e.target;
       setNewData({...newData, [name]: value});
@@ -133,82 +141,207 @@ const BuyUnitModelListPage: React.FC & {
         setNewData({...newData, [name]: e});
       }
     }
-
-    
   }
     //등록 버튼 함수
-    const handleSubmitNewData = async (data: any) => {
-      try {
-        const val = validReq(data, unitModelReq());
-        if (!val.isValid) {
-          showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
-          return;
-        }
-    
-        console.log(data);
-    
-        if (data?.id) {
-          const id = data.id;
-          // 적용일이 오늘 또는 이전인지 확인
-          const isPastOrToday = data.appOriginDt && dayjs(data.appOriginDt).isValid() && (
-            dayjs(data.appOriginDt).isBefore(dayjs(), 'day') ||
-            dayjs(data.appOriginDt).isSame(dayjs(), 'day')
-          );
-    
-          // 적용일이 지났으면 가격만 업데이트
-          const patchData = isPastOrToday ? {
-            price: data.price
-          } : data;
-          
-          // 필요없는 필드 제거
-          delete patchData.id;
-          delete patchData.appOriginDt;
-
-          // 모델 단가 수정
-          const result = await patchAPI({
-            type: 'baseinfo',
-            utype: 'tenant/',
-            url: 'model-base-price',
-            jsx: 'jsxcrud',
-          }, id, patchData);
-    
-          console.log(result);
-    
-          if (result.resultCode === 'OK_0000') {
-            refetch();
-            setNewOpen(false);
-            setResultFunc('success', '모델 단가 수정 성공', '모델 단가 수정이 완료되었습니다.');
-          } else {
-            setNewOpen(false);
-            setResultFunc('error', '모델 단가 수정 실패', '모델 단가 수정을 실패하였습니다.');
-          }
-    
-        } else {
-          // 모델 단가 등록
-          const result = await postAPI({
-            type: 'baseinfo',
-            utype: 'tenant/',
-            url: 'model-base-price',
-            jsx: 'jsxcrud',
-          }, newData);
-    
-          console.log(result);
-    
-          if (result.resultCode === 'OK_0000') {
-            refetch();
-            setNewOpen(false);
-            setResultFunc('success', '모델 단가 등록 성공', '모델 단가 등록이 완료되었습니다.');
-          } else {
-            setNewOpen(false);
-            setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
-          }
-        }
-      } catch (e) {
-        setNewOpen(false);
-        setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
+  const handleSubmitNewData = async (data: any) => {
+    try {
+      const val = validReq(data, unitModelReq());
+      if (!val.isValid) {
+        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+        return;
       }
-    };
+  
+      if (data?.id) {
+        const id = data.id;
+        // 적용일이 오늘 또는 이전인지 확인
+        const isPastOrToday = data.appOriginDt && dayjs(data.appOriginDt).isValid() && (
+          dayjs(data.appOriginDt).isBefore(dayjs(), 'day') ||
+          dayjs(data.appOriginDt).isSame(dayjs(), 'day')
+        );
+
+        // 적용일이 지났으면 가격만 업데이트
+        const patchData = isPastOrToday ? {
+          price: data.price,
+          appDt: data.applyAppDt,
+        } : data;
+
+        // 필요없는 필드 제거
+        delete patchData.id;
+        delete patchData.applyAppDt;
+        delete patchData.applyPrice;
+        delete patchData.originPrice;
+        delete patchData.appOriginDt;
+
+        // 모델 단가 수정
+        const result = await patchAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'model-base-price',
+          jsx: 'jsxcrud',
+        }, id, patchData);
+        console.log(result);
+  
+        if (result.resultCode === 'OK_0000') {
+          refetch();
+          setNewOpen(false);
+          setNewData(newUnitModelCUType());
+          setResultFunc('success', '모델 단가 수정 성공', '모델 단가 수정이 완료되었습니다.');
+        } else {
+          setNewOpen(false);
+          setResultFunc('error', '모델 단가 수정 실패', '모델 단가 수정을 실패하였습니다.');
+        }
+  
+      } else {
+        // 모델 단가 등록
+        const result = await postAPI({
+          type: 'baseinfo',
+          utype: 'tenant/',
+          url: 'model-base-price',
+          jsx: 'jsxcrud',
+        }, newData);
+  
+        console.log(result);
+  
+        if (result.resultCode === 'OK_0000') {
+          refetch();
+          setNewOpen(false);
+          setResultFunc('success', '모델 단가 등록 성공', '모델 단가 등록이 완료되었습니다.');
+        } else {
+          setNewOpen(false);
+          setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
+        }
+      }
+    } catch (e) {
+      setNewOpen(false);
+      setResultFunc('error', '모델 단가 등록 실패', '모델 단가 등록을 실패하였습니다.');
+    }
+  };
   // ----------- 신규 데이터 끝 -----------
+
+  // ----------- 단가 적용일, 적용단가 데이터 시작 -----------
+    // apply 데이터
+  const [applyData, setApplyData] = useState<unitModelApplyType[]>([]);
+
+  const convertCUType = (record: unitModelType): unitModelCUType => ({
+    id: record.id,
+    layerEm: record.layerEm,
+    minAmount: record.minAmount,
+    maxAmount: record.maxAmount,
+    price: record.price,
+    deliveryDays: record.deliveryDays,
+    ordNo: record.ordNo,
+    useYn: record.useYn,
+    remark: record.remark,
+    appDt: record.appDt,
+    appOriginDt: record.appDt,
+    applyAppDt: record.appDt,
+    applyPrice: record.price,
+  });
+
+  const fetchApplyData = async (targetId: string) => {
+    const result = await getAPI({
+      type: 'core-d2',
+      utype: 'tenant/',
+      url: `cbiz-apply-price-data/default/one/MODEL_BASE_PRICE/${targetId}`,
+    });
+
+    if (result.resultCode === 'OK_0000') {
+      setApplyData(result.data?.data ?? []);
+      console.log('applydata:', result.data?.data);
+    } else {
+      console.log('error:', result.response);
+    };
+
+    return result;
+  }
+
+  const handleEditClick = async (record: unitModelCUType) => {
+
+    const applyDataResult = await fetchApplyData(record.id ?? '');
+    const converted = convertCUType(record);
+
+    // 기본값으로 현재 단가 설정
+    let currentData = {
+      ...converted,
+      applyPrice: record.price, // 기본값으로 현재 단가 설정
+    };
+  
+    if (applyDataResult.resultCode === 'OK_0000') {
+      const applyData = applyDataResult.data;
+      const applyDate = dayjs(applyData.applyDate);
+      const today = dayjs();
+  
+      // 단가적용일이 오늘이거나 과거면 적용단가 정보 설정
+      if (applyDate.isBefore(today, 'day') || applyDate.isSame(today, 'day')) {
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.price ?? record.price,  // 적용 단가로 설정
+        };
+      }
+
+      if (applyDataResult.resultCode === 'OK_0000') {
+        const applyData = applyDataResult.data;
+      
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.mapping?.price ?? record.price,
+          applyAppDt: applyData.applyDate ?? record.appDt, // 직접 넣어줘야 함
+        };
+      }
+    }
+
+    setNewData(currentData);
+  
+    const today = dayjs();
+    // 적용일 기준으로 다른 모달 아이템 표시
+    if (record.appDt && (dayjs(record.appDt).isSame(today, 'day') || dayjs(record.appDt).isBefore(today, 'day'))) {
+      // 과거/오늘이면 적용단가 수정 폼 (적용가격만 수정 가능)
+      const applyItems = getUpdatedCUDPopItems(MOCK.applyUnitModelItems.CUDPopItems);
+      setAddModalInfoList(applyItems);
+    } else {
+      // 미래면 기본 폼 (모든 필드 수정 가능)
+      const standardItems = getUpdatedCUDPopItems(MOCK.unitModelItems.CUDPopItems);
+      setAddModalInfoList(standardItems);
+    }
+  
+    setNewOpen(true);
+  };
+
+  // 적용일이 지난 경우 가격만 수정 불가능하도록 처리
+  const getUpdatedCUDPopItems = (items = addModalInfoList) => {
+    return items.map((item) => {
+      let disabled = false;
+  
+      if (
+        newData.id &&
+        newData.appDt &&
+        dayjs(newData.appDt).isValid() &&
+        (dayjs(newData.appDt).isBefore(dayjs(), 'day') || dayjs(newData.appDt).isSame(dayjs(), 'day'))
+      ) {
+        if (item.name !== 'price' && item.name !== 'applyAppDt') {
+          disabled = true;
+        }
+      }
+
+      // 레이어 유형 리스트 갱신
+      if (item.name === 'layerEm') {
+        return {
+          key: 'id',
+          ...item,
+          option: layerEmList,
+          disabled,
+        };
+      }
+
+      return { ...item, disabled };
+    });
+  };
+
+  useEffect(() => {
+    setAddModalInfoList(getUpdatedCUDPopItems());
+  }, [data, newData.appDt, newData.id]);
+  
+  // ----------- 단가 적용일, 적용단가 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
     try {
@@ -237,48 +370,34 @@ const BuyUnitModelListPage: React.FC & {
     }
   }
 
-  function modalClose(){
+  function modalClose() {
     setNewOpen(false);
     setNewData(newUnitModelCUType);
   }
   
-  // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
+  // newData 변경 감지
   useEffect(() => {
-    if (!layerEmList || layerEmList.length < 1) return;
+    // 등록 modal의 레이어 유형 리스트 갱신
+    if (!newData.id) {
+      const updatedItems = MOCK.unitModelItems.CUDPopItems.map((item) => {
+        let disabled = false;
   
-    const today = dayjs();
-    const isPastOrToday = newData.appOriginDt && dayjs(newData.appOriginDt).isValid() && (
-      dayjs(newData.appOriginDt).isBefore(today, 'day') ||
-      dayjs(newData.appOriginDt).isSame(today, 'day')
-    );
-  
-    const updatedItems = MOCK.unitModelItems.CUDPopItems.map((item) => {
-      let disabled = false;
-  
-      if (isPastOrToday) {
-        if (item.name !== 'price') {
-          disabled = true;
+        // 레이어 유형 리스트 갱신
+        if (item.name === 'layerEm') {
+          return {
+            key: 'id',
+            ...item,
+            option: layerEmList,
+            disabled,
+          };
         }
-      }
   
-      if (item.name === 'layerEm') {
-        return {
-          key: 'id',
-          ...item,
-          option: layerEmList,
-          disabled,
-        };
-      }
+        return { ...item, disabled };
+      });
   
-      return {
-        ...item,
-        disabled,
-      };
-    });
-  
-    setAddModalInfoList(updatedItems);
-  }, [metarialSelectList, newData.appOriginDt]);
-  
+      setAddModalInfoList(updatedItems);
+    }
+  }, [newData]);
 
   return (
     <>
@@ -292,16 +411,14 @@ const BuyUnitModelListPage: React.FC & {
         <div className="v-between-h-center pb-20">
           <div className="flex gap-10">
             <p>총 {totalData}건</p>
-            {/* <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
-            </Radio.Group> */}
           </div>
           <div
             className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
+            onClick={()=>{
+              setNewOpen(true);
+              setNewData(newUnitModelCUType());
+              setAddModalInfoList(MOCK.unitModelItems.CUDPopItems);
+            }}
           >
             등록
           </div>
@@ -326,8 +443,7 @@ const BuyUnitModelListPage: React.FC & {
                 <div
                   className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                   onClick={()=>{
-                    setNewData(setUnitModelCUType(record));
-                    setNewOpen(true);
+                    handleEditClick(record);
                   }}
                 >
                   {record.layerEm.replace("L", "") + "층"}
@@ -423,13 +539,13 @@ const BuyUnitModelListPage: React.FC & {
           />
         </div>
       </>}
-
+      
       <BaseInfoCUDModal
         title={{name: `모델 단가 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
         open={newOpen} 
         setOpen={setNewOpen} 
         onClose={() => modalClose()}
-        items={addModalInfoList} 
+        items={addModalInfoList}
         data={newData}
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}

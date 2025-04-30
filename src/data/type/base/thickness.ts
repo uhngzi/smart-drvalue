@@ -14,6 +14,7 @@ export type unitThicknessType = {
   ordNo?: number;
   useYn?: boolean;
   appDt?: Date | Dayjs | null;
+  appOriginDt?: Date | Dayjs | null;
 }
 
 export const setUnitThicknessType = (data: any):unitThicknessType => {
@@ -28,6 +29,7 @@ export const setUnitThicknessType = (data: any):unitThicknessType => {
     ordNo: data.ordNo,
     useYn: data.useYn,
     appDt: data.appDt,
+    appOriginDt: data.appDt,
   }
 }
 
@@ -42,6 +44,7 @@ export type unitThicknessCUType = {
   ordNo?: number;
   useYn?: boolean;
   appDt?: Date | Dayjs | null;
+  appOriginDt?: Date | Dayjs | null;
 }
 
 export const setUnitThicknessCUType = (data: any):unitThicknessCUType => {
@@ -56,6 +59,7 @@ export const setUnitThicknessCUType = (data: any):unitThicknessCUType => {
     ordNo: data.ordNo,
     useYn: data.useYn,
     appDt: data.appDt,
+    appOriginDt: data.appDt,
   }
 }
 
@@ -72,3 +76,13 @@ export const newUnitThicknessCUType = ():unitThicknessCUType => {
     appDt: null,
   }
 }
+
+export const unitThicknessReq = () => [
+  { field: "layerEm", label: "레이어 유형" },
+  { field: 'minThickness', label: '최소 두께' },
+  { field: 'maxThickness', label: '최대 두께' },
+  { field: "weight", label: "가중치" },
+  { field: "addCost", label: "추가 비용" },
+  { field: "appDt", label: "적용일" },
+  { field: "useYn", label: "사용 여부" },
+];

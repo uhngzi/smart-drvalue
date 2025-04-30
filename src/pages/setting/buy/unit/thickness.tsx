@@ -10,6 +10,8 @@ import { apiGetResponseType } from "@/data/type/apiResponse";``
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import useToast from "@/utils/useToast";
+import dayjs from "dayjs";
 
 // 기초 타입 import
 import { 
@@ -17,7 +19,8 @@ import {
   unitThicknessCUType,
   setUnitThicknessType,
   setUnitThicknessCUType,
-  newUnitThicknessCUType
+  newUnitThicknessCUType,
+  unitThicknessReq
 } from "@/data/type/base/thickness";
 
 // 레이어 유형 enum import
@@ -29,6 +32,7 @@ import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
 import { useBase } from "@/data/context/BaseContext";
+import { validReq } from "@/utils/valid";
 
 const BuyUnitThicknessListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -36,6 +40,7 @@ const BuyUnitThicknessListPage: React.FC & {
   const router = useRouter();
   const { type } = router.query;
   const { metarialSelectList } = useBase();
+  const { showToast, ToastContainer } = useToast();
 
   // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
   const layerEmList = Object.keys(LayerEm).map((key) => ({
@@ -52,11 +57,6 @@ const BuyUnitThicknessListPage: React.FC & {
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
-
-    /*const start = (page - 1) * pagination.size;
-    const end = start + pagination.size;
-    const slicedData = allData.slice(start, end);
-    setList(slicedData);*/
   };
 
   // --------- 리스트 데이터 시작 ---------
@@ -136,10 +136,33 @@ const BuyUnitThicknessListPage: React.FC & {
     //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
+      const val = validReq(data, unitThicknessReq());
+      if (!val.isValid) {
+        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, 'error');
+        return;
+      }
+
       console.log(data);
+
       if(data?.id){
         const id = data.id;
-        delete data.id;
+        
+        // 적용일이 오늘 또는 이전인지 확인
+        const isPastOrToday = data.appOriginDt && dayjs(data.appOriginDt).isValid() && (
+          dayjs(data.appOriginDt).isBefore(dayjs(), 'day') ||
+          dayjs(data.appOriginDt).isSame(dayjs(), 'day')
+        );
+  
+        // 적용일이 지났으면 가격만 업데이트
+        const patchData = isPastOrToday ? {
+          price: data.price
+        } : data;
+        
+        // 필요없는 필드 제거
+        delete patchData.id;
+        delete patchData.appOriginDt;
+        /*delete data.id;
+        delete data.appOriginDt;*/
 
         // 두께 수정
         const result = await patchAPI({
@@ -158,11 +181,10 @@ const BuyUnitThicknessListPage: React.FC & {
           setResultFunc('success', '두께 수정 성공', '두께 수정이 완료되었습니다.');
         } else {
           setNewOpen(false);
-          
           setResultFunc('error', '두께 수정 실패', '두께 수정을 실패하였습니다.');
         }
 
-      }else{
+      } else {
         // 두께 등록
         const result = await postAPI({
           type: 'baseinfo', 
@@ -223,27 +245,53 @@ const BuyUnitThicknessListPage: React.FC & {
     setNewOpen(false);
     setNewData(newUnitThicknessCUType);
   }
+
+  /*if (newData?.id) {
+    MOCK.unitThicknessItems.CUDPopItems.map((item) => {
+      if (item.)
+    });
+    MOCK.unitThicknessItems.CUDPopItems.push(
+      { name: 'appDt', label: '단가 적용일', widthType: 'full', type: 'date' },
+      { name: 'addCost', label: '변경될 단가', widthType: 'full', type: 'input', inputType: 'number' },
+    );
+  }*/
   
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
   useEffect(() => {
     if (!layerEmList || layerEmList.length < 1) return;
 
-    const arr = MOCK.unitThicknessItems.CUDPopItems.map((item) => {
+    const today = dayjs();
+    const isPastOrToday = newData.appOriginDt && dayjs(newData.appOriginDt).isValid() && (
+      dayjs(newData.appOriginDt).isBefore(today, 'day') ||
+      dayjs(newData.appOriginDt).isSame(today, 'day')
+    );
+
+    const updatedItems = MOCK.unitThicknessItems.CUDPopItems.map((item) => {
+      let disabled = false;
+
+      if (isPastOrToday) {
+        if (item.name !== 'addCost') {
+          disabled = true;
+        }
+      }
+
       if (item.name === 'layerEm') {
         return {
           key: 'id',
           ...item,
-          option: layerEmList
+          option: layerEmList,
+          disabled,
         };
       }
 
       return {
         ...item,
+        disabled,
       };
     });
 
-    setAddModalInfoList(arr)
-  }, [metarialSelectList]);
+    setAddModalInfoList(updatedItems)
+  }, [metarialSelectList, newData.appOriginDt]);
 
   return (
     <>
