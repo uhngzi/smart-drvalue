@@ -248,7 +248,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const [starMenu, setStarMenu] = useState<ItemType<MenuItemType>[]>([]);
 
   useEffect(() => {
-    if (bookMarkMenu.length > 0) {
+    if (bookMarkMenu && bookMarkMenu.length > 0 && menu && menu?.length > 0) {
       let list: ItemType<MenuItemType>[] = [];
 
       bookMarkMenu.map((item) => {
@@ -309,7 +309,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     } else {
       setStarMenu([]);
     }
-  }, [bookMarkMenu]);
+  }, [bookMarkMenu, menu]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
