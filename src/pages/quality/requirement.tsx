@@ -511,12 +511,18 @@ const QualityRequirementsPage: React.FC & {
                       setDetail(record);
                     }}
                   >
-                    <FullChip
-                      label={record.prt?.prtRegCd?.toString() ?? ""}
-                      state="line"
-                      className="!font-normal"
-                    />
-                    {record.prt?.prtNm}
+                    {record.prt ? (
+                      <>
+                        <FullChip
+                          label={record.prt?.prtRegCd?.toString() ?? ""}
+                          state="line"
+                          className="!font-normal"
+                        />
+                        {record.prt?.prtNm}
+                      </>
+                    ) : (
+                      <div className="w-full text-center">-</div>
+                    )}
                   </div>
                 ),
               },

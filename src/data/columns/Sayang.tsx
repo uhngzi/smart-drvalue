@@ -74,12 +74,20 @@ export const specStatusClmn = (
           setPartnerMngData(null);
         }}
       >
-        <FullChip
-          label={record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record?.specModels?.[0]?.partner?.prtNm}
+        {record?.specModels?.[0]?.partner ? (
+          <>
+            <FullChip
+              label={
+                record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""
+              }
+              state="line"
+              className="!font-normal"
+            />
+            {record?.specModels?.[0]?.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -290,12 +298,20 @@ export const specIngClmn = (
           setPartnerMngData(null);
         }}
       >
-        <FullChip
-          label={record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record?.specModels?.[0]?.partner?.prtNm}
+        {record?.specModels?.[0]?.partner ? (
+          <>
+            <FullChip
+              label={
+                record?.specModels?.[0]?.partner?.prtRegCd?.toString() ?? ""
+              }
+              state="line"
+              className="!font-normal"
+            />
+            {record?.specModels?.[0]?.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -588,12 +604,18 @@ export const sayangSampleWaitClmn = (
           setPartnerMngData(record.orderModel?.prtInfo.mng ?? null);
         }}
       >
-        <FullChip
-          label={record.orderModel?.prtInfo.prt?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.orderModel?.prtInfo.prt?.prtNm}
+        {record.orderModel?.prtInfo ? (
+          <>
+            <FullChip
+              label={record.orderModel?.prtInfo.prt?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.orderModel?.prtInfo.prt?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -798,12 +820,18 @@ export const sayangSampleWaitAddClmn = (
               {record?.prdMngNo}
             </div>
             <div className="h-[50%] w-[100%] v-h-center gap-5">
-              <FullChip
-                label={record?.partner?.prtRegCd?.toString() ?? ""}
-                state="line"
-                className="!font-normal"
-              />
-              {record?.partner?.prtNm}
+              {record?.partner ? (
+                <>
+                  <FullChip
+                    label={record?.partner?.prtRegCd?.toString() ?? ""}
+                    state="line"
+                    className="!font-normal"
+                  />
+                  {record?.partner?.prtNm}
+                </>
+              ) : (
+                <div className="w-full text-center">-</div>
+              )}
             </div>
           </>
         ),
@@ -1692,12 +1720,18 @@ export const sayangModelWaitClmn = (
           setPartnerMngData(record.prtInfo.mng);
         }}
       >
-        <FullChip
-          label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.prtInfo?.prt?.prtNm}
+        {record.prtInfo?.prt ? (
+          <>
+            <FullChip
+              label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.prtInfo?.prt?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },

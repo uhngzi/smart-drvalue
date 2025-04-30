@@ -488,12 +488,18 @@ export const WKStatusProcClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        <FullChip
-          label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.specModel?.partner?.prtNm}
+        {record.specModel?.partner ? (
+          <>
+            <FullChip
+              label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.specModel?.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -823,12 +829,18 @@ export const WKStatusInClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        <FullChip
-          label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.specModel?.partner?.prtNm}
+        {record.specModel?.partner ? (
+          <>
+            <FullChip
+              label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.specModel?.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -1026,12 +1038,18 @@ export const WkStatusOutClmn = (
           setPartnerData(record?.specModel?.partner ?? null);
         }}
       >
-        <FullChip
-          label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.specModel?.partner?.prtNm}
+        {record.specModel?.partner ? (
+          <>
+            <FullChip
+              label={record.specModel?.partner?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.specModel?.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },

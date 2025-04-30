@@ -86,12 +86,18 @@ export const salesOrderStatusClmn = (
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        <FullChip
-          label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.prtInfo?.prt?.prtNm}
+        {record.prtInfo?.prt ? (
+          <>
+            <FullChip
+              label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.prtInfo?.prt?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -304,12 +310,18 @@ export const salesUserOrderClmn = (
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        <FullChip
-          label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.prtInfo?.prt?.prtNm}
+        {record.prtInfo.prt ? (
+          <>
+            <FullChip
+              label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.prtInfo?.prt?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -644,12 +656,18 @@ export const salesModelsClmn = (
           setPartnerData(record?.partner);
         }}
       >
-        <FullChip
-          label={record.partner?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.partner?.prtNm}
+        {record.partner ? (
+          <>
+            <FullChip
+              label={record.partner?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.partner?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },
@@ -779,12 +797,18 @@ export const salesEstimateClmn = (
           setPartnerMngData(record?.prtInfo?.mng ?? null);
         }}
       >
-        <FullChip
-          label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
-          state="line"
-          className="!font-normal"
-        />
-        {record.prtInfo?.prt?.prtNm}
+        {record.prtInfo?.prt ? (
+          <>
+            <FullChip
+              label={record.prtInfo?.prt?.prtRegCd?.toString() ?? ""}
+              state="line"
+              className="!font-normal"
+            />
+            {record.prtInfo?.prt?.prtNm}
+          </>
+        ) : (
+          <div className="w-full text-center">-</div>
+        )}
       </div>
     ),
   },

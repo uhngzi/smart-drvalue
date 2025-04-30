@@ -552,15 +552,21 @@ const WKStatusProcPage: {
                       title2="코드/업체명"
                       children2={
                         <div className="w-full h-center text-left gap-5">
-                          <FullChip
-                            label={
-                              select?.specModel?.partner?.prtRegCd?.toString() ??
-                              ""
-                            }
-                            state="line"
-                            className="!font-normal"
-                          />
-                          {select?.specModel?.partner?.prtNm ?? ""}
+                          {select?.specModel?.partner ? (
+                            <>
+                              <FullChip
+                                label={
+                                  select?.specModel?.partner?.prtRegCd?.toString() ??
+                                  ""
+                                }
+                                state="line"
+                                className="!font-normal"
+                              />
+                              {select?.specModel?.partner?.prtNm ?? ""}
+                            </>
+                          ) : (
+                            <div className="w-full text-center">-</div>
+                          )}
                         </div>
                       }
                       title3="관리번호"
@@ -595,15 +601,21 @@ const WKStatusProcPage: {
                       title2="코드/업체명"
                       children2={
                         <div className="w-full h-center text-left gap-5">
-                          <FullChip
-                            label={
-                              select?.specModel?.partner?.prtRegCd?.toString() ??
-                              ""
-                            }
-                            state="line"
-                            className="!font-normal"
-                          />
-                          {select?.specModel?.partner?.prtNm ?? ""}
+                          {select?.specModel?.partner ? (
+                            <>
+                              <FullChip
+                                label={
+                                  select?.specModel?.partner?.prtRegCd?.toString() ??
+                                  ""
+                                }
+                                state="line"
+                                className="!font-normal"
+                              />
+                              {select?.specModel?.partner?.prtNm ?? ""}
+                            </>
+                          ) : (
+                            <div className="w-full text-center">-</div>
+                          )}
                         </div>
                       }
                       title3="관리번호"
