@@ -1,23 +1,29 @@
-import { CustomColumn } from "@/components/List/AntdTableEdit";
-import { HotGrade, LayerEm, ModelStatus } from "../type/enum";
-import { wkPlanWaitType, wkProcsType } from "../type/wk/plan";
-import FullChip from "@/components/Chip/FullChip";
-import { partnerRType } from "../type/base/partner";
-import { Checkbox, Progress } from "antd";
-import ProgressBar from "@/components/ProgressBar/ProgressBar";
-import { SetStateAction } from "react";
-import { processVendorRType } from "../type/base/process";
-import dayjs, { Dayjs } from "dayjs";
 import cookie from "cookiejs";
+import dayjs, { Dayjs } from "dayjs";
+import { SetStateAction } from "react";
 import { NextRouter } from "next/router";
+import { port } from "@/pages/_app";
+import { Checkbox } from "antd";
+
+import { HotGrade, ModelStatus } from "../type/enum";
+import { wkPlanWaitType, wkProcsType } from "../type/wk/plan";
+import { partnerRType } from "../type/base/partner";
+import { processVendorRType } from "../type/base/process";
+
+import { CustomColumn } from "@/components/List/AntdTableEdit";
+import FullChip from "@/components/Chip/FullChip";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 import AntdSelect from "@/components/Select/AntdSelect";
-import { port } from "@/pages/_app";
+
+import Print from "@/assets/svg/icons/print.svg";
 
 export const WkPalnWaitClmn = (
   totalData: number,
   pagination: { current: number; size: number },
   handleSubmit: (id: string, value: string) => void,
+  setFormData: React.Dispatch<SetStateAction<wkPlanWaitType | null>>,
+  setDocumentFormOpen: React.Dispatch<SetStateAction<boolean>>,
   router?: NextRouter
 ): CustomColumn[] => [
   {
@@ -321,13 +327,38 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
+    title: "제작의뢰서",
+    width: 100,
+    dataIndex: "film",
+    key: "film",
+    align: "center",
+    editable: false,
+    fixed: "right",
+    render: (_, record) => (
+      <div className="w-full v-h-center">
+        <div
+          className="bg-back rounded-6 w-40 h-40 v-h-center cursor-pointer"
+          onClick={() => {
+            setFormData(record);
+            setDocumentFormOpen(true);
+          }}
+        >
+          <p className="w-24 h-24">
+            <Print />
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  {
     title: "메모",
     width: 80,
     dataIndex: "memo",
     key: "memo",
     align: "center",
     editable: false,
-    rightPin: true,
+    // rightPin: true,
+    fixed: "right",
     render: (_, record, index) => (
       <GlobalMemo
         key={index}

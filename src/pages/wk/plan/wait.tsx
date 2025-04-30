@@ -13,13 +13,16 @@ import MainPageLayout from "@/layouts/Main/MainPageLayout";
 import { exportToExcelAndPrint } from "@/utils/exportToExcel";
 import useToast from "@/utils/useToast";
 import { useQuery } from "@tanstack/react-query";
-import { List } from "antd";
+import { Button, List } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMenu } from "@/data/context/MenuContext";
 import cookie from "cookiejs";
 import { port } from "@/pages/_app";
+import AntdModal from "@/components/Modal/AntdModal";
+import domtoimage from "dom-to-image";
+import FilmDocumentForm from "@/contents/documentForm/FilmDocumentForm";
 
 const WkPlanWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -52,14 +55,18 @@ const WkPlanWaitPage: React.FC & {
   };
 
   const handlePageMenuClick = (key: number) => {
-    const clmn = WkPalnWaitClmn(totalData, pagination, handleSubmit).map(
-      (item) => ({
-        title: item.title?.toString() as string,
-        dataIndex: item.dataIndex,
-        width: Number(item.width ?? item.minWidth ?? 0),
-        cellAlign: item.cellAlign,
-      })
-    );
+    const clmn = WkPalnWaitClmn(
+      totalData,
+      pagination,
+      handleSubmit,
+      setFormData,
+      setDocumentFormOpen
+    ).map((item) => ({
+      title: item.title?.toString() as string,
+      dataIndex: item.dataIndex,
+      width: Number(item.width ?? item.minWidth ?? 0),
+      cellAlign: item.cellAlign,
+    }));
     if (key === 1) {
       // 엑셀 다운로드
       exportToExcelAndPrint(
@@ -199,6 +206,69 @@ const WkPlanWaitPage: React.FC & {
 
   const [open, setOpen] = useState<boolean>(false);
 
+  // ---------------- 양식 모달 --------------- 시작
+  const [formData, setFormData] = useState<wkPlanWaitType | null>(null);
+  const [documentFormOpen, setDocumentFormOpen] = useState<boolean>(false);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = async () => {
+    const node = document.getElementById("print-area");
+    if (!node) return;
+
+    try {
+      const dataUrl = await domtoimage.toPng(node, {
+        quality: 1,
+        height: node.offsetHeight * 2,
+        width: node.offsetWidth * 2,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+        },
+      });
+
+      const win = window.open("");
+      win?.document.write(`
+            <html>
+              <head>
+                <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+                <style>
+                  @page {
+                    size: A4;
+                    margin: 0;
+                  }
+                  @media print {
+                    table {
+                      table-layout: fixed;
+                      width: 100%;
+                    }
+                    td {
+                      word-wrap: break-word;
+                    }
+                  }
+                  body { margin: 0; }
+                  img { width: 100%; height: auto; }
+                </style>
+              </head>
+              <body>
+                <img src="${dataUrl}" />
+                <script>
+                  window.onload = function() {
+                    window.print();
+                    window.onafterprint = function() {
+                      window.close();
+                    };
+                  }
+                </script>
+              </body>
+            </html>
+          `);
+      win?.document.close();
+    } catch (error) {
+      console.error("캡처 실패", error);
+    }
+  };
+  // ---------------- 양식 모달 --------------- 끝
+
   // 결과 모달창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<"success" | "error" | "">("");
@@ -225,6 +295,8 @@ const WkPlanWaitPage: React.FC & {
                   totalData,
                   pagination,
                   handleSubmit,
+                  setFormData,
+                  setDocumentFormOpen,
                   router
                 )?.filter(
                   (f) =>
@@ -238,7 +310,13 @@ const WkPlanWaitPage: React.FC & {
                     !f.key?.toString().includes("prdCnt") &&
                     !f.key?.toString().includes("sth")
                 )
-              : WkPalnWaitClmn(totalData, pagination, handleSubmit)
+              : WkPalnWaitClmn(
+                  totalData,
+                  pagination,
+                  handleSubmit,
+                  setFormData,
+                  setDocumentFormOpen
+                )
           }
           data={data}
           setData={setData}
@@ -271,6 +349,33 @@ const WkPlanWaitPage: React.FC & {
       >
         <div className="flex flex-col gap-15 p-20 !pr-5"></div>
       </AntdDrawer>
+
+      {/* 제작의뢰서 */}
+      <AntdModal
+        open={documentFormOpen}
+        setOpen={setDocumentFormOpen}
+        title={"FIML 제작의뢰서 미리보기"}
+        width={635}
+        draggable
+        contents={
+          <>
+            <div id="print-area" ref={componentRef}>
+              <FilmDocumentForm
+                id={formData?.id ?? ""}
+                // formData={order}
+                // products={orderDetails}
+                // prtNm={csList.find((f: any) => f.id === prtId)?.label ?? ""}
+                // prtMng={
+                //   csMngList.filter((f: any) => f.id === prtMngId)?.[0] ?? null
+                // }
+              />
+            </div>
+            <div className="v-h-center gap-5 mt-20">
+              <Button onClick={handlePrint}>인쇄</Button>
+            </div>
+          </>
+        }
+      />
 
       <AntdAlertModal
         open={resultOpen}

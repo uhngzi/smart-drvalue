@@ -1,29 +1,31 @@
+import { Tooltip } from "antd";
+import cookie from "cookiejs";
+import { NextRouter } from "next/router";
+import { port } from "@/pages/_app";
+import { SetStateAction } from "react";
+
 import { CustomColumn } from "@/components/List/AntdTableEdit";
+import AntdSelect from "@/components/Select/AntdSelect";
+import AntdInput from "@/components/Input/AntdInput";
+import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import FullChip from "@/components/Chip/FullChip";
+
+import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
+
 import {
   buyCostOutType,
   buyOrderDetailType,
   buyOrderType,
 } from "../type/buy/cost";
 import { LayerEm } from "../type/enum";
-import FullChip from "@/components/Chip/FullChip";
-import { SetStateAction, useRef } from "react";
 import { processVendorPriceRType } from "../type/base/process";
 import {
   materialGroupType,
   materialPriceType,
 } from "../type/base/material_back";
+
 import Trash from "@/assets/svg/icons/trash.svg";
 import Print from "@/assets/svg/icons/print.svg";
-import { NextRouter } from "next/router";
-import AntdSelect from "@/components/Select/AntdSelect";
-import { selectType } from "../type/componentStyles";
-import AntdInput from "@/components/Input/AntdInput";
-import CustomAutoCompleteLabel from "@/components/AutoComplete/CustomAutoCompleteLabel";
-import { InputRef, Tooltip } from "antd";
-import cookie from "cookiejs";
-import { port } from "@/pages/_app";
-import ProgressBar from "@/components/ProgressBar/ProgressBar";
-import GlobalMemo from "@/contents/globalMemo/GlobalMemo";
 
 export const BuyCostOutClmn = (
   totalData: number,

@@ -204,6 +204,7 @@ const SalesUserEstimatePage: React.FC & {
   });
   // ------------ 디테일 데이터 세팅 ------------ 끝
 
+  // ---------------- 양식 모달 --------------- 시작
   const [documentOpen, setDocumentOpen] = useState<boolean>(false);
   const componentRef = useRef<HTMLDivElement>(null);
 
@@ -226,7 +227,7 @@ const SalesUserEstimatePage: React.FC & {
       win?.document.write(`
           <html>
             <head>
-              <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+              <title>견적서_${dayjs().format("YYYYMMDD")}</title>
               <style>
                 @page {
                   size: A4;
@@ -263,6 +264,7 @@ const SalesUserEstimatePage: React.FC & {
       console.error("캡처 실패", error);
     }
   };
+  // ---------------- 양식 모달 --------------- 끝
 
   return (
     <>

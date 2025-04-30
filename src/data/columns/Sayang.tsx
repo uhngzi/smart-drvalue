@@ -243,11 +243,13 @@ export const specStatusClmn = (
     align: "center",
     rightPin: true,
     render: (_, record, index) => (
-      <GlobalMemo
-        key={index}
-        id={record.id ?? ""}
-        entityName="RnTenantCbizSpecEntity"
-      />
+      <div className="w-full h-full v-h-center">
+        <GlobalMemo
+          key={index}
+          id={record.id ?? ""}
+          entityName="RnTenantCbizSpecEntity"
+        />
+      </div>
     ),
   },
 ];
@@ -299,7 +301,7 @@ export const specIngClmn = (
   },
   {
     title: "모델명",
-    width: 350,
+    minWidth: 350,
     dataIndex: "specModels.prdNm",
     key: "specModels.prdNm",
     align: "center",
@@ -466,11 +468,13 @@ export const specIngClmn = (
     align: "center",
     rightPin: true,
     render: (_, record, index) => (
-      <GlobalMemo
-        key={index}
-        id={record.id ?? ""}
-        entityName="RnTenantCbizSpecEntity"
-      />
+      <div className="w-full h-full v-h-center">
+        <GlobalMemo
+          key={index}
+          id={record.id ?? ""}
+          entityName="RnTenantCbizSpecEntity"
+        />
+      </div>
     ),
   },
 ];
@@ -523,7 +527,7 @@ export const sayangSampleWaitClmn = (
         />
       </div>
     ),
-    width: 65,
+    width: 70,
     dataIndex: "check",
     key: "check",
     align: "center",
@@ -559,6 +563,7 @@ export const sayangSampleWaitClmn = (
     dataIndex: "index",
     key: "index",
     align: "center",
+    leftPin: true,
     render: (_: any, __: any, index: number) => totalData - index, // 역순 번호 매기기
   },
   {
@@ -594,7 +599,7 @@ export const sayangSampleWaitClmn = (
   },
   {
     title: "모델명",
-    width: 350,
+    minWidth: 350,
     dataIndex: "model.prdNm",
     key: "model.prdNm",
     align: "center",
@@ -709,11 +714,13 @@ export const sayangSampleWaitClmn = (
     align: "center",
     rightPin: true,
     render: (_, record, index) => (
-      <GlobalMemo
-        key={index}
-        id={record.id ?? ""}
-        entityName="RnTenantCbizSpecEntity"
-      />
+      <div className="w-full h-full v-h-center">
+        <GlobalMemo
+          key={index}
+          id={record.id ?? ""}
+          entityName="RnTenantCbizSpecEntity"
+        />
+      </div>
     ),
   },
 ];
@@ -3187,14 +3194,16 @@ export const sayangModelStatusClmn = (
     align: "center",
     rightPin: true,
     render: (_, record, index) => (
-      <GlobalMemo
-        key={index}
-        id={record.id ?? ""}
-        entityName="RnTenantCbizModelEntity"
-        entityRelation={{
-          RnTenantCbizBizPartnerEntity: true,
-        }}
-      />
+      <div className="w-full h-full v-h-center">
+        <GlobalMemo
+          key={index}
+          id={record.id ?? ""}
+          entityName="RnTenantCbizModelEntity"
+          entityRelation={{
+            RnTenantCbizBizPartnerEntity: true,
+          }}
+        />
+      </div>
     ),
   },
 ];

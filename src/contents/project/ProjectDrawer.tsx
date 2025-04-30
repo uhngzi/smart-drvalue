@@ -788,7 +788,7 @@ const ProjectDrawer: React.FC<Props> = ({
                     </div>
                     <div className="flex flex-col gap-10">
                       <p className="text-14">첨부파일</p>
-                      <div className="w-full h-[172px]">
+                      <div className="w-full">
                         <AntdDragger
                           fileList={fileList}
                           setFileList={setFileList}
@@ -796,7 +796,7 @@ const ProjectDrawer: React.FC<Props> = ({
                           setFileIdList={setFileIdList}
                         />
                       </div>
-                      <div style={{height:`${32*fileList.length}px`}}></div>
+                      {/* <div style={{height:`${32*fileList.length}px`}}></div> */}
                     </div>
                     <div className="flex flex-col gap-10">
                       <p className="text-14">비고</p>
@@ -813,8 +813,14 @@ const ProjectDrawer: React.FC<Props> = ({
                   <p className="flex gap-5 font-medium text-16"><TimeFill/> 진행 정보</p>
                 </div>
                 <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
-                  <div className="flex justify-end" onClick={() => setProcDailyData(prev => prev.map(d => ({...d, open: false})))}>
-                    <span className="text-[#00000073] cursor-pointer">전체 접기</span>
+                  <div className="flex justify-end" onClick={() => {
+                    if(procDailyData.some((v:any) => v.open)) {
+                      setProcDailyData((prev:any) => prev.map((prevData:any) => ({...prevData, open: false})));
+                    }else{
+                      setProcDailyData((prev:any) => prev.map((prevData:any) => ({...prevData, open: true})));
+                    }
+                  }}>
+                    {procDailyData.some((v:any) => v.open) ? <span className="text-[#00000073] cursor-pointer">전체 접기</span> : <span className="text-[#00000073] cursor-pointer">전체 펼치기</span>}
                   </div>
                   <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
                     {procDailyData.map((data, procIdx) => {
@@ -1152,8 +1158,15 @@ const ProjectDrawer: React.FC<Props> = ({
                   <p className="flex gap-5 font-medium text-16 items-center"><TimeFill/>이전 인력투입</p>
                 </div>
                 <CardInputList items={[]} handleDataChange={() => {}} styles={{mg:'-10px'}}>
-                  <div className="flex justify-end" onClick={() => setPrevWorkList((prev:any) => prev.map((d:any) => ({...d, open: false})))}>
-                    <span className="text-[#00000073] cursor-pointer">전체 접기</span>
+                  <div className="flex justify-end" onClick={() => {
+                    console.log(prevWorkList)
+                    if(prevWorkList.some((v:any) => v.open)) {
+                      setPrevWorkList((prev:any) => prev.map((prevData:any) => ({...prevData, open: false})));
+                    }else{
+                      setPrevWorkList((prev:any) => prev.map((prevData:any) => ({...prevData, open: true})));
+                    }
+                  }}>
+                    {prevWorkList.some((v:any) => v.open) ? <span className="text-[#00000073] cursor-pointer">전체 접기</span> : <span className="text-[#00000073] cursor-pointer">전체 펼치기</span>}
                   </div>
                   <section className="bg-white" style={{border:"1px solid #D9D9D9"}}>
                     {prevWorkList.map((data:any, idx:any) => {
