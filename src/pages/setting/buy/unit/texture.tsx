@@ -6,18 +6,19 @@ import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import { apiGetResponseType } from "@/data/type/apiResponse";``
+import { apiGetResponseType } from "@/data/type/apiResponse";
+``;
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 // 기초 타입 import
-import { 
+import {
   unitTextureType,
   unitTextureCUType,
   setUnitTextureType,
   setUnitTextureCUType,
-  newUnitTextureCUType
+  newUnitTextureCUType,
 } from "@/data/type/base/texture";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -46,32 +47,33 @@ const BuyunitTextureListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<unitTextureType>>([]);
-  const { data:queryData, refetch } = useQuery<
-    apiGetResponseType, Error
-  >({
+  const [data, setData] = useState<Array<unitTextureType>>([]);
+  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
     // queryKey: ['setting', 'buy', 'unit', type, pagination.current],
-    queryKey: ['bp-texture/jsxcrud/many', type, pagination.current],
+    queryKey: ["bp-texture/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
 
       // 재질 리스트 조회
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'bp-texture/jsxcrud/many'
-      },{
-        limit: pagination.size,
-        page: pagination.current,
-        anykeys: {id: type} // 수정한거(보류)
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "bp-texture/jsxcrud/many",
+        },
+        {
+          limit: pagination.size,
+          page: pagination.current,
+          anykeys: { id: type }, // 수정한거(보류)
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
       } else {
-        console.log('error:', result.response);
+        console.log("error:", result.response);
       }
 
       setDataLoading(false);
@@ -82,28 +84,31 @@ const BuyunitTextureListPage: React.FC & {
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
-    // 결과 모달창을 위한 변수
-  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
-  const [ resultType, setResultType ] = useState<AlertType>('info');
-  const [ resultTitle, setResultTitle ] = useState<string>('');
-  const [ resultText, setResultText ] = useState<string>('');
+  // 결과 모달창을 위한 변수
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<AlertType>("info");
+  const [resultTitle, setResultTitle] = useState<string>("");
+  const [resultText, setResultText] = useState<string>("");
   function setResultFunc(type: AlertType, title: string, text: string) {
     setResultOpen(true);
     setResultType(type);
     setResultTitle(title);
     setResultText(text);
   }
-    //등록 모달창을 위한 변수
-  const [ newOpen, setNewOpen ] = useState<boolean>(false);
-    //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<unitTextureCUType>(newUnitTextureCUType);
-  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.unitTextureItems.CUDPopItems);
-    //값 변경 함수
+  //등록 모달창을 위한 변수
+  const [newOpen, setNewOpen] = useState<boolean>(false);
+  //등록 모달창 데이터
+  const [newData, setNewData] =
+    useState<unitTextureCUType>(newUnitTextureCUType);
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
+    MOCK.unitTextureItems.CUDPopItems
+  );
+  //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-    key?: string,
+    type: "input" | "select" | "date" | "other",
+    key?: string
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
@@ -111,121 +116,143 @@ const BuyunitTextureListPage: React.FC & {
     } else if (type === "select") {
       if (key) {
         setNewData({
-          ...newData, [name]: {
+          ...newData,
+          [name]: {
             ...((newData as any)[name] || {}), // 기존 객체 값 유지
             [key]: e?.toString(), // 새로운 key 값 업데이트
-          }
+          },
         });
       }
     }
-  }
+  };
 
-    //등록 버튼 함수
+  //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
       console.log(data);
-      if(data?.id){
+      if (data?.id) {
         const id = data.id;
         delete data.id;
 
         // 재질 수정
-        const result = await patchAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'bp-texture',
-          jsx: 'jsxcrud'
-        }, id,{
-          ...data,
-          weight: Number(data.weight) * 0.01,  // 가중치 수정 시 백분율 -> 소수점 변환
-          texture: {
-            id: data.texture
+        const result = await patchAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "bp-texture",
+            jsx: "jsxcrud",
+          },
+          id,
+          {
+            ...data,
+            weight: Number(data.weight) * 0.01, // 가중치 수정 시 백분율 -> 소수점 변환
+            texture: {
+              id: data.texture,
+            },
           }
-        });
+        );
 
-        if(result.resultCode === 'OK_0000') {
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc('success', '재질 수정 성공', '재질 수정이 완료되었습니다.');
+          setResultFunc(
+            "success",
+            "재질 수정 성공",
+            "재질 수정이 완료되었습니다."
+          );
         } else {
           setNewOpen(false);
-          setResultFunc('error', '재질 수정 실패', '재질 수정을 실패하였습니다.');
+          setResultFunc(
+            "error",
+            "재질 수정 실패",
+            "재질 수정을 실패하였습니다."
+          );
         }
-
-      }else{
-
+      } else {
         // 재질 등록
-        const result = await postAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'bp-texture',
-          jsx: 'jsxcrud'
-        }, {
-          ...newData,
-          weight: Number(newData.weight) * 0.01,  // 가중치 등록 시 백분율 -> 소수점 변환
-          texture: {
-            id: newData.texture
+        const result = await postAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "bp-texture",
+            jsx: "jsxcrud",
           },
-        });
+          {
+            ...newData,
+            weight: Number(newData.weight) * 0.01, // 가중치 등록 시 백분율 -> 소수점 변환
+            texture: {
+              id: newData.texture,
+            },
+          }
+        );
 
         // Debug
         // console.log(result, JSON.stringify(newData));
-  
-        if(result.resultCode === 'OK_0000') {
+
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc('success', '재질 등록 성공', '재질 등록이 완료되었습니다.');
+          setResultFunc(
+            "success",
+            "재질 등록 성공",
+            "재질 등록이 완료되었습니다."
+          );
         } else {
           setNewOpen(false);
-          setResultFunc('error', '재질 등록 실패', '재질 등록을 실패하였습니다.');
+          setResultFunc(
+            "error",
+            "재질 등록 실패",
+            "재질 등록을 실패하였습니다."
+          );
         }
       }
-    } catch(e) {
+    } catch (e) {
       setNewOpen(false);
-      setResultFunc('error', '재질 등록 실패', '재질 등록을 실패하였습니다.');
+      setResultFunc("error", "재질 등록 실패", "재질 등록을 실패하였습니다.");
     }
-  }
+  };
   // ----------- 신규 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
     try {
-
       // 재질 삭제
-      const result = await deleteAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: 'bp-texture',
-        jsx: 'jsxcrud'},
-        id,
+      const result = await deleteAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "bp-texture",
+          jsx: "jsxcrud",
+        },
+        id
       );
       console.log(result);
 
-      if(result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setNewOpen(false);
-        setResultFunc('success', '삭제 성공', '재질 삭제가 완료되었습니다.');
+        setResultFunc("success", "삭제 성공", "재질 삭제가 완료되었습니다.");
       } else {
         setNewOpen(false);
-        setResultFunc('error', '삭제 실패', '재질 삭제를 실패하였습니다.');
+        setResultFunc("error", "삭제 실패", "재질 삭제를 실패하였습니다.");
       }
-    }
-    catch(e) {
+    } catch (e) {
       setNewOpen(false);
-      setResultFunc('error', '삭제 실패', '재질 삭제를 실패하였습니다.');
+      setResultFunc("error", "삭제 실패", "재질 삭제를 실패하였습니다.");
     }
-  }
+  };
 
-  function modalClose(){
+  function modalClose() {
     setNewOpen(false);
     setNewData(newUnitTextureCUType);
   }
-  
+
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
   useEffect(() => {
     if (!metarialSelectList || metarialSelectList.length < 1) return;
-    
+
     const arr = MOCK.unitTextureItems.CUDPopItems.map((item) => {
-      if (item.name === 'texture') {
+      if (item.name === "texture") {
         return {
-          key: 'id',
+          key: "id",
           ...item,
-          option: metarialSelectList
+          option: metarialSelectList,
         };
       }
 
@@ -234,145 +261,139 @@ const BuyunitTextureListPage: React.FC & {
       };
     });
 
-    setAddModalInfoList(arr)
+    setAddModalInfoList(arr);
   }, [metarialSelectList]);
 
   return (
     <>
-      {dataLoading && 
+      {dataLoading && (
         <div className="w-full h-[90vh] v-h-center">
-          <Spin tip="Loading..."/>
+          <Spin tip="Loading..." />
         </div>
-      }
-      {!dataLoading &&
-      <>
-        <div className="v-between-h-center pb-20">
-          <div className="flex gap-10">
-            <p>총 {totalData}건</p>
-            {/* <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
-            </Radio.Group> */}
+      )}
+      {!dataLoading && (
+        <>
+          <div className="v-between-h-center pb-20">
+            <div className="flex gap-10">
+              <p>총 {totalData}건</p>
+            </div>
+            <div
+              className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
+              onClick={() => {
+                setNewOpen(true);
+              }}
+            >
+              등록
+            </div>
           </div>
-          <div
-            className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
-          >
-            등록
-          </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'id',
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '재질',
-              width: 130,
-              dataIndex: 'texture',
-              key: 'texture',
-              align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setUnitTextureCUType(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.texture?.cdNm}
-                </div>
-              )
-            },
-            {
-              title: '가중치(%)',
-              width: 130,
-              dataIndex: 'weight',
-              key: 'weight',
-              align: 'center',
-              render: (value: number) => (
-                <div>
-                  {value * 100}  {/* 가중치 -> 백분율 형태로 보여줌 */}
-                </div>
-              )
-            },
-            {
-              title: '추가 비용',
-              width: 130,
-              dataIndex: 'addCost',
-              key: 'addCost',
-              align: 'center',
-              render: (value: number) => (
-                <div className="text-right">
-                  {value.toLocaleString()}
-                </div>
-              )
-            },
-            {
-              title: '적용일',
-              width: 130,
-              dataIndex: 'appDt',
-              key: 'appDt',
-              align: 'center',
-            },
-            {
-              title: '비고',
-              width: 130,
-              dataIndex: 'remark',
-              key: 'remark',
-              align: 'center',
-            },
-            {
-              title: '변경이력',
-              width: 130,
-              dataIndex: 'updatedAt',
-              key: 'updatedAt',
-              align: 'center',
-              render: (value: string) => (
-                <div>
-                  {value.split("T")[0]}
-                </div>
-              )
-            },
-          ]}
-          data={data}
-        />
 
-        <div className="w-full h-100 h-center justify-end">
-          <AntdSettingPagination
-            current={pagination.current}
-            total={totalData}
-            size={pagination.size}
-            onChange={handlePageChange}
+          <AntdTable
+            columns={[
+              {
+                title: "No",
+                width: 50,
+                dataIndex: "id",
+                render: (_: any, __: any, index: number) =>
+                  totalData -
+                  ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                align: "center",
+              },
+              {
+                title: "재질",
+                width: 130,
+                dataIndex: "texture",
+                key: "texture",
+                align: "center",
+                render: (_, record) => (
+                  <div
+                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    onClick={() => {
+                      setNewData(setUnitTextureCUType(record));
+                      setNewOpen(true);
+                    }}
+                  >
+                    {record.texture?.cdNm}
+                  </div>
+                ),
+              },
+              {
+                title: "추가 비율(%)",
+                width: 130,
+                dataIndex: "weight",
+                key: "weight",
+                align: "center",
+                render: (value: number) => (
+                  <div>
+                    {value * 100} {/* 가중치 -> 백분율 형태로 보여줌 */}
+                  </div>
+                ),
+              },
+              {
+                title: "현재 단가",
+                width: 130,
+                dataIndex: "addCost",
+                key: "addCost",
+                align: "center",
+                render: (value: number) => (
+                  <div className="text-right">{value.toLocaleString()}</div>
+                ),
+              },
+              {
+                title: "초기 적용일",
+                width: 130,
+                dataIndex: "appDt",
+                key: "appDt",
+                align: "center",
+              },
+              {
+                title: "비고",
+                width: 130,
+                dataIndex: "remark",
+                key: "remark",
+                align: "center",
+              },
+              {
+                title: "변경이력",
+                width: 130,
+                dataIndex: "updatedAt",
+                key: "updatedAt",
+                align: "center",
+                render: (value: string) => <div>{value.split("T")[0]}</div>,
+              },
+            ]}
+            data={data}
           />
-        </div>  
-      </>}
+
+          <div className="w-full h-100 h-center justify-end">
+            <AntdSettingPagination
+              current={pagination.current}
+              total={totalData}
+              size={pagination.size}
+              onChange={handlePageChange}
+            />
+          </div>
+        </>
+      )}
 
       <BaseInfoCUDModal
-        title={{name: `재질 ${newData?.id ? '수정' : '등록'}`, icon: <Bag/>}}
-        open={newOpen} 
-        setOpen={setNewOpen} 
+        title={{ name: `재질 ${newData?.id ? "수정" : "등록"}`, icon: <Bag /> }}
+        open={newOpen}
+        setOpen={setNewOpen}
         onClose={() => modalClose()}
-        items={addModalInfoList} 
+        items={addModalInfoList}
         data={newData}
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}
-        handleDataChange={handleDataChange}/>
+        handleDataChange={handleDataChange}
+      />
 
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
         title={resultTitle}
         contents={resultText}
-        type={resultType} 
-        onOk={()=>{
+        type={resultType}
+        onOk={() => {
           refetch();
           setResultOpen(false);
           setNewData(newUnitTextureCUType);
@@ -381,20 +402,21 @@ const BuyunitTextureListPage: React.FC & {
         theme="base"
       />
     </>
-  )
-}
+  );
+};
 
 BuyunitTextureListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'70px'}}
+  <SettingPageLayout
+    styles={{ pd: "70px" }}
     menu={[
-      { text: '모델 단가', link: '/setting/buy/unit/model' },
-      { text: '추가비용(두께)', link: '/setting/buy/unit/thickness' },
-      { text: '재질', link: '/setting/buy/unit/texture' },
-      { text: '특별사양', link: '/setting/buy/unit/special' },
+      { text: "모델 단가", link: "/setting/buy/unit/model" },
+      { text: "추가비용(두께)", link: "/setting/buy/unit/thickness" },
+      { text: "재질", link: "/setting/buy/unit/texture" },
+      { text: "특별사양", link: "/setting/buy/unit/special" },
     ]}
   >
     {page}
   </SettingPageLayout>
-)
+);
 
 export default BuyunitTextureListPage;

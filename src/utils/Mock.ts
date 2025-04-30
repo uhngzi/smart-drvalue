@@ -825,6 +825,13 @@ const MOCK = {
           { value: "FR-4", label: "FR-4" },
         ],
       },
+      {
+        name: "addCost",
+        label: "현재 단가",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
+      },
       //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
       {
         name: "useYn",
@@ -885,6 +892,13 @@ const MOCK = {
           { value: "FR-4", label: "FR-4" },
         ],
       },
+      {
+        name: "addCost",
+        label: "현재 단가",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
+      },
       //{ name:'ordNo', label:'순번', widthType:'half', type:'input', inputType:'number' },
       {
         name: "useYn",
@@ -907,7 +921,7 @@ const MOCK = {
       {
         name: "applyPrice",
         label: "예정 단가",
-        widthType: "half",
+        widthType: "full",
         type: "input",
         inputType: "number",
       },

@@ -519,7 +519,7 @@ const BuyUnitModelListPage: React.FC & {
                 ),
               },
               {
-                title: "가격",
+                title: "현재 단가",
                 width: 130,
                 dataIndex: "price",
                 key: "price",
@@ -536,7 +536,7 @@ const BuyUnitModelListPage: React.FC & {
                 align: "center",
               },
               {
-                title: "적용일",
+                title: "초기 적용일",
                 width: 130,
                 dataIndex: "appDt",
                 key: "appDt",
@@ -549,13 +549,6 @@ const BuyUnitModelListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              /*{
-              title: '사용 여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-            },*/
               {
                 title: "변경이력",
                 width: 130,
