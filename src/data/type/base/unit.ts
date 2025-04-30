@@ -47,6 +47,9 @@ export type unitModelCUType = {
   remark?: string;
   appDt?: Date | Dayjs | null;
   appOriginDt?: Date | Dayjs | null;
+  applyAppDt?: Date | Dayjs | null;
+  applyPrice?: number;
+  originPrice?: number;
 }
 
 export const setUnitModelCUType = (data: any):unitModelCUType => {
@@ -62,6 +65,9 @@ export const setUnitModelCUType = (data: any):unitModelCUType => {
     remark: data.remark,
     appDt: data.appDt,
     appOriginDt: data.appDt,
+    applyAppDt: data.appDt,
+    applyPrice: data.price,
+    originPrice: data.price,
   }
 }
 
@@ -87,3 +93,26 @@ export const unitModelReq = () => [
   { field: 'deliveryDays', label: '배송일' },
   { field: 'appDt', label: '적용일' },
 ];
+
+export type unitModelApplyType = {
+  id?: string;
+  targetIndex?: string;
+  typeName?: string;
+
+  fData1?: number;
+  fData2?: number;
+  iData1?: number;
+  iData2?: number;
+  sData1?: string | null;
+  sData2?: string | null;
+
+  applyDate?: Date | Dayjs | null;
+  applyYn?: boolean;
+
+  createdAt?: string;
+  updatedAt?: string;
+
+  mapping?: {
+    priceUnit?: number;
+  };
+};

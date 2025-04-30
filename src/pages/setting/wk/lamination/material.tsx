@@ -17,6 +17,7 @@ import { deleteAPI } from "@/api/delete";
 import { useBase } from "@/data/context/BaseContext";
 import { add } from "lodash";
 import test from "node:test";
+import { LamDtlTypeEm } from "@/data/type/enum";
 
   const WkLaminationMaterialListPage: React.FC & {
     layout?: (page: React.ReactNode) => React.ReactNode;
@@ -224,7 +225,13 @@ import test from "node:test";
           </div>
           <div
             className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
+            onClick={() => {
+              setNewData({
+                ...newLaminationMaterialType(),
+                lamDtlTypeEm: type === "" ? null : type as LamDtlTypeEm, //유형 선택칸 들어가서 등록 누를 시 유형에 자동으로 값 들어가게 설정
+              });
+              setNewOpen(true);
+            }}
           >
             등록
           </div>
@@ -342,9 +349,10 @@ import test from "node:test";
 WkLaminationMaterialListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout styles={{pd:'70px'}}
     menu={[
+      { text: '적층구조 요소', link: '/setting/wk/lamination/source' },
       { text: '적층구조 자재', link: '/setting/wk/lamination/material' },
       { text: '적층구조 동박', link: '/setting/wk/lamination/copper' },
-      { text: '적층구조 요소', link: '/setting/wk/lamination/source' },
+    
     ]}
   >
     {page}

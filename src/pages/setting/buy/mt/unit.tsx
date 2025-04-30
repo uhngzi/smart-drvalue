@@ -79,7 +79,7 @@ const BuyMtUnitListPage: React.FC & {
   } else {
     console.log('error:', result.response);
   };
-  return result;
+    return result;
   };
 
   
@@ -426,47 +426,12 @@ const BuyMtUnitListPage: React.FC & {
     type: 'input' | 'select' | 'date' | 'other',
     key?: string
   ) => {
-    // 단가(priceUnit)와 적용단가(applyPrice)를 독립적으로 처리
-    if (name === 'priceUnit' && typeof e !== "string") {
-      const { value } = e.target;
-      setNewData({
-        ...newData,
-        priceUnit: value
-        // 적용단가는 자동으로 설정하지 않음
-      });
-      return;
-    }
-    
-    // 적용단가(applyPrice) 별도 처리
-    if (name === 'applyPrice' && typeof e !== "string") {
-      const { value } = e.target;
-      setNewData({
-        ...newData,
-        applyPrice: value
-      });
-      return;
-    }
-  
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
-      const findLabelByName = (name: string): string => {
-        const item = addModalInfoList.find((i) => i.name === name);
-        return item?.label || name;
-      };
-      
-      // 숫자 필드에 대한 유효성 검사
-      if (['priceUnit', 'applyPrice', 'thicMin', 'thicMax', 'sizeW', 'sizeH', 'cntMin', 'cntMax', 'wgtMin', 'wgtMax', 'safeInv'].includes(name)) {
-        // 빈 문자열이거나 숫자인 경우만 허용
-        if (value === '' || isValidNumber(value)) {
-          setNewData({ ...newData, [name]: value });
-        } else {
-          showToast(`${findLabelByName(name)}은(는) 숫자만 입력 가능합니다.`, 'error');
-          return;
-        }
-      } else {
-        // 일반 텍스트 필드는 그대로 처리
-        setNewData({ ...newData, [name]: value });
-      }
+  
+      const targetItem = addModalInfoList.find((i) => i.name === name);
+  
+      setNewData({ ...newData, [name]: value });
     } else if (type === "select") {
       if (key) {
         setNewData({
@@ -476,7 +441,6 @@ const BuyMtUnitListPage: React.FC & {
           }
         });
       } else {
-        // 원자재가 바뀌었을 때 관련 종속 값들 초기화
         if (name === 'materialIdx') {
           setNewData({
             ...newData,
@@ -484,7 +448,6 @@ const BuyMtUnitListPage: React.FC & {
             partnerIdx: undefined,
             priceNm: '',
             priceUnit: 0,
-            applyPrice: 0, // 적용단가도 초기화
           });
         } else {
           setNewData({ ...newData, [name]: e });
