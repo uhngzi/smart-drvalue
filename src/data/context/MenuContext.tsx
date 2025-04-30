@@ -86,7 +86,7 @@ interface Menu {
   menuActApp?: boolean;
   menuActOther?: string;
   menuClassifyEm?: string;
-  menuSearchJsxcrud?: string;
+  menuSearchJsxcrud?: string | null;
   menuNmOrigin?: string;
   ordNo?: number;
   useYn?: boolean;

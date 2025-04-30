@@ -225,37 +225,33 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   ];
 
   const [starMenu, setStarMenu] = useState<ItemType<MenuItemType>[]>([]);
-  useEffect(() => {
-    console.log(bookMarkMenu);
-    if (bookMarkMenu.length > 0) {
-      const list = bookMarkMenu.map((item) => ({
-        key: item.url,
-        title: item.url,
-        label: item.label,
-      }));
-      setStarMenu([
-        {
-          key: "star",
-          title: "",
-          label: "즐겨찾는 메뉴",
-          icon: (
-            <p className={iconClassNm}>
-              <p className="w-24 h-24">
-                <Star />
-              </p>
-            </p>
-          ),
-          children: list,
-        },
-        {
-          type: "divider",
-          style: { margin: 15 },
-        },
-      ]);
-    } else {
-      setStarMenu([]);
-    }
-  }, [bookMarkMenu]);
+  // useEffect(() => {
+  //   if (bookMarkMenu && bookMarkMenu.length > 0) {
+  //     const list: any[] = [];
+
+  //     setStarMenu([
+  //       {
+  //         key: "star",
+  //         title: "",
+  //         label: "즐겨찾는 메뉴",
+  //         icon: (
+  //           <p className={iconClassNm}>
+  //             <p className="w-24 h-24">
+  //               <Star />
+  //             </p>
+  //           </p>
+  //         ),
+  //         children: list,
+  //       },
+  //       {
+  //         type: "divider",
+  //         style: { margin: 15 },
+  //       },
+  //     ]);
+  //   } else {
+  //     setStarMenu([]);
+  //   }
+  // }, [bookMarkMenu]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
