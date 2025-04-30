@@ -18,7 +18,8 @@ import {
   materialPriceType,
   newMaterialPriceCUType,
   materialPriceReq,
-  materialSupplierType
+  materialSupplierType,
+  materialApplyType
 } from "@/data/type/base/mt";
 import { partnerRType } from "@/data/type/base/partner";
 
@@ -45,7 +46,6 @@ const BuyMtUnitListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const [newData, setNewData] = useState<materialPriceCUType>(newMaterialPriceCUType());
-  const [newApplyData, setApplyData] = useState<materialPriceCUType>(newMaterialPriceCUType());
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.materialPriceItems.CUDPopItems);
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
@@ -60,6 +60,7 @@ const BuyMtUnitListPage: React.FC & {
   const [actionType, setActionType] = useState<'create' | 'update' | 'delete'>('create');
   const [dataMaterial, setDataMaterial] = useState<materialType[]>([]);
   const [data, setData] = useState<materialPriceType[]>([]);
+  const [applyData, setApplyData] = useState<materialApplyType[]>([]);
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
@@ -67,13 +68,27 @@ const BuyMtUnitListPage: React.FC & {
   
   // --------- 필요 데이터 시작 ----------
   const fetchApplyPriceData = async (targetId: string) => {
-  const result = await getAPI({
-    type: 'core-d2',
-    utype: 'tenant/',
-    url: `cbiz-apply-price-data/default/one/MATERIAL_PRICE/${targetId}` 
-  });
-  return result;
-};
+    const result = await getAPI({
+      type: 'core-d2',
+      utype: 'tenant/',
+      url: `cbiz-apply-price-data/default/one/MATERIAL_PRICE/${targetId}`
+    });
+  
+    if (result.resultCode === 'OK_0000') {
+      const data = result.data?.data;
+  
+      if (data) {
+        setNewData((prev) => ({
+          ...prev,
+          appDt: data.applyDate, // 적용일
+          priceUnit: data.mapping?.priceUnit // 적용 가격
+        }));
+      }
+    }
+  
+    return result;
+  };
+  
 
   
 
@@ -283,7 +298,11 @@ const BuyMtUnitListPage: React.FC & {
           // 과거 적용일인 경우: 적용단가만 수정 (priceUnit은 건드리지 않음)
           const result = await patchAPI(
             { type: 'baseinfo', utype: 'tenant/', url: 'material-price', jsx: 'jsxcrud' },
-            newData?.id ?? '', 
+            newData?.id ?? '',
+            {
+              // 여기에 전송할 데이터 추가
+              priceUnit: newData.applyPrice, // applyPrice를 priceUnit로 업데이트
+            }
           );
           
           if (result.resultCode === 'OK_0000') {
@@ -306,6 +325,7 @@ const BuyMtUnitListPage: React.FC & {
               partner: { id: newData.partnerIdx ?? '' },
               materialIdx: undefined,
               partnerIdx: undefined,
+              priceUnit: newData.priceUnit, // priceUnit 포함
             }
           );
           
@@ -331,6 +351,7 @@ const BuyMtUnitListPage: React.FC & {
   const handleEditClick = async (record: materialPriceType) => {
     setActionType('update');
     const applyDataResult = await fetchApplyPriceData(record.id);
+    console.log('[applyDataResult]', applyDataResult);
     const converted = convertToCUType(record);
     
     // 기본값으로 현재 단가 설정
@@ -342,6 +363,7 @@ const BuyMtUnitListPage: React.FC & {
     if (applyDataResult.resultCode === 'OK_0000' && applyDataResult.data) {
       const applyData = applyDataResult.data;
       const applyDate = dayjs(applyData.applyDate);
+      
       const today = dayjs();
   
       // 단가적용일이 오늘이거나 과거면 적용단가 정보 설정
