@@ -397,9 +397,14 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
               배열 도면
             </div>
 
-            <div className="h-[268px]">
-              {arrayBase64 && <img src={arrayBase64} alt="logo" />}
-              {/* ...배열 도면 content... */}
+            <div className="h-[268px] max-h-[268px] max-w-[380px]">
+              {arrayBase64 && (
+                <img
+                  src={arrayBase64}
+                  alt="logo"
+                  className="max-h-full w-auto object-contain mx-auto"
+                />
+              )}
             </div>
           </div>
 
