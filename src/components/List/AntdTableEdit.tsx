@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import styled from "styled-components";
 import { get, set } from "lodash";
-import React, { Key, SetStateAction, useEffect, useState } from "react";
+import React, { Key, SetStateAction, useEffect, useRef, useState } from "react";
 import {
   ConfigProvider,
   Table,
@@ -836,7 +836,9 @@ const AntdTableEdit: React.FC<Props> = ({
   };
 
   const updateFixedOffsets = () => {
-    const headerCells = document.querySelectorAll(
+    if (!tableRef.current) return;
+
+    const headerCells = tableRef.current.querySelectorAll(
       ".ant-table-thead .ant-table-cell-fix-left"
     );
     const leftOffsets: number[] = [];
@@ -849,7 +851,7 @@ const AntdTableEdit: React.FC<Props> = ({
     });
 
     // 바디의 모든 left 고정 셀들
-    const bodyRows = document.querySelectorAll(".ant-table-tbody tr");
+    const bodyRows = tableRef.current.querySelectorAll(".ant-table-tbody tr");
     bodyRows.forEach((row) => {
       const cells = row.querySelectorAll(".ant-table-cell-fix-left");
       cells.forEach((cell, i) => {
@@ -858,7 +860,7 @@ const AntdTableEdit: React.FC<Props> = ({
     });
 
     // right 도 동일하게
-    const rightHeaderCells = document.querySelectorAll(
+    const rightHeaderCells = tableRef.current.querySelectorAll(
       ".ant-table-thead .ant-table-cell-fix-right"
     );
     const rightOffsets: number[] = [];
@@ -883,10 +885,13 @@ const AntdTableEdit: React.FC<Props> = ({
 
     window.addEventListener("resize", updateFixedOffsets);
     return () => window.removeEventListener("resize", updateFixedOffsets);
-  }, [dataSource]);
+  }, [dataSource, mergedColumns]);
+
+  const tableRef = useRef<HTMLDivElement>(null);
 
   return (
     <AntdTableStyled
+      ref={tableRef}
       className={className}
       $padding={styles?.pd || "0 10px"}
       $thPadding={styles?.th_pd || "0 10px"}
