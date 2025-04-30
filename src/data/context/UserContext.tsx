@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { getAPI } from "@/api/get";
 import { apiAuthResponseType } from "@/data/type/apiResponse";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +20,12 @@ export interface User {
   status: string;
 }
 
+export interface bookMarkMenu {
+  index: number;
+  label: string;
+  url: string;
+}
+
 interface UserContextType {
   me: User | null;
   meLoading: boolean;
@@ -24,6 +36,8 @@ interface UserContextType {
   user: UserType | null;
   userRefetch: () => void;
   handleSubmitBookmark: (label: string, url: string) => void;
+  bookMarkMenu: bookMarkMenu[];
+  setBookMarkMenu: React.Dispatch<SetStateAction<bookMarkMenu[]>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -94,6 +108,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // ----------- 즐겨찾는 메뉴 세팅 ------------ 시작
   const [user, setUser] = useState<UserType | null>(null);
+  const [bookMarkMenu, setBookMarkMenu] = useState<bookMarkMenu[]>([]);
   const { refetch: userRefetch } = useQuery({
     queryKey: ["user/jsxcrud/one", me?.id],
     queryFn: async () => {
@@ -106,7 +121,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       if (result.resultCode === "OK_0000") {
         const entity = (result.data?.data as UserType) ?? null;
         setUser(entity);
-        console.log(entity.detail?.metaData);
+        setBookMarkMenu(
+          entity.detail?.metaData?.[0]?.bookMarkMenu as bookMarkMenu[]
+        );
       } else {
         console.log("CATCH ERROR:", result.response);
       }
@@ -117,10 +134,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleSubmitBookmarkAPI = async (label: string, url: string) => {
     try {
-      if (!label || !url || label.includes("undefined")) {
-        return;
-      }
-
       let meta: any[] = (user?.detail?.metaData?.[0]?.bookMarkMenu ?? []).map(
         (item: any, index: number) => ({
           index: index + 1,
@@ -171,6 +184,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleSubmitBookmark = (label: string, url: string) => {
     console.log("즐겨찾기 저장", label, url);
+
+    if (!label || !url || label.includes("undefined")) {
+      return;
+    }
     handleSubmitBookmarkAPI(label, url);
   };
   // ----------- 즐겨찾는 메뉴 세팅 ------------ 끝
@@ -187,6 +204,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         user,
         userRefetch,
         handleSubmitBookmark,
+        bookMarkMenu,
+        setBookMarkMenu,
       }}
     >
       {children}

@@ -40,11 +40,10 @@ interface Props {
 
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
-  const { menuLoading, sider } = useMenu();
-  const { user } = useUser();
+  const { menuLoading, sider, setSelectMenu } = useMenu();
+  const { bookMarkMenu } = useUser();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
-
   const [selectedKey, setSelectedKey] = useState<string>("");
 
   useEffect(() => {
@@ -63,6 +62,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   }, [router.asPath]);
 
   const [signIn, setSignIn] = useState<boolean>(false);
+
   useEffect(() => {
     setSignIn(loginCheck);
   }, [signIn]);
@@ -224,6 +224,39 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
     // },
   ];
 
+  const [starMenu, setStarMenu] = useState<ItemType<MenuItemType>[]>([]);
+  useEffect(() => {
+    console.log(bookMarkMenu);
+    if (bookMarkMenu.length > 0) {
+      const list = bookMarkMenu.map((item) => ({
+        key: item.url,
+        title: item.url,
+        label: item.label,
+      }));
+      setStarMenu([
+        {
+          key: "star",
+          title: "",
+          label: "즐겨찾는 메뉴",
+          icon: (
+            <p className={iconClassNm}>
+              <p className="w-24 h-24">
+                <Star />
+              </p>
+            </p>
+          ),
+          children: list,
+        },
+        {
+          type: "divider",
+          style: { margin: 15 },
+        },
+      ]);
+    } else {
+      setStarMenu([]);
+    }
+  }, [bookMarkMenu]);
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -276,7 +309,27 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         <Menu
           mode="inline"
-          items={sider}
+          items={[
+            {
+              key: "/",
+              title: "/",
+              label: "홈 피드",
+              icon: (
+                <p className={iconClassNm}>
+                  <DashBoard />
+                </p>
+              ),
+              onClick: () => {
+                setSelectMenu(null);
+              },
+            },
+            {
+              type: "divider",
+              style: { margin: 15 },
+            },
+            ...(starMenu ?? []),
+            ...(sider ?? []),
+          ]}
           onClick={({ key, item }) => {
             const it: any = item;
             router.push(`/${it.props.title}`); //title이 실제 url이므로 title 추출

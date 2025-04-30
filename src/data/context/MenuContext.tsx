@@ -218,9 +218,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({
       children: m1.children?.map((m2) => ({
         id: m2.children?.[0]?.id ?? "",
         key: m2.children?.[0]?.menuUrl?.split("/").slice(0, 2).join("/"),
-        title: m2.children?.[0]?.menuUrl?.includes("requirements")
-          ? "/quality/requirement"
-          : m2.children?.[0]?.menuUrl,
+        title: m2.children?.[0]?.menuUrl,
         label: m2.menuNm,
         onClick: () => {
           setTimeout(() => setSelectMenu({ ...m2, parentsNm: m1.menuNm }), 50);
@@ -228,34 +226,15 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({
       })),
     }));
 
-    setSider([
-      {
-        key: "/",
-        title: "/",
-        label: "홈 피드",
-        icon: (
-          <p className={iconClassNm}>
-            <DashBoard />
-          </p>
-        ),
-        onClick: () => {
-          setSelectMenu(null);
-        },
-      },
-      {
-        type: "divider",
-        style: { margin: 15 },
-      },
-      ...(arr ?? []),
-    ]);
+    setSider(arr ?? []);
     setMenuLoading(false);
   }, [menu]);
 
   // 새로고침 시에도 어떤 메뉴를 선택중인지를 저장되기 위해 쿠키에 넣어줌
   useEffect(() => {
+    console.log(selectMenu);
     if (selectMenu?.id) {
       cookie.set(SELECT_MENU_COOKIE_KEY, selectMenu.id);
-      console.log(selectMenu);
     }
   }, [selectMenu]);
 
