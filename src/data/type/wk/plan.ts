@@ -185,6 +185,9 @@ export type wkPlanWaitType = {
     specDr?: number;
     specPad?: number;
     prdCnt?: number;
+    vcutText?: string;
+    impedanceLineCnt?: number;
+    couponYn?: boolean;
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
