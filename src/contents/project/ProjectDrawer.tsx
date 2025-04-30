@@ -680,6 +680,7 @@ const ProjectDrawer: React.FC<Props> = ({
           if(result.resultCode === 'OK_0000') {
             showToast("저장되었습니다.", "success");
             workDoRefetch();
+            prevWorkRefetch();
           } else {
             showToast("인력투입 등록중 문제가 발생했습니다..", "error");
             return;

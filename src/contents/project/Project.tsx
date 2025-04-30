@@ -203,7 +203,8 @@ const Project: React.FC<Props> = ({
                   from: task.wkProcStDtm,
                   to: task.wkProcEdDtm,
                   progColor: 'gray',
-                  progTo: task.wkProcLastWorkDt,
+                  progFrom: task?.wkProcStartWorkDt || "",
+                  progTo: task?.wkProcLastWorkDt || "",
                   progress: (task.wkProcPer*100).toFixed(0),
                   workers: workerPlan,
                 };
@@ -587,9 +588,9 @@ function addPopWorkers(data: any) {
           <section className="flex flex-col w-full h-full">
             <div className="flex gap-20 h-center pb-10 ">
               <p className="font-medium text-16 h-40 h-center gap-5">
-                <span>{detailData.specModel?.partner?.prtNm}</span>
+                <span>{detailData?.specModel?.partner?.prtNm}</span>
                 <span>-</span>
-                <span>{detailData.specModel?.prdNm}</span>
+                <span>{detailData?.specModel?.prdNm}</span>
                 <span>{"("}시작일 :
                   { detailData?.orderProduct?.currPrdInfo ?
                     JSON.parse(detailData?.orderProduct?.currPrdInfo).orderDt ?
