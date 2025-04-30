@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SetStateAction } from "react";
 import Star from "@/assets/svg/icons/star.svg";
+import { useMenu } from "@/data/context/MenuContext";
 
 interface Props {
   items: Array<{
@@ -78,6 +79,7 @@ export const TabLarge: React.FC<PropsLarge> = ({
   bookmarks,
   handleSubmitBookmark,
 }) => {
+  const { selectMenu } = useMenu();
   return (
     <div
       className="w-full flex h-50 z-10 relative"
@@ -110,7 +112,10 @@ export const TabLarge: React.FC<PropsLarge> = ({
                   : {}
               }
               onClick={() => {
-                handleSubmitBookmark(i.parentsText + " > " + i.text, i.link);
+                handleSubmitBookmark(
+                  (selectMenu?.id ?? "") + ":" + i.parentsText + " > " + i.text,
+                  i.link
+                );
               }}
             >
               <Star

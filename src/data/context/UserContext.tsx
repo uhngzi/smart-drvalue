@@ -122,7 +122,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const entity = (result.data?.data as UserType) ?? null;
         setUser(entity);
         setBookMarkMenu(
-          entity.detail?.metaData?.[0]?.bookMarkMenu as bookMarkMenu[]
+          (entity.detail?.metaData?.[0]?.bookMarkMenu as bookMarkMenu[]) ?? []
         );
       } else {
         console.log("CATCH ERROR:", result.response);

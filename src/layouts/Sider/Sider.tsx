@@ -1,10 +1,12 @@
 import { Menu } from "antd";
-import cookie from "cookiejs";
 import Image from "next/image";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import { baseURL } from "@/api/lib/config";
 
 import Logo from "@/assets/logo/gpn-logo.png";
 import LogoSY from "@/assets/logo/sy-logo.png";
@@ -26,12 +28,30 @@ import PlaceHolderImg from "@/assets/png/placeholderImg.png";
 import { loginCheck, logout } from "@/utils/signUtil";
 
 import { useMenu } from "@/data/context/MenuContext";
-import { port } from "@/pages/_app";
-import { companyType } from "@/data/type/base/company";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import { baseURL } from "@/api/lib/config";
 import { useUser } from "@/data/context/UserContext";
+import { companyType } from "@/data/type/base/company";
+
+interface Menu {
+  id?: string;
+  menuNm?: string;
+  menuRefNm?: string;
+  menuUrl?: string;
+  menuDepth?: number;
+  menuTypeEm?: string;
+  menuActList?: boolean;
+  menuActAdd?: boolean;
+  menuActUp?: boolean;
+  menuActDel?: boolean;
+  menuActApp?: boolean;
+  menuActOther?: string;
+  menuClassifyEm?: string;
+  menuSearchJsxcrud?: string | null;
+  menuNmOrigin?: string;
+  ordNo?: number;
+  useYn?: boolean;
+  children?: Menu[];
+  parentsNm?: string;
+}
 
 interface Props {
   collapsed: boolean;
@@ -40,7 +60,7 @@ interface Props {
 
 const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const router = useRouter();
-  const { menuLoading, sider, setSelectMenu } = useMenu();
+  const { menuLoading, menu, sider, setSelectMenu } = useMenu();
   const { bookMarkMenu } = useUser();
 
   const iconClassNm = "h-40 min-w-[40px!important]";
@@ -225,33 +245,70 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   ];
 
   const [starMenu, setStarMenu] = useState<ItemType<MenuItemType>[]>([]);
-  // useEffect(() => {
-  //   if (bookMarkMenu && bookMarkMenu.length > 0) {
-  //     const list: any[] = [];
 
-  //     setStarMenu([
-  //       {
-  //         key: "star",
-  //         title: "",
-  //         label: "즐겨찾는 메뉴",
-  //         icon: (
-  //           <p className={iconClassNm}>
-  //             <p className="w-24 h-24">
-  //               <Star />
-  //             </p>
-  //           </p>
-  //         ),
-  //         children: list,
-  //       },
-  //       {
-  //         type: "divider",
-  //         style: { margin: 15 },
-  //       },
-  //     ]);
-  //   } else {
-  //     setStarMenu([]);
-  //   }
-  // }, [bookMarkMenu]);
+  useEffect(() => {
+    if (bookMarkMenu && bookMarkMenu.length > 0 && menu && menu?.length > 0) {
+      let list: ItemType<MenuItemType>[] = [];
+
+      bookMarkMenu.map((item) => {
+        // 0번째는 selectMenu의 ID값, 1번째는 label
+        const name = item.label.split(":");
+        if (name.length > 1) {
+          menu?.map((m1) => {
+            if (m1.id === name[0]) {
+              list.push({
+                key: item.url,
+                title: item.url,
+                label: <div className="v-between-h-center">{name[1]}</div>,
+                onClick: () => {
+                  setTimeout(() => setSelectMenu({ ...m1, parentsNm: "" }), 50);
+                },
+              });
+            } else {
+              m1.children?.map((m2) => {
+                if (m2.id === name[0]) {
+                  console.log(name[0]);
+                  list.push({
+                    key: item.url,
+                    title: item.url,
+                    label: name[1],
+                    onClick: () => {
+                      setTimeout(
+                        () => setSelectMenu({ ...m2, parentsNm: m1.menuNm }),
+                        50
+                      );
+                    },
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+
+      setStarMenu([
+        {
+          key: "star",
+          title: "",
+          label: "즐겨찾는 메뉴",
+          icon: (
+            <p className={iconClassNm}>
+              <p className="w-24 h-24">
+                <Star />
+              </p>
+            </p>
+          ),
+          children: list,
+        },
+        {
+          type: "divider",
+          style: { margin: 15 },
+        },
+      ]);
+    } else {
+      setStarMenu([]);
+    }
+  }, [bookMarkMenu, menu]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -328,7 +385,9 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           ]}
           onClick={({ key, item }) => {
             const it: any = item;
-            router.push(`/${it.props.title}`); //title이 실제 url이므로 title 추출
+            //title이 실제 url이므로 title 추출
+            const cleanPath = it?.props?.title?.replace(/^\/+/, ""); // 앞 슬래시 제거
+            router.push(`/${cleanPath}`);
           }}
           className="!bg-[unset]"
           inlineCollapsed={collapsed}
@@ -356,7 +415,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               ),
               onClick: () => {
                 router.push("/setting");
-                sessionStorage.setItem("prevUrl", router.asPath);
+                sessionStorage.setItem("prevUrl", router.pathname);
               },
             },
             {
