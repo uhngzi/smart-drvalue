@@ -1,10 +1,12 @@
 import { Menu } from "antd";
-import cookie from "cookiejs";
 import Image from "next/image";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "@/api/get";
+import { baseURL } from "@/api/lib/config";
 
 import Logo from "@/assets/logo/gpn-logo.png";
 import LogoSY from "@/assets/logo/sy-logo.png";
@@ -26,12 +28,9 @@ import PlaceHolderImg from "@/assets/png/placeholderImg.png";
 import { loginCheck, logout } from "@/utils/signUtil";
 
 import { useMenu } from "@/data/context/MenuContext";
-import { port } from "@/pages/_app";
-import { companyType } from "@/data/type/base/company";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import { baseURL } from "@/api/lib/config";
 import { useUser } from "@/data/context/UserContext";
+import { companyType } from "@/data/type/base/company";
+
 interface Menu {
   id?: string;
   menuNm?: string;
@@ -260,7 +259,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               list.push({
                 key: item.url,
                 title: item.url,
-                label: name[1],
+                label: <div className="v-between-h-center">{name[1]}</div>,
                 onClick: () => {
                   setTimeout(() => setSelectMenu({ ...m1, parentsNm: "" }), 50);
                 },
@@ -416,7 +415,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               ),
               onClick: () => {
                 router.push("/setting");
-                sessionStorage.setItem("prevUrl", router.asPath);
+                sessionStorage.setItem("prevUrl", router.pathname);
               },
             },
             {

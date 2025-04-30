@@ -155,6 +155,7 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
           className="w-40 h-40 v-h-center bg-back rounded-50 cursor-pointer"
           onClick={() => {
             router.push("/setting");
+            sessionStorage.setItem("prevUrl", router.pathname);
           }}
         >
           <p className="w-24 h-24 text-[#718EBF] bg-back rounded-50">
