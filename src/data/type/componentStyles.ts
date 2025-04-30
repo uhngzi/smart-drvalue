@@ -25,37 +25,37 @@ export type componentsStylesType = {
   bw?: string;
   bc?: string;
   br?: string;
-}
+};
 
-export const componentsStyles = (styles:componentsStylesType | undefined) => {
+export const componentsStyles = (styles: componentsStylesType | undefined) => {
   return {
-    width:styles?.wd,
-    height:styles?.ht,
-    backgroundColor:styles?.bg,
-    color:styles?.fc,
-    padding:styles?.pd,
-    paddingTop:styles?.pt,
-    paddingLeft:styles?.pl,
-    paddingRight:styles?.pr,
-    paddingBottom:styles?.pb,
-    margin:styles?.mg,
-    marginTop:styles?.mt,
-    marginLeft:styles?.ml,
-    marginRight:styles?.mr,
-    marginBottom:styles?.mb,
-    border:styles?.bd,
-    borderTop:styles?.bd_t,
-    borderLeft:styles?.bd_l,
-    borderRight:styles?.bd_r,
-    borderBottom:styles?.bd_b,
-    borderRadius:styles?.br,
-  }
-}
+    width: styles?.wd,
+    height: styles?.ht,
+    backgroundColor: styles?.bg,
+    color: styles?.fc,
+    padding: styles?.pd,
+    paddingTop: styles?.pt,
+    paddingLeft: styles?.pl,
+    paddingRight: styles?.pr,
+    paddingBottom: styles?.pb,
+    margin: styles?.mg,
+    marginTop: styles?.mt,
+    marginLeft: styles?.ml,
+    marginRight: styles?.mr,
+    marginBottom: styles?.mb,
+    border: styles?.bd,
+    borderTop: styles?.bd_t,
+    borderLeft: styles?.bd_l,
+    borderRight: styles?.bd_r,
+    borderBottom: styles?.bd_b,
+    borderRadius: styles?.br,
+  };
+};
 
 export type selectType = {
-  value:any;
-  label:string;
-}
+  value: any;
+  label: string | number;
+};
 
 export type treeType = {
   id: string;
@@ -71,7 +71,7 @@ export type treeType = {
     useYn?: boolean;
   }>;
   open: boolean;
-}
+};
 
 export type CUtreeType = {
   parentId?: string;
@@ -80,4 +80,4 @@ export type CUtreeType = {
   ordNo?: number;
   useYn?: boolean;
   [key: string]: any;
-}
+};
