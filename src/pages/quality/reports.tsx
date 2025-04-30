@@ -1015,7 +1015,7 @@ const QualityReportsPage: React.FC & {
                           prt: {
                             ...detail?.prt,
                             id: value,
-                            prtNm: p.label,
+                            prtNm: p.label.toString(),
                           },
                         });
                       }
@@ -1097,7 +1097,7 @@ const QualityReportsPage: React.FC & {
                             prt: {
                               ...detail?.prt,
                               id: value,
-                              prtNm: p.label,
+                              prtNm: p.label.toString(),
                             },
                           });
                         }
