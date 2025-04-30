@@ -281,7 +281,7 @@ const BuyunitTextureListPage: React.FC & {
               align: 'center',
               render: (_, record) => (
                 <div
-                  className="w-full h-full h-center justify-center cursor-pointer"
+                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                   onClick={()=>{
                     setNewData(setUnitTextureCUType(record));
                     setNewOpen(true);

@@ -263,14 +263,7 @@ import test from "node:test";
               key: 'matNm',
               align: 'center',
               render: (_, record) => (
-                <div
-                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                  className="w-full h-full cursor-pointer reference-detail"
-                  onClick={() => {
-                    setNewData(setLaminationMaterialType(record));
-                    setNewOpen(true);
-                  }}
-                >
+                <div>
                   {record.matNm}
                 </div>
               )
@@ -283,13 +276,7 @@ import test from "node:test";
               key: 'epoxy',
               align: 'center',
               render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationMaterialType(record));
-                    setNewOpen(true);
-                  }}
-                >
+                <div>
                   {record.epoxy}
                 </div>
               )
@@ -301,13 +288,7 @@ import test from "node:test";
               key: 'code',
               align: 'center',
               render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationMaterialType(record));
-                    setNewOpen(true);
-                  }}
-                >
+                <div>
                   {record.code}
                 </div>
               )
