@@ -68,27 +68,19 @@ const BuyMtUnitListPage: React.FC & {
   
   // --------- 필요 데이터 시작 ----------
   const fetchApplyPriceData = async (targetId: string) => {
-    const result = await getAPI({
-      type: 'core-d2',
-      utype: 'tenant/',
-      url: `cbiz-apply-price-data/default/one/MATERIAL_PRICE/${targetId}`
-    });
-  
-    if (result.resultCode === 'OK_0000') {
-      const data = result.data?.data;
-  
-      if (data) {
-        setNewData((prev) => ({
-          ...prev,
-          appDt: data.applyDate, // 적용일
-          priceUnit: data.mapping?.priceUnit // 적용 가격
-        }));
-      }
-    }
-  
-    return result;
+  const result = await getAPI({
+    type: 'core-d2',
+    utype: 'tenant/',
+    url: `cbiz-apply-price-data/default/one/MATERIAL_PRICE/${targetId}` 
+  });
+  if (result.resultCode === 'OK_0000') {
+    setApplyData(result.data?.data ?? []);
+    console.log('applydata:',result.data?.data);
+  } else {
+    console.log('error:', result.response);
   };
-  
+  return result;
+  };
 
   
 
@@ -98,6 +90,7 @@ const BuyMtUnitListPage: React.FC & {
     queryFn: async () => {
       const result = await getAPI({ type: 'baseinfo', utype: 'tenant/', url: 'material/jsxcrud/many' });
       if (result.resultCode === 'OK_0000') setDataMaterial(result.data?.data ?? []);
+      
       return result;
     },
   });
@@ -301,7 +294,8 @@ const BuyMtUnitListPage: React.FC & {
             newData?.id ?? '',
             {
               // 여기에 전송할 데이터 추가
-              priceUnit: newData.applyPrice, // applyPrice를 priceUnit로 업데이트
+              priceUnit: newData.priceUnit, // applyPrice를 priceUnit로 업데이트
+              appDt: newData.applyPricedt,
             }
           );
           
@@ -360,7 +354,7 @@ const BuyMtUnitListPage: React.FC & {
       applyPrice: record.priceUnit, // 기본값으로 현재 단가 설정
     };
   
-    if (applyDataResult.resultCode === 'OK_0000' && applyDataResult.data) {
+    if (applyDataResult.resultCode === 'OK_0000') {
       const applyData = applyDataResult.data;
       const applyDate = dayjs(applyData.applyDate);
       
@@ -370,17 +364,17 @@ const BuyMtUnitListPage: React.FC & {
       if (applyDate.isBefore(today, 'day') || applyDate.isSame(today, 'day')) {
         currentData = {
           ...currentData,
-          applyPrice: applyData.mapping?.priceUnit ?? record.priceUnit,  // 적용 단가로 설정
+          applyPrice: applyData.priceUnit ?? record.priceUnit,  // 적용 단가로 설정
         };
       }
 
-      if (applyDataResult.resultCode === 'OK_0000' && applyDataResult.data) {
+      if (applyDataResult.resultCode === 'OK_0000') {
         const applyData = applyDataResult.data;
       
         currentData = {
           ...currentData,
           applyPrice: applyData.mapping?.priceUnit ?? record.priceUnit,
-          applyPricedt: applyData.applyDate ?? record.appDt, // 직접 넣어줘야 함
+          applyPricedt: applyData.applyDate ?? record.appDt,
         };
       }
 

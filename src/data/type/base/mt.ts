@@ -278,3 +278,26 @@ export type materialBadType = {
   updatedAt?: string;
   deletedAt?: string;
 };
+
+export type materialApplyType = {
+  id?: string;
+  targetIndex?: string;
+  typeName?: string;
+
+  fData1?: number;
+  fData2?: number;
+  iData1?: number;
+  iData2?: number;
+  sData1?: string | null;
+  sData2?: string | null;
+
+  applyDate?: Date | Dayjs | null;
+  applyYn?: boolean;
+
+  createdAt?: string;
+  updatedAt?: string;
+
+  mapping?: {
+    priceUnit?: number;
+  };
+};
