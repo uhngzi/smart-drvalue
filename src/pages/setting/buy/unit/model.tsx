@@ -177,7 +177,6 @@ const BuyUnitModelListPage: React.FC & {
         delete patchData.id;
         delete patchData.applyAppDt;
         delete patchData.applyPrice;
-        delete patchData.originPrice;
         delete patchData.appOriginDt;
 
         // 모델 단가 수정

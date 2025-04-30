@@ -7,7 +7,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-``;
+
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState, useMemo } from "react";
@@ -353,12 +353,6 @@ const BuyUnitSpecialListPage: React.FC & {
           <div className="v-between-h-center pb-20">
             <div className="flex gap-10">
               <p>총 {totalData}건</p>
-              {/* <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
-            </Radio.Group> */}
             </div>
             <div
               className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"

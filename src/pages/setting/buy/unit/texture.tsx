@@ -7,7 +7,7 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-``;
+
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
