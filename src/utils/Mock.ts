@@ -36,8 +36,8 @@ const MOCK = {
 			CUDPopItems: [
 					{ name:'lamDtlTypeEm',label:'유형', widthType:'full', type:'select', option:[{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}], },
 					{ name:'matNm', label:'자재', widthType:'full', type:'select', optionSource: 'materialOptions' },
-					{ name:'matNm',label:'자재두께', widthType:'full', type:'select', optionSource: 'materialOptions', disabled: true },
-					{ name:'epoxy',label:'Epoxy', widthType:'full', type:'input', inputType:'number', },
+					{ name:'epoxy',label:'Epoxy', widthType:'full', type:'input', inputType:'number',  disabled: true},
+					{ name:'코드',label:'Code', widthType:'full', type:'input', inputType:'number',  disabled: true},
 					{ name:'name', label:'동박', widthType:'full', type:'select', optionSource: 'copperList' },
 					{ name:'name',label:'동박두께', widthType:'full', type:'select', optionSource: 'copperList', disabled: true},
 					{ name:'useYn',label:'사용여부', widthType:'full', type:'select', option:[{value:true,label:"사용"},{value:false,label:"미사용"}]},
