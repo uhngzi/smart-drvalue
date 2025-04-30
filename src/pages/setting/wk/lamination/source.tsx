@@ -249,7 +249,8 @@ useEffect(() => {
   }
 
   if (dataGroup.length > 0) {
-    setMaterialCode(
+    setMaterialCode( 
+      
       dataGroup.map((materialCodeGap) => ({
         value: materialCodeGap.id,
         label: materialCodeGap.code ?? "",
