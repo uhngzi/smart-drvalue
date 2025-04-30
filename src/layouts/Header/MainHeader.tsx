@@ -129,7 +129,11 @@ const MainHeader: React.FC<Props> = ({ title, login }) => {
                 }
                 onClick={() => {
                   handleSubmitBookmark(
-                    selectMenu.parentsNm + " > " + selectMenu.menuNm,
+                    (selectMenu.id ?? "") +
+                      ":" +
+                      selectMenu.parentsNm +
+                      " > " +
+                      selectMenu.menuNm,
                     router.asPath
                   );
                 }}
