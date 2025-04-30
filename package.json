@@ -30,7 +30,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^12.6.5",
     "html2canvas": "^1.4.1",
-    "jseo-plan-gantt": "^0.7.2",
+    "jseo-plan-gantt": "^0.7.5",
     "jspdf": "^3.0.1",
     "lodash": "^4.17.21",
     "next": "15.1.3",
