@@ -386,7 +386,7 @@ const Sider: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           ]}
           onClick={({ key, item }) => {
             const it: any = item;
-            router.push(`/${it.props.title}`); //title이 실제 url이므로 title 추출
+            router.push(`${it.props.title}`); //title이 실제 url이므로 title 추출
           }}
           className="!bg-[unset]"
           inlineCollapsed={collapsed}
