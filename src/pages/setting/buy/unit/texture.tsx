@@ -7,10 +7,11 @@ import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
 import { apiGetResponseType } from "@/data/type/apiResponse";
-
+import dayjs from "dayjs";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import useToast from "@/utils/useToast";
 
 // 기초 타입 import
 import {
@@ -19,6 +20,8 @@ import {
   setUnitTextureType,
   setUnitTextureCUType,
   newUnitTextureCUType,
+  unitTextureApplyType,
+  unitTextureReq,
 } from "@/data/type/base/texture";
 
 import Bag from "@/assets/svg/icons/bag.svg";
@@ -27,6 +30,7 @@ import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
 import { useBase } from "@/data/context/BaseContext";
+import { validReq } from "@/utils/valid";
 
 const BuyunitTextureListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -34,7 +38,7 @@ const BuyunitTextureListPage: React.FC & {
   const router = useRouter();
   const { type } = router.query;
   const { metarialSelectList } = useBase();
-
+  const { showToast, ToastContainer } = useToast();
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
@@ -44,6 +48,23 @@ const BuyunitTextureListPage: React.FC & {
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
+  };
+  // --------- 적용 예정일 데이터 시작---------
+  const [applyData, setApplyData] = useState<unitTextureApplyType[]>([]);
+
+  const fetchApplyPriceData = async (targetId: string) => {
+    const result = await getAPI({
+      type: "core-d2",
+      utype: "tenant/",
+      url: `cbiz-apply-price-data/default/one/BP_TEXTURE/${targetId}`,
+    });
+    if (result.resultCode === "OK_0000") {
+      setApplyData(result.data?.data ?? []);
+      console.log("applydata:", result.data?.data);
+    } else {
+      console.log("error:", result.response);
+    }
+    return result;
   };
 
   // --------- 리스트 데이터 시작 ---------
@@ -126,46 +147,113 @@ const BuyunitTextureListPage: React.FC & {
     }
   };
 
+  // 적용일이 지난 경우 가격만 수정 불가능하도록 처리
+  const getUpdatedCUDPopItems = (items = addModalInfoList) => {
+    return items.map((item) => {
+      let disabled = false;
+
+      if (
+        newData.id &&
+        newData.appDt &&
+        dayjs(newData.appDt).isValid() &&
+        (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
+          dayjs(newData.appDt).isSame(dayjs(), "day"))
+      ) {
+        if (item.name !== "addCost" && item.name !== "applyAppDt") {
+          disabled = true;
+        }
+      }
+
+      return { ...item, disabled };
+    });
+  };
+
+  useEffect(() => {
+    setAddModalInfoList(getUpdatedCUDPopItems());
+  }, [newData.appDt, newData.id]);
+
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
+    const val = validReq(newData, unitTextureReq());
+    if (!val.isValid) {
+      showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, "error");
+      return;
+    }
+
     try {
       console.log(data);
       if (data?.id) {
-        const id = data.id;
+        const { appOriginDt, applyPrice, applyAppDt } = data.id;
         delete data.id;
 
         // 재질 수정
-        const result = await patchAPI(
-          {
-            type: "baseinfo",
-            utype: "tenant/",
-            url: "bp-texture",
-            jsx: "jsxcrud",
-          },
-          id,
-          {
-            ...data,
-            weight: Number(data.weight) * 0.01, // 가중치 수정 시 백분율 -> 소수점 변환
-            texture: {
-              id: data.texture,
-            },
-          }
-        );
+        const today = dayjs();
 
-        if (result.resultCode === "OK_0000") {
-          setNewOpen(false);
-          setResultFunc(
-            "success",
-            "재질 수정 성공",
-            "재질 수정이 완료되었습니다."
+        if (
+          newData.appOriginDt &&
+          (dayjs(newData.appDt).isBefore(today, "day") ||
+            dayjs(newData.appDt).isSame(today, "day"))
+        ) {
+          const result = await patchAPI(
+            {
+              type: "baseinfo",
+              utype: "tenant/",
+              url: "bp-texture",
+              jsx: "jsxcrud",
+            },
+            newData?.id ?? "",
+            {
+              addCost: newData.addCost,
+              appDt: newData.applyAppDt,
+            }
           );
+
+          if (result.resultCode === "OK_0000") {
+            setNewOpen(false);
+            setResultFunc(
+              "success",
+              "재질 수정 성공",
+              "재질 수정이 완료되었습니다."
+            );
+          } else {
+            setNewOpen(false);
+            setResultFunc(
+              "error",
+              "재질 수정 실패",
+              "재질 수정을 실패하였습니다."
+            );
+          }
         } else {
-          setNewOpen(false);
-          setResultFunc(
-            "error",
-            "재질 수정 실패",
-            "재질 수정을 실패하였습니다."
+          const { id, appOriginDt, applyPrice, applyAppDt } = newData;
+          const result = await patchAPI(
+            {
+              type: "baseinfo",
+              utype: "tenant/",
+              url: "bp-texture",
+              jsx: "jsxcrud",
+            },
+            newData?.id ?? "",
+            {
+              texture: { id: "" },
+              addCost: newData.addCost,
+            }
           );
+
+          if (result.resultCode === "OK_0000") {
+            setNewOpen(false);
+            setResultFunc(
+              "success",
+              "재질 수정 성공",
+              "재질 수정이 완료되었습니다."
+            );
+          } else {
+            setNewOpen(false);
+            setResultFunc(
+              "error",
+              "재질 수정 실패",
+              "재질 수정을 실패하였습니다."
+            );
+          }
         }
       } else {
         // 재질 등록
@@ -210,6 +298,64 @@ const BuyunitTextureListPage: React.FC & {
     }
   };
   // ----------- 신규 데이터 끝 -----------
+  const handleEditClick = async (record: unitTextureType) => {
+    const applyDataResult = await fetchApplyPriceData(record.id ?? "");
+    console.log("[applyDataResult]", applyDataResult);
+    const converted = setUnitTextureCUType(record);
+
+    // 기본값으로 현재 단가 설정
+    let currentData = {
+      ...converted,
+      applyPrice: record.addCost, // 기본값으로 현재 단가 설정
+    };
+
+    if (applyDataResult.resultCode === "OK_0000") {
+      const applyData = applyDataResult.data;
+      const applyDate = dayjs(applyData.applyDate);
+      const today = dayjs();
+
+      // 적용일이 오늘이거나 과거면 적용단가 정보 설정
+      if (applyDate.isBefore(today, "day") || applyDate.isSame(today, "day")) {
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.addCost ?? record.addCost, // 적용 단가로 설정
+        };
+      }
+
+      if (applyDataResult.resultCode === "OK_0000") {
+        const applyData = applyDataResult.data;
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.mapping?.addCost ?? record.addCost,
+          applyAppDt: applyData.applyDate ?? record.appDt,
+        };
+      }
+    }
+
+    setNewData(currentData);
+
+    const today = dayjs();
+    // 적용일 기준으로 다른 모달 아이템 표시
+    if (
+      record.appDt &&
+      (dayjs(record.appDt).isSame(today, "day") ||
+        dayjs(record.appDt).isBefore(today, "day"))
+    ) {
+      // 과거/오늘이면 적용단가 수정 폼 (추가비용만 수정 가능)
+      const applyItems = getUpdatedCUDPopItems(
+        MOCK.applyUnitTextureItems.CUDPopItems
+      );
+      setAddModalInfoList(applyItems);
+    } else {
+      // 미래면 기본 폼 (모든 필드 수정 가능)
+      const standardItems = getUpdatedCUDPopItems(
+        MOCK.unitTextureItems.CUDPopItems
+      );
+      setAddModalInfoList(standardItems);
+    }
+
+    setNewOpen(true);
+  };
 
   const handleDataDelete = async (id: string) => {
     try {
@@ -281,6 +427,9 @@ const BuyunitTextureListPage: React.FC & {
               className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
               onClick={() => {
                 setNewOpen(true);
+                setAddModalInfoList(MOCK.unitTextureItems.CUDPopItems);
+                setNewOpen(true);
+                setNewData(newUnitTextureCUType());
               }}
             >
               등록
@@ -307,10 +456,7 @@ const BuyunitTextureListPage: React.FC & {
                 render: (_, record) => (
                   <div
                     className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                    onClick={() => {
-                      setNewData(setUnitTextureCUType(record));
-                      setNewOpen(true);
-                    }}
+                    onClick={() => handleEditClick(record)}
                   >
                     {record.texture?.cdNm}
                   </div>
@@ -401,6 +547,7 @@ const BuyunitTextureListPage: React.FC & {
         hideCancel={true}
         theme="base"
       />
+      <ToastContainer />
     </>
   );
 };
