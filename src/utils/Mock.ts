@@ -83,19 +83,20 @@ const MOCK = {
         optionSource: "materialOptions",
       },
       {
-        name: "matNm",
-        label: "자재두께",
-        widthType: "full",
-        type: "select",
-        optionSource: "materialOptions",
-        disabled: true,
-      },
-      {
         name: "epoxy",
         label: "Epoxy",
         widthType: "full",
         type: "input",
         inputType: "number",
+        disabled: true,
+      },
+      {
+        name: "code",
+        label: "Code",
+        widthType: "full",
+        type: "input",
+        inputType: "number",
+        disabled: true,
       },
       {
         name: "name",
@@ -105,10 +106,10 @@ const MOCK = {
         optionSource: "copperList",
       },
       {
-        name: "name",
+        name: "copThk",
         label: "동박두께",
         widthType: "full",
-        type: "select",
+        type: "input",
         optionSource: "copperList",
         disabled: true,
       },
@@ -124,6 +125,7 @@ const MOCK = {
       },
     ],
   },
+
   MaterialListPage: {
     tableColumns: [],
     CUDPopItems: [
