@@ -3,7 +3,11 @@ import AntdTable from "@/components/List/AntdTable";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import { useEffect, useState } from "react";
-import { laminationMaterialType, setLaminationMaterialType, newLaminationMaterialType } from "@/data/type/base/lamination";
+import {
+  laminationMaterialType,
+  setLaminationMaterialType,
+  newLaminationMaterialType,
+} from "@/data/type/base/lamination";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { patchAPI } from "@/api/patch";
@@ -19,16 +23,20 @@ import { add } from "lodash";
 import test from "node:test";
 import { LamDtlTypeEm } from "@/data/type/enum";
 
-  const WkLaminationMaterialListPage: React.FC & {
-    layout?: (page: React.ReactNode) => React.ReactNode;
-  } = () => {
-    const { metarialSelectList } = useBase();
+const WkLaminationMaterialListPage: React.FC & {
+  layout?: (page: React.ReactNode) => React.ReactNode;
+} = () => {
+  const { metarialSelectList } = useBase();
 
   //등록 모달창을 위한 변수
-  const [ newOpen, setNewOpen ] = useState<boolean>(false);
-    //등록 모달창 데이터
-  const [ newData, setNewData ] = useState<laminationMaterialType>(newLaminationMaterialType);
-  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.MaterialListPage.CUDPopItems);
+  const [newOpen, setNewOpen] = useState<boolean>(false);
+  //등록 모달창 데이터
+  const [newData, setNewData] = useState<laminationMaterialType>(
+    newLaminationMaterialType
+  );
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
+    MOCK.MaterialListPage.CUDPopItems
+  );
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const router = useRouter();
@@ -40,40 +48,42 @@ import { LamDtlTypeEm } from "@/data/type/enum";
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
-  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
-  const [ resultType, setResultType ] = useState<AlertType>('info');
-  const [ resultTitle, setResultTitle ] = useState<string>('');
-  const [ resultText, setResultText ] = useState<string>('');
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<AlertType>("info");
+  const [resultTitle, setResultTitle] = useState<string>("");
+  const [resultText, setResultText] = useState<string>("");
   function setResultFunc(type: AlertType, title: string, text: string) {
     setResultOpen(true);
     setResultType(type);
     setResultTitle(title);
     setResultText(text);
   }
-  
-  const [ type, setType ] = useState<'cf' | 'pp' | 'ccl' | ''>('');
-  const [ data, setData ] = useState<Array<laminationMaterialType>>([]);
+
+  const [type, setType] = useState<"cf" | "pp" | "ccl" | "">("");
+  const [data, setData] = useState<Array<laminationMaterialType>>([]);
   const { data: queryData, refetch } = useQuery({
-    queryKey: ['lamination-material/jsxcrud/many', type, pagination.current],
+    queryKey: ["lamination-material/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'lamination-material/jsxcrud/many'   
-      },
-      { 
-        limit: pagination.size,
-        page: pagination.current,
-        anykeys: type === '' ? {} : {lamDtlTypeEm: type}
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "lamination-material/jsxcrud/many",
+        },
+        {
+          limit: pagination.size,
+          page: pagination.current,
+          anykeys: type === "" ? {} : { lamDtlTypeEm: type },
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
-        } else {
-        console.log('error:', result.response);
+      } else {
+        console.log("error:", result.response);
       }
 
       setDataLoading(false);
@@ -81,7 +91,6 @@ import { LamDtlTypeEm } from "@/data/type/enum";
       return result;
     },
   });
-  
 
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
@@ -97,27 +106,38 @@ import { LamDtlTypeEm } from "@/data/type/enum";
       delete payload.updatedAt;
 
       console.log(data);
-      if(data?.id){
+      if (data?.id) {
         const id = data.id;
-  
-        const result = await patchAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'lamination-material/',
-          jsx: 'jsxcrud'
-        },id, payload);
+
+        const result = await patchAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "lamination-material/",
+            jsx: "jsxcrud",
+          },
+          id,
+          payload
+        );
         console.log(result);
 
-        if(result.resultCode === 'OK_0000') {
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc('success', '적층 구조 수정 성공', '적층 구조 수정이 완료되었습니다.');
+          setResultFunc(
+            "success",
+            "적층 구조 수정 성공",
+            "적층 구조 수정이 완료되었습니다."
+          );
         } else {
           setNewOpen(false);
-          
-          setResultFunc('error', '적층 구조 수정 실패', '적층 구조 수정을 실패하였습니다.');
-        }
 
-      }else{
+          setResultFunc(
+            "error",
+            "적층 구조 수정 실패",
+            "적층 구조 수정을 실패하였습니다."
+          );
+        }
+      } else {
         const payload = {
           ...data,
           matNm: data.matNm,
@@ -126,60 +146,83 @@ import { LamDtlTypeEm } from "@/data/type/enum";
         delete payload.material;
         delete payload.createdAt;
         delete payload.updatedAt;
-        
-        console.log("🧾 최종 payload to send:", payload);
-        
-        const result = await postAPI({
-          type: 'baseinfo', 
-          utype: 'tenant/',
-          url: 'lamination-material/',
-          jsx: 'jsxcrud'
-        }, payload);
-        console.log(result);
-        console.log(result, JSON.stringify(payload), "result 테스트중 post부분");
 
-  
-        if(result.resultCode === 'OK_0000') {
+        console.log("🧾 최종 payload to send:", payload);
+
+        const result = await postAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "lamination-material/",
+            jsx: "jsxcrud",
+          },
+          payload
+        );
+        console.log(result);
+        console.log(
+          result,
+          JSON.stringify(payload),
+          "result 테스트중 post부분"
+        );
+
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc('success', '적층 구조 등록 성공', '적층 구조 등록이 완료되었습니다.');
+          setResultFunc(
+            "success",
+            "적층 구조 등록 성공",
+            "적층 구조 등록이 완료되었습니다."
+          );
         } else {
           setNewOpen(false);
-          setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
+          setResultFunc(
+            "error",
+            "적층 구조 등록 실패",
+            "적층 구조 등록을 실패하였습니다."
+          );
         }
       }
-    } catch(e) {
+    } catch (e) {
       setNewOpen(false);
-      setResultFunc('error', '적층 구조 등록 실패', '적층 구조 등록을 실패하였습니다.');
+      setResultFunc(
+        "error",
+        "적층 구조 등록 실패",
+        "적층 구조 등록을 실패하였습니다."
+      );
     }
-  }
+  };
   // ----------- 신규 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
     try {
-      const result = await deleteAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: 'lamination-material/',
-        jsx: 'jsxcrud'},
-        id,
+      const result = await deleteAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "lamination-material/",
+          jsx: "jsxcrud",
+        },
+        id
       );
       console.log(result);
 
-      if(result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setNewOpen(false);
-        setResultFunc('success', '삭제 성공', '적층 구조 삭제가 완료되었습니다.');
+        setResultFunc(
+          "success",
+          "삭제 성공",
+          "적층 구조 삭제가 완료되었습니다."
+        );
       } else {
         setNewOpen(false);
-        setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
+        setResultFunc("error", "삭제 실패", "적층 구조 삭제를 실패하였습니다.");
       }
-    }
-    catch(e) {
+    } catch (e) {
       setNewOpen(false);
-      setResultFunc('error', '삭제 실패', '적층 구조 삭제를 실패하였습니다.');
+      setResultFunc("error", "삭제 실패", "적층 구조 삭제를 실패하였습니다.");
     }
-  }
+  };
 
-  function modalClose(){
+  function modalClose() {
     setNewOpen(false);
     setNewData(newLaminationMaterialType);
   }
@@ -189,11 +232,11 @@ import { LamDtlTypeEm } from "@/data/type/enum";
     if (!metarialSelectList || metarialSelectList.length < 1) return;
 
     const arr = MOCK.MaterialListPage.CUDPopItems.map((item) => {
-      if (item.name === 'material') {
+      if (item.name === "material") {
         return {
-          key: 'id',
+          key: "id",
           ...item,
-          option: metarialSelectList
+          option: metarialSelectList,
         };
       }
 
@@ -202,136 +245,147 @@ import { LamDtlTypeEm } from "@/data/type/enum";
       };
     });
 
-    setAddModalInfoList(arr)
+    setAddModalInfoList(arr);
   }, [metarialSelectList]);
   return (
     <>
-      {dataLoading && 
+      {dataLoading && (
         <div className="w-full h-[90vh] v-h-center">
-          <Spin tip="Loading..."/>
+          <Spin tip="Loading..." />
         </div>
-      }
-      {!dataLoading &&
-      <>
-        <div className="v-between-h-center pb-20">
-          <div className="flex gap-10">
-            <p>총 {totalData}건</p>
-            <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => setType('')}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => setType('cf')}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => setType('pp')}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => setType('ccl')}>CCL</Radio.Button>
-            </Radio.Group>
+      )}
+      {!dataLoading && (
+        <>
+          <div className="v-between-h-center pb-20">
+            <div className="flex gap-10">
+              <p>총 {totalData}건</p>
+              <Radio.Group
+                value={type ? type : ""}
+                size="small"
+                className="custom-radio-group"
+              >
+                <Radio.Button value="" onClick={() => setType("")}>
+                  전체
+                </Radio.Button>
+                <Radio.Button value="cf" onClick={() => setType("cf")}>
+                  C/F
+                </Radio.Button>
+                <Radio.Button value="pp" onClick={() => setType("pp")}>
+                  P/P
+                </Radio.Button>
+                <Radio.Button value="ccl" onClick={() => setType("ccl")}>
+                  CCL
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+            <div
+              className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
+              onClick={() => {
+                setNewData({
+                  ...newLaminationMaterialType(),
+                  lamDtlTypeEm: type === "" ? null : (type as LamDtlTypeEm), //유형 선택칸 들어가서 등록 누를 시 유형에 자동으로 값 들어가게 설정
+                });
+                setNewOpen(true);
+              }}
+            >
+              등록
+            </div>
           </div>
-          <div
-            className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-            onClick={() => {
-              setNewData({
-                ...newLaminationMaterialType(),
-                lamDtlTypeEm: type === "" ? null : type as LamDtlTypeEm, //유형 선택칸 들어가서 등록 누를 시 유형에 자동으로 값 들어가게 설정
-              });
-              setNewOpen(true);
-            }}
-          >
-            등록
-          </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '유형',
-              width: 130,
-              dataIndex: 'lamDtlTypeEm',
-              key: 'lamDtlTypeEm',
-              align: 'center',
-              render: (_, record) => (
-                <div
-                  className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                  onClick={()=>{
-                    setNewData(setLaminationMaterialType(record));
-                    setNewOpen(true);
-                  }}
-                >
-                  {record.lamDtlTypeEm}
-                </div>
-              )
-            },
-            {
-              title: '재질',
-              dataIndex: 'matNm',
-              key: 'matNm',
-              align: 'center',
-              render: (_, record) => (
-                <div>
-                  {record.matNm}
-                </div>
-              )
-            },
-            
-            {
-              title: 'Epoxy',
-              width: 130,
-              dataIndex: 'epoxy',
-              key: 'epoxy',
-              align: 'center',
-              render: (_, record) => (
-                <div>
-                  {record.epoxy}
-                </div>
-              )
-            },
-            {
-              title: '코드',
-              width: 130,
-              dataIndex: 'code',
-              key: 'code',
-              align: 'center',
-              render: (_, record) => (
-                <div>
-                  {record.code}
-                </div>
-              )
-            },
-          ]}
-          data={data}
-        />
 
-        <div className="w-full h-100 h-center justify-end">
-          <AntdSettingPagination
-            current={pagination.current}
-            total={totalData}
-            size={pagination.size}
-            onChange={handlePageChange}
+          <AntdTable
+            columns={[
+              {
+                title: "No",
+                width: 50,
+                dataIndex: "no",
+                render: (_: any, __: any, index: number) =>
+                  totalData -
+                  ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                align: "center",
+              },
+              {
+                title: "유형",
+                width: 130,
+                dataIndex: "lamDtlTypeEm",
+                key: "lamDtlTypeEm",
+                align: "center",
+                render: (_, record) => <div>{record.lamDtlTypeEm}</div>,
+              },
+              {
+                title: "재질",
+                dataIndex: "matNm",
+                key: "matNm",
+                align: "center",
+                render: (_, record) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    onClick={() => {
+                      setNewData(setLaminationMaterialType(record));
+                      setNewOpen(true);
+                    }}
+                  >
+                    {record.matNm}
+                  </div>
+                ),
+              },
+
+              {
+                title: "Epoxy",
+                width: 130,
+                dataIndex: "epoxy",
+                key: "epoxy",
+                align: "center",
+                render: (_, record) => <div>{record.epoxy}</div>,
+              },
+              {
+                title: "코드",
+                width: 130,
+                dataIndex: "code",
+                key: "code",
+                align: "center",
+                render: (_, record) => <div>{record.code}</div>,
+              },
+            ]}
+            data={data}
           />
-        </div>
-      </>}
+
+          <div className="w-full h-100 h-center justify-end">
+            <AntdSettingPagination
+              current={pagination.current}
+              total={totalData}
+              size={pagination.size}
+              onChange={handlePageChange}
+            />
+          </div>
+        </>
+      )}
 
       <BaseInfoCUDModal
-        title={{ name: `적층구조 자재 ${newData?.id ? '수정' : '등록'}`, icon: <Bag /> }}
-        open={newOpen} 
-        setOpen={setNewOpen} 
+        title={{
+          name: `적층구조 자재 ${newData?.id ? "수정" : "등록"}`,
+          icon: <Bag />,
+        }}
+        open={newOpen}
+        setOpen={setNewOpen}
         onClose={() => modalClose()}
-        items={addModalInfoList} 
+        items={addModalInfoList}
         data={newData}
         onSubmit={handleSubmitNewData}
-        onDelete={handleDataDelete}/>
-        
+        onDelete={handleDataDelete}
+      />
 
-        <AntdAlertModal
+      <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
         title={resultTitle}
         contents={resultText}
-        type={resultType} 
-        onOk={()=>{
+        type={resultType}
+        onOk={() => {
           refetch();
           setResultOpen(false);
           setNewData(newLaminationMaterialType);
@@ -340,23 +394,20 @@ import { LamDtlTypeEm } from "@/data/type/enum";
         theme="base"
       />
     </>
-  )
-}
-
-
-
+  );
+};
 
 WkLaminationMaterialListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'70px'}}
+  <SettingPageLayout
+    styles={{ pd: "70px" }}
     menu={[
-      { text: '적층구조 요소', link: '/setting/wk/lamination/source' },
-      { text: '적층구조 자재', link: '/setting/wk/lamination/material' },
-      { text: '적층구조 동박', link: '/setting/wk/lamination/copper' },
-    
+      { text: "적층구조 요소", link: "/setting/wk/lamination/source" },
+      { text: "적층구조 자재", link: "/setting/wk/lamination/material" },
+      { text: "적층구조 동박", link: "/setting/wk/lamination/copper" },
     ]}
   >
     {page}
   </SettingPageLayout>
-)
+);
 
 export default WkLaminationMaterialListPage;
