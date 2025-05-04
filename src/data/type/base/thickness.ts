@@ -12,6 +12,7 @@ export type unitThicknessType = {
   weight?: number;
   addCost?: number;
   ordNo?: number;
+  appDt?: Date | Dayjs | null;
   useYn?: boolean;
 };
 
@@ -25,6 +26,7 @@ export const setUnitThicknessType = (data: any): unitThicknessType => {
     weight: data.weight,
     addCost: data.addCost,
     ordNo: data.ordNo,
+    appDt: data.appDt,
     useYn: data.useYn,
   };
 };
