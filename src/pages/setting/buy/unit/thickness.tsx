@@ -69,7 +69,6 @@ const BuyUnitThicknessListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<unitThicknessType>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
     queryKey: ["add-thickness-price/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
@@ -291,7 +290,7 @@ const BuyUnitThicknessListPage: React.FC & {
   const handleEditClick = async (record: unitThicknessCUType) => {
     const applyDataResult = await fetchApplyData(record.id ?? "");
     const converted = convertCUType(record);
-
+    console.log("!!!!!", converted);
     // 기본값으로 현재 단가 설정
     let currentData = {
       ...converted,
