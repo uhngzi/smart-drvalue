@@ -34,6 +34,7 @@ interface Props {
 
   max?: number;
   acceptType?: string[];
+  maxSizeMB?: number;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -70,6 +71,7 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
 
   max,
   acceptType,
+  maxSizeMB,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -81,6 +83,14 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
       if (max && fileList.length + fileListNew.length > max) {
         showToast(`최대 ${max}개의 파일만 업로드할 수 있습니다.`, "error");
         return false; // 업로드 무시
+      }
+
+      if (maxSizeMB && file.size / 1024 / 1024 > maxSizeMB) {
+        showToast(
+          `파일 크기는 최대 ${maxSizeMB}MB까지만 업로드할 수 있습니다.`,
+          "error"
+        );
+        return false;
       }
 
       // 타입 체크
@@ -99,7 +109,6 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
           `지원하지 않는 파일 형식입니다. (${readableTypes} 형식의 파일만 첨부 가능합니다)`,
           "error"
         );
-        return false;
         return false;
       }
 

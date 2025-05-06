@@ -1103,6 +1103,7 @@ const QualityReportsPage: React.FC & {
                     defaultHeight={"auto"}
                     max={1}
                     acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>
@@ -1174,6 +1175,7 @@ const QualityReportsPage: React.FC & {
                     defaultHeight={"auto"}
                     max={1}
                     acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>

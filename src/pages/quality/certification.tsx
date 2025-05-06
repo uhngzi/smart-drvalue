@@ -1076,6 +1076,7 @@ const QualityCertificationPage: React.FC & {
                     defaultHeight={"auto"}
                     max={1}
                     acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>
@@ -1165,6 +1166,7 @@ const QualityCertificationPage: React.FC & {
                     defaultHeight={"auto"}
                     max={1}
                     acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>
