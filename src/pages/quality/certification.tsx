@@ -1075,6 +1075,7 @@ const QualityCertificationPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
                   />
                 </div>
               </>
@@ -1163,6 +1164,7 @@ const QualityCertificationPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
                   />
                 </div>
               </>

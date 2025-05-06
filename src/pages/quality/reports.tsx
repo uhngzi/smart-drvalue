@@ -1102,6 +1102,7 @@ const QualityReportsPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
                   />
                 </div>
               </>
@@ -1172,6 +1173,7 @@ const QualityReportsPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
                   />
                 </div>
               </>

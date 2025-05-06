@@ -33,6 +33,7 @@ interface Props {
   defaultHeight?: number | string;
 
   max?: number;
+  acceptType?: string[];
 }
 
 const CustomDragger = styled(Dragger)`
@@ -68,6 +69,7 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
   defaultHeight,
 
   max,
+  acceptType,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -80,6 +82,27 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
         showToast(`최대 ${max}개의 파일만 업로드할 수 있습니다.`, "error");
         return false; // 업로드 무시
       }
+
+      // 타입 체크
+      if (
+        acceptType &&
+        !acceptType.some((typePrefix) => file.type.startsWith(typePrefix))
+      ) {
+        const readableTypes = acceptType
+          .map((type) => {
+            if (type === "image/") return "이미지";
+            if (type === "application/pdf") return "PDF";
+            return type;
+          })
+          .join(", ");
+        showToast(
+          `지원하지 않는 파일 형식입니다. (${readableTypes} 형식의 파일만 첨부 가능합니다)`,
+          "error"
+        );
+        return false;
+        return false;
+      }
+
       return true;
     },
     onChange: async (info) => {
