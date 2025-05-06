@@ -57,6 +57,11 @@ import Print from "@/assets/svg/icons/print.svg";
 import Open from "@/assets/svg/icons/s_open_window.svg";
 import BlueCheck from "@/assets/svg/icons/blue_check.svg";
 
+import dynamic from "next/dynamic";
+const PdfView = dynamic(() => import("@/contents/quality/PdfView"), {
+  ssr: false,
+});
+
 const QualityReportsPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -235,9 +240,6 @@ const QualityReportsPage: React.FC & {
   // ------------ 디테일 데이터 세팅 ------------ 끝
 
   // --------------- 파일 세팅 --------------- 시작
-  useEffect(() => {
-    console.log(selectImage);
-  }, [selectImage]);
   const [fileList, setFileList] = useState<any[]>([]);
   const [fileIdList, setFileIdList] = useState<string[]>([]);
 
@@ -872,25 +874,15 @@ const QualityReportsPage: React.FC & {
                 detailContents.length > 0 &&
                 fileList.length > 0 && (
                   <>
-                    {fileList[0].type === "application/pdf" ? (
-                      <iframe
-                        src={`https://docs.google.com/gview?url=${encodeURIComponent(
-                          `${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`
-                        )}&embedded=true`}
-                        style={{
-                          width: `${previewWidth}px`,
-                          height: "calc(85vh - 60px)",
-                          border: "none",
-                        }}
-                        title="PDF Viewer"
-                      />
+                    {fileList[0]?.type === "application/pdf" ? (
+                      <PdfView selectImage={selectImage} />
                     ) : (
                       <Image
                         src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
                         fill
                         sizes={`${previewWidth}px`}
                         style={{ objectFit: "contain" }}
-                        alt={""}
+                        alt=""
                       />
                     )}
                   </>
