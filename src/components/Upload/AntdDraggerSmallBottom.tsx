@@ -84,18 +84,20 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
     },
     onChange: async (info) => {
       const { status } = info.file;
-      console.log("info.file", info.file);
 
       if (status === "error") {
-        message.error(`${info.file.name} 파일 업로드에 실패했습니다.`);
-        Modal.error({
-          title: "업로드 실패",
-          content: "업로드에 실패하였습니다.",
-        });
+        showToast(
+          "파일 업로드에 실패했습니다. 잠시 후에 다시 시도해주세요.",
+          "error"
+        );
       }
 
       if (info.file.status === "done") {
-        console.log("info.file.response", info.file.response);
+        if (info.file.response?.resultCode !== "OK_0000") {
+          showToast(`${info?.file?.response?.message}`, "error");
+          return;
+        }
+
         const filesNm = (info.file.response.data ?? []).map((file: any) => {
           return file?.uploadEntityResult?.storageName;
         });
