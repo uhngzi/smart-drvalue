@@ -838,7 +838,11 @@ const QualityCertificationPage: React.FC & {
                 fileList.length > 0 && (
                   <>
                     {fileList[0]?.type === "application/pdf" ? (
-                      <PdfView selectImage={selectImage} />
+                      <PdfView
+                        selectImage={selectImage}
+                        fileName={fileList[0]?.originalName ?? ""}
+                        width={previewWidth}
+                      />
                     ) : (
                       <Image
                         src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
