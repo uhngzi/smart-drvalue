@@ -1,13 +1,7 @@
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 dayjs.extend(isSameOrBefore);
-import MainPageLayout from "@/layouts/Main/MainPageLayout";
-import AntdTableEdit from "@/components/List/AntdTableEdit";
-import { useMenu } from "@/data/context/MenuContext";
-import { useUser } from "@/data/context/UserContext";
-import { List } from "@/layouts/Body/List";
-import { ListPagination } from "@/layouts/Body/Pagination";
-import useToast from "@/utils/useToast";
+
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -16,6 +10,41 @@ import {
   reportsType,
 } from "@/data/type/quality/reports";
 import { Button, Dropdown, Space } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { CloseOutlined, HolderOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import cookie from "cookiejs";
+import Image from "next/image";
+import { port } from "../_app";
+import { getAPI } from "@/api/get";
+import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
+import { getPrtCsAPI } from "@/api/cache/client";
+import { baseURL, cookieName } from "@/api/lib/config";
+
+import useToast from "@/utils/useToast";
+import { validReq } from "@/utils/valid";
+
+import { List } from "@/layouts/Body/List";
+import { ListPagination } from "@/layouts/Body/Pagination";
+import MainPageLayout from "@/layouts/Main/MainPageLayout";
+
+import AntdTableEdit from "@/components/List/AntdTableEdit";
+import AntdAlertModal from "@/components/Modal/AntdAlertModal";
+import FullChip from "@/components/Chip/FullChip";
+import AntdModal from "@/components/Modal/AntdModal";
+import LabelItem from "@/components/Text/LabelItem";
+import AntdInput from "@/components/Input/AntdInput";
+import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
+import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
+import AntdDraggerSmallBottom from "@/components/Upload/AntdDraggerSmallBottom";
+import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
+
+import { useMenu } from "@/data/context/MenuContext";
+import { useUser } from "@/data/context/UserContext";
+import { selectType } from "@/data/type/componentStyles";
+import { partnerRType } from "@/data/type/base/partner";
 
 import Edit from "@/assets/svg/icons/edit.svg";
 import Trash from "@/assets/svg/icons/trash.svg";
@@ -27,30 +56,6 @@ import Download from "@/assets/svg/icons/s_download.svg";
 import Print from "@/assets/svg/icons/print.svg";
 import Open from "@/assets/svg/icons/s_open_window.svg";
 import BlueCheck from "@/assets/svg/icons/blue_check.svg";
-import AntdAlertModal from "@/components/Modal/AntdAlertModal";
-import { CloseOutlined, HolderOutlined } from "@ant-design/icons";
-import { deleteAPI } from "@/api/delete";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "@/api/get";
-import FullChip from "@/components/Chip/FullChip";
-import AntdModal from "@/components/Modal/AntdModal";
-import LabelItem from "@/components/Text/LabelItem";
-import AntdInput from "@/components/Input/AntdInput";
-import CustomAutoComplete from "@/components/AutoComplete/CustomAutoComplete";
-import { selectType } from "@/data/type/componentStyles";
-import { getPrtCsAPI } from "@/api/cache/client";
-import { partnerRType } from "@/data/type/base/partner";
-import TextArea from "antd/es/input/TextArea";
-import AntdDatePicker from "@/components/DatePicker/AntdDatePicker";
-import AntdDraggerSmallBottom from "@/components/Upload/AntdDraggerSmallBottom";
-import { validReq } from "@/utils/valid";
-import { postAPI } from "@/api/post";
-import { patchAPI } from "@/api/patch";
-import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
-import { baseURL, cookieName } from "@/api/lib/config";
-import cookie from "cookiejs";
-import { port } from "../_app";
-import Image from "next/image";
 
 const QualityReportsPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -230,8 +235,12 @@ const QualityReportsPage: React.FC & {
   // ------------ 디테일 데이터 세팅 ------------ 끝
 
   // --------------- 파일 세팅 --------------- 시작
+  useEffect(() => {
+    console.log(selectImage);
+  }, [selectImage]);
   const [fileList, setFileList] = useState<any[]>([]);
   const [fileIdList, setFileIdList] = useState<string[]>([]);
+
   useEffect(() => {
     if (fileIdList.length > 0)
       setDetail({
@@ -859,15 +868,33 @@ const QualityReportsPage: React.FC & {
                 height: "calc(85vh - 60px)", // 높이 고정
               }}
             >
-              {detailContents && detailContents.length > 0 && (
-                <Image
-                  src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
-                  fill
-                  sizes={`${previewWidth}px`}
-                  style={{ objectFit: "contain" }}
-                  alt={""}
-                />
-              )}
+              {detailContents &&
+                detailContents.length > 0 &&
+                fileList.length > 0 && (
+                  <>
+                    {fileList[0].type === "application/pdf" ? (
+                      <iframe
+                        src={`https://docs.google.com/gview?url=${encodeURIComponent(
+                          `${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`
+                        )}&embedded=true`}
+                        style={{
+                          width: `${previewWidth}px`,
+                          height: "calc(85vh - 60px)",
+                          border: "none",
+                        }}
+                        title="PDF Viewer"
+                      />
+                    ) : (
+                      <Image
+                        src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
+                        fill
+                        sizes={`${previewWidth}px`}
+                        style={{ objectFit: "contain" }}
+                        alt={""}
+                      />
+                    )}
+                  </>
+                )}
               {historyOpen && (
                 <div className="bg-[#00000050] w-1/2 h-full absolute top-0 right-0 z-10 px-10 gap-10 flex flex-col">
                   <div className="h-40 v-between-h-center">
