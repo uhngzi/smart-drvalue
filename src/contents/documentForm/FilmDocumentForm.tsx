@@ -1,6 +1,8 @@
 import { getAPI } from "@/api/get";
 import { baseURL } from "@/api/lib/config";
+import FullChip from "@/components/Chip/FullChip";
 import { companyType } from "@/data/type/base/company";
+import { HotGrade, ModelStatus } from "@/data/type/enum";
 import { wkPlanWaitType } from "@/data/type/wk/plan";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -143,7 +145,7 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 <th className={titleTableStyle + " bg-[#EEEEEE80] font-normal"}>
                   작성일
                 </th>
-                <td className={titleTableStyle}>내용</td>
+                <td className={titleTableStyle}></td>
               </tr>
               <tr className="border-t border-b border-[#D9D9D9]">
                 <th className={titleTableStyle + " bg-[#EEEEEE80] font-normal"}>
@@ -188,7 +190,7 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
             <tr className="border-t border-b border-[#D9D9D9]">
               <td className={defaultInfoTbodyStyle + " bg-[#FEFBAD80]"}>1</td>
               <td className={defaultInfoTbodyStyle + " border-l"}>
-                {formData?.specModel?.fpNo}
+                {formData?.specModel?.prdMngNo}
               </td>
               <td className={defaultInfoTbodyStyle + " border-l"}>
                 {formData?.specModel?.partner?.prtNm}
@@ -214,7 +216,13 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
             <tbody>
               <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>투입구분</th>
-                <td className={defaultSpecTdStyle}></td>
+                <td className={defaultSpecTdStyle}>
+                  {formData?.orderProduct?.modelStatus === ModelStatus.MODIFY
+                    ? "수정"
+                    : formData?.orderProduct?.modelStatus === ModelStatus.REPEAT
+                    ? "반복"
+                    : "신규"}
+                </td>
               </tr>
               <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>층수</th>
@@ -332,19 +340,27 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
               <tbody>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>회로두께</th>
-                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>1</td>
+                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
+                    {formData?.specModel?.specLine}
+                  </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>회로간격</th>
-                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>1</td>
+                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
+                    {formData?.specModel?.specSpace}
+                  </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>드릴(￠)</th>
-                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>1</td>
+                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
+                    {formData?.specModel?.specDr}
+                  </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>랜드(￠)</th>
-                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>1</td>
+                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
+                    {formData?.specModel?.specPad}
+                  </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle + " border-b"}>
                   <th className={arrAndSpecThStyle + " px-8"}>난이도</th>
@@ -386,7 +402,11 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 원판
               </th>
               <td className="max-w-[110px] w-[110px] h-36 text-10 text-center">
-                {formData?.specModel?.board?.brdType}
+                {/* {formData?.specModel?.board?.brdType} */}
+                {formData?.specModel?.board?.brdDesc}
+                <br />
+                {formData?.specModel?.board?.brdW} *{" "}
+                {formData?.specModel?.board?.brdH}
               </td>
             </tr>
           </table>
