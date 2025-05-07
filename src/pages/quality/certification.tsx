@@ -56,6 +56,11 @@ import Print from "@/assets/svg/icons/print.svg";
 import Open from "@/assets/svg/icons/s_open_window.svg";
 import BlueCheck from "@/assets/svg/icons/blue_check.svg";
 
+import dynamic from "next/dynamic";
+const PdfView = dynamic(() => import("@/contents/quality/PdfView"), {
+  ssr: false,
+});
+
 const QualityCertificationPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
@@ -828,15 +833,27 @@ const QualityCertificationPage: React.FC & {
                 height: "calc(85vh - 60px)", // 높이 고정
               }}
             >
-              {detailContents && detailContents.length > 0 && (
-                <Image
-                  src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
-                  fill
-                  sizes={`${previewWidth}px`}
-                  style={{ objectFit: "contain" }}
-                  alt={""}
-                />
-              )}
+              {detailContents &&
+                detailContents.length > 0 &&
+                fileList.length > 0 && (
+                  <>
+                    {fileList[0]?.type === "application/pdf" ? (
+                      <PdfView
+                        selectImage={selectImage}
+                        fileName={fileList[0]?.originalName ?? ""}
+                        width={previewWidth}
+                      />
+                    ) : (
+                      <Image
+                        src={`${baseURL}file-mng/v1/every/file-manager/download/${selectImage}`}
+                        fill
+                        sizes={`${previewWidth}px`}
+                        style={{ objectFit: "contain" }}
+                        alt=""
+                      />
+                    )}
+                  </>
+                )}
               {historyOpen && (
                 <div className="bg-[#00000050] w-1/2 h-full absolute top-0 right-0 z-10 px-10 gap-10 flex flex-col">
                   <div className="h-40 v-between-h-center">
@@ -1058,6 +1075,8 @@ const QualityCertificationPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>
@@ -1146,6 +1165,8 @@ const QualityCertificationPage: React.FC & {
                     setFileIdList={setFileIdList}
                     defaultHeight={"auto"}
                     max={1}
+                    acceptType={["image/", "application/pdf"]}
+                    maxSizeMB={50}
                   />
                 </div>
               </>

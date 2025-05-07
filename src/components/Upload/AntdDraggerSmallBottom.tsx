@@ -33,6 +33,8 @@ interface Props {
   defaultHeight?: number | string;
 
   max?: number;
+  acceptType?: string[];
+  maxSizeMB?: number;
 }
 
 const CustomDragger = styled(Dragger)`
@@ -68,6 +70,8 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
   defaultHeight,
 
   max,
+  acceptType,
+  maxSizeMB,
 }) => {
   const { showToast, ToastContainer } = useToast();
 
@@ -80,22 +84,52 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
         showToast(`최대 ${max}개의 파일만 업로드할 수 있습니다.`, "error");
         return false; // 업로드 무시
       }
+
+      if (maxSizeMB && file.size / 1024 / 1024 > maxSizeMB) {
+        showToast(
+          `파일 크기는 최대 ${maxSizeMB}MB까지만 업로드할 수 있습니다.`,
+          "error"
+        );
+        return false;
+      }
+
+      // 타입 체크
+      if (
+        acceptType &&
+        !acceptType.some((typePrefix) => file.type.startsWith(typePrefix))
+      ) {
+        const readableTypes = acceptType
+          .map((type) => {
+            if (type === "image/") return "이미지";
+            if (type === "application/pdf") return "PDF";
+            return type;
+          })
+          .join(", ");
+        showToast(
+          `지원하지 않는 파일 형식입니다. (${readableTypes} 형식의 파일만 첨부 가능합니다)`,
+          "error"
+        );
+        return false;
+      }
+
       return true;
     },
     onChange: async (info) => {
       const { status } = info.file;
-      console.log("info.file", info.file);
 
       if (status === "error") {
-        message.error(`${info.file.name} 파일 업로드에 실패했습니다.`);
-        Modal.error({
-          title: "업로드 실패",
-          content: "업로드에 실패하였습니다.",
-        });
+        showToast(
+          "파일 업로드에 실패했습니다. 잠시 후에 다시 시도해주세요.",
+          "error"
+        );
       }
 
       if (info.file.status === "done") {
-        console.log("info.file.response", info.file.response);
+        if (info.file.response?.resultCode !== "OK_0000") {
+          showToast(`${info?.file?.response?.message}`, "error");
+          return;
+        }
+
         const filesNm = (info.file.response.data ?? []).map((file: any) => {
           return file?.uploadEntityResult?.storageName;
         });
