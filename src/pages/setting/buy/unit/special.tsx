@@ -235,7 +235,7 @@ const BuyUnitSpecialListPage: React.FC & {
           id,
           {
             ...patchData,
-            weight: Number(data.weight) * 0.01, // 가중치 수정 시 백분율 -> 소수점 변환
+            weight: Number(data.weight) * 0.01, // 가중치(추가 비율) 수정 시 백분율 -> 소수점 변환
           }
         );
         console.log(result);
@@ -267,7 +267,7 @@ const BuyUnitSpecialListPage: React.FC & {
           },
           {
             ...newData,
-            weight: Number(newData.weight) * 0.01, // 가중치 등록 시 백분율 -> 소수점 변환
+            weight: Number(newData.weight) * 0.01, // 가중치(추가 비율) 등록 시 백분율 -> 소수점 변환
             process: {
               id: newData.process,
             },
@@ -332,7 +332,7 @@ const BuyUnitSpecialListPage: React.FC & {
     // 기본값으로 현재 단가 설정
     let currentData = {
       ...converted,
-      weight: Number(record.weight) * 100, // 가중치 -> 백분율 형태로 보여줌
+      weight: parseFloat((Number(record.weight) * 100).toFixed(1)), // 가중치(추가 비율) -> 백분율 형태로 보여줌
       applyPrice: record.addCost, // 기본값으로 현재 단가 설정
     };
 
@@ -558,7 +558,8 @@ const BuyUnitSpecialListPage: React.FC & {
                 align: "center",
                 render: (value: number) => (
                   <div>
-                    {value * 100} {/* 가중치 -> 백분율 형태로 보여줌 */}
+                    {parseFloat((value * 100).toFixed(1))}
+                    {/* 가중치(추가 비율) -> 백분율 형태로 보여줌 */}
                   </div>
                 ),
               },
