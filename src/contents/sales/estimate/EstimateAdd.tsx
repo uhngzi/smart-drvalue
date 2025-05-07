@@ -487,7 +487,7 @@ const EstimateAddLayout = () => {
       win?.document.write(`
         <html>
           <head>
-            <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+            <title>견적서_${dayjs().format("YYYYMMDD")}</title>
             <style>
               @page {
                 size: A4;

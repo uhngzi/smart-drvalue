@@ -230,7 +230,7 @@ const WkPlanWaitPage: React.FC & {
       win?.document.write(`
             <html>
               <head>
-                <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+                <title>FILM제작의뢰서_${dayjs().format("YYYYMMDD")}</title>
                 <style>
                   @page {
                     size: A4;
