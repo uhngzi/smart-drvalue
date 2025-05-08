@@ -790,7 +790,7 @@ const SayangSampleAddPage: React.FC & {
                   </Popup>
                 </div>
               )}
-              {cookie.get("companySY") !== "sy" && (
+              {(cookie.get("companySY") !== "sy" || port !== "90") && (
                 <div className="flex gap-40 flex-row">
                   <Popup className="!w-[300px] flex-grow-[20]">
                     {/* 적층 구조 */}
