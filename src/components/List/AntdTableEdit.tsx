@@ -1040,7 +1040,7 @@ const AntdTableStyled = styled.div<{
       text-align: center;
       font-weight: ${({ $thFontWeight }) => $thFontWeight};
       font-size: ${({ $fs }) => $fs};
-      color: #444444;
+      color: #000000;
       background-color: transparent;
       border: 0;
       ::before {
@@ -1078,7 +1078,7 @@ const AntdTableStyled = styled.div<{
       text-align: ${({ $tdTextAlign }) => $tdTextAlign};
       font-weight: 400;
       font-size: ${({ $fs }) => $fs};
-      color: #444444;
+      color: #000000;
     }
 
     & tr:last-child td {
