@@ -592,7 +592,9 @@ const WKStatusProcPage: {
                     </DescriptionItems>
                   </Description>
                 )}
-                {cookie.get("companySY") !== "sy" && (
+                {(port === "3000"
+                  ? cookie.get("companySY") !== "sy"
+                  : port !== "90") && (
                   <Description separatorColor="#e7e7ed">
                     <DescriptionItems3
                       height="20"

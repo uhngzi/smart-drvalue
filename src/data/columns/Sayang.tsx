@@ -867,63 +867,63 @@ export const sayangSampleWaitAddClmn = (
     key: "layer",
     align: "center",
     width: 55,
-    render:
-      cookie.get("companySY") !== "sy"
-        ? undefined
-        : (_, record: specModelType) => (
-            <div className={divTopClass}>
-              <div className={divClass}>
-                <AntdInputFill
-                  value={record.thk}
-                  onChange={(e) =>
-                    handleModelDataChange(record.id, "thk", e.target.value)
-                  }
-                  type="number"
-                  tabIndex={(record?.index ?? 1) * 40 + 2}
-                  disabled={view ? true : false}
-                />
-              </div>
+    render: (port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90")
+      ? undefined
+      : (_, record: specModelType) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.thk}
+                onChange={(e) =>
+                  handleModelDataChange(record.id, "thk", e.target.value)
+                }
+                type="number"
+                tabIndex={(record?.index ?? 1) * 40 + 2}
+                disabled={view ? true : false}
+              />
             </div>
-          ),
-    children:
-      cookie.get("companySY") !== "sy"
-        ? [
-            {
-              title: "두께(T)",
-              width: 55,
-              dataIndex: "thic_layer",
-              key: "thic_layer",
-              align: "center",
+          </div>
+        ),
+    children: (
+      port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90"
+    )
+      ? [
+          {
+            title: "두께(T)",
+            width: 55,
+            dataIndex: "thic_layer",
+            key: "thic_layer",
+            align: "center",
 
-              render: (_, record: specModelType) => (
-                <div className={divTopClass}>
-                  <div className={divClass + "mb-3"}>
-                    <AntdSelectFill
-                      options={generateFloorOptions()}
-                      value={record.layerEm}
-                      onChange={(e) =>
-                        handleModelDataChange(record.id, "layerEm", e)
-                      }
-                      tabIndex={(record?.index ?? 1) * 40 + 1}
-                      disabled={view ? true : false}
-                    />
-                  </div>
-                  <div className={divClass}>
-                    <AntdInputFill
-                      value={record.thk}
-                      onChange={(e) =>
-                        handleModelDataChange(record.id, "thk", e.target.value)
-                      }
-                      type="number"
-                      tabIndex={(record?.index ?? 1) * 40 + 2}
-                      disabled={view ? true : false}
-                    />
-                  </div>
+            render: (_, record: specModelType) => (
+              <div className={divTopClass}>
+                <div className={divClass + "mb-3"}>
+                  <AntdSelectFill
+                    options={generateFloorOptions()}
+                    value={record.layerEm}
+                    onChange={(e) =>
+                      handleModelDataChange(record.id, "layerEm", e)
+                    }
+                    tabIndex={(record?.index ?? 1) * 40 + 1}
+                    disabled={view ? true : false}
+                  />
                 </div>
-              ),
-            },
-          ]
-        : undefined,
+                <div className={divClass}>
+                  <AntdInputFill
+                    value={record.thk}
+                    onChange={(e) =>
+                      handleModelDataChange(record.id, "thk", e.target.value)
+                    }
+                    type="number"
+                    tabIndex={(record?.index ?? 1) * 40 + 2}
+                    disabled={view ? true : false}
+                  />
+                </div>
+              </div>
+            ),
+          },
+        ]
+      : undefined,
   },
   {
     title: "동박두께",
@@ -1628,7 +1628,7 @@ export const sayangSampleWaitAddClmn = (
     key: "cnt",
     align: "center",
     render: (_, record: specModelType) =>
-      cookie.get("companySY") !== "sy" ? (
+      (port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90") ? (
         <div className={divTopClass}>
           <AutoHideTooltip title="수주량" className="w-full">
             <div className={divClass + " !w-full !justify-end gap-5"}>
@@ -1638,7 +1638,13 @@ export const sayangSampleWaitAddClmn = (
                 ).toLocaleString()}
               </div>
               <div className="!min-w-25 !w-25 !text-12">
-                {cookie.get("companySY") !== "sy" ? "PCS" : "EA"}
+                {(
+                  port === "3000"
+                    ? cookie.get("companySY") !== "sy"
+                    : port !== "90"
+                )
+                  ? "PCS"
+                  : "EA"}
               </div>
             </div>
           </AutoHideTooltip>

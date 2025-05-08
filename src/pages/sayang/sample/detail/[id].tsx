@@ -790,7 +790,9 @@ const SayangSampleAddPage: React.FC & {
                   </Popup>
                 </div>
               )}
-              {(cookie.get("companySY") !== "sy" || port !== "90") && (
+              {(port === "3000"
+                ? cookie.get("companySY") !== "sy"
+                : port !== "90") && (
                 <div className="flex gap-40 flex-row">
                   <Popup className="!w-[300px] flex-grow-[20]">
                     {/* 적층 구조 */}
@@ -897,7 +899,12 @@ const SayangSampleAddPage: React.FC & {
                           showToast("모델 내 수량을 입력해주세요.", "error");
                           return;
                         }
-                        if (flag && cookie.get("companySY") !== "sy") {
+                        if (
+                          flag &&
+                          (port === "3000"
+                            ? cookie.get("companySY") !== "sy"
+                            : port !== "90")
+                        ) {
                           showToast(
                             "모델 내 작업량(PNL)을 입력해주세요.",
                             "error"

@@ -338,7 +338,9 @@ const SalesModelTable: React.FC<Props> = ({
                     partnerMngId={partnerMngId}
                   />
                 )}
-                {cookie.get("companySY") !== "sy" && (
+                {(port === "3000"
+                  ? cookie.get("companySY") !== "sy"
+                  : port !== "90") && (
                   <SalesModelHead
                     model={model}
                     handleModelDataChange={handleModelDataChange}
