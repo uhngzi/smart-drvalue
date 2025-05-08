@@ -36,7 +36,7 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
 
   // id 값이 변경될 경우마다 실행됨
   const { data: queryDetailData } = useQuery({
-    queryKey: ["sales-estimate/jsxcrud/one", id],
+    queryKey: ["worksheet/wait-for-production-plan/jsxcrud/one", id],
     queryFn: async () => {
       const result = await getAPI({
         type: "core-d2",
