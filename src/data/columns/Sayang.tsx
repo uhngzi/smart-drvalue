@@ -1513,7 +1513,7 @@ export const sayangSampleWaitAddClmn = (
     key: "spec",
     align: "center",
     render: (_, record: specModelType) =>
-      port === "90" || cookie.get("companySY") === "sy" ? (
+      (port === "3000" ? cookie.get("companySY") === "sy" : port === "90") ? (
         <>
           <div className={divClass + "mb-3 gap-5"}>
             <p className="text-left min-w-50 w-50 !text-12">Design Press</p>

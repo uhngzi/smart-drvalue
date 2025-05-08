@@ -462,7 +462,9 @@ const ModelAddLayout = () => {
                         />
                       </div>
                     </div>
-                    {cookie.get("companySY") === "sy" && (
+                    {(port === "3000"
+                      ? cookie.get("companySY") === "sy"
+                      : port === "90") && (
                       <div className="h-center gap-15">
                         <Items2
                           label1="고객"
