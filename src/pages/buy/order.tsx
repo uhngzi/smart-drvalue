@@ -300,6 +300,7 @@ const BuyOrderPage: React.FC & {
           limit: pagination.size,
           page: pagination.current,
           s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+          sort: "orderDt,DESC",
         }
       );
     },
