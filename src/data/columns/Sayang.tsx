@@ -1275,27 +1275,27 @@ export const sayangSampleWaitAddClmn = (
           />
         </div>
         <div className={divClass + "mb-3"}>
-          <AntdInputFill
-            value={record.ulTxt2}
-            onChange={(e) =>
-              handleModelDataChange(record.id, "ulTxt2", e.target.value)
-            }
-            tabIndex={(record?.index ?? 1) * 40 + 21}
-            placeholder="주기"
-            disabled={view ? true : false}
-            memoView
-          />
-        </div>
-        <div className={divClass + "mb-3"}>
           <AntdSelectFill
             options={ul1SelectList}
             value={record.ulCd1?.id}
             onChange={(e) => handleModelDataChange(record.id, "ulCd1.id", e)}
             className="w-[60px!important]"
             styles={{ pd: "0" }}
-            tabIndex={(record?.index ?? 1) * 40 + 22}
-            placeholder="위치1"
+            tabIndex={(record?.index ?? 1) * 40 + 21}
+            placeholder="UL위치"
             disabled={view ? true : false}
+          />
+        </div>
+        <div className={divClass + "mb-3"}>
+          <AntdInputFill
+            value={record.ulTxt2}
+            onChange={(e) =>
+              handleModelDataChange(record.id, "ulTxt2", e.target.value)
+            }
+            tabIndex={(record?.index ?? 1) * 40 + 22}
+            placeholder="주기"
+            disabled={view ? true : false}
+            memoView
           />
         </div>
         <div className={divClass + "mb-3"}>
@@ -1306,7 +1306,7 @@ export const sayangSampleWaitAddClmn = (
             className="w-[60px!important]"
             styles={{ pd: "0" }}
             tabIndex={(record?.index ?? 1) * 40 + 23}
-            placeholder="위치2"
+            placeholder="주기위치"
             disabled={view ? true : false}
           />
         </div>
