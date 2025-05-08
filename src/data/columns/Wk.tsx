@@ -1088,6 +1088,10 @@ export const WkStatusOutClmn = (
     dataIndex: "orderProduct.orderPrdPrice",
     key: "orderProduct.orderPrdPrice",
     align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
   },
   {
     title: "발주 금액",
@@ -1095,6 +1099,10 @@ export const WkStatusOutClmn = (
     dataIndex: "requestMaterialsTotalPrice",
     key: "requestMaterialsTotalPrice",
     align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
   },
   {
     title: port === "90" || cookie("companySY") === "sy" ? "제품수" : "판넬수",
