@@ -100,13 +100,24 @@ export const BuyCostOutClmn = (
     ),
   },
   {
-    title: "진행률",
+    title: "총 금액",
     width: 100,
-    dataIndex: "progress",
-    key: "progress",
+    dataIndex: "totalCalcPrice",
+    key: "totalCalcPrice",
     align: "center",
-    render: (value: number) => <ProgressBar value={value} />,
+    cellAlign: "right",
+    render: (value: number) => {
+      return (value ?? 0).toLocaleString();
+    },
   },
+  // {
+  //   title: "진행률",
+  //   width: 100,
+  //   dataIndex: "progress",
+  //   key: "progress",
+  //   align: "center",
+  //   render: (value: number) => <ProgressBar value={value} />,
+  // },
   {
     title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
       ? "사양확정일"
@@ -143,8 +154,8 @@ export const BuyCostOutClmn = (
   {
     title: "외주처공정수",
     width: 100,
-    dataIndex: "wkProcCnt",
-    key: "wkProcCnt",
+    dataIndex: "wkVenderProcCnt",
+    key: "wkVenderProcCnt",
     align: "center",
     cellAlign: "right",
   },
@@ -671,6 +682,17 @@ export const BuyCostOutStatusClmn = (
     ),
   },
   {
+    title: "총 금액",
+    width: 100,
+    dataIndex: "totalCalcPrice",
+    key: "totalCalcPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value: number) => {
+      return (value ?? 0).toLocaleString();
+    },
+  },
+  {
     title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
       ? "사양확정일"
       : "작업지시확정일",
@@ -706,8 +728,8 @@ export const BuyCostOutStatusClmn = (
   {
     title: "외주처공정수",
     width: 100,
-    dataIndex: "wkProcCnt",
-    key: "wkProcCnt",
+    dataIndex: "wkVenderProcCnt",
+    key: "wkVenderProcCnt",
     align: "center",
     cellAlign: "right",
   },

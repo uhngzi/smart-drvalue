@@ -98,7 +98,7 @@ export const WkPalnWaitClmn = (
     ),
   },
   {
-    title: "외주처공정수",
+    title: "공정수",
     width: 100,
     dataIndex: "wkProcCnt",
     key: "wkProcCnt",

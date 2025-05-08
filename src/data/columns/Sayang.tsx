@@ -1296,7 +1296,6 @@ export const sayangSampleWaitAddClmn = (
             options={ul1SelectList}
             value={record.ulCd1?.id}
             onChange={(e) => handleModelDataChange(record.id, "ulCd1.id", e)}
-            className="w-[60px!important]"
             styles={{ pd: "0" }}
             tabIndex={(record?.index ?? 1) * 40 + 21}
             placeholder="UL위치"
@@ -1320,7 +1319,6 @@ export const sayangSampleWaitAddClmn = (
             options={ul2SelectList}
             value={record.ulCd2?.id}
             onChange={(e) => handleModelDataChange(record.id, "ulCd2.id", e)}
-            className="w-[60px!important]"
             styles={{ pd: "0" }}
             tabIndex={(record?.index ?? 1) * 40 + 23}
             placeholder="주기위치"

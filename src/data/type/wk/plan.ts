@@ -18,8 +18,9 @@ export type wkPlanWaitType = {
   progress?: number;
   m2?: number;
   wkLatestMemo?: string; // 공정 마지막 비고
-  wkPrdCnt?: 0; // 수주량
-  wkProcCnt?: 0; // 외주처 공정 수
+  wkPrdCnt?: number; // 수주량
+  wkProcCnt?: number; // 공정 수
+  wkVenderProcCnt?: number; // 외주처 공정 수
   wkLatestDtm?: Date | Dayjs | null; // 현경과
   wsExpDt?: Date | Dayjs | null; // 생산예정일
   wsSchDt?: Date | Dayjs | null; // 시작계획일(계획확정일)
