@@ -608,7 +608,10 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
           <div className="flex-1 h-center">
             <div className="flex-1">
               {Array.from(Array(8)).map((_, i) => (
-                <div className="h-center text-9 border-b border-bdDefault h-20 max-h-20">
+                <div
+                  key={i}
+                  className="h-center text-9 border-b border-bdDefault h-20 max-h-20"
+                >
                   <div className="w-50 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5 border-r border-bdDefault">
                     {proc?.procs?.[i]?.specPrdGrp?.process?.wipPrcNm ?? ""}
                   </div>
@@ -621,7 +624,10 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
             {(proc?.procs ?? []).length > 8 && (
               <div className="w-1/2">
                 {Array.from(Array(8)).map((_, i) => (
-                  <div className="h-center text-9 border-b border-l-2 border-bdDefault h-20 max-h-20">
+                  <div
+                    key={i + 9}
+                    className="h-center text-9 border-b border-l-2 border-bdDefault h-20 max-h-20"
+                  >
                     <div className="w-50 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5 border-r border-bdDefault">
                       {proc?.procs?.[i + 9]?.specPrdGrp?.process?.wipPrcNm ??
                         ""}
