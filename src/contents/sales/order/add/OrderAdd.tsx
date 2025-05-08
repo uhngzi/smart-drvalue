@@ -403,7 +403,9 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if (port === "90" || cookie.get("companySY") === "sy") {
+          if (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          ) {
             if (model.modelStatus === ModelStatus.NEW) {
               handleSubmit(entity.id, entity);
             }
@@ -433,7 +435,9 @@ const OrderAddLayout = () => {
           // 발주도 자동 저장
           handleEditOrderMain(true);
 
-          if (port === "90" || cookie.get("companySY") === "sy") {
+          if (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          ) {
             if (model.modelStatus === ModelStatus.NEW) {
               setTimeout(() => handleSubmit(model.id ?? "", model), 500);
             } else {

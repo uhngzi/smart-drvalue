@@ -477,7 +477,7 @@ const WKStatusProcPage: {
       <List>
         <AntdTableEdit
           columns={
-            port === "90" || cookie.get("companySY") === "sy"
+            (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
               ? WKStatusProcClmn(
                   totalData,
                   pagination,
@@ -543,7 +543,9 @@ const WKStatusProcPage: {
             <div className="w-full h-full p-30 bg-white rounded-14 flex flex-col gap-30">
               <div className="flex flex-col gap-10">
                 <LabelMedium label="생산 정보" />
-                {(port === "90" || cookie.get("companySY") === "sy") && (
+                {(port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90") && (
                   <Description separatorColor="#e7e7ed">
                     <DescriptionItems3
                       height="20"

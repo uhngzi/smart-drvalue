@@ -183,7 +183,7 @@ const BuyCostStatusPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            port === "90" || cookie.get("companySY") === "sy"
+            (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
               ? BuyCostOutStatusClmn(totalData, pagination, setSelect).filter(
                   (f) =>
                     !f.key?.toString().includes("layerEm") &&

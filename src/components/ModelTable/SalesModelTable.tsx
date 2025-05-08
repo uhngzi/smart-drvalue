@@ -320,7 +320,9 @@ const SalesModelTable: React.FC<Props> = ({
                 }
                 className="min-w-[1490px]"
               >
-                {cookie.get("companySY") === "sy" && (
+                {(port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90") && (
                   <SalesModelHeadSy
                     model={model}
                     handleModelDataChange={handleModelDataChange}
@@ -361,7 +363,11 @@ const SalesModelTable: React.FC<Props> = ({
                 <div className="flex flex-col ">
                   <AntdTable
                     columns={
-                      port === "90" || cookie.get("companySY") === "sy"
+                      (
+                        port === "3000"
+                          ? cookie.get("companySY") === "sy"
+                          : port === "90"
+                      )
                         ? salesOrderModelClmn(
                             data,
                             setData,

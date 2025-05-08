@@ -684,7 +684,11 @@ const OrderAddLayout: React.FC<OrderAddProps> = ({
             <Popup
               title="발주 등록"
               className={
-                port === "90" || cookie.get("companySY") === "sy"
+                (
+                  port === "3000"
+                    ? cookie.get("companySY") === "sy"
+                    : port === "90"
+                )
                   ? "!min-h-[570px] !min-w-[800px]"
                   : "!min-h-[420px] !min-w-[800px]"
               }

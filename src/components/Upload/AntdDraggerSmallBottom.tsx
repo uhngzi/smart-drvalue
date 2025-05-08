@@ -171,7 +171,7 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
         name="files"
         headers={{
           "x-tenant-code": String(
-            port === "90" || cookie.get("companySY") === "sy"
+            port === "90"
               ? "shinyang-test"
               : port === "3000"
               ? // "shinyang-dev"

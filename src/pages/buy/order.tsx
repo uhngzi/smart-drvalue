@@ -427,7 +427,7 @@ const BuyOrderPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            port === "90" || cookie.get("companySY") === "sy"
+            (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
               ? BuyOrderClmn(
                   totalData,
                   pagination,

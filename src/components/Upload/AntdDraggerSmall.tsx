@@ -174,12 +174,13 @@ const AntdDraggerSmall: React.FC<Props> = ({
         disabled={disabled}
         name="files"
         headers={{
-          "x-tenant-code":
-            port === "90" || cookie.get("companySY") === "sy"
-              ? "shinyang-test"
-              : cookie.get("x-custom-tenant-code")
-              ? cookie.get("x-custom-tenant-code").toString()
-              : "gpntest-sebuk-ver",
+          "x-tenant-code": (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          )
+            ? "shinyang-test"
+            : cookie.get("x-custom-tenant-code")
+            ? cookie.get("x-custom-tenant-code").toString()
+            : "gpntest-sebuk-ver",
           Authorization: `bearer ${cookie.get(cookieName)}`,
         }}
         action={`${baseURL}file-mng/v1/tenant/file-manager/upload/multiple`}

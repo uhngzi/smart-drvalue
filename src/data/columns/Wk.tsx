@@ -45,19 +45,22 @@ export const WkPalnWaitClmn = (
     align: "center",
     cellAlign: "left",
     editable: false,
-    tooltip:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "모델명을 클릭하면 일정 및 인력을 관리할 수 있어요"
-        : undefined,
+    tooltip: (
+      port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+    )
+      ? "모델명을 클릭하면 일정 및 인력을 관리할 수 있어요"
+      : undefined,
     render: (_, record) => (
       <div
         className={`w-full text-left ${
-          port === "90" || cookie.get("companySY") === "sy"
+          (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
             ? "reference-detail"
             : ""
         }`}
         onClick={() => {
-          if (port === "90" || cookie.get("companySY") === "sy") {
+          if (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          ) {
             router?.push(`/wk/plan/${record?.id}`);
           }
         }}
@@ -72,7 +75,11 @@ export const WkPalnWaitClmn = (
     dataIndex: "wsExpDt",
     key: "wsExpDt",
     align: "center",
-    editable: port === "90" || cookie.get("companySY") === "sy" ? false : true,
+    editable: (
+      port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+    )
+      ? false
+      : true,
     editType: "date",
     enter: true,
     enterSubmit: (id, value) => handleSubmit(id, value),
@@ -136,10 +143,9 @@ export const WkPalnWaitClmn = (
     editable: false,
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 W * 제품 H"
-        : "PCS W * PCS H",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 W * 제품 H"
+      : "PCS W * PCS H",
     width: 130,
     dataIndex: "specModel.pcsW*specModel.pcsL",
     key: "specModel.pcsW*specModel.pcsL",
@@ -517,7 +523,9 @@ export const WKStatusProcClmn = (
       <div
         className={input ? "" : "reference-detail"}
         onClick={() => {
-          if (port === "90" || cookie.get("companySY") === "sy") {
+          if (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          ) {
             router?.push(`/wk/status/${record.id}`);
           } else {
             setSelect?.(record);
@@ -529,8 +537,9 @@ export const WKStatusProcClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "시작일" : "투입일",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "시작일"
+      : "투입일",
     width: 100,
     dataIndex: "wsExpDt",
     key: "wsExpDt",
@@ -599,10 +608,9 @@ export const WKStatusProcClmn = (
     align: "center",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "수주량"
-        : "수주량(PCS)",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "수주량"
+      : "수주량(PCS)",
     width: 80,
     dataIndex: "wkPrdCnt",
     key: "wkPrdCnt",

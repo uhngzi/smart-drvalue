@@ -417,8 +417,9 @@ export const specIngClmn = (
     },
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "제품 SIZE" : "PCS",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS",
     width: 100,
     dataIndex: "specModels.pcsW",
     key: "specModels.pcsW",
@@ -704,8 +705,9 @@ export const sayangSampleWaitClmn = (
     },
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "제품 SIZE" : "PCS",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS",
     width: 100,
     dataIndex: "tempModel.pcsW",
     key: "tempModel.pcsW",
@@ -862,7 +864,9 @@ export const sayangSampleWaitAddClmn = (
     ],
   },
   {
-    title: port === "90" || cookie.get("companySY") === "sy" ? "두께(T)" : "층",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "두께(T)"
+      : "층",
     dataIndex: "layer",
     key: "layer",
     align: "center",
@@ -1157,8 +1161,9 @@ export const sayangSampleWaitAddClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "도장" : "특수인쇄",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "도장"
+      : "특수인쇄",
     width: 80,
     dataIndex: "tPrint",
     key: "tPrint",
@@ -1168,14 +1173,22 @@ export const sayangSampleWaitAddClmn = (
         <div className={divClass}>
           <AntdSelectFill
             options={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? stampColorSelectList ?? []
                 : spPrintSelectList
             }
             value={record?.spPrint?.id}
             onChange={(e) => handleModelDataChange(record.id, "spPrint.id", e)}
             placeholder={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? "도장컬러"
                 : "특수인쇄"
             }
@@ -1189,7 +1202,11 @@ export const sayangSampleWaitAddClmn = (
             value={record?.spType?.id}
             onChange={(e) => handleModelDataChange(record.id, "spType.id", e)}
             placeholder={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? "도장종류"
                 : "특수인쇄종류"
             }
@@ -1340,10 +1357,9 @@ export const sayangSampleWaitAddClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 SIZE"
-        : "PCS SIZE",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS SIZE",
     width: 80,
     dataIndex: "pcs",
     key: "pcs",
