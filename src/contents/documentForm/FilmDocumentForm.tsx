@@ -3,7 +3,8 @@ import { baseURL } from "@/api/lib/config";
 import FullChip from "@/components/Chip/FullChip";
 import { companyType } from "@/data/type/base/company";
 import { HotGrade, ModelStatus } from "@/data/type/enum";
-import { wkPlanWaitType } from "@/data/type/wk/plan";
+import { approveMetaDataType } from "@/data/type/sayang/sample";
+import { wkDetailType, wkPlanWaitType, wkProcsType } from "@/data/type/wk/plan";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -53,7 +54,57 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
     },
     enabled: !!id,
   });
+
+  useEffect(() => {
+    console.log(formData?.specModel?.spec?.id);
+  }, [formData?.specModel?.spec?.id]);
+
+  const [approveMetaData, setApproveMetaData] =
+    useState<approveMetaDataType | null>(null);
+  const { data: queryApproveData } = useQuery({
+    queryKey: ["approve-metadata/default/one/spec", formData],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "core-d2",
+        utype: "tenant/",
+        url: `approve-metadata/default/one/spec/${formData?.specModel?.spec?.id}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const entity = result.data as approveMetaDataType;
+        setApproveMetaData(entity ?? null);
+      }
+
+      return result;
+    },
+    enabled: !!formData?.specModel?.spec?.id,
+  });
   // ------------ 디테일 데이터 세팅 ------------ 끝
+
+  // ------------- 공정 데이터 세팅 ------------- 시작
+  const [proc, setProc] = useState<wkDetailType | null>(null);
+  const { data: queryWkProcData } = useQuery({
+    queryKey: [
+      "worksheet/production-status/process-status/detail/jsxcrud/one",
+      id,
+    ],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "core-d2",
+        utype: "tenant/",
+        url: `worksheet/production-status/process-status/detail/jsxcrud/one/${id}`,
+      });
+
+      if (result.resultCode === "OK_0000") {
+        const entity = result?.data?.data as wkDetailType;
+        setProc(entity ?? null);
+      }
+
+      return result;
+    },
+    enabled: !!id,
+  });
+  // ------------- 공정 데이터 세팅 ------------- 끝
 
   // 회사 기본 정보 가져오는 api
   const [company, setCompany] = useState<companyType | null>(null);
@@ -145,19 +196,23 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 <th className={titleTableStyle + " bg-[#EEEEEE80] font-normal"}>
                   작성일
                 </th>
-                <td className={titleTableStyle}></td>
+                <td className={titleTableStyle}>
+                  {approveMetaData?.writeAt
+                    ? dayjs(approveMetaData?.writeAt).format("YYYY-MM-DD")
+                    : ""}
+                </td>
               </tr>
               <tr className="border-t border-b border-[#D9D9D9]">
                 <th className={titleTableStyle + " bg-[#EEEEEE80] font-normal"}>
                   작성자
                 </th>
-                <td className={titleTableStyle}>내용</td>
+                <td className={titleTableStyle}>{approveMetaData?.writerNm}</td>
               </tr>
               <tr className="border-t border-b border-[#D9D9D9]">
                 <th className={titleTableStyle + " bg-[#EEEEEE80] font-normal"}>
                   CAM
                 </th>
-                <td className={titleTableStyle}>내용</td>
+                <td className={titleTableStyle}>CTS</td>
               </tr>
             </tbody>
           </table>
@@ -227,13 +282,13 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
               <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>층수</th>
                 <td className={defaultSpecTdStyle}>
-                  {formData?.specModel?.layerEm?.replace("L", "")}
+                  {formData?.specModel?.layerEm?.replace("L", "")}층
                 </td>
               </tr>
               <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>제품 두께</th>
                 <td className={defaultSpecTdStyle}>
-                  {formData?.specModel?.thk}
+                  {formData?.specModel?.thk}T
                 </td>
               </tr>
               <tr className={defaultSpecTrStyle}>
@@ -262,17 +317,29 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 </td>
               </tr>
               <tr className={defaultSpecTrStyle}>
+                <th className={defaultSpecThStyle}>PSR 색상</th>
+                <td className={defaultSpecTdStyle}>
+                  {/* {formData?.specModel?.} */}
+                </td>
+              </tr>
+              <tr className={defaultSpecTrStyle}>
+                <th className={defaultSpecThStyle}>MK 색상</th>
+                <td className={defaultSpecTdStyle}>
+                  {formData?.specModel?.mkColor?.cdNm}
+                </td>
+              </tr>
+              <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>임피던스</th>
                 <td className={defaultSpecTdStyle}>
                   {formData?.specModel?.impedanceLineCnt}
                 </td>
               </tr>
-              <tr className={defaultSpecTrStyle}>
+              {/* <tr className={defaultSpecTrStyle}>
                 <th className={defaultSpecThStyle}>쿠폰</th>
                 <td className={defaultSpecTdStyle}>
                   {formData?.specModel?.couponYn ? "유" : "무"}
                 </td>
-              </tr>
+              </tr> */}
               <tr className={defaultSpecTrStyle + " border-b"}>
                 <th className={defaultSpecThStyle}>납기일</th>
                 <td className={defaultSpecTdStyle}>
@@ -297,33 +364,43 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>연조</th>
                   <td className={arrAndSpecTdStyle}>
-                    {formData?.specModel?.ypnlL} * {formData?.specModel?.ypnlW}
+                    {formData?.specModel?.ykitL} x {formData?.specModel?.ykitW}{" "}
+                    ={" "}
+                    {Number(formData?.specModel?.ykitL ?? 0) *
+                      Number(formData?.specModel?.ykitW ?? 0)}{" "}
+                    연조
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>KIT SIZE</th>
-                  <td className={arrAndSpecTdStyle}>
-                    {formData?.specModel?.kitL} * {formData?.specModel?.kitW}
+                  <td className={arrAndSpecTdStyle + " v-between-h-center"}>
+                    <p>{formData?.specModel?.kitL}</p>
+                    <p>x</p>
+                    <p>{formData?.specModel?.kitW}</p>
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>배열</th>
-                  <td className={arrAndSpecTdStyle}>
-                    {/* {formData?.specModel?.spec?.jYn} */}
+                  <td className={arrAndSpecTdStyle + " v-between-h-center"}>
+                    {/* <p>{formData?.specModel?.kit}</p>
+                    <p>x</p>
+                    <p>{formData?.specModel?.kitW}</p> */}
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>규격</th>
-                  <td className={arrAndSpecTdStyle}>
-                    {formData?.specModel?.spec?.stdW} *{" "}
-                    {formData?.specModel?.spec?.stdH}
+                  <td className={arrAndSpecTdStyle + " v-between-h-center"}>
+                    <p>{formData?.specModel?.spec?.stdW}</p>
+                    <p>x</p>
+                    <p>{formData?.specModel?.spec?.stdH}</p>
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle + " border-b"}>
                   <th className={arrAndSpecThStyle + " pl-8"}>WORKING SIZE</th>
-                  <td className={arrAndSpecTdStyle}>
-                    {formData?.specModel?.spec?.wksizeW} *{" "}
-                    {formData?.specModel?.spec?.wksizeH}
+                  <td className={arrAndSpecTdStyle + " v-between-h-center"}>
+                    <p>{formData?.specModel?.spec?.wksizeW}</p>
+                    <p>x</p>
+                    <p>{formData?.specModel?.spec?.wksizeH}</p>
                   </td>
                 </tr>
               </tbody>
@@ -341,30 +418,26 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>회로두께</th>
                   <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
-                    {formData?.specModel?.specLine}
+                    {formData?.specModel?.specLine ?? 0} ㎜
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>회로간격</th>
                   <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
-                    {formData?.specModel?.specSpace}
+                    {formData?.specModel?.specSpace ?? 0} ㎜
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>드릴(￠)</th>
                   <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
-                    {formData?.specModel?.specDr}
+                    {formData?.specModel?.specDr ?? 0} ￠
                   </td>
                 </tr>
                 <tr className={arrAndSpecTrStyle}>
                   <th className={arrAndSpecThStyle + " px-8"}>랜드(￠)</th>
                   <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>
-                    {formData?.specModel?.specPad}
+                    {formData?.specModel?.specPad ?? 0} ￠
                   </td>
-                </tr>
-                <tr className={arrAndSpecTrStyle + " border-b"}>
-                  <th className={arrAndSpecThStyle + " px-8"}>난이도</th>
-                  <td className={arrAndSpecTdStyle + " bg-[#FEFBAD80]"}>1</td>
                 </tr>
               </tbody>
             </table>
@@ -380,8 +453,8 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
                 필름사이즈
               </th>
               <td className="max-w-[110px] w-[110px] h-36 bg-[#FEFBAD80] text-12 text-center">
-                {formData?.specModel?.spec?.stdW} X{" "}
-                {formData?.specModel?.spec?.stdH}
+                {formData?.specModel?.spec?.wksizeW} x{" "}
+                {formData?.specModel?.spec?.wksizeH}
               </td>
               <th className="w-80 h-36 px-8 bg-[#EEEEEE80] text-12 text-[#000000D9] text-left font-normal">
                 재단사이즈
@@ -412,19 +485,39 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
           </table>
 
           {/* 배열 도면 */}
-          <div className="w-full">
-            <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
-              배열 도면
-            </div>
+          <div className="w-full h-center">
+            <div className="w-1/2">
+              <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
+                배열 도면
+              </div>
 
-            <div className="h-[268px] max-h-[268px] max-w-[380px]">
-              {arrayBase64 && (
-                <img
-                  src={arrayBase64}
-                  alt="logo"
-                  className="max-h-full w-auto object-contain mx-auto"
-                />
-              )}
+              <div className="h-[268px] max-h-[268px] max-w-[380px]">
+                {arrayBase64 && (
+                  <img
+                    src={arrayBase64}
+                    alt="logo"
+                    className="max-h-full w-auto object-contain mx-auto"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="w-1/2">
+              <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
+                적층구조
+              </div>
+
+              <div className="h-[268px] max-h-[268px] max-w-[380px]">
+                {/* {Array.isArray(lamination) &&
+                  lamination.length > 0 &&
+                  lamination.map((item: laminationSourceList, index: number) => (
+                    <LaminationRow
+                      key={item.id + ":" + index}
+                      item={item}
+                      index={index}
+                      color={color}
+                    />
+                  ))} */}
+              </div>
             </div>
           </div>
 
@@ -491,88 +584,114 @@ const FilmDocumentForm: React.FC<{ id: string }> = ({ id }) => {
       </div>{" "}
       {/* 제작정보 영역 end */}
       {/* CAM 전달사항 / UL주기 영역 */}
-      <div className="v-between-h-center">
+      <div className="v-between-h-center min-h-[170px] h-[180px] gap-10">
         {/* CAM 전달사항 */}
-        <div className="w-[320px]">
+        <div className="flex-1 h-full flex flex-col">
           <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
             CAM 전달사항
           </div>
 
-          <div className="h-[157px] p-10 border-t border-b border-[#D9D9D9] text-10 text-[#000000A6] whitespace-pre-line">
+          <div className="flex-1 p-10 border-t border-b border-[#D9D9D9] text-10 text-[#000000A6] whitespace-pre-line">
             {formData?.specModel?.spec?.camNotice}
           </div>
         </div>
 
-        {/* UL주기 / 관리No 영역 */}
-        <div className="flex flex-col gap-10 w-[225px]">
-          {/* UL주기 테이블 */}
-          <div>
-            <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
-              UL/ 주기
-            </div>
-
-            <table className="w-full text-9">
-              <tbody>
-                <tr className="h-20">
-                  <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
-                    UL
-                  </th>
-                  <td
-                    colSpan={2}
-                    className="max-w-[150px] w-[150px] px-8 border-t border-[#D9D9D9]"
-                  >
-                    {formData?.specModel?.ulTxt1}
-                  </td>
-                </tr>
-                <tr className="h-20">
-                  <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
-                    위치
-                  </th>
-                  <td className="max-w-75 w-75 px-8 border-t border-r border-[#D9D9D9]">
-                    {formData?.specModel?.ulCd1?.cdNm}
-                  </td>
-                  <td className="max-w-75 w-75 px-8 border-t border-[#D9D9D9]">
-                    {formData?.specModel?.ulCd2?.cdNm}
-                  </td>
-                </tr>
-                <tr className="h-20">
-                  <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
-                    주기
-                  </th>
-                  <td
-                    colSpan={2}
-                    className="max-w-[150px] w-[150px] px-8 border-t border-[#D9D9D9]"
-                  >
-                    {formData?.specModel?.ulTxt2}
-                  </td>
-                </tr>
-                <tr className="h-20">
-                  <th className="w-75 px-8 border-t border-b border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
-                    위치
-                  </th>
-                  <td className="max-w-75 w-75 px-8 border-t border-b border-r border-[#D9D9D9]">
-                    {formData?.specModel?.ulCd1?.cdNm}
-                  </td>
-                  <td className="max-w-75 w-75 px-8 border-t border-b border-[#D9D9D9]">
-                    {formData?.specModel?.ulCd2?.cdNm}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        {/* 공정 */}
+        <div
+          className={`flex flex-col h-full ${
+            (proc?.procs ?? []).length > 8 ? "min-w-[220px]" : "min-w-[150px]"
+          }`}
+        >
+          <div className="v-h-center h-20 min-h-20 border-t border-b border-[#D9D9D9] bg-[#E9EDF5] text-9">
+            공정
           </div>
-
-          {/* 관리No */}
-          <div className="w-full">
-            <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
-              관리No
+          <div className="flex-1 h-center">
+            <div className="flex-1">
+              {Array.from(Array(8)).map((_, i) => (
+                <div className="h-center text-9 border-b border-bdDefault h-20 max-h-20">
+                  <div className="w-50 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5 border-r border-bdDefault">
+                    {proc?.procs?.[i]?.specPrdGrp?.process?.wipPrcNm ?? ""}
+                  </div>
+                  <div className="flex-1 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5">
+                    {proc?.procs?.[i]?.vendor?.prtNm ?? ""}
+                  </div>
+                </div>
+              ))}
             </div>
-
-            <div className="v-h-center h-47 border-t border-b border-[#D9D9D9]">
-              <p className="text-20 font-bold">{formData?.specModel?.fpNo}</p>
-            </div>
+            {(proc?.procs ?? []).length > 8 && (
+              <div className="w-1/2">
+                {Array.from(Array(8)).map((_, i) => (
+                  <div className="h-center text-9 border-b border-l-2 border-bdDefault h-20 max-h-20">
+                    <div className="w-50 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5 border-r border-bdDefault">
+                      {proc?.procs?.[i + 9]?.specPrdGrp?.process?.wipPrcNm ??
+                        ""}
+                    </div>
+                    <div className="flex-1 h-20 h-center whitespace-nowrap overflow-hidden text-ellipsis px-5">
+                      {proc?.procs?.[i + 9]?.vendor?.prtNm ?? ""}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>{" "}
+
+        {/* UL주기 / Tool No 영역 */}
+        <div className="flex flex-col w-[120px] h-full">
+          {/* UL주기 테이블 */}
+          <div className="v-h-center h-20 border-t border-[#D9D9D9] bg-[#E9EDF5] text-9">
+            UL/ 주기
+          </div>
+
+          <table className="w-full text-9">
+            <tbody>
+              <tr className="h-20">
+                <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
+                  UL
+                </th>
+                <td
+                  colSpan={2}
+                  className="max-w-[150px] w-[150px] px-8 border-t border-[#D9D9D9]"
+                >
+                  {formData?.specModel?.ulTxt1}
+                </td>
+              </tr>
+              <tr className="h-20">
+                <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
+                  위치
+                </th>
+                <td className="max-w-75 w-75 px-8 border-t border-[#D9D9D9]">
+                  {formData?.specModel?.ulCd1?.cdNm}
+                </td>
+              </tr>
+              <tr className="h-20">
+                <th className="w-75 px-8 border-t border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
+                  주기
+                </th>
+                <td
+                  colSpan={2}
+                  className="max-w-[150px] w-[150px] px-8 border-t border-[#D9D9D9]"
+                >
+                  {formData?.specModel?.ulTxt2}
+                </td>
+              </tr>
+              <tr className="h-20">
+                <th className="w-75 px-8 border-t border-b border-[#D9D9D9] bg-[#EEEEEE80] text-left font-normal">
+                  위치
+                </th>
+                <td className="max-w-75 w-75 px-8 border-t border-b border-[#D9D9D9]">
+                  {formData?.specModel?.ulCd2?.cdNm}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* 관리No */}
+          <div className="v-h-center flex-1 border-b border-[#D9D9D9]">
+            <p className="text-20 font-bold">{formData?.specModel?.fpNo}</p>
+          </div>
+        </div>
+      </div>
       {/* CAM 전달사항 / UL주기 영역 end */}
     </div>
   );

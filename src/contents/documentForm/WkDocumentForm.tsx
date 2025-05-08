@@ -73,7 +73,12 @@ const WkDocumentForm: React.FC<{ id: string }> = ({ id }) => {
   }, [company?.companyLogoId]);
 
   return (
-    <div className="flex w-full items-center justify-center flex-col bg-[white]"></div>
+    <div className="p-15 min-h-[595px] min-w-[1123px] flex flex-col bg-[white]">
+      <div className="h-center">
+        <div></div>
+      </div>
+      <div className="flex flex-col"></div>
+    </div>
   );
 };
 
