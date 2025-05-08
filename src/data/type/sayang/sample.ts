@@ -1,7 +1,13 @@
 import { Dayjs } from "dayjs";
 import { commonCodeRType } from "../base/common";
 import { specLaminationType } from "./lamination";
-import { AnyStatus, LayerEm, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
+import {
+  AnyStatus,
+  LayerEm,
+  ModelTypeEm,
+  SalesOrderStatus,
+  SpecStatus,
+} from "../enum";
 import { partnerRType } from "../base/partner";
 import { processRType } from "../base/process";
 import { modelsMatchDetail } from "./models";
@@ -28,12 +34,12 @@ export type specType = {
   deletedAt?: Date | Dayjs | null;
   specModels?: specModelType[];
   specPrdGroupPrcs?: specPrdGroupPrcs[];
-  index?: number;   // 샘플로 넣은 값
+  index?: number; // 샘플로 넣은 값
   wkPrdCnt?: number;
   kitGapX?: number;
   kitGapY?: number;
   couponYn?: boolean;
-}
+};
 
 export type specModelType = {
   id?: string;
@@ -123,7 +129,7 @@ export type specModelType = {
   index?: number;
   copOutForCd?: commonCodeRType;
   copInForCd?: commonCodeRType;
-}
+};
 
 export type specPrdGroupPrcs = {
   createdAt?: Date | Dayjs | null;
@@ -141,9 +147,9 @@ export type specPrdGroupPrcs = {
     deletedAt?: Date | Dayjs | null;
     id?: string;
     name?: string;
-  },
+  };
   vendor?: partnerRType;
-}
+};
 
 export type yieldInputType = {
   extraMargin?: number;
@@ -164,38 +170,38 @@ export type yieldInputType = {
   marginLongSide?: number | string;
   marginShortSide?: number | string;
   useSharingLine?: boolean;
-  minWidth?: number,
-  minHeight?: number,
-}
+  minWidth?: number;
+  minHeight?: number;
+};
 
 export const yieldInputReq = () => {
   return [
-    { field : 'minPanelLength', label: '판넬 최저 길이' },
+    { field: "minPanelLength", label: "판넬 최저 길이" },
     // { field : 'diskWidth', label: '원판 너비' },
     // { field : 'diskHeight', label: '원판 높이' },
-    { field : 'minYield', label: '최저 수율' },
-    { field : 'kitWidth', label: 'Kit 너비' },
-    { field : 'kitHeight', label: 'Kit 높이' },
-    { field : 'kitGapX', label: 'Kit 간격 X' },
-    { field : 'kitGapY', label: 'Kit 간격 Y' },
+    { field: "minYield", label: "최저 수율" },
+    { field: "kitWidth", label: "Kit 너비" },
+    { field: "kitHeight", label: "Kit 높이" },
+    { field: "kitGapX", label: "Kit 간격 X" },
+    { field: "kitGapY", label: "Kit 간격 Y" },
     // { field : 'kitArrangeX', label: 'Kit 배치 X' },
     // { field : 'kitArrangeY', label: 'Kit 배치 Y' },
-    { field : 'marginLongSide', label: '긴쪽 여분' },
-    { field : 'marginShortSide', label: '짧은쪽 여분' },
-  ]
-}
+    { field: "marginLongSide", label: "긴쪽 여분" },
+    { field: "marginShortSide", label: "짧은쪽 여분" },
+  ];
+};
 
 export type yieldCalType = {
   disk?: {
     diskWidth?: number;
     diskHeight?: number;
-  },
+  };
   panel?: {
     width?: number;
     height?: number;
     arrangeX?: number;
     arrangeY?: number;
-  },
+  };
   layout?: {
     placed?: {
       x?: number;
@@ -205,23 +211,23 @@ export type yieldCalType = {
       rotated?: boolean;
     }[];
     yieldRatio?: number;
-  },
+  };
   panelCount?: number;
   kitCount?: number;
   requestId?: string;
   images?: {
     layout?: string;
     panel?: string;
-  }
-}
+  };
+};
 
 export type arrayCalType = {
-  id?: string,
-  imageName: "sihun.vLg4DUH.20250227183155-ofmgtvccst.panel_kit1:1x2_kit2:1x2.png",
+  id?: string;
+  imageName: "sihun.vLg4DUH.20250227183155-ofmgtvccst.panel_kit1:1x2_kit2:1x2.png";
   stdInfo: {
     x: number;
     y: number;
-  },
+  };
   configs: {
     kitId: string;
     rows: number;
@@ -237,7 +243,7 @@ export type arrayCalType = {
     boardId: string;
     width: number;
     height: number;
-  },
+  };
   boardImageStorageName: string;
   panelImageStorageName: string;
   kitsInfo: {
@@ -248,4 +254,46 @@ export type arrayCalType = {
     kitArrayXSize: number;
     kitArrayYSize: number;
   }[];
-}
+};
+
+export type approveMetaDataType = {
+  id?: string;
+  type?: string;
+  postId?: string;
+  writerNm?: string;
+  linkedEntity?: {
+    data?: string;
+  };
+  approveAt?: Date | Dayjs | null;
+  approverNm?: string;
+  writeAt?: Date | Dayjs | null;
+  writer?: {
+    id?: string;
+    name?: string;
+    userId?: string;
+    passwordEncrypted?: string;
+    passwordSalt?: string;
+    status?: string;
+    role?: any;
+    detail?: any;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  };
+  approver?: {
+    id?: string;
+    name?: string;
+    userId?: string;
+    passwordEncrypted?: string;
+    passwordSalt?: string;
+    status?: string;
+    role?: any;
+    detail?: any;
+    createdAt?: Date | Dayjs | null;
+    updatedAt?: Date | Dayjs | null;
+    deletedAt?: Date | Dayjs | null;
+  };
+  createdAt?: Date | Dayjs | null;
+  updatedAt?: Date | Dayjs | null;
+  deletedAt?: Date | Dayjs | null;
+};

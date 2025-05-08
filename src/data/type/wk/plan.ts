@@ -329,6 +329,7 @@ export type wkProcsType = {
       };
       prcNm?: string;
       useYn?: boolean;
+      wipPrcNm?: string;
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
