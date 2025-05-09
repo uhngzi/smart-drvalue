@@ -977,7 +977,8 @@ export const WkStatusOutClmn = (
   setPartnerData: React.Dispatch<React.SetStateAction<partnerRType | null>>,
   checkeds: wkPlanWaitType[],
   setCheckeds: React.Dispatch<SetStateAction<wkPlanWaitType[]>>,
-  handleCheckedAllClick: () => void
+  handleCheckedAllClick: () => void,
+  router: NextRouter
 ): CustomColumn[] => [
   {
     title: (
@@ -1068,6 +1069,29 @@ export const WkStatusOutClmn = (
     key: "specModel.prdNm",
     align: "center",
     cellAlign: "left",
+    tooltip: (
+      port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+    )
+      ? undefined
+      : "모델명을 클릭하면 공정 진행 현황을 작성할 수 있어요",
+    render: (_, record: wkPlanWaitType) => (
+      <div
+        className={
+          (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+            ? ""
+            : "reference-detail"
+        }
+        onClick={() => {
+          if (
+            port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+          ) {
+            router?.push(`/wk/status/${record.id}`);
+          }
+        }}
+      >
+        {record.specModel?.prdNm}
+      </div>
+    ),
   },
   {
     title: "수주번호",
