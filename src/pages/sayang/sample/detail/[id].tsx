@@ -724,7 +724,8 @@ const SayangSampleAddPage: React.FC & {
                                 f.key !== "kit" &&
                                 f.key !== "pnl" &&
                                 f.key !== "kitpcs" &&
-                                f.key !== "im"
+                                f.key !== "im" &&
+                                f.key !== "ul"
                             )
                           : sayangSampleWaitAddClmn(
                               surfaceSelectList,

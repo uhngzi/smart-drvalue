@@ -31,6 +31,8 @@ import CardList from "@/components/List/CardList";
 import { ModelTypeEm } from "@/data/type/enum";
 import dayjs from "dayjs";
 import { useMenu } from "@/data/context/MenuContext";
+import { port } from "../_app";
+import cookie from "cookiejs";
 
 const SalesOrderStatusPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -217,6 +219,224 @@ const SalesOrderStatusPage: React.FC & {
     }
   }, [drawerModelOpen]);
 
+  const cardItem = [
+    {
+      label: "모델명",
+      value: specData?.prdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "관리No",
+      value: specData?.prdMngNo ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "제조사",
+      value: specData?.mnfNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "REV",
+      value: specData?.prdRevNo ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "구분",
+      value:
+        specData?.modelTypeEm === ModelTypeEm.SAMPLE
+          ? "샘플"
+          : specData?.modelTypeEm === ModelTypeEm.PRODUCTION
+          ? "양산"
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "층",
+      value: specData?.layerEm?.replace("L", "") ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "두께",
+      value: specData?.thk ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "단위",
+      value: specData?.unit?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "재질",
+      value: specData?.material?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "외형가공형태",
+      value: specData?.aprType?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "동박내층",
+      value: specData?.copIn ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "동박외층",
+      value: specData?.copOut ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "S/M 인쇄",
+      value: specData?.smPrint?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "M/K 인쇄",
+      value: specData?.mkPrint?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "S/M 색상",
+      value: specData?.smColor?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "M/K 색상",
+      value: specData?.mkColor?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "S/M 종류",
+      value: specData?.smType?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "M/K 종류",
+      value: specData?.mkType?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특수인쇄",
+      value: specData?.spPrint?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특수인쇄종류",
+      value: specData?.spType?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "도금 두께",
+      value: specData?.pltThk ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "도금 두께 여유",
+      value: specData?.pltAlph ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특별도금(Au)",
+      value: specData?.spPltAu ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특별도금여유(Au)",
+      value: specData?.spPltAuAlph ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특별도금(Ni)",
+      value: specData?.spPltNi ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "특별도금여유(Ni)",
+      value: specData?.spPltNiAlph ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "핀 수",
+      value: specData?.pinCnt ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "KIT X/Y",
+      value:
+        specData?.kitW && specData?.kitL
+          ? specData?.kitW + "/" + specData?.kitL
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "PCS X/Y",
+      value:
+        specData?.pcsW && specData?.pcsL
+          ? specData?.pcsW + "/" + specData?.pcsL
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "PNL X/Y",
+      value:
+        specData?.pnlW && specData?.pnlL
+          ? specData?.pnlW + "/" + specData?.pnlL
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "kitPcs",
+      value: specData?.kitPcs ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "pnlKit",
+      value: specData?.pnlKit ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "sthPcs",
+      value: specData?.sthPcs ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "sthPnl",
+      value: specData?.sthPnl ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "브이컷유무",
+      value: specData?.vcutYn ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "브이컷형태",
+      value: specData?.vcutType?.cdNm ?? "-",
+      widthType: "half",
+    },
+    {
+      label: "연조KIT",
+      value:
+        specData?.ykitW && specData?.ykitL
+          ? specData?.ykitW + " " + specData?.ykitL
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "연조PNL",
+      value:
+        specData?.ypnlW && specData?.ypnlL
+          ? specData?.ypnlW + "/" + specData?.ypnlL
+          : "-",
+      widthType: "half",
+    },
+    {
+      label: "등록일",
+      value: dayjs(specData?.createdAt).format("YYYY-MM-DD HH:ss") ?? "-",
+      widthType: "half",
+    },
+  ];
+
   return (
     <>
       <ListPagination
@@ -310,225 +530,321 @@ const SalesOrderStatusPage: React.FC & {
               </div>
             </div>
             <CardList
-              items={[
-                {
-                  label: "모델명",
-                  value: specData?.prdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "관리No",
-                  value: specData?.prdMngNo ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "제조사",
-                  value: specData?.mnfNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "REV",
-                  value: specData?.prdRevNo ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "구분",
-                  value:
-                    specData?.modelTypeEm === ModelTypeEm.SAMPLE
-                      ? "샘플"
-                      : specData?.modelTypeEm === ModelTypeEm.PRODUCTION
-                      ? "양산"
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "층",
-                  value: specData?.layerEm?.replace("L", "") ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "두께",
-                  value: specData?.thk ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "단위",
-                  value: specData?.unit?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "재질",
-                  value: specData?.material?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "외형가공형태",
-                  value: specData?.aprType?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "동박내층",
-                  value: specData?.copIn ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "동박외층",
-                  value: specData?.copOut ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "S/M 인쇄",
-                  value: specData?.smPrint?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "M/K 인쇄",
-                  value: specData?.mkPrint?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "S/M 색상",
-                  value: specData?.smColor?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "M/K 색상",
-                  value: specData?.mkColor?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "S/M 종류",
-                  value: specData?.smType?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "M/K 종류",
-                  value: specData?.mkType?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특수인쇄",
-                  value: specData?.spPrint?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특수인쇄종류",
-                  value: specData?.spType?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "도금 두께",
-                  value: specData?.pltThk ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "도금 두께 여유",
-                  value: specData?.pltAlph ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특별도금(Au)",
-                  value: specData?.spPltAu ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특별도금여유(Au)",
-                  value: specData?.spPltAuAlph ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특별도금(Ni)",
-                  value: specData?.spPltNi ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "특별도금여유(Ni)",
-                  value: specData?.spPltNiAlph ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "핀 수",
-                  value: specData?.pinCnt ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "KIT X/Y",
-                  value:
-                    specData?.kitW && specData?.kitL
-                      ? specData?.kitW + "/" + specData?.kitL
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "PCS X/Y",
-                  value:
-                    specData?.pcsW && specData?.pcsL
-                      ? specData?.pcsW + "/" + specData?.pcsL
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "PNL X/Y",
-                  value:
-                    specData?.pnlW && specData?.pnlL
-                      ? specData?.pnlW + "/" + specData?.pnlL
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "kitPcs",
-                  value: specData?.kitPcs ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "pnlKit",
-                  value: specData?.pnlKit ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "sthPcs",
-                  value: specData?.sthPcs ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "sthPnl",
-                  value: specData?.sthPnl ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "브이컷유무",
-                  value: specData?.vcutYn ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "브이컷형태",
-                  value: specData?.vcutType?.cdNm ?? "-",
-                  widthType: "half",
-                },
-                {
-                  label: "연조KIT",
-                  value:
-                    specData?.ykitW && specData?.ykitL
-                      ? specData?.ykitW + " " + specData?.ykitL
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "연조PNL",
-                  value:
-                    specData?.ypnlW && specData?.ypnlL
-                      ? specData?.ypnlW + "/" + specData?.ypnlL
-                      : "-",
-                  widthType: "half",
-                },
-                {
-                  label: "등록일",
-                  value:
-                    dayjs(specData?.createdAt).format("YYYY-MM-DD HH:ss") ??
-                    "-",
-                  widthType: "half",
-                },
-              ]}
+              items={
+                (
+                  port === "3000"
+                    ? cookie.get("companySY") === "sy"
+                    : port === "90"
+                )
+                  ? [
+                      {
+                        label: "모델명",
+                        value: specData?.prdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "관리No",
+                        value: specData?.prdMngNo ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "제조사",
+                        value: specData?.mnfNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "REV",
+                        value: specData?.prdRevNo ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "두께",
+                        value: specData?.thk ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "단위",
+                        value: specData?.unit?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "재질",
+                        value: specData?.material?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "외형가공형태",
+                        value: specData?.aprType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "도금 두께",
+                        value: specData?.pltThk ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특수도금",
+                        value: specData?.spPltNi ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특수도금여유",
+                        value: specData?.spPltNiAlph ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "도장색상",
+                        value: specData?.spPrint?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "도장종류",
+                        value: specData?.spType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "제품 X/Y",
+                        value:
+                          specData?.pcsW && specData?.pcsL
+                            ? specData?.pcsW + "/" + specData?.pcsL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "브이컷형태",
+                        value: specData?.vcutType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "등록일",
+                        value:
+                          dayjs(specData?.createdAt).format(
+                            "YYYY-MM-DD HH:ss"
+                          ) ?? "-",
+                        widthType: "half",
+                      },
+                    ]
+                  : [
+                      {
+                        label: "모델명",
+                        value: specData?.prdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "관리No",
+                        value: specData?.prdMngNo ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "제조사",
+                        value: specData?.mnfNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "REV",
+                        value: specData?.prdRevNo ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "구분",
+                        value:
+                          specData?.modelTypeEm === ModelTypeEm.SAMPLE
+                            ? "샘플"
+                            : specData?.modelTypeEm === ModelTypeEm.PRODUCTION
+                            ? "양산"
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "층",
+                        value: specData?.layerEm?.replace("L", "") ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "두께",
+                        value: specData?.thk ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "단위",
+                        value: specData?.unit?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "재질",
+                        value: specData?.material?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "외형가공형태",
+                        value: specData?.aprType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "동박내층",
+                        value: specData?.copIn ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "동박외층",
+                        value: specData?.copOut ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "S/M 인쇄",
+                        value: specData?.smPrint?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "M/K 인쇄",
+                        value: specData?.mkPrint?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "S/M 색상",
+                        value: specData?.smColor?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "M/K 색상",
+                        value: specData?.mkColor?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "S/M 종류",
+                        value: specData?.smType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "M/K 종류",
+                        value: specData?.mkType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특수인쇄",
+                        value: specData?.spPrint?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특수인쇄종류",
+                        value: specData?.spType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "도금 두께",
+                        value: specData?.pltThk ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "도금 두께 여유",
+                        value: specData?.pltAlph ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특별도금(Au)",
+                        value: specData?.spPltAu ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특별도금여유(Au)",
+                        value: specData?.spPltAuAlph ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특별도금(Ni)",
+                        value: specData?.spPltNi ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "특별도금여유(Ni)",
+                        value: specData?.spPltNiAlph ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "핀 수",
+                        value: specData?.pinCnt ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "KIT X/Y",
+                        value:
+                          specData?.kitW && specData?.kitL
+                            ? specData?.kitW + "/" + specData?.kitL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "PCS X/Y",
+                        value:
+                          specData?.pcsW && specData?.pcsL
+                            ? specData?.pcsW + "/" + specData?.pcsL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "PNL X/Y",
+                        value:
+                          specData?.pnlW && specData?.pnlL
+                            ? specData?.pnlW + "/" + specData?.pnlL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "kitPcs",
+                        value: specData?.kitPcs ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "pnlKit",
+                        value: specData?.pnlKit ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "sthPcs",
+                        value: specData?.sthPcs ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "sthPnl",
+                        value: specData?.sthPnl ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "브이컷유무",
+                        value: specData?.vcutYn ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "브이컷형태",
+                        value: specData?.vcutType?.cdNm ?? "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "연조KIT",
+                        value:
+                          specData?.ykitW && specData?.ykitL
+                            ? specData?.ykitW + " " + specData?.ykitL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "연조PNL",
+                        value:
+                          specData?.ypnlW && specData?.ypnlL
+                            ? specData?.ypnlW + "/" + specData?.ypnlL
+                            : "-",
+                        widthType: "half",
+                      },
+                      {
+                        label: "등록일",
+                        value:
+                          dayjs(specData?.createdAt).format(
+                            "YYYY-MM-DD HH:ss"
+                          ) ?? "-",
+                        widthType: "half",
+                      },
+                    ]
+              }
               title=""
               btnLabel=""
               btnClick={() => {}}

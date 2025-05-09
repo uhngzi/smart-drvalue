@@ -342,13 +342,12 @@ const ModelDrawer: React.FC<Props> = ({
             },
             {
               title: "동박두께",
-              dataIndex: "pltThk",
-              key: "pltThk",
+              dataIndex: "copOut",
+              key: "copOut",
               align: "center",
               render: (value, record: modelsType) => (
                 <div className="w-full h-full v-h-center">
-                  {value ?? 0} (<p className="text-10 h-center">±</p>
-                  {record.pltAlph ?? 0})
+                  {value ?? 0}외 / {record.pltAlph ?? 0}내
                 </div>
               ),
             },

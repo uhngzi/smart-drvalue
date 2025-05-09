@@ -174,8 +174,9 @@ const AntdDraggerSmallBottom: React.FC<Props> = ({
             port === "90"
               ? "shinyang-test"
               : port === "3000"
-              ? // "shinyang-dev"
-                "gpntest-dev"
+              ? cookie.get("companySY") === "sy"
+                ? "shinyang-dev"
+                : "gpntest-dev"
               : cookie.get("x-custom-tenant-code") || "gpntest-sebuk-ver"
           ),
           Authorization: `bearer ${cookie.get(cookieName)}`,

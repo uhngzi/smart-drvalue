@@ -1,23 +1,26 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect } from "react";
 
-import Download from '@/assets/svg/icons/s_download.svg';
-import OpenNewWindow from '@/assets/svg/icons/l_open_window.svg';
-import UploadIcon from '@/assets/svg/icons/folder.svg';
-import Klip from '@/assets/svg/icons/klip.svg';
-import Del from '@/assets/svg/icons/trash.svg';
+import Download from "@/assets/svg/icons/s_download.svg";
+import OpenNewWindow from "@/assets/svg/icons/l_open_window.svg";
+import UploadIcon from "@/assets/svg/icons/folder.svg";
+import Klip from "@/assets/svg/icons/klip.svg";
+import Del from "@/assets/svg/icons/trash.svg";
 
-import { message, Modal, UploadProps } from 'antd';
-import { UploadFile } from 'antd/es/upload';
-import Dragger from 'antd/es/upload/Dragger';
-import styled from 'styled-components';
-import { downloadFileByObjectName, sliceByDelimiter, uploadFile } from './upLoadUtils';
-import { instance } from '@/api/lib/axios';
-import cookie from 'cookiejs';
-import { cookieName } from '@/api/lib/config';
-import useToast from '@/utils/useToast';
-import { Upload } from 'antd/lib';
-import { port } from '@/pages/_app';
-
+import { message, Modal, UploadProps } from "antd";
+import { UploadFile } from "antd/es/upload";
+import Dragger from "antd/es/upload/Dragger";
+import styled from "styled-components";
+import {
+  downloadFileByObjectName,
+  sliceByDelimiter,
+  uploadFile,
+} from "./upLoadUtils";
+import { instance } from "@/api/lib/axios";
+import cookie from "cookiejs";
+import { cookieName } from "@/api/lib/config";
+import useToast from "@/utils/useToast";
+import { Upload } from "antd/lib";
+import { port } from "@/pages/_app";
 
 interface Props {
   fileList: UploadFile[];
@@ -32,15 +35,15 @@ interface Props {
 }
 
 const CustomDragger = styled(Dragger)`
-  .ant-upload-drag .ant-upload-btn{
+  .ant-upload-drag .ant-upload-btn {
     padding: 0;
   }
-    
+
   .ant-upload-drag {
     border-radius: 2px;
-    border: 1px solid #D9D9D9;
+    border: 1px solid #d9d9d9;
   }
-`
+`;
 
 const AntdDragger: React.FC<Props> = ({
   fileList,
@@ -55,7 +58,7 @@ const AntdDragger: React.FC<Props> = ({
   const { showToast, ToastContainer } = useToast();
 
   const UploadProp: UploadProps = {
-    name: 'files',
+    name: "files",
     multiple: mult,
     showUploadList: false,
     beforeUpload: (file, fileListNew) => {
@@ -65,53 +68,60 @@ const AntdDragger: React.FC<Props> = ({
       }
       return true;
     },
-    onChange: async info => {
+    onChange: async (info) => {
       const { status } = info.file;
 
-      if (status === 'error') {
+      if (status === "error") {
         showToast(`${info.file.name} 파일 업로드에 실패했습니다.`, "error");
         return;
       }
 
-      if (status === 'done') {
+      if (status === "done") {
         const filesNm = (info.file.response.data ?? []).map((file: any) => {
           return file?.uploadEntityResult?.storageName;
         });
-    
-        setFileList(prev => [...prev, info.file]);
-        setFileIdList(prev => [...prev, ...filesNm]);
+
+        setFileList((prev) => [...prev, info.file]);
+        setFileIdList((prev) => [...prev, ...filesNm]);
       }
     },
   };
 
   const handleDeleteFile = (idx: number) => {
-    setFileList(prevFileList =>
-      prevFileList.filter((_, index) => index !== idx),
+    setFileList((prevFileList) =>
+      prevFileList.filter((_, index) => index !== idx)
     );
-    setFileIdList(prevFileIdList =>
-      prevFileIdList.filter((_, index) => index !== idx),
+    setFileIdList((prevFileIdList) =>
+      prevFileIdList.filter((_, index) => index !== idx)
     );
   };
 
   return (
     <>
-      <CustomDragger 
-        {...UploadProp} 
-        className="bg-white" 
+      <CustomDragger
+        {...UploadProp}
+        className="bg-white"
         disabled={disabled}
         name="files"
         headers={{
-        //  'x-tenant-code' : 'gpntest-sebuk-ver',
-         'x-tenant-code' : (
-            port === '90' || cookie.get('companySY') === 'sy' ? 'shinyang-test' :
-            cookie.get('x-custom-tenant-code') ? cookie.get('x-custom-tenant-code').toString() :
-            'gpntest-sebuk-ver'
+          "x-tenant-code": String(
+            port === "90"
+              ? "shinyang-test"
+              : port === "3000"
+              ? cookie.get("companySY") === "sy"
+                ? "shinyang-dev"
+                : "gpntest-dev"
+              : cookie.get("x-custom-tenant-code") || "gpntest-sebuk-ver"
           ),
           Authorization: `bearer ${cookie.get(cookieName)}`,
         }}
         action={`http://115.68.221.100:3300/api/serv/file-mng/v1/tenant/file-manager/upload/multiple`}
       >
-        <div className={`flex-col v-h-center ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+        <div
+          className={`flex-col v-h-center ${
+            disabled ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
+        >
           <div className="h-84 h-center">
             <p className="w-48 h-48 v-h-center p-3">
               <UploadIcon />
@@ -122,7 +132,8 @@ const AntdDragger: React.FC<Props> = ({
               Click or drag file to this area to upload
             </p>
             <p className="text-[#00000045] text-14">
-              Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
+              Support for a single or bulk upload. Strictly prohibit from
+              uploading company data or other band files
             </p>
           </div>
         </div>
@@ -130,14 +141,19 @@ const AntdDragger: React.FC<Props> = ({
       <div className="flex flex-col mt-20 max-h-100 overflow-y-auto">
         {fileList?.map((file, idx) => (
           <div className="h-center h-32" key={idx}>
-            <p className="w-16 h-16 mr-8"><Klip /></p>
+            <p className="w-16 h-16 mr-8">
+              <Klip />
+            </p>
             {/* 파일 이름/형식/사이즈 */}
-            <p 
-              className="flex flex-1 text-15 text-[#1890FF] cursor-pointer" key={idx}
-              onClick={() => downloadFileByObjectName(fileIdList[idx], fileList[idx])}
+            <p
+              className="flex flex-1 text-15 text-[#1890FF] cursor-pointer"
+              key={idx}
+              onClick={() =>
+                downloadFileByObjectName(fileIdList[idx], fileList[idx])
+              }
             >
-              {sliceByDelimiter(file.name || '', '.', 'front')}.
-              {sliceByDelimiter(file.name || '', '.', 'back')}
+              {sliceByDelimiter(file.name || "", ".", "front")}.
+              {sliceByDelimiter(file.name || "", ".", "back")}
               {/* {Math.round(byteToKB(file.size || 0))}KB] */}
             </p>
 
