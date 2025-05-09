@@ -6,7 +6,12 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import { newDataProcessGroupCUType, processGroupCUType, processGroupRType, processRType } from "@/data/type/base/process";
+import {
+  newDataProcessGroupCUType,
+  processGroupCUType,
+  processGroupRType,
+  processRType,
+} from "@/data/type/base/process";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
@@ -17,7 +22,12 @@ import CustomTree from "@/components/Tree/CustomTree";
 import { patchAPI } from "@/api/patch";
 import useToast from "@/utils/useToast";
 import { CUtreeType, treeType } from "@/data/type/componentStyles";
-import { onTreeAdd, onTreeDelete, onTreeEdit, updateTreeDatas } from "@/utils/treeCUDfunc";
+import {
+  onTreeAdd,
+  onTreeDelete,
+  onTreeEdit,
+  updateTreeDatas,
+} from "@/utils/treeCUDfunc";
 import { Spin } from "antd";
 
 const WkProcessGroupListPage: React.FC & {
@@ -37,50 +47,55 @@ const WkProcessGroupListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [ data, setData ] = useState<Array<processGroupRType>>([]);
-  const [ treeData, setTreeData ] = useState<treeType[]>([]);
-  const { data:queryData, refetch } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['setting', 'wk', 'process'],
+  const [data, setData] = useState<Array<processGroupRType>>([]);
+  const [treeData, setTreeData] = useState<treeType[]>([]);
+  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["setting", "wk", "process"],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI({
-        type: 'baseinfo', 
-        utype: 'tenant/',
-        url: 'process-group/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC",
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-group/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData((result.data?.data ?? []).length ?? 0);
-        let childArr:processRType[] = [];
+        let childArr: processRType[] = [];
 
-        const arr = (result.data?.data ?? []).map((group:processGroupRType) => ({
-          id: group.id,
-          label: group.prcGrpNm,
-          ordNo: group.ordNo,
-          children: group.processes.sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0)).map((process:processRType) => {
-            const child = {
-              id: process.id,
-              label: process.prcNm,
-              wipPrcNm: process.wipPrcNm,
-              isInternal: process.isInternal,
-              ordNo: process.ordNo,
-            }
-            childArr.push(child);
-            return child;
-          }),
-          open: true,
-        }));
+        const arr = (result.data?.data ?? []).map(
+          (group: processGroupRType) => ({
+            id: group.id,
+            label: group.prcGrpNm,
+            ordNo: group.ordNo,
+            children: group.processes
+              .sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0))
+              .map((process: processRType) => {
+                const child = {
+                  id: process.id,
+                  label: process.prcNm,
+                  wipPrcNm: process.wipPrcNm,
+                  isInternal: process.isInternal,
+                  ordNo: process.ordNo,
+                };
+                childArr.push(child);
+                return child;
+              }),
+            open: true,
+          })
+        );
         setTreeData(arr);
         setAddParentEditsInfo(arr);
         setAddChildEditsInfo(childArr);
       } else {
-        console.log('error:', result.response);
+        console.log("error:", result.response);
       }
 
       setDataLoading(false);
@@ -91,132 +106,145 @@ const WkProcessGroupListPage: React.FC & {
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
-    // 결과 모달창을 위한 변수
-  const [ resultOpen, setResultOpen ] = useState<boolean>(false);
-  const [ resultType, setResultType ] = useState<AlertType>('info');
+  // 결과 모달창을 위한 변수
+  const [resultOpen, setResultOpen] = useState<boolean>(false);
+  const [resultType, setResultType] = useState<AlertType>("info");
 
   // ---------- 신규 tree 데이터 시작 ----------
-  const [ addList, setAddList ] = useState<any[]>([]);
-  const [ editList, setEditList ] = useState<any[]>([]);
-  const [ deleteList, setDeleteList ] = useState<{type: string, id: string}[]>([]);
-  const [ addParentEditsInfo, setAddParentEditsInfo ] = useState<any[]>([]);
-  const [ addChildEditsInfo, setAddChildEditsInfo ] = useState<any[]>([]);
+  const [addList, setAddList] = useState<any[]>([]);
+  const [editList, setEditList] = useState<any[]>([]);
+  const [deleteList, setDeleteList] = useState<{ type: string; id: string }[]>(
+    []
+  );
+  const [addParentEditsInfo, setAddParentEditsInfo] = useState<any[]>([]);
+  const [addChildEditsInfo, setAddChildEditsInfo] = useState<any[]>([]);
 
   const addEdits = {
-    info: addParentEditsInfo, 
+    info: addParentEditsInfo,
     setInfo: setAddParentEditsInfo,
     childInfo: addChildEditsInfo,
     setChildInfo: setAddChildEditsInfo,
-    addChildEditList:[
-      {type:"input", key:"wipPrcNm", name:"WIP 공정명"},
-      {type:"switch", key:"isInternal", name:"내부 여부"},
-    ]
-  }
+    addChildEditList: [
+      { type: "input", key: "wipPrcNm", name: "WIP 공정명" },
+      { type: "switch", key: "isInternal", name: "내부 여부" },
+    ],
+  };
 
   // 트리데이터 submit 함수
-  async function onTreeSubmit(){
-      console.log(addList, editList, deleteList);
-      const { updatedAddList, finalEditList, updatedDeleteList } = updateTreeDatas(addList, editList, deleteList);
-      console.log("add:",updatedAddList, "edit:", finalEditList, "delete: ",updatedDeleteList);
-      let result = false
-  
-      for(const item of updatedAddList){
-        let url: string = "process-group";
-        let parent: string = '';
-        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
-  
-        if(item.parentId) {
-          url = "process";
-          parent = "process-group";
-          jsonData.processGroup = {id: item.parentId};
-          jsonData.prcNm = item.label;
-        }else{
-          jsonData.prcGrpNm = item.label;
-        }
-        result = await onTreeAdd(url, jsonData);
-        if(!result) {
-          showToast('데이터 추가중 오류가 발생했습니다.', 'error');
-        }
-        console.log("add", result)
+  async function onTreeSubmit() {
+    console.log(addList, editList, deleteList);
+    const { updatedAddList, finalEditList, updatedDeleteList } =
+      updateTreeDatas(addList, editList, deleteList);
+    console.log(
+      "add:",
+      updatedAddList,
+      "edit:",
+      finalEditList,
+      "delete: ",
+      updatedDeleteList
+    );
+    let result = false;
+
+    for (const item of updatedAddList) {
+      let url: string = "process-group";
+      let parent: string = "";
+      const jsonData: { [key: string]: any; useYn: boolean } = { useYn: true };
+
+      if (item.parentId) {
+        url = "process";
+        parent = "process-group";
+        jsonData.processGroup = { id: item.parentId };
+        jsonData.prcNm = item.label;
+      } else {
+        jsonData.prcGrpNm = item.label;
       }
-  
-      for(const item of finalEditList){
-        let url: string = "process-group";
-        const jsonData: { [key: string]: any, useYn: boolean } = {useYn: true}
-  
-        if(item.parentId) {
-          url = "process";
-          jsonData.processGroup = {id: item.parentId};
-          jsonData.prcNm = item.label;
-          jsonData.ordNo = Number(item.ordNo);
-          jsonData.wipPrcNm = item.wipPrcNm;
-          jsonData.isInternal = item.isInternal;
-        }else{
-          jsonData.prcGrpNm = item.label;
-          jsonData.ordNo = Number(item.ordNo);
-        }
-        result = await onTreeEdit(item, url, jsonData);
-        if(!result){
-          showToast('데이터 수정중 오류가 발생했습니다.', 'error');
-        }
+      result = await onTreeAdd(url, jsonData);
+      if (!result) {
+        showToast("데이터 추가중 오류가 발생했습니다.", "error");
       }
-  
-      for(const item of updatedDeleteList){
-        let url: string = "process-group";
-        if(item.type === 'child'){
-          url = "process";
-        }
-        result = await onTreeDelete(item, url);
-        if(!result){
-          showToast('데이터 삭제중 오류가 발생했습니다.', 'error');
-        }
+      console.log("add", result);
+    }
+
+    for (const item of finalEditList) {
+      let url: string = "process-group";
+      const jsonData: { [key: string]: any; useYn: boolean } = { useYn: true };
+
+      if (item.parentId) {
+        url = "process";
+        jsonData.processGroup = { id: item.parentId };
+        jsonData.prcNm = item.label;
+        jsonData.ordNo = Number(item.ordNo);
+        jsonData.wipPrcNm = item.wipPrcNm;
+        jsonData.isInternal = item.isInternal;
+      } else {
+        jsonData.prcGrpNm = item.label;
+        jsonData.ordNo = Number(item.ordNo);
       }
-      console.log(result);
-      if(result) {
-        setAddList([]);
-        setEditList([]);
-        setDeleteList([]);
-        showToast('저장이 완료되었습니다.', 'success');
-        refetch();
+      result = await onTreeEdit(item, url, jsonData);
+      if (!result) {
+        showToast("데이터 수정중 오류가 발생했습니다.", "error");
       }
     }
-   
+
+    for (const item of updatedDeleteList) {
+      let url: string = "process-group";
+      if (item.type === "child") {
+        url = "process";
+      }
+      result = await onTreeDelete(item, url);
+      if (!result) {
+        showToast("데이터 삭제중 오류가 발생했습니다.", "error");
+      }
+    }
+    console.log(result);
+    if (result) {
+      setAddList([]);
+      setEditList([]);
+      setDeleteList([]);
+      showToast("저장이 완료되었습니다.", "success");
+      refetch();
+    }
+  }
 
   return (
     <>
-      {dataLoading && 
+      {dataLoading && (
         <div className="w-full h-[90vh] v-h-center">
-          <Spin tip="Loading..."/>
+          <Spin tip="Loading..." />
         </div>
-      }
-      {!dataLoading &&
-      <>
-        <div className="h-[900px] h-full">
-          <CustomTree
-            data={treeData}
-            // handleDataChange={handleTreeDataChange}
-            onSubmit={onTreeSubmit}
-            setAddList={setAddList}
-            setEditList={setEditList}
-            setDelList={setDeleteList}
-            addEdits={addEdits}
-          />
-        </div>
-      </>}
-        
+      )}
+      {!dataLoading && (
+        <>
+          <div className="h-[900px] h-full">
+            <CustomTree
+              data={treeData}
+              // handleDataChange={handleTreeDataChange}
+              onSubmit={onTreeSubmit}
+              setAddList={setAddList}
+              setEditList={setEditList}
+              setDelList={setDeleteList}
+              addEdits={addEdits}
+            />
+          </div>
+        </>
+      )}
+
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
 WkProcessGroupListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{pd:'70px'}}
+  <SettingPageLayout
+    styles={{ pd: "70px" }}
     menu={[
-      { text: '공정', link: '/setting/wk/process/list' },
-      { text: '공정 외주처', link: '/setting/wk/process/vendor' },
-      { text: '공정 외주처 가격', link: '/setting/wk/process/vendor-price' },
+      { text: "공정", link: "/setting/wk/process/list" },
+      { text: "공정 외주처", link: "/setting/wk/process/vendor" },
+      { text: "공정 외주처 가격", link: "/setting/wk/process/vendor-price" },
     ]}
-  >{page}</SettingPageLayout>
-)
+  >
+    {page}
+  </SettingPageLayout>
+);
 
 export default WkProcessGroupListPage;
