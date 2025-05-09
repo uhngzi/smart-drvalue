@@ -18,6 +18,10 @@ import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
 import { set } from "lodash";
+import {
+  autoHyphenBusinessLicense,
+  autoHyphenCorpRegNo,
+} from "@/utils/formatBusinessHyphen";
 
 interface Option {
   value: string | number | boolean;
@@ -135,6 +139,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
       value = inputTel(value);
     } else if (itemName.toLowerCase().includes("fax")) {
       value = inputFax(value);
+    } else if (itemName.toLowerCase().includes("corpregno")) {
+      value = autoHyphenCorpRegNo(value);
+    } else if (itemName.toLowerCase().includes("regno")) {
+      value = autoHyphenBusinessLicense(value);
     }
     setFormData((prev) => ({ ...prev, [itemName]: value }));
     setData(itemName, value);
@@ -264,13 +272,8 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
                                 (f) => f.prtRegCd === Number(e.target.value)
                               );
 
-                              setCdChk(!!csData); // csData가 존재하면 true, 아니면 false
-
-                              /*if(csData)  setCdChk(true);
-                              else        setCdChk(false);*/
-                            } /* else {
-                              setCdChk(false);
-                            }*/
+                              setCdChk(!!csData);
+                            }
                           }}
                           placeholder={item.placeholder}
                           type={item.inputType ?? "string"}
