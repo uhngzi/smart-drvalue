@@ -7,7 +7,7 @@ import UserFollow from "@/assets/svg/icons/user-follow.svg";
 import UserAdd from "@/assets/svg/icons/user-add.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
 import { useQuery } from "@tanstack/react-query";
 import { apiGetResponseType } from "@/data/type/apiResponse";
@@ -69,7 +69,10 @@ const HrUserListPage: React.FC & {
 
   const [newOpen, setNewOpen] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<keyof typeof groupType | null>(null);
-  const [newData, setNewData] = useState<any>([]);
+  const [newData, setNewData] = useState<any>({});
+  useEffect(() => {
+    console.log(newData);
+  }, [newData]);
 
   const [baseJobData, setBaseJobData] = useState<
     { value: string; label: string }[]
@@ -195,7 +198,7 @@ const HrUserListPage: React.FC & {
         );
       } else {
         console.log("error:", result.response);
-        setNewData([]);
+        setNewData({});
       }
 
       setDataLoading(false);
@@ -236,7 +239,7 @@ const HrUserListPage: React.FC & {
         setNewData(arr);
       } else {
         console.log("error:", result.response);
-        setNewData([]);
+        setNewData({});
       }
 
       setDataLoading(false);
@@ -520,7 +523,7 @@ const HrUserListPage: React.FC & {
     console.log("close");
     setNewTitle(null);
     setNewOpen(false);
-    setNewData([]);
+    setNewData({});
   }
 
   function userModalClose() {
@@ -632,7 +635,10 @@ const HrUserListPage: React.FC & {
             <div className="h-center justify-end pb-10">
               <div
                 className="w-90 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-                onClick={() => setUserDetailOpen(true)}
+                onClick={() => {
+                  setNewData({});
+                  setUserDetailOpen(true);
+                }}
               >
                 구성원 관리
               </div>
@@ -769,13 +775,31 @@ const HrUserListPage: React.FC & {
       <BaseInfoCUDModal
         popWidth={610}
         title={{
-          name: `구성원 ${newData?.id ? "수정" : "등록"}`,
+          name: `구성원 ${userData?.id ? "수정" : "등록"}`,
           icon: <Bag />,
         }}
         open={userDetailOpen}
         setOpen={setUserDetailOpen}
         onClose={() => userModalClose()}
-        items={addModalInfoList}
+        items={
+          userData?.id
+            ? [
+                ...addModalInfoList.map((f) => {
+                  if (f.name === "userPassword") {
+                    return {
+                      name: "userPassword",
+                      label: "비밀번호",
+                      widthType: "third",
+                      type: "password",
+                      disabled: true,
+                    };
+                  } else {
+                    return { ...f };
+                  }
+                }),
+              ]
+            : addModalInfoList
+        }
         data={userData}
         onSubmit={handleSubmitNewData}
         onDelete={handleDataDelete}
