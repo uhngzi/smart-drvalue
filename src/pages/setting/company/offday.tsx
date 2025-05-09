@@ -467,7 +467,7 @@ const CompanyOffdayListPage: React.FC & {
 };
 
 CompanyOffdayListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{ pd: "70px" }}>{page}</SettingPageLayout>
+  <SettingPageLayout>{page}</SettingPageLayout>
 );
 
 export default CompanyOffdayListPage;

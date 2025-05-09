@@ -705,7 +705,6 @@ const WkLaminationSourceListPage: React.FC & {
 
 WkLaminationSourceListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
-    styles={{ pd: "70px" }}
     menu={[
       { text: "적층구조 요소", link: "/setting/wk/lamination/source" },
       { text: "적층구조 자재", link: "/setting/wk/lamination/material" },

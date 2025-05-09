@@ -615,7 +615,6 @@ const BuyUnitModelListPage: React.FC & {
 
 BuyUnitModelListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
-    styles={{ pd: "70px" }}
     menu={[
       { text: "모델 단가", link: "/setting/buy/unit/model" },
       { text: "추가비용(두께)", link: "/setting/buy/unit/thickness" },

@@ -215,7 +215,7 @@ const WkProcessGroupListPage: React.FC & {
       )}
       {!dataLoading && (
         <>
-          <div className="h-[900px] h-full">
+          <div className="!h-[calc(100vh-210px)] h-full">
             <CustomTree
               data={treeData}
               // handleDataChange={handleTreeDataChange}
@@ -236,7 +236,6 @@ const WkProcessGroupListPage: React.FC & {
 
 WkProcessGroupListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
-    styles={{ pd: "70px" }}
     menu={[
       { text: "공정", link: "/setting/wk/process/list" },
       { text: "공정 외주처", link: "/setting/wk/process/vendor" },

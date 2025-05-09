@@ -47,15 +47,18 @@ import { validReq } from "@/utils/valid";
 import Bag from "@/assets/svg/icons/bag.svg";
 import { Spin } from "antd";
 
-
 const WkProcessVendorPriceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
 
   // 신규 등록 모달 입력값 상태
-  const [newData, setNewData] = useState<processVendorPriceCUType>(newDataProcessVendorPriceCUType);
-  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(MOCK.vendorItems.CUDPopItems);
+  const [newData, setNewData] = useState<processVendorPriceCUType>(
+    newDataProcessVendorPriceCUType
+  );
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
+    MOCK.vendorItems.CUDPopItems
+  );
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
   const [pagination, setPagination] = useState({
@@ -70,25 +73,26 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   //외주처
   const [dataVendor, setDataVendor] = useState<Array<processVendorRType>>([]);
-  const { data: queryDataVendor } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['process-vendor/jsxcrud/many'],
+  const { data: queryDataVendor } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-vendor/jsxcrud/many"],
     queryFn: async () => {
       setDataVendor([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process-vendor/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-vendor/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setDataVendor(result.data?.data ?? []);
-        console.log('vendor : ', result.data?.data);
+        console.log("vendor : ", result.data?.data);
       } else {
-        console.log('error:', result.response);
+        console.log("error:", result.response);
       }
       return result;
     },
@@ -96,51 +100,53 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // 공정 그룹 조회
   const [dataGroup, setDataGroup] = useState<Array<processGroupRType>>([]);
-  const { data: queryDataGroup } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['process-group/jsxcrud/many'],
+  const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-group/jsxcrud/many"],
     queryFn: async () => {
       setDataGroup([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process-group/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-group/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setDataGroup(result.data?.data ?? []);
-        console.log('group : ', result.data?.data);
+        console.log("group : ", result.data?.data);
       } else {
-        console.log('error:', result.response);
-      };
+        console.log("error:", result.response);
+      }
       return result;
     },
   });
 
   // 공정 목록 조회
   const [dataProcess, setDataProcess] = useState<Array<processRType>>([]);
-  const { data: queryDataProcess } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['process/jsxcrud/many'],
+  const { data: queryDataProcess } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process/jsxcrud/many"],
     queryFn: async () => {
       setDataProcess([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process/jsxcrud/many'
-      },{
-        sort: "ordNo,ASC"
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setDataProcess(result.data?.data ?? []);
-        console.log('process : ', result.data?.data);
+        console.log("process : ", result.data?.data);
       } else {
-        console.log('error:', result.response);
+        console.log("error:", result.response);
       }
       return result;
     },
@@ -149,28 +155,29 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<processVendorRType>>([]);
-  const { data: queryData, refetch } = useQuery<
-    apiGetResponseType, Error
-  >({
-    queryKey: ['process-vendor-price/jsxcrud/many', pagination.current],
+  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-vendor-price/jsxcrud/many", pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
-      const result = await getAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process-vendor-price/jsxcrud/many'
-      }, {
-        limit: pagination.size,
-        page: pagination.current,
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-vendor-price/jsxcrud/many",
+        },
+        {
+          limit: pagination.size,
+          page: pagination.current,
+        }
+      );
 
-      if (result.resultCode === 'OK_0000') {
+      if (result.resultCode === "OK_0000") {
         setData(result.data?.data ?? []);
         setTotalData(result.data?.total ?? 0);
-        console.log('data : ', result.data?.data);
+        console.log("data : ", result.data?.data);
       } else {
-        console.log('error:', result.response);
+        console.log("error:", result.response);
       }
       setDataLoading(false);
       return result;
@@ -181,16 +188,16 @@ const WkProcessVendorPriceListPage: React.FC & {
   // ---------- 신규 데이터 시작 ----------
   // 등록/수정 결과 알림 모달 상태
   const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<AlertType>('info');
-  const [errMsg, setErrMsg] = useState<string>('');
+  const [resultType, setResultType] = useState<AlertType>("info");
+  const [errMsg, setErrMsg] = useState<string>("");
   //등록 모달창을 위한 변수
   const [newOpen, setNewOpen] = useState<boolean>(false);
   // 모달 입력 필드 값 변경 핸들러
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     name: string,
-    type: 'input' | 'select' | 'date' | 'other',
-    key?: string,
+    type: "input" | "select" | "date" | "other",
+    key?: string
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
@@ -198,10 +205,11 @@ const WkProcessVendorPriceListPage: React.FC & {
     } else if (type === "select") {
       if (key) {
         setNewData({
-          ...newData, [name]: {
+          ...newData,
+          [name]: {
             ...((newData as any)[name] || {}), // 기존 객체 값 유지
             [key]: e?.toString(), // 새로운 key 값 업데이트
-          }
+          },
         });
       } else {
         // 공정그룹이 바뀌었을 때 관련 종속 값들 초기화
@@ -222,12 +230,14 @@ const WkProcessVendorPriceListPage: React.FC & {
         }
       }
     }
-  }
+  };
 
   const { showToast, ToastContainer } = useToast();
 
   //수정하기 위한 데이터 셋팅
-  function setDataProcessVendorPriceType(record: any): processVendorPriceCUType {
+  function setDataProcessVendorPriceType(
+    record: any
+  ): processVendorPriceCUType {
     console.log("hi");
     return {
       id: record.id,
@@ -261,74 +271,85 @@ const WkProcessVendorPriceListPage: React.FC & {
   }
 
   // 신규 데이터 초기화 함수
-  const [actionType, setActionType] = useState<'등록' | '수정' | '삭제'>('등록');
+  const [actionType, setActionType] = useState<"등록" | "수정" | "삭제">(
+    "등록"
+  );
   const handleSubmitNewData = async () => {
     try {
       const val = validReq(newData, processVendorPriceReq());
       if (!val.isValid) {
-        showToast(val.missingLabels + '은(는) 필수 입력입니다.', "error");
+        showToast(val.missingLabels + "은(는) 필수 입력입니다.", "error");
         return;
       }
 
       console.log(newData);
       if (newData.id) {
-        setActionType('수정');
-        const result = await patchAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'process-vendor-price',
-          jsx: 'jsxcrud'
-        }, newData.id, newData.appOriginDt && dayjs(newData.appOriginDt) <= dayjs() ? {
-          priceUnit: newData.priceUnit,
-        } : {
-          ...newData,
-          id: undefined,
-          process: { id: newData.processIdx },
-          processGroup: { id: newData.processGroupIdx },
-          vendor: { id: newData.vendorIdx },
-          processIdx: undefined,
-          processGroupIdx: undefined,
-          vendorIdx: undefined,
-        });
+        setActionType("수정");
+        const result = await patchAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "process-vendor-price",
+            jsx: "jsxcrud",
+          },
+          newData.id,
+          newData.appOriginDt && dayjs(newData.appOriginDt) <= dayjs()
+            ? {
+                priceUnit: newData.priceUnit,
+              }
+            : {
+                ...newData,
+                id: undefined,
+                process: { id: newData.processIdx },
+                processGroup: { id: newData.processGroupIdx },
+                vendor: { id: newData.vendorIdx },
+                processIdx: undefined,
+                processGroupIdx: undefined,
+                vendorIdx: undefined,
+              }
+        );
 
-        if (result.resultCode === 'OK_0000') {
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
           setResultOpen(true);
-          setResultType('success');
+          setResultType("success");
           setNewData(newDataProcessVendorPriceCUType);
         } else {
           const msg = result?.response?.data?.message;
           setNewOpen(false);
-          setResultType('error');
+          setResultType("error");
           setErrMsg(msg);
           setResultOpen(true);
         }
       } else {
-        setActionType('등록');
-        const result = await postAPI({
-          type: 'baseinfo',
-          utype: 'tenant/',
-          url: 'process-vendor-price',
-          jsx: 'jsxcrud'
-        }, {
-          ...newData,
-          process: { id: newData.processIdx },
-          processGroup: { id: newData.processGroupIdx },
-          vendor: { id: newData.vendorIdx },
-          processIdx: undefined,
-          processGroupIdx: undefined,
-          vendorIdx: undefined,
-        });
+        setActionType("등록");
+        const result = await postAPI(
+          {
+            type: "baseinfo",
+            utype: "tenant/",
+            url: "process-vendor-price",
+            jsx: "jsxcrud",
+          },
+          {
+            ...newData,
+            process: { id: newData.processIdx },
+            processGroup: { id: newData.processGroupIdx },
+            vendor: { id: newData.vendorIdx },
+            processIdx: undefined,
+            processGroupIdx: undefined,
+            vendorIdx: undefined,
+          }
+        );
 
-        if (result.resultCode === 'OK_0000') {
+        if (result.resultCode === "OK_0000") {
           setNewOpen(false);
           setResultOpen(true);
-          setResultType('success');
+          setResultType("success");
           setNewData(newDataProcessVendorPriceCUType);
         } else {
           const msg = result?.response?.data?.message;
           setNewOpen(false);
-          setResultType('error');
+          setResultType("error");
           setErrMsg(msg);
           setResultOpen(true);
         }
@@ -336,40 +357,42 @@ const WkProcessVendorPriceListPage: React.FC & {
     } catch (e) {
       setNewOpen(false);
       setResultOpen(true);
-      setResultType('error');
+      setResultType("error");
     }
-  }
+  };
 
-
-  useEffect(()=>{
-    console.log('newData : ', newData);
-  }, [newData])
+  useEffect(() => {
+    console.log("newData : ", newData);
+  }, [newData]);
 
   // 삭제 버튼 함수
   const handleDataDelete = async (id: string) => {
     try {
-      const result = await deleteAPI({
-        type: 'baseinfo',
-        utype: 'tenant/',
-        url: 'process-vendor-price',
-        jsx: 'jsxcrud'
-      }, id);
+      const result = await deleteAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-vendor-price",
+          jsx: "jsxcrud",
+        },
+        id
+      );
 
-      if (result.resultCode === 'OK_0000') {
-        setActionType('삭제');
-        setResultType('success');
+      if (result.resultCode === "OK_0000") {
+        setActionType("삭제");
+        setResultType("success");
         refetch();
       } else {
         const msg = result?.response?.data?.message;
         setNewOpen(false);
-        setResultType('error');
+        setResultType("error");
         setErrMsg(msg);
         setResultOpen(true);
       }
       setResultOpen(true);
       setNewOpen(false);
     } catch (e) {
-      setResultType('error');
+      setResultType("error");
       setResultOpen(true);
       setNewOpen(false);
     }
@@ -380,14 +403,18 @@ const WkProcessVendorPriceListPage: React.FC & {
   const getUpdatedCUDPopItems = () => {
     return MOCK.vendorItems.CUDPopItems.map((item) => {
       let disabled = false;
-      if (newData.id && dayjs(newData.appDt) <= dayjs() && item.name !== 'priceUnit') {
+      if (
+        newData.id &&
+        dayjs(newData.appDt) <= dayjs() &&
+        item.name !== "priceUnit"
+      ) {
         // 적용일이 지났으면 가격을 제외한 모든 필드 disabled 처리
         disabled = true;
       }
 
-      if (item.name === 'processGroupIdx') {
+      if (item.name === "processGroupIdx") {
         return {
-          key: 'id',
+          key: "id",
           ...item,
           option: dataGroup.map((group) => ({
             value: group.id,
@@ -397,32 +424,32 @@ const WkProcessVendorPriceListPage: React.FC & {
         };
       }
 
-      if (item.name === 'processIdx') {
+      if (item.name === "processIdx") {
         const groupId = newData?.processGroupIdx;
 
         const option = groupId
           ? dataProcess
-            .filter(p => String(p?.processGroup?.id) === String(groupId))
-            .map(p => ({ value: p.id, label: p.prcNm }))
-          : dataProcess.map(p => ({ value: p.id, label: p.prcNm }));
+              .filter((p) => String(p?.processGroup?.id) === String(groupId))
+              .map((p) => ({ value: p.id, label: p.prcNm }))
+          : dataProcess.map((p) => ({ value: p.id, label: p.prcNm }));
 
         return {
           ...item,
-          key: 'id',
+          key: "id",
           option,
           disabled: disabled,
         };
       }
 
-      if (item.name === 'vendorIdx') {
+      if (item.name === "vendorIdx") {
         const procId = newData?.processIdx;
         const filteredVendors = dataVendor.filter(
-          v => String(v.process?.id) === String(procId)
+          (v) => String(v.process?.id) === String(procId)
         );
 
         return {
           ...item,
-          key: 'id',
+          key: "id",
           option: filteredVendors.map((v) => ({
             value: v.vendor.id,
             label: v.vendor.prtNm,
@@ -431,10 +458,10 @@ const WkProcessVendorPriceListPage: React.FC & {
         };
       }
 
-      if (item.name === 'layerEm') {
+      if (item.name === "layerEm") {
         return {
           ...item,
-          key: 'id',
+          key: "id",
           option: generateFloorOptions(),
           disabled: disabled,
         };
@@ -453,28 +480,23 @@ const WkProcessVendorPriceListPage: React.FC & {
 
     const updatedItems = getUpdatedCUDPopItems();
     setAddModalInfoList(updatedItems);
-  }, [
-    dataGroup,
-    dataProcess,
-    dataVendor,
-    newData,
-  ]);
+  }, [dataGroup, dataProcess, dataVendor, newData]);
 
   return (
     <>
-      {dataLoading &&
+      {dataLoading && (
         <div className="w-full h-[90vh] v-h-center">
           <Spin tip="Loading..." />
         </div>
-      }
-      {!dataLoading &&
+      )}
+      {!dataLoading && (
         <>
           <div className="v-between-h-center pb-10">
             <p>총 {totalData}건</p>
             <div
               className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
               onClick={() => {
-                setNewOpen(true)
+                setNewOpen(true);
                 setNewData(newDataProcessVendorPriceCUType);
               }}
             >
@@ -484,38 +506,40 @@ const WkProcessVendorPriceListPage: React.FC & {
           <AntdTable
             columns={[
               {
-                title: 'No',
+                title: "No",
                 width: 50,
-                dataIndex: 'no',
-                render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-                align: 'center',
+                dataIndex: "no",
+                render: (_: any, __: any, index: number) =>
+                  totalData -
+                  ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                align: "center",
               },
               {
-                title: '공정그룹명',
-                dataIndex: 'processGroup',
-                key: 'processGroup',
-                align: 'center',
+                title: "공정그룹명",
+                dataIndex: "processGroup",
+                key: "processGroup",
+                align: "center",
                 render: (item: processGroupRType) => item.prcGrpNm,
               },
               {
-                title: '공정명',
-                dataIndex: 'process',
-                key: 'process',
-                align: 'center',
+                title: "공정명",
+                dataIndex: "process",
+                key: "process",
+                align: "center",
                 render: (item: processRType) => item.prcNm,
               },
               {
-                title: '외주처명',
-                dataIndex: 'vendor',
-                key: 'vendor',
-                align: 'center',
+                title: "외주처명",
+                dataIndex: "vendor",
+                key: "vendor",
+                align: "center",
                 render: (item: partnerRType) => item.prtNm,
               },
               {
-                title: '가격명',
-                dataIndex: 'priceNm',
-                key: 'priceNm',
-                align: 'center',
+                title: "가격명",
+                dataIndex: "priceNm",
+                key: "priceNm",
+                align: "center",
                 render: (_: any, record: any) => (
                   <div
                     className="cursor-pointer reference-detail"
@@ -529,25 +553,25 @@ const WkProcessVendorPriceListPage: React.FC & {
                 ),
               },
               {
-                title: '가격',
-                dataIndex: 'priceUnit',
-                key: 'priceUnit',
-                align: 'center',
+                title: "가격",
+                dataIndex: "priceUnit",
+                key: "priceUnit",
+                align: "center",
               },
               {
-                title: '제품유형',
-                dataIndex: 'modelTypeEm',
-                key: 'modelTypeEm',
-                align: 'center',
-                render: (item: string) => item === 'sample' ? '샘플' : '양산',
+                title: "제품유형",
+                dataIndex: "modelTypeEm",
+                key: "modelTypeEm",
+                align: "center",
+                render: (item: string) => (item === "sample" ? "샘플" : "양산"),
               },
               {
-                title: '사용여부',
+                title: "사용여부",
                 width: 130,
-                dataIndex: 'useYn',
-                key: 'useYn',
-                align: 'center',
-                render: (value: boolean) => value ? '사용' : '미사용',
+                dataIndex: "useYn",
+                key: "useYn",
+                align: "center",
+                render: (value: boolean) => (value ? "사용" : "미사용"),
               },
             ]}
             data={data}
@@ -561,11 +585,14 @@ const WkProcessVendorPriceListPage: React.FC & {
               onChange={handlePageChange}
             />
           </div>
-        </>}
-
+        </>
+      )}
 
       <BaseInfoCUDModal
-        title={{ name: `공정 외주처 가격 ${newData.id ? '수정' : '등록'}`, icon: <Bag /> }}
+        title={{
+          name: `공정 외주처 가격 ${newData.id ? "수정" : "등록"}`,
+          icon: <Bag />,
+        }}
         data={newData}
         onSubmit={handleSubmitNewData}
         setOpen={setNewOpen}
@@ -587,9 +614,11 @@ const WkProcessVendorPriceListPage: React.FC & {
             : `공정 외주처 가격 ${actionType} 실패`
         }
         contents={
-          resultType === "success"
-            ? <div>공정 외주처 가격 {actionType}이 완료되었습니다.</div>
-            : <div>공정 외주처 가격 {actionType}에 실패하였습니다.</div>
+          resultType === "success" ? (
+            <div>공정 외주처 가격 {actionType}이 완료되었습니다.</div>
+          ) : (
+            <div>공정 외주처 가격 {actionType}에 실패하였습니다.</div>
+          )
         }
         type={resultType}
         onOk={() => {
@@ -601,17 +630,19 @@ const WkProcessVendorPriceListPage: React.FC & {
       />
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
 WkProcessVendorPriceListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{ pd: '70px' }}
+  <SettingPageLayout
     menu={[
-      { text: '공정', link: '/setting/wk/process/list' },
-      { text: '공정 외주처', link: '/setting/wk/process/vendor' },
-      { text: '공정 외주처 가격', link: '/setting/wk/process/vendor-price' },
+      { text: "공정", link: "/setting/wk/process/list" },
+      { text: "공정 외주처", link: "/setting/wk/process/vendor" },
+      { text: "공정 외주처 가격", link: "/setting/wk/process/vendor-price" },
     ]}
-  >{page}</SettingPageLayout>
-)
+  >
+    {page}
+  </SettingPageLayout>
+);
 
 export default WkProcessVendorPriceListPage;

@@ -770,7 +770,7 @@ const ClientCuListPage: React.FC & {
 };
 
 ClientCuListPage.layout = (page: React.ReactNode) => (
-  <SettingPageLayout styles={{ pd: "70px" }}>{page}</SettingPageLayout>
+  <SettingPageLayout>{page}</SettingPageLayout>
 );
 
 export default ClientCuListPage;
