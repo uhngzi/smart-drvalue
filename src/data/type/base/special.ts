@@ -89,7 +89,7 @@ export const newUnitSpecialCUType = (): unitSpecialCUType => {
   };
 };
 
-export const unitModelReq = () => [
+export const unitSpecialReq = () => [
   { field: "process", label: "공정" },
   { field: "minRange", label: "최소 범위" },
   { field: "maxRange", label: "최대 범위" },
@@ -100,7 +100,7 @@ export const unitModelReq = () => [
   { field: "appDt", label: "초기 적용일" },
 ];
 
-export type unitModelApplyType = {
+export type unitSpecialApplyType = {
   id?: string;
   targetIndex?: string;
   typeName?: string;

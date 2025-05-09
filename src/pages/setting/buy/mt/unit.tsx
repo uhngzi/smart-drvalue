@@ -575,7 +575,7 @@ const BuyMtUnitListPage: React.FC & {
                 dataIndex: "priceNm",
                 render: (_: any, record: any) => (
                   <span
-                    className="cursor-pointer"
+                    className="cursor-pointer reference-detail"
                     onClick={() => handleEditClick(record)}
                   >
                     {record.priceNm}
