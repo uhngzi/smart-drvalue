@@ -1102,10 +1102,10 @@ export const WkStatusOutClmn = (
     },
   },
   {
-    title: "발주 금액",
+    title: "발주금액(자재비)",
     width: 120,
-    dataIndex: "requestMaterialsTotalPrice",
-    key: "requestMaterialsTotalPrice",
+    dataIndex: "calcMaterialPrice",
+    key: "calcMaterialPrice",
     align: "center",
     cellAlign: "right",
     render: (value) => {
@@ -1117,17 +1117,6 @@ export const WkStatusOutClmn = (
     width: 120,
     dataIndex: "calcOutPrice",
     key: "calcOutPrice",
-    align: "center",
-    cellAlign: "right",
-    render: (value) => {
-      return value ? value.toLocaleString() : 0;
-    },
-  },
-  {
-    title: "자재비",
-    width: 120,
-    dataIndex: "calcMaterialPrice",
-    key: "calcMaterialPrice",
     align: "center",
     cellAlign: "right",
     render: (value) => {

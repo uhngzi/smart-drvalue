@@ -22,6 +22,7 @@ export type buyCostOutType = {
   totalCalcPrice?: number;
   wkProcCnt?: number;
   wkVenderProcCnt?: number;
+  wkVenderProcSelectedCnt?: number;
   wkLatestDtm?: Date | Dayjs | null;
   wsExpDt?: Date | Dayjs | null;
   wsSchDt?: Date | Dayjs | null;
