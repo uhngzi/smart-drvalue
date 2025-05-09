@@ -312,6 +312,7 @@ const WkPlanWaitPage: React.FC & {
                     !f.key?.toString().includes("Kit") &&
                     !f.key?.toString().includes("board") &&
                     !f.key?.toString().includes("prdCnt") &&
+                    !f.key?.toString().includes("film") &&
                     !f.key?.toString().includes("sth")
                 )
               : WkPalnWaitClmn(
