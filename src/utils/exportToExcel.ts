@@ -11,6 +11,8 @@ import { postAPI } from "@/api/post";
 import { downloadFileByObjectName } from "@/components/Upload/upLoadUtils";
 import { toast } from "react-toastify";
 import { useMenu } from "@/data/context/MenuContext";
+import { port } from "@/pages/_app";
+import cookie from "cookiejs";
 
 export const exportToExcelAndPrint = async (
   columns: {
@@ -52,6 +54,25 @@ export const exportToExcelAndPrint = async (
 
     const cal = columns
       .filter((item) => item.dataIndex !== "memo")
+      .filter((f) =>
+        (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+          ? !f.dataIndex?.toString().includes("layerEm") &&
+            !f.dataIndex?.toString().includes("sm") &&
+            !f.dataIndex?.toString().includes("mk") &&
+            !f.dataIndex?.toString().includes("pnlL") &&
+            !f.dataIndex?.toString().includes("pnlW") &&
+            !f.dataIndex?.toString().includes("kit") &&
+            !f.dataIndex?.toString().includes("Kit") &&
+            !f.dataIndex?.toString().includes("prdMngNo") &&
+            !f.dataIndex?.toString().includes("wkOutCnt") &&
+            !f.dataIndex?.toString().includes("board") &&
+            !f.dataIndex?.toString().includes("prdCnt") &&
+            !f.dataIndex?.toString().includes("sth") &&
+            !f.dataIndex?.toString().includes("rein") &&
+            !f.dataIndex?.toString().includes("m2") &&
+            !f.dataIndex?.toString().includes("film")
+          : true
+      )
       .flatMap((item, index) => {
         if (
           item.title.includes("M/K") ||

@@ -91,7 +91,7 @@ export const BuyCostOutClmn = (
     align: "center",
     render: (value: 0 | 1 | boolean, record: buyCostOutType) => (
       <div className="w-full h-full v-h-center">
-        {record.progress === 0 ? (
+        {(record.wkVenderProcSelectedCnt ?? 0) < 1 ? (
           <FullChip label="등록전" />
         ) : (
           <FullChip state="yellow" label="등록중" />
@@ -150,22 +150,25 @@ export const BuyCostOutClmn = (
     key: "wkPrdCnt",
     align: "center",
     cellAlign: "right",
+    render: (value: number) => {
+      return (value ?? 0).toLocaleString();
+    },
   },
   {
     title: "지정된 공정수",
-    width: 100,
+    width: 110,
     dataIndex: "wkVenderProcSelectedCnt",
     key: "wkVenderProcSelectedCnt",
     align: "center",
-    cellAlign: "right",
+    // cellAlign: "right",
   },
   {
-    title: "외주처공정수",
-    width: 100,
+    title: "외주처 공정수",
+    width: 110,
     dataIndex: "wkVenderProcCnt",
     key: "wkVenderProcCnt",
     align: "center",
-    cellAlign: "right",
+    // cellAlign: "right",
   },
   {
     title: "재질",
