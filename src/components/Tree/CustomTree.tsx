@@ -819,7 +819,7 @@ const CustomTree: React.FC<Props> = ({
                           item.id === hoverId ? "visible" : "invisible"
                         }`}
                       >
-                        {isChild && (
+                        {!(item?.id ?? "").includes("temp") && isChild && (
                           <Button
                             size="small"
                             type="text"
