@@ -29,6 +29,7 @@ interface Props {
   tabIndex?: number;
   maxPoint?: number;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
   autoFocus?: boolean;
   memoView?: boolean;
 }
@@ -51,6 +52,7 @@ const AntdInput = forwardRef<InputRef, Props>(
       tabIndex,
       maxPoint,
       onFocus,
+      onBlur,
       autoFocus,
       memoView,
     },
@@ -203,6 +205,7 @@ const AntdInput = forwardRef<InputRef, Props>(
               // type={type}
               defaultValue={defaultValue}
               onPressEnter={onPressEnter}
+              onBlur={onBlur}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   setEnterFlag(true);
