@@ -1093,8 +1093,8 @@ export const WkStatusOutClmn = (
   {
     title: "수주 금액",
     width: 120,
-    dataIndex: "orderProduct.orderPrdPrice",
-    key: "orderProduct.orderPrdPrice",
+    dataIndex: "calcOrderPrice",
+    key: "calcOrderPrice",
     align: "center",
     cellAlign: "right",
     render: (value) => {
@@ -1106,6 +1106,61 @@ export const WkStatusOutClmn = (
     width: 120,
     dataIndex: "requestMaterialsTotalPrice",
     key: "requestMaterialsTotalPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
+  },
+  {
+    title: "외주비",
+    width: 120,
+    dataIndex: "calcOutPrice",
+    key: "calcOutPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
+  },
+  {
+    title: "자재비",
+    width: 120,
+    dataIndex: "calcMaterialPrice",
+    key: "calcMaterialPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
+  },
+  {
+    title: "인건비",
+    width: 120,
+    dataIndex: "calcLaborPrice",
+    key: "calcLaborPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
+  },
+  {
+    title: "비용합계",
+    width: 120,
+    dataIndex: "calcTotalPrice",
+    key: "calcTotalPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value) => {
+      return value ? value.toLocaleString() : 0;
+    },
+  },
+  {
+    title: "수주대비비용",
+    width: 120,
+    dataIndex: "calcNetProfit",
+    key: "calcNetProfit",
     align: "center",
     cellAlign: "right",
     render: (value) => {
