@@ -412,7 +412,7 @@ const WkProcessVendorListPage: React.FC & {
         <>
           <div className="w-full flex gap-30">
             <div
-              className="w-[30%] rounded-14 p-20"
+              className="w-[30%] h-[calc(100vh-210px)] rounded-14 p-20"
               style={{ border: "1px solid #D9D9D9" }}
             >
               <CustomTreeUsed
@@ -625,120 +625,8 @@ const WkProcessVendorListPage: React.FC & {
               </div>
             </div>
           </div>
-          {/* <div className="v-between-h-center">
-          <p>총 {totalData}건</p>
-          <div
-            className="w-80 h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer"
-            onClick={()=>{setNewOpen(true)}}
-          >
-            등록
-          </div>
-        </div>
-        
-        <AntdTable
-          columns={[
-            {
-              title: 'No',
-              width: 50,
-              dataIndex: 'no',
-              render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              align: 'center',
-            },
-            {
-              title: '공정그룹명',
-              dataIndex: 'processGroup',
-              key: 'processGroup',
-              align: 'center',
-              render: (item:processGroupRType) => item?.prcGrpNm,
-            },
-            {
-              title: '공정명',
-              dataIndex: 'process',
-              key: 'process',
-              align: 'center',
-              render: (item:processRType) => item?.prcNm,
-            },
-            {
-              title: '외주처명',
-              dataIndex: 'vendor',
-              key: 'vendor',
-              align: 'center',
-              render: (item:partnerRType) => item?.prtNm,
-            },
-            {
-              title: '사용여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-            },
-          ]}
-          data={data}
-        />
-
-        <div className="w-full h-100 v-h-center">
-          <AntdPagination
-            current={pagination.current}
-            total={totalData}
-            size={pagination.size}
-            onChange={handlePageChange}
-          />
-        </div> */}
         </>
       )}
-
-      {/* <AntdModal
-        title={"공정 등록"}
-        open={newOpen}
-        setOpen={setNewOpen}
-        width={800}
-        contents={
-          <AddContents
-            handleDataChange={handleDataChange}
-            newData={newData}
-            handleSubmitNewData={handleSubmitNewData}
-            setNewOpen={setNewOpen}
-            setNewData={setNewData}
-            item={[
-              { 
-                name: 'processGroup',
-                key: 'id',
-                label: '공정그룹',
-                type: 'select',
-                value: newData.processGroup.id,
-                option: dataGroup?.map((item:processGroupRType)=>({value:item.id,label:item.prcGrpNm})) ?? []
-              },
-              { 
-                name: 'process',
-                key: 'id',
-                label: '공정',
-                type: 'select',
-                value: newData.process.id,
-                option: dataProcess?.filter((item:processRType)=>item?.processGroup?.id === newData.processGroup.id).map((item)=>({value:item.id,label:(item?.prcNm ?? "")})) ?? []
-              },
-              { 
-                name: 'vendor',
-                key: 'id',
-                label: '외주처',
-                type: 'select',
-                value: newData.vendor.id,
-                option: dataVendor?.map((item)=>({value:item.id,label:(item?.prtNm ?? "")})) ?? []
-              },
-              { 
-                name: 'useYn',
-                label: '사용여부',
-                type: 'select',
-                option: [{value:true,label:"사용"},{value:false,label:"미사용"}],
-                value: newData.useYn,
-              },
-            ]}
-          />
-        }
-        onClose={()=>{
-          setNewOpen(false);
-          setNewData(newDataProcessVendorCUType);
-        }}
-      /> */}
 
       <AntdAlertModal
         open={resultOpen}
