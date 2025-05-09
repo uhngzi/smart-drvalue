@@ -462,7 +462,9 @@ const ModelAddLayout = () => {
                         />
                       </div>
                     </div>
-                    {cookie.get("companySY") === "sy" && (
+                    {(port === "3000"
+                      ? cookie.get("companySY") === "sy"
+                      : port === "90") && (
                       <div className="h-center gap-15">
                         <Items2
                           label1="고객"
@@ -653,7 +655,9 @@ const ModelAddLayout = () => {
                         />
                       </div>
                     )}
-                    {cookie.get("companySY") !== "sy" && (
+                    {(port === "3000"
+                      ? cookie.get("companySY") !== "sy"
+                      : port !== "90") && (
                       <div className="h-center gap-15">
                         <Items2
                           size1={1}
@@ -917,7 +921,11 @@ const ModelAddLayout = () => {
                 </BoxHead>
                 <AntdTable
                   columns={
-                    port === "90" || cookie.get("companySY") === "sy"
+                    (
+                      port === "3000"
+                        ? cookie.get("companySY") === "sy"
+                        : port === "90"
+                    )
                       ? salesOrderModelAddClmn(
                           unitSelectList,
                           vcutSelectList,

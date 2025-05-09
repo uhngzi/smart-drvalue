@@ -300,6 +300,7 @@ const BuyOrderPage: React.FC & {
           limit: pagination.size,
           page: pagination.current,
           s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+          sort: "orderDt,DESC",
         }
       );
     },
@@ -426,7 +427,7 @@ const BuyOrderPage: React.FC & {
       <List>
         <AntdTableEdit
           columns={
-            port === "90" || cookie.get("companySY") === "sy"
+            (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
               ? BuyOrderClmn(
                   totalData,
                   pagination,

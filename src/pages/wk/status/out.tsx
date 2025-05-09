@@ -64,7 +64,8 @@ const WKStatusOutPage: {
       setPartnerData,
       checkeds,
       setCheckeds,
-      handleCheckedAllClick
+      handleCheckedAllClick,
+      router
     ).map((item) => ({
       title: item.title?.toString() as string,
       dataIndex: item.dataIndex,
@@ -293,7 +294,8 @@ const WKStatusOutPage: {
             setPartnerData,
             checkeds,
             setCheckeds,
-            handleCheckedAllClick
+            handleCheckedAllClick,
+            router
           )}
           data={data}
           styles={{

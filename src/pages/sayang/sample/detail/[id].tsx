@@ -193,7 +193,7 @@ const SayangSampleAddPage: React.FC & {
       setPrcNotice(rdata?.prcNotice ?? "");
       setCamNotice(rdata?.camNotice ?? "");
       if (
-        (port === "90" || cookie.get("companySY") === "sy") &&
+        (port === "3000" ? cookie.get("companySY") === "sy" : port === "90") &&
         (rdata?.brdArrStorageKey ?? "").length > 0
       ) {
         setFileIdList((rdata?.brdArrStorageKey ?? "").split(","));
@@ -556,7 +556,7 @@ const SayangSampleAddPage: React.FC & {
 
   useEffect(() => {
     if (
-      (port === "90" || cookie.get("companySY") === "sy") &&
+      (port === "3000" ? cookie.get("companySY") === "sy" : port === "90") &&
       fileIdList.length > 0
     ) {
       setDetailData({
@@ -576,7 +576,9 @@ const SayangSampleAddPage: React.FC & {
           className="w-32 h-32 bg-white rounded-50 border-1 border-line v-h-center text-[#666666] cursor-pointer"
           onClick={() => {
             if (
-              (port === "90" || cookie.get("companySY") === "sy") &&
+              (port === "3000"
+                ? cookie.get("companySY") === "sy"
+                : port === "90") &&
               !fileSubmitFlag
             ) {
               setResultType("fileClose");
@@ -665,7 +667,12 @@ const SayangSampleAddPage: React.FC & {
                       </div>
                     </div>
                     <div className="h-center gap-20">
-                      {!(view || cookie.get("companySY") === "sy") && (
+                      {!(
+                        view ||
+                        (port === "3000"
+                          ? cookie.get("companySY") === "sy"
+                          : port === "90")
+                      ) && (
                         <Button
                           className="!text-point1 !border-point1"
                           icon={<Models className="w-16 h-16" />}
@@ -682,7 +689,11 @@ const SayangSampleAddPage: React.FC & {
                   <div>
                     <AntdTable
                       columns={
-                        port === "90" || cookie.get("companySY") === "sy"
+                        (
+                          port === "3000"
+                            ? cookie.get("companySY") === "sy"
+                            : port === "90"
+                        )
                           ? sayangSampleWaitAddClmn(
                               surfaceSelectList,
                               unitSelectList,
@@ -751,7 +762,9 @@ const SayangSampleAddPage: React.FC & {
                   </div>
                 </Popup>
               )}
-              {(port === "90" || cookie.get("companySY") === "sy") && (
+              {(port === "3000"
+                ? cookie.get("companySY") === "sy"
+                : port === "90") && (
                 <div className="flex gap-40 flex-row">
                   <Popup className="!w-[300px] flex-grow-[20]">
                     <TitleIcon title="설계도면 첨부" icon={<Box />} />
@@ -790,7 +803,9 @@ const SayangSampleAddPage: React.FC & {
                   </Popup>
                 </div>
               )}
-              {cookie.get("companySY") !== "sy" && (
+              {(port === "3000"
+                ? cookie.get("companySY") !== "sy"
+                : port !== "90") && (
                 <div className="flex gap-40 flex-row">
                   <Popup className="!w-[300px] flex-grow-[20]">
                     {/* 적층 구조 */}
@@ -892,12 +907,19 @@ const SayangSampleAddPage: React.FC & {
                         });
                         if (
                           flag &&
-                          (port === "90" || cookie.get("companySY") === "sy")
+                          (port === "3000"
+                            ? cookie.get("companySY") === "sy"
+                            : port === "90")
                         ) {
                           showToast("모델 내 수량을 입력해주세요.", "error");
                           return;
                         }
-                        if (flag && cookie.get("companySY") !== "sy") {
+                        if (
+                          flag &&
+                          (port === "3000"
+                            ? cookie.get("companySY") !== "sy"
+                            : port !== "90")
+                        ) {
                           showToast(
                             "모델 내 작업량(PNL)을 입력해주세요.",
                             "error"

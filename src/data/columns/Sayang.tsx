@@ -417,8 +417,9 @@ export const specIngClmn = (
     },
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "제품 SIZE" : "PCS",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS",
     width: 100,
     dataIndex: "specModels.pcsW",
     key: "specModels.pcsW",
@@ -704,8 +705,9 @@ export const sayangSampleWaitClmn = (
     },
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "제품 SIZE" : "PCS",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS",
     width: 100,
     dataIndex: "tempModel.pcsW",
     key: "tempModel.pcsW",
@@ -862,68 +864,70 @@ export const sayangSampleWaitAddClmn = (
     ],
   },
   {
-    title: port === "90" || cookie.get("companySY") === "sy" ? "두께(T)" : "층",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "두께(T)"
+      : "층",
     dataIndex: "layer",
     key: "layer",
     align: "center",
     width: 55,
-    render:
-      cookie.get("companySY") !== "sy"
-        ? undefined
-        : (_, record: specModelType) => (
-            <div className={divTopClass}>
-              <div className={divClass}>
-                <AntdInputFill
-                  value={record.thk}
-                  onChange={(e) =>
-                    handleModelDataChange(record.id, "thk", e.target.value)
-                  }
-                  type="number"
-                  tabIndex={(record?.index ?? 1) * 40 + 2}
-                  disabled={view ? true : false}
-                />
-              </div>
+    render: (port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90")
+      ? undefined
+      : (_, record: specModelType) => (
+          <div className={divTopClass}>
+            <div className={divClass}>
+              <AntdInputFill
+                value={record.thk}
+                onChange={(e) =>
+                  handleModelDataChange(record.id, "thk", e.target.value)
+                }
+                type="number"
+                tabIndex={(record?.index ?? 1) * 40 + 2}
+                disabled={view ? true : false}
+              />
             </div>
-          ),
-    children:
-      cookie.get("companySY") !== "sy"
-        ? [
-            {
-              title: "두께(T)",
-              width: 55,
-              dataIndex: "thic_layer",
-              key: "thic_layer",
-              align: "center",
+          </div>
+        ),
+    children: (
+      port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90"
+    )
+      ? [
+          {
+            title: "두께(T)",
+            width: 55,
+            dataIndex: "thic_layer",
+            key: "thic_layer",
+            align: "center",
 
-              render: (_, record: specModelType) => (
-                <div className={divTopClass}>
-                  <div className={divClass + "mb-3"}>
-                    <AntdSelectFill
-                      options={generateFloorOptions()}
-                      value={record.layerEm}
-                      onChange={(e) =>
-                        handleModelDataChange(record.id, "layerEm", e)
-                      }
-                      tabIndex={(record?.index ?? 1) * 40 + 1}
-                      disabled={view ? true : false}
-                    />
-                  </div>
-                  <div className={divClass}>
-                    <AntdInputFill
-                      value={record.thk}
-                      onChange={(e) =>
-                        handleModelDataChange(record.id, "thk", e.target.value)
-                      }
-                      type="number"
-                      tabIndex={(record?.index ?? 1) * 40 + 2}
-                      disabled={view ? true : false}
-                    />
-                  </div>
+            render: (_, record: specModelType) => (
+              <div className={divTopClass}>
+                <div className={divClass + "mb-3"}>
+                  <AntdSelectFill
+                    options={generateFloorOptions()}
+                    value={record.layerEm}
+                    onChange={(e) =>
+                      handleModelDataChange(record.id, "layerEm", e)
+                    }
+                    tabIndex={(record?.index ?? 1) * 40 + 1}
+                    disabled={view ? true : false}
+                  />
                 </div>
-              ),
-            },
-          ]
-        : undefined,
+                <div className={divClass}>
+                  <AntdInputFill
+                    value={record.thk}
+                    onChange={(e) =>
+                      handleModelDataChange(record.id, "thk", e.target.value)
+                    }
+                    type="number"
+                    tabIndex={(record?.index ?? 1) * 40 + 2}
+                    disabled={view ? true : false}
+                  />
+                </div>
+              </div>
+            ),
+          },
+        ]
+      : undefined,
   },
   {
     title: "동박두께",
@@ -1157,8 +1161,9 @@ export const sayangSampleWaitAddClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy" ? "도장" : "특수인쇄",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "도장"
+      : "특수인쇄",
     width: 80,
     dataIndex: "tPrint",
     key: "tPrint",
@@ -1168,14 +1173,22 @@ export const sayangSampleWaitAddClmn = (
         <div className={divClass}>
           <AntdSelectFill
             options={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? stampColorSelectList ?? []
                 : spPrintSelectList
             }
             value={record?.spPrint?.id}
             onChange={(e) => handleModelDataChange(record.id, "spPrint.id", e)}
             placeholder={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? "도장컬러"
                 : "특수인쇄"
             }
@@ -1189,7 +1202,11 @@ export const sayangSampleWaitAddClmn = (
             value={record?.spType?.id}
             onChange={(e) => handleModelDataChange(record.id, "spType.id", e)}
             placeholder={
-              port === "90" || cookie.get("companySY") === "sy"
+              (
+                port === "3000"
+                  ? cookie.get("companySY") === "sy"
+                  : port === "90"
+              )
                 ? "도장종류"
                 : "특수인쇄종류"
             }
@@ -1275,12 +1292,23 @@ export const sayangSampleWaitAddClmn = (
           />
         </div>
         <div className={divClass + "mb-3"}>
+          <AntdSelectFill
+            options={ul1SelectList}
+            value={record.ulCd1?.id}
+            onChange={(e) => handleModelDataChange(record.id, "ulCd1.id", e)}
+            styles={{ pd: "0" }}
+            tabIndex={(record?.index ?? 1) * 40 + 21}
+            placeholder="UL위치"
+            disabled={view ? true : false}
+          />
+        </div>
+        <div className={divClass + "mb-3"}>
           <AntdInputFill
             value={record.ulTxt2}
             onChange={(e) =>
               handleModelDataChange(record.id, "ulTxt2", e.target.value)
             }
-            tabIndex={(record?.index ?? 1) * 40 + 21}
+            tabIndex={(record?.index ?? 1) * 40 + 22}
             placeholder="주기"
             disabled={view ? true : false}
             memoView
@@ -1288,25 +1316,12 @@ export const sayangSampleWaitAddClmn = (
         </div>
         <div className={divClass + "mb-3"}>
           <AntdSelectFill
-            options={ul1SelectList}
-            value={record.ulCd1?.id}
-            onChange={(e) => handleModelDataChange(record.id, "ulCd1.id", e)}
-            className="w-[60px!important]"
-            styles={{ pd: "0" }}
-            tabIndex={(record?.index ?? 1) * 40 + 22}
-            placeholder="위치1"
-            disabled={view ? true : false}
-          />
-        </div>
-        <div className={divClass + "mb-3"}>
-          <AntdSelectFill
             options={ul2SelectList}
             value={record.ulCd2?.id}
             onChange={(e) => handleModelDataChange(record.id, "ulCd2.id", e)}
-            className="w-[60px!important]"
             styles={{ pd: "0" }}
             tabIndex={(record?.index ?? 1) * 40 + 23}
-            placeholder="위치2"
+            placeholder="주기위치"
             disabled={view ? true : false}
           />
         </div>
@@ -1340,10 +1355,9 @@ export const sayangSampleWaitAddClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 SIZE"
-        : "PCS SIZE",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 SIZE"
+      : "PCS SIZE",
     width: 80,
     dataIndex: "pcs",
     key: "pcs",
@@ -1497,7 +1511,7 @@ export const sayangSampleWaitAddClmn = (
     key: "spec",
     align: "center",
     render: (_, record: specModelType) =>
-      port === "90" || cookie.get("companySY") === "sy" ? (
+      (port === "3000" ? cookie.get("companySY") === "sy" : port === "90") ? (
         <>
           <div className={divClass + "mb-3 gap-5"}>
             <p className="text-left min-w-50 w-50 !text-12">Design Press</p>
@@ -1628,7 +1642,7 @@ export const sayangSampleWaitAddClmn = (
     key: "cnt",
     align: "center",
     render: (_, record: specModelType) =>
-      cookie.get("companySY") !== "sy" ? (
+      (port === "3000" ? cookie.get("companySY") !== "sy" : port !== "90") ? (
         <div className={divTopClass}>
           <AutoHideTooltip title="수주량" className="w-full">
             <div className={divClass + " !w-full !justify-end gap-5"}>
@@ -1638,7 +1652,13 @@ export const sayangSampleWaitAddClmn = (
                 ).toLocaleString()}
               </div>
               <div className="!min-w-25 !w-25 !text-12">
-                {cookie.get("companySY") !== "sy" ? "PCS" : "EA"}
+                {(
+                  port === "3000"
+                    ? cookie.get("companySY") !== "sy"
+                    : port !== "90"
+                )
+                  ? "PCS"
+                  : "EA"}
               </div>
             </div>
           </AutoHideTooltip>

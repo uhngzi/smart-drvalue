@@ -1,7 +1,15 @@
 import { Dayjs } from "dayjs";
 import { processRType } from "../base/process";
 import { partnerMngRType, partnerRType } from "../base/partner";
-import { AnyStatus, HotGrade, LayerEm, ModelStatus, ModelTypeEm, SalesOrderStatus, SpecStatus } from "../enum";
+import {
+  AnyStatus,
+  HotGrade,
+  LayerEm,
+  ModelStatus,
+  ModelTypeEm,
+  SalesOrderStatus,
+  SpecStatus,
+} from "../enum";
 import { boardType } from "../base/board";
 import { commonCodeRType } from "../base/common";
 import { materialPriceType, materialType } from "../base/material_back";
@@ -11,7 +19,10 @@ export type buyCostOutType = {
   progress?: number;
   wkLatestMemo?: string;
   wkPrdCnt?: number;
+  totalCalcPrice?: number;
   wkProcCnt?: number;
+  wkVenderProcCnt?: number;
+  wkVenderProcSelectedCnt?: number;
   wkLatestDtm?: Date | Dayjs | null;
   wsExpDt?: Date | Dayjs | null;
   wsSchDt?: Date | Dayjs | null;
@@ -42,7 +53,7 @@ export type buyCostOutType = {
         createdAt?: Date | Dayjs | null;
         updatedAt?: Date | Dayjs | null;
         deletedAt?: Date | Dayjs | null;
-      },
+      };
       prdGrpNm?: string;
       process?: {
         id?: string;
@@ -54,16 +65,16 @@ export type buyCostOutType = {
           createdAt?: Date | Dayjs | null;
           updatedAt?: Date | Dayjs | null;
           deletedAt?: Date | Dayjs | null;
-        },
+        };
         prcNm?: string;
         useYn?: boolean;
         createdAt?: Date | Dayjs | null;
         updatedAt?: Date | Dayjs | null;
         deletedAt?: Date | Dayjs | null;
-      },
+      };
       ordNo?: number;
       prcWkRemark?: string;
-    },
+    };
     tempPrdInfo?: string;
     vendor?: partnerRType;
     vendorPrice?: number;
@@ -98,7 +109,7 @@ export type buyCostOutType = {
     modelMatch?: {
       id?: string;
       modelStatus?: ModelStatus;
-    },
+    };
     partner?: partnerRType;
     usedYn?: boolean;
     inactiveYn?: boolean;
@@ -116,7 +127,7 @@ export type buyCostOutType = {
     copOut?: number;
     copIn?: number;
     smPrint?: commonCodeRType;
-    smColor?: commonCodeRType
+    smColor?: commonCodeRType;
     smType?: commonCodeRType;
     mkPrint?: commonCodeRType;
     mkColor?: commonCodeRType;
@@ -162,7 +173,7 @@ export type buyCostOutType = {
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
-  },
+  };
   orderProduct?: {
     id?: string;
     currPrdInfo?: string;
@@ -181,7 +192,7 @@ export type buyCostOutType = {
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
-    },
+    };
     order?: {
       id?: string;
       orderNm?: string;
@@ -199,8 +210,8 @@ export type buyCostOutType = {
         createdAt?: Date | Dayjs | null;
         updatedAt?: Date | Dayjs | null;
         deletedAt?: Date | Dayjs | null;
-      }
-    },
+      };
+    };
     modelStatus?: ModelStatus;
     orderDt?: Date | Dayjs | null;
     orderNo?: string;
@@ -216,8 +227,8 @@ export type buyCostOutType = {
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
-  },
-}
+  };
+};
 
 export type buyCostOutDetailType = {
   id?: string;
@@ -257,7 +268,7 @@ export type buyCostOutDetailType = {
           createdAt?: Date | Dayjs | null;
           updatedAt?: Date | Dayjs | null;
           deletedAt?: Date | Dayjs | null;
-        },
+        };
         spec?: {
           id?: string;
           specNo?: string;
@@ -277,7 +288,7 @@ export type buyCostOutDetailType = {
           createdAt?: Date | Dayjs | null;
           updatedAt?: Date | Dayjs | null;
           deletedAt?: Date | Dayjs | null;
-        },
+        };
         prdGrpNm?: string;
         process?: {
           id?: string;
@@ -285,20 +296,20 @@ export type buyCostOutDetailType = {
             id?: string;
             prcGrpNm?: string;
             useYn?: boolean;
-            processes?: processRType[],
+            processes?: processRType[];
             createdAt?: Date | Dayjs | null;
             updatedAt?: Date | Dayjs | null;
             deletedAt?: Date | Dayjs | null;
-          },
+          };
           prcNm?: string;
           useYn?: boolean;
           createdAt?: Date | Dayjs | null;
           updatedAt?: Date | Dayjs | null;
           deletedAt?: Date | Dayjs | null;
-        },
+        };
         ordNo?: number;
         prcWkRemark?: string;
-      },
+      };
       vendorPriceIdxNoForgKey?: string | null;
       tempPrdInfo?: string;
       vendor?: partnerRType;
@@ -314,8 +325,8 @@ export type buyCostOutDetailType = {
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
     }
-  ],
-}
+  ];
+};
 
 export type buyOrderType = {
   id?: string;
@@ -349,7 +360,7 @@ export type buyOrderType = {
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
-    },
+    };
     emp?: {
       id?: string;
       name?: string;
@@ -361,18 +372,21 @@ export type buyOrderType = {
       createdAt?: Date | Dayjs | null;
       updatedAt?: Date | Dayjs | null;
       deletedAt?: Date | Dayjs | null;
-    },
+    };
     docNo?: string;
     orderDueDt?: Date | Dayjs | null;
     orderDt?: Date | Dayjs | null;
-    remarks?: string
+    remarks?: string;
     deliveryDueDt?: Date | Dayjs | null;
     arrivalDt?: Date | Dayjs | null;
     paymentCondition?: string;
     totalAmount?: number;
     orderConfirmDt?: Date | Dayjs | null;
     approvalDt?: Date | Dayjs | null;
-    worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
+    worksheetIdxNoForgKeyType?:
+      | "WORKSHEET"
+      | "WORKSHEET_PROCESS"
+      | "NO_FOREIGN_KEY";
     worksheetIdxNoForgKey?: string;
     worksheetProcessIdxNoForgKey?: string;
     inventoryCheckDt?: Date | Dayjs | null;
@@ -413,7 +427,7 @@ export type buyOrderType = {
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
-  }
+  };
 
   // 등록 또는 수정
   orderRoot?: {
@@ -431,13 +445,16 @@ export type buyOrderType = {
     totalAmount?: number;
     orderConfirmDt?: Date | Dayjs | null;
     approvalDt?: Date | Dayjs | null;
-    worksheetIdxNoForgKeyType?: "WORKSHEET" | "WORKSHEET_PROCESS" | "NO_FOREIGN_KEY";
+    worksheetIdxNoForgKeyType?:
+      | "WORKSHEET"
+      | "WORKSHEET_PROCESS"
+      | "NO_FOREIGN_KEY";
     worksheetIdxNoForgKey?: string;
     worksheetProcessIdxNoForgKey?: string;
   };
 
   orderDetail?: buyOrderDetailType[];
-}
+};
 
 export type buyOrderDetailType = {
   id?: string;
@@ -463,9 +480,9 @@ export type buyOrderDetailType = {
     badNm?: string;
     badCnt?: number;
     materialBadIdx?: string;
-  }[]
+  }[];
   mtNm?: string;
   materialGrpIdx?: string;
   mtId?: string;
   mtPriceIdx?: string;
-}
+};

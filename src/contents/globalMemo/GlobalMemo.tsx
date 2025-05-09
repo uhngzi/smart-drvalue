@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button, Checkbox, Empty, Skeleton } from "antd";
@@ -428,32 +428,58 @@ const GlobalMemo: React.FC<Props> = ({
                     data.map((item, index) => (
                       <div
                         key={index}
-                        className={`h-center text-left px-5 py-1 border-b-1 border-line gap-8 ${
-                          item.metaData?.cancel
-                            ? "line-through text-gray-400"
-                            : ""
-                        }`}
+                        className="v-between-h-center px-5 pb-3 border-b-1 border-line"
                       >
-                        {item.memo}
-                        {!item.metaData?.cancel ? (
-                          <p
-                            className="w-12 h-12 text-[#00000040] cursor-pointer"
-                            onClick={() => {
-                              handleDelete(item.id ?? "", true);
-                            }}
+                        <div className="flex-1 flex flex-col text-left">
+                          <div
+                            className={
+                              item.metaData?.cancel
+                                ? "line-through text-gray-400"
+                                : ""
+                            }
                           >
-                            <Close />
-                          </p>
-                        ) : (
-                          <p
-                            className="w-12 h-12 text-[#FF000098] cursor-pointer"
-                            onClick={() => {
-                              handleDelete(item.id ?? "", false);
-                            }}
-                          >
-                            <Back />
-                          </p>
-                        )}
+                            {item.memo}
+                          </div>
+                          <div className="text-10 h-center">
+                            <p className="pr-3">{item.metaData?.empName}</p>
+                            <p className="border-l-1 border-line px-3">
+                              {dayjs(item.createdAt).format("YYYY-MM-DD")}
+                            </p>
+                            <p className="border-l-1 border-line px-3">
+                              {item.metaData?.shared ? "공개" : "비공개"}
+                            </p>
+                            {item.metaData?.cancel ? (
+                              <p className="text-[red] border-l-1 border-line px-3">
+                                {dayjs(item.metaData.canceldAt).format(
+                                  "YYYY-MM-DD"
+                                )}
+                              </p>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </div>
+                        <div className="">
+                          {!item.metaData?.cancel ? (
+                            <p
+                              className="w-12 h-12 text-[#00000040] cursor-pointer"
+                              onClick={() => {
+                                handleDelete(item.id ?? "", true);
+                              }}
+                            >
+                              <Close />
+                            </p>
+                          ) : (
+                            <p
+                              className="w-12 h-12 text-[#FF000098] cursor-pointer"
+                              onClick={() => {
+                                handleDelete(item.id ?? "", false);
+                              }}
+                            >
+                              <Back />
+                            </p>
+                          )}
+                        </div>
                       </div>
                     ))}
                 </>

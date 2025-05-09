@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button, Radio, Tree, TreeDataNode } from "antd";
+import { Button, Radio, Tooltip, Tree, TreeDataNode } from "antd";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
@@ -32,6 +32,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import FullChip from "@/components/Chip/FullChip";
+import AutoHideTooltip from "@/components/Tooltip/AntdHideTooltip";
 
 interface Props {
   open: boolean;
@@ -583,7 +584,7 @@ const ProcessSelection: React.FC<Props> = ({
                   />
                 )}
                 <div
-                  className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-30 h-center gap-10 cursor-move"
+                  className="w-full min-h-70 border-[0.6px] border-line rounded-14 px-10 h-center gap-10 cursor-move"
                   draggable={!view ? true : false}
                   onDragStart={() => handleDragStart(index)}
                   onDragOver={(e) => {
@@ -596,9 +597,11 @@ const ProcessSelection: React.FC<Props> = ({
                   }}
                   onDragEnd={handleDragEnd}
                 >
-                  <p className="w-24 h-24">
-                    <Star />
-                  </p>
+                  <div className="h-center flex-col w-40">
+                    <p className="text-9">공정 순서</p>
+                    <p>{index + 1}</p>
+                    {/* <Star /> */}
+                  </div>
                   <div className="flex-1 h-full h-center gap-50">
                     <div
                       className="w-[200px] flex flex-col font-medium"
@@ -606,14 +609,28 @@ const ProcessSelection: React.FC<Props> = ({
                     >
                       {group ? (
                         <>
-                          <span>{`${group.prcGrpNm} > ${
-                            group.processes.find((f) => f.id === process.id)
-                              ?.prcNm ?? ""
-                          }`}</span>
-                          <span className="text-12 text-[#4880FF]">
-                            {selectedVendors.find((sv) => sv.pid === process.id)
-                              ?.vname ?? ""}
+                          <span className="h-center gap-5">
+                            <FullChip label="외주" state="mint" />
+                            {`${group.prcGrpNm} > ${
+                              group.processes.find((f) => f.id === process.id)
+                                ?.prcNm ?? ""
+                            }`}
                           </span>
+                          <Tooltip
+                            title={
+                              selectedVendors.find(
+                                (sv) => sv.pid === process.id
+                              )?.vname
+                                ? undefined
+                                : "설정에서 해당 공정에 대한 외주처를 등록 후 공정을 다시 지정하시거나 생산 관리에서 생산 진행 시 외주처를 지정할 수 있습니다"
+                            }
+                          >
+                            <span className="text-12 text-[#4880FF]">
+                              {selectedVendors.find(
+                                (sv) => sv.pid === process.id
+                              )?.vname ?? "선택된 외주처 없음"}
+                            </span>
+                          </Tooltip>
                         </>
                       ) : (
                         process.prcNm
@@ -636,6 +653,7 @@ const ProcessSelection: React.FC<Props> = ({
                             setSelectPrc(newSelectPrc);
                           }}
                           disabled={view ? true : false}
+                          placeholder="작업방법 입력"
                           memoView
                         />
                       </div>

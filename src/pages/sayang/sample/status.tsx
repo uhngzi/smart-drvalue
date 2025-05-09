@@ -117,6 +117,7 @@ const SayangSampleStatPage: React.FC & {
           limit: pagination.size,
           page: pagination.current,
           s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
+          sort: "specModelsModelMatchOrderModelOrderOrigin.orderDt,DESC",
         }
       );
       setDataLoading(false);

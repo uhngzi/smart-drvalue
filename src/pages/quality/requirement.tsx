@@ -42,6 +42,7 @@ import Trash from "@/assets/svg/icons/trash.svg";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Back from "@/assets/svg/icons/back.svg";
 import Hint from "@/assets/svg/icons/hint.svg";
+import Cancel from "@/assets/svg/icons/s_close.svg";
 
 const QualityRequirementsPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -716,6 +717,10 @@ const QualityRequirementsPage: React.FC & {
                 <Button
                   className="!h-32 max-h-32 bg-point1 text-white rounded-6"
                   onClick={() => {
+                    if (detailContentsNew?.content === "") {
+                      showToast("내용을 입력해주세요", "error");
+                      return;
+                    }
                     handleSubmit();
                   }}
                 >
@@ -748,46 +753,68 @@ const QualityRequirementsPage: React.FC & {
                       triggerNode.parentElement!
                     }
                     menu={{
-                      items: [
-                        {
-                          label: (
-                            <div className="h-center gap-5">
-                              <p className="w-16 h-16">
-                                <Back />
-                              </p>
-                              {item.isCanceled ? "복구" : "취소"}
-                            </div>
-                          ),
-                          key: 0,
-                          onClick: () => {
-                            handleSubmit(
-                              "sub_cancel",
-                              undefined,
-                              item.id,
-                              !item.isCanceled
-                            );
-                          },
-                        },
-                        {
-                          label: (
-                            <div className="text-[red] h-center gap-5">
-                              <p className="w-16 h-16">
-                                <Trash />
-                              </p>
-                              삭제
-                            </div>
-                          ),
-                          key: 1,
-                          onClick: () => {
-                            setDeleted({ id: item.id ?? "", type: "sub" });
-                            setResultMsg(
-                              "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
-                            );
-                            setResultType("delete");
-                            setResultOpen(true);
-                          },
-                        },
-                      ],
+                      items: item.isCanceled
+                        ? [
+                            {
+                              label: (
+                                <div className="h-center gap-5">
+                                  <p className="w-16 h-16">
+                                    <Back />
+                                  </p>
+                                  복구
+                                </div>
+                              ),
+                              key: 0,
+                              onClick: () => {
+                                handleSubmit(
+                                  "sub_cancel",
+                                  undefined,
+                                  item.id,
+                                  !item.isCanceled
+                                );
+                              },
+                            },
+                            {
+                              label: (
+                                <div className="text-[red] h-center gap-5">
+                                  <p className="w-16 h-16">
+                                    <Trash />
+                                  </p>
+                                  삭제
+                                </div>
+                              ),
+                              key: 1,
+                              onClick: () => {
+                                setDeleted({ id: item.id ?? "", type: "sub" });
+                                setResultMsg(
+                                  "삭제 시 복구가 불가능합니다. 정말 삭제하시겠습니까?"
+                                );
+                                setResultType("delete");
+                                setResultOpen(true);
+                              },
+                            },
+                          ]
+                        : [
+                            {
+                              label: (
+                                <div className="h-center gap-5">
+                                  <p className="w-16 h-16">
+                                    <Cancel />
+                                  </p>
+                                  취소
+                                </div>
+                              ),
+                              key: 0,
+                              onClick: () => {
+                                handleSubmit(
+                                  "sub_cancel",
+                                  undefined,
+                                  item.id,
+                                  !item.isCanceled
+                                );
+                              },
+                            },
+                          ],
                     }}
                   >
                     <a onClick={(e) => e.preventDefault()}>

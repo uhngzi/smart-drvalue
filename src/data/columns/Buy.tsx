@@ -100,18 +100,28 @@ export const BuyCostOutClmn = (
     ),
   },
   {
-    title: "진행률",
+    title: "총 금액",
     width: 100,
-    dataIndex: "progress",
-    key: "progress",
+    dataIndex: "totalCalcPrice",
+    key: "totalCalcPrice",
     align: "center",
-    render: (value: number) => <ProgressBar value={value} />,
+    cellAlign: "right",
+    render: (value: number) => {
+      return (value ?? 0).toLocaleString();
+    },
   },
+  // {
+  //   title: "진행률",
+  //   width: 100,
+  //   dataIndex: "progress",
+  //   key: "progress",
+  //   align: "center",
+  //   render: (value: number) => <ProgressBar value={value} />,
+  // },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "사양확정일"
-        : "작업지시확정일",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "사양확정일"
+      : "작업지시확정일",
     width: 120,
     dataIndex: "wsExpDt",
     key: "wsExpDt",
@@ -125,10 +135,9 @@ export const BuyCostOutClmn = (
     align: "center",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "시작예정일"
-        : "투입예정일",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "시작예정일"
+      : "투입예정일",
     width: 100,
     dataIndex: "wsExpDt",
     key: "wsExpDt",
@@ -143,10 +152,18 @@ export const BuyCostOutClmn = (
     cellAlign: "right",
   },
   {
+    title: "지정된 공정수",
+    width: 100,
+    dataIndex: "wkVenderProcSelectedCnt",
+    key: "wkVenderProcSelectedCnt",
+    align: "center",
+    cellAlign: "right",
+  },
+  {
     title: "외주처공정수",
     width: 100,
-    dataIndex: "wkProcCnt",
-    key: "wkProcCnt",
+    dataIndex: "wkVenderProcCnt",
+    key: "wkVenderProcCnt",
     align: "center",
     cellAlign: "right",
   },
@@ -183,10 +200,9 @@ export const BuyCostOutClmn = (
     cellAlign: "right",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 W"
-        : "제품 PCS W",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 W"
+      : "제품 PCS W",
     width: 100,
     dataIndex: "specModel.pcsW",
     key: "specModel.pcsW",
@@ -194,10 +210,9 @@ export const BuyCostOutClmn = (
     cellAlign: "right",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 H"
-        : "제품 PCS H",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 H"
+      : "제품 PCS H",
     width: 100,
     dataIndex: "specModel.pcsL",
     key: "specModel.pcsL",
@@ -675,10 +690,20 @@ export const BuyCostOutStatusClmn = (
     ),
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "사양확정일"
-        : "작업지시확정일",
+    title: "총 금액",
+    width: 100,
+    dataIndex: "totalCalcPrice",
+    key: "totalCalcPrice",
+    align: "center",
+    cellAlign: "right",
+    render: (value: number) => {
+      return (value ?? 0).toLocaleString();
+    },
+  },
+  {
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "사양확정일"
+      : "작업지시확정일",
     width: 120,
     dataIndex: "wsExpDt",
     key: "wsExpDt",
@@ -692,10 +717,9 @@ export const BuyCostOutStatusClmn = (
     align: "center",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "시작예정일"
-        : "투입예정일",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "시작예정일"
+      : "투입예정일",
     width: 100,
     dataIndex: "wsExpDt",
     key: "wsExpDt",
@@ -710,10 +734,18 @@ export const BuyCostOutStatusClmn = (
     cellAlign: "right",
   },
   {
+    title: "지정된 공정수",
+    width: 100,
+    dataIndex: "wkVenderProcSelectedCnt",
+    key: "wkVenderProcSelectedCnt",
+    align: "center",
+    cellAlign: "right",
+  },
+  {
     title: "외주처공정수",
     width: 100,
-    dataIndex: "wkProcCnt",
-    key: "wkProcCnt",
+    dataIndex: "wkVenderProcCnt",
+    key: "wkVenderProcCnt",
     align: "center",
     cellAlign: "right",
   },
@@ -750,10 +782,9 @@ export const BuyCostOutStatusClmn = (
     cellAlign: "right",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 W"
-        : "제품 PCS W",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 W"
+      : "제품 PCS W",
     width: 100,
     dataIndex: "specModel.pcsW",
     key: "specModel.pcsW",
@@ -761,10 +792,9 @@ export const BuyCostOutStatusClmn = (
     cellAlign: "right",
   },
   {
-    title:
-      port === "90" || cookie.get("companySY") === "sy"
-        ? "제품 H"
-        : "제품 PCS H",
+    title: (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? "제품 H"
+      : "제품 PCS H",
     width: 100,
     dataIndex: "specModel.pcsL",
     key: "specModel.pcsL",

@@ -23,6 +23,7 @@ import { port } from "@/pages/_app";
 import AntdModal from "@/components/Modal/AntdModal";
 import domtoimage from "dom-to-image";
 import FilmDocumentForm from "@/contents/documentForm/FilmDocumentForm";
+import WkDocumentForm from "@/contents/documentForm/WkDocumentForm";
 
 const WkPlanWaitPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -128,8 +129,11 @@ const WkPlanWaitPage: React.FC & {
           page: pagination.current,
           s_query: sQueryJson.length > 1 ? JSON.parse(sQueryJson) : undefined,
           anykeys: {
-            applyAutoFilter:
-              port === "90" || cookie.get("companySY") === "sy" ? true : false,
+            applyAutoFilter: (
+              port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+            )
+              ? true
+              : false,
           },
         }
       );
@@ -230,7 +234,7 @@ const WkPlanWaitPage: React.FC & {
       win?.document.write(`
             <html>
               <head>
-                <title>구매발주서_${dayjs().format("YYYYMMDD")}</title>
+                <title>FILM제작의뢰서_${dayjs().format("YYYYMMDD")}</title>
                 <style>
                   @page {
                     size: A4;
@@ -290,7 +294,7 @@ const WkPlanWaitPage: React.FC & {
         <AntdTableEdit
           create={true}
           columns={
-            port === "90" || cookie.get("companySY") === "sy"
+            (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
               ? WkPalnWaitClmn(
                   totalData,
                   pagination,
@@ -308,6 +312,7 @@ const WkPlanWaitPage: React.FC & {
                     !f.key?.toString().includes("Kit") &&
                     !f.key?.toString().includes("board") &&
                     !f.key?.toString().includes("prdCnt") &&
+                    !f.key?.toString().includes("film") &&
                     !f.key?.toString().includes("sth")
                 )
               : WkPalnWaitClmn(
@@ -356,19 +361,13 @@ const WkPlanWaitPage: React.FC & {
         setOpen={setDocumentFormOpen}
         title={"FIML 제작의뢰서 미리보기"}
         width={635}
+        // width={1200}
         draggable
         contents={
           <>
             <div id="print-area" ref={componentRef}>
-              <FilmDocumentForm
-                id={formData?.id ?? ""}
-                // formData={order}
-                // products={orderDetails}
-                // prtNm={csList.find((f: any) => f.id === prtId)?.label ?? ""}
-                // prtMng={
-                //   csMngList.filter((f: any) => f.id === prtMngId)?.[0] ?? null
-                // }
-              />
+              <FilmDocumentForm id={formData?.id ?? ""} />
+              {/* <WkDocumentForm id={formData?.id ?? ""} /> */}
             </div>
             <div className="v-h-center gap-5 mt-20">
               <Button onClick={handlePrint}>인쇄</Button>
