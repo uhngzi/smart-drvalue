@@ -1078,8 +1078,8 @@ export const WkStatusOutClmn = (
       <div
         className={
           (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
-            ? ""
-            : "reference-detail"
+            ? "reference-detail"
+            : ""
         }
         onClick={() => {
           if (
