@@ -180,7 +180,10 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
             $pd={styles?.pd ? styles.pd : "20px"}
             className="p-10 flex flex-col gap-10"
           >
-            <div className="w-full flex justify-between items-center h-[50px]">
+            <div
+              className="w-full flex justify-between items-center h-[50px]"
+              id="title"
+            >
               <div className="flex items-center gap-10">
                 {title.icon}
                 <p className="text-16 font-medium">{title.name}</p>

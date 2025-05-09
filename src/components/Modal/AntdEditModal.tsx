@@ -93,12 +93,15 @@ const AntdEditModal: React.FC<Props> = ({
     }
   }, [open, draggable]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: MouseEvent | React.MouseEvent) => {
     if (!modalRef.current) return;
     setDragging(true);
+
+    const modalRect = modalRef.current.getBoundingClientRect();
+
     offset.current = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
+      x: e.clientX - modalRect.left,
+      y: e.clientY - modalRect.top,
     };
   };
 
@@ -132,6 +135,23 @@ const AntdEditModal: React.FC<Props> = ({
     };
   }, [dragging]);
 
+  const [hasTitleElement, setHasTitleElement] = useState(false);
+  useEffect(() => {
+    if (open && draggable) {
+      const timer = setTimeout(() => {
+        const titleEl = document.getElementById("title");
+        if (titleEl) {
+          titleEl.onmousedown = handleMouseDown as any;
+          titleEl.style.cursor = "grab";
+          setHasTitleElement(true);
+        } else {
+          setHasTitleElement(false);
+        }
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [open, draggable, contents]);
+
   return (
     <Modal
       classNames={classNames}
@@ -150,7 +170,7 @@ const AntdEditModal: React.FC<Props> = ({
           ? (modal) => (
               <div
                 ref={modalRef}
-                onMouseDown={handleMouseDown}
+                onMouseDown={!hasTitleElement ? handleMouseDown : undefined}
                 style={
                   dragFlag
                     ? {
@@ -161,13 +181,12 @@ const AntdEditModal: React.FC<Props> = ({
                         minWidth: 320,
                         maxWidth: "100vw",
                         transform: "none",
-                        cursor: "grab",
+                        cursor: hasTitleElement ? "default" : "grab",
                       }
                     : {
                         width: full ? "100%" : width || 600,
                         minWidth: 320,
                         maxWidth: "100vw",
-                        cursor: "grab",
                       }
                 }
               >
