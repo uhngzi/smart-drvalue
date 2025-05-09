@@ -34,6 +34,12 @@ export type wkPlanWaitType = {
   invChkCnt?: number; // 재고량?
   isWait?: boolean; // 생산대기여부
   wsRemark?: string; // 생산특이사항
+  calcOrderPrice?: number; // 수주금액
+  calcOutPrice?: number; // 외주비
+  calcMaterialPrice?: number; // 자재비
+  calcLaborPrice?: number; // 인건비
+  calcTotalPrice?: number; // 비용합계
+  calcNetProfit?: number; // 수주대비비용
   wkLatestProc?: {
     // 마지막 공정
     id?: string;
