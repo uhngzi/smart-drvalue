@@ -1,30 +1,31 @@
 import { JSX } from "react";
 
 export type componentsStylesType = {
-  wd?: string;
-  ht?: string;
-  pd?: string;
-  pt?: string;
-  pl?: string;
-  pr?: string;
-  pb?: string;
-  mg?: string;
-  mt?: string;
-  ml?: string;
-  mr?: string;
-  mb?: string;
-  bg?: string;
-  fc?: string;
-  fs?: string;
-  fw?: string;
-  bd?: string;
-  bd_t?: string;
-  bd_l?: string;
-  bd_r?: string;
-  bd_b?: string;
-  bw?: string;
-  bc?: string;
-  br?: string;
+  wd?: string; // width
+  ht?: string; // height
+  pd?: string; // padding
+  pt?: string; // padding top
+  pl?: string; // padding left
+  pr?: string; // padding right
+  pb?: string; // padding bottom
+  mg?: string; // margin
+  mt?: string; // margin top
+  ml?: string; // margin left
+  mr?: string; // margin right
+  mb?: string; // margin bottom
+  bg?: string; // background
+  ta?: string; // text align
+  fc?: string; // font color
+  fs?: string; // font size
+  fw?: string; // font wieght
+  bd?: string; // border
+  bd_t?: string; // border top
+  bd_l?: string; // border left
+  bd_r?: string; // border rignt
+  bd_b?: string; // border bottom
+  bw?: string; // border width
+  bc?: string; // border color
+  br?: string; // border radius
 };
 
 export const componentsStyles = (styles: componentsStylesType | undefined) => {

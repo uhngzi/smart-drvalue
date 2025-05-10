@@ -182,6 +182,7 @@ const AntdInput = forwardRef<InputRef, Props>(
           $bc={styles?.bc ? styles.bc : "#D9D9D9"}
           $br={styles?.br ? styles.br : "2px"}
           $type={type ?? "string"}
+          $ta={styles?.ta}
           className={`${className}`}
         >
           <div className="relative w-full h-full">
@@ -331,6 +332,7 @@ const AntdInputStyled = styled.div<{
   $bc: string;
   $br: string;
   $type: string;
+  $ta?: string;
 }>`
   width: 100%;
   height: ${({ $ht }) => $ht} !important;
@@ -342,8 +344,8 @@ const AntdInputStyled = styled.div<{
     border-color: ${({ $bc }) => $bc} !important;
     border-radius: ${({ $br }) => $br} !important;
     font-family: "Spoqa Han Sans Neo", "sans-serif";
-    text-align: ${({ $type }) =>
-      $type === "number" ? "right" : "left"} !important;
+    text-align: ${({ $ta, $type }) =>
+      $ta ? `${$ta}` : $type === "number" ? "right" : "left"} !important;
   }
 `;
 
