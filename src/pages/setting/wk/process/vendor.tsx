@@ -197,8 +197,8 @@ const WkProcessVendorListPage: React.FC & {
       setData([]);
     }
   }, [childCheckId]);
-  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["processVendor", pagination.current, childCheckId],
+  const { refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-vendor/jsxcrud/many", pagination.current, childCheckId],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -230,76 +230,16 @@ const WkProcessVendorListPage: React.FC & {
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
-  // 결과 모달창을 위한 변수
-  const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<AlertType>("info");
-  //등록 모달창을 위한 변수
-  const [newOpen, setNewOpen] = useState<boolean>(false);
   //등록 모달창 데이터
   const [newData, setNewData] = useState<any[]>([]);
   //값 변경 함수
   const [deleteData, setDeleteData] = useState<string[]>([]); // 삭제할 데이터
-  const handleDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: "input" | "select" | "date" | "other",
-    key?: string
-  ) => {
-    if (type === "input" && typeof e !== "string") {
-      const { value } = e.target;
-      setNewData({ ...newData, [name]: value });
-    } else if (type === "select") {
-      if (key) {
-        setNewData({
-          ...newData,
-          [name]: {
-            ...((newData as any)[name] || {}), // 기존 객체 값 유지
-            [key]: e?.toString(), // 새로운 key 값 업데이트
-          },
-        });
-      } else {
-        setNewData({ ...newData, [name]: e });
-      }
-    }
-  };
-  //등록 버튼 함수
-  const handleSubmitNewData = async () => {
-    try {
-      console.log(newData);
-      const result = await postAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "process-vendor",
-          jsx: "jsxcrud",
-        },
-        newData
-      );
-      console.log(result);
-
-      if (result.resultCode === "OK_0000") {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType("success");
-        setNewData([]);
-      } else {
-        setNewOpen(false);
-        setResultOpen(true);
-        setResultType("error");
-      }
-    } catch (e) {
-      setNewOpen(false);
-      setResultOpen(true);
-      setResultType("error");
-    }
-  };
   // ----------- 신규 데이터 끝 -----------
-
-  const handleCheck = (e: CheckboxChangeEvent) => {};
 
   function handleSelect(id: string) {
     const selectId = id;
     setChildCheckId((prev) => (prev === selectId ? null : selectId));
+    setNewData([]);
   }
 
   function addVendor(record: partnerRType) {
@@ -338,8 +278,12 @@ const WkProcessVendorListPage: React.FC & {
   }
 
   async function vendorSave() {
-    console.log(newData);
-    console.log(deleteData);
+    console.log("new : ", newData + " / " + "delete : ", deleteData);
+    if (newData.length < 1 && deleteData.length < 1) {
+      showToast("변경된 내용이 없습니다.", "error");
+      return;
+    }
+
     let flag = false;
     if (deleteData.length > 0) {
       for (const item of deleteData) {
@@ -424,16 +368,12 @@ const WkProcessVendorListPage: React.FC & {
             </div>
             <div className="w-[70%] flex flex-col gap-15">
               <div className="flex justify-end pt-10">
-                <Button
-                  type="primary"
-                  className="bg-[#038D07] text-white"
+                <div
+                  className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
                   onClick={vendorSave}
                 >
-                  <p className="w-16 h-16">
-                    <Arrow />
-                  </p>
-                  저장
-                </Button>
+                  등록
+                </div>
               </div>
               <div className="flex flex-col">
                 <AntdTableEdit
@@ -628,29 +568,6 @@ const WkProcessVendorListPage: React.FC & {
         </>
       )}
 
-      <AntdAlertModal
-        open={resultOpen}
-        setOpen={setResultOpen}
-        title={
-          resultType === "success"
-            ? "공정 외주처 등록 성공"
-            : "공정 외주처 등록 실패"
-        }
-        contents={
-          resultType === "success" ? (
-            <div>공정 외주처 등록이 완료되었습니다.</div>
-          ) : (
-            <div>공정 외주처 등록이 실패하였습니다.</div>
-          )
-        }
-        type={resultType}
-        onOk={() => {
-          // refetch();
-          setResultOpen(false);
-        }}
-        hideCancel={true}
-        theme="base"
-      />
       <ToastContainer />
     </>
   );
