@@ -504,28 +504,44 @@ const CustomTree: React.FC<Props> = ({
     value: string,
     parentsId?: string
   ) => {
+    let length = 0;
     const uniqueKey = Date.now();
     console.log(type, id, value, parentsId, uniqueKey);
+
     setList((prev) => {
       if (type === "main") {
+        length = list.length;
+
         setAddList((prev) => [
           ...prev,
-          { id: `temp-${uniqueKey}`, label: value },
+          { id: `temp-${uniqueKey}`, label: value, ordNo: list.length },
         ]);
         return [
           ...prev.filter((item) => !item.id.includes("new")),
-          { id: `temp-${uniqueKey}`, label: value, children: [], open: true },
+          {
+            id: `temp-${uniqueKey}`,
+            label: value,
+            children: [],
+            open: true,
+            ordNo: list.length,
+          },
         ];
       } else {
         const newList = prev.map((item) => {
           if (item.id === parentsId) {
+            length = (item.children ?? []).length;
+
             return {
               ...item,
               children: [
                 ...(item.children ?? []).filter(
                   (child: any) => !child.id.includes("new")
                 ),
-                { id: `temp-${uniqueKey}`, label: value },
+                {
+                  id: `temp-${uniqueKey}`,
+                  label: value,
+                  ordNo: (item.children ?? []).length,
+                },
               ],
             };
           }
@@ -535,6 +551,7 @@ const CustomTree: React.FC<Props> = ({
           id: `temp-${uniqueKey}`,
           label: value,
           parentId: parentsId,
+          ordNo: length,
         };
         setAddList((prev) => [...prev, newAddItem]);
         return newList;
