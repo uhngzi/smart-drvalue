@@ -116,11 +116,13 @@ const HrUserListPage: React.FC & {
           id: group.id,
           label: group.deptNm,
           ordNo: group.ordNo,
-          children: group.teams?.map((team: any) => ({
-            id: team.id,
-            label: team.teamNm,
-            ordNo: team.ordNo,
-          })),
+          children: group.teams
+            ?.sort((a: any, b: any) => a.ordNo - b.ordNo)
+            .map((team: any) => ({
+              id: team.id,
+              label: team.teamNm,
+              ordNo: team.ordNo,
+            })),
           open: true,
         }));
         console.log(arr);
@@ -137,6 +139,7 @@ const HrUserListPage: React.FC & {
           },
           {
             anykeys: { type: "JOB_TYPE" },
+            sort: "ordNo,ASC",
           }
         );
         if (baseJob.resultCode === "OK_0000") {
@@ -154,6 +157,7 @@ const HrUserListPage: React.FC & {
           },
           {
             anykeys: { type: "WORK_TYPE" },
+            sort: "ordNo,ASC",
           }
         );
         if (baseWork.resultCode === "OK_0000") {
@@ -222,6 +226,7 @@ const HrUserListPage: React.FC & {
         },
         {
           anykeys: { type: newTitle },
+          sort: "ordNo,ASC",
         }
       );
 
@@ -270,6 +275,7 @@ const HrUserListPage: React.FC & {
           s_query: selectedTeam
             ? { "detail.team.id": { $eq: selectedTeam } }
             : "",
+          sort: "ordNo,ASC",
         }
       );
 
