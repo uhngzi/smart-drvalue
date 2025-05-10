@@ -228,7 +228,7 @@ const BuyMtListPage: React.FC & {
       }
 
     if (data.mtEnm && !isValidEnglish(data.mtEnm)) {
-      showToast("원자재 영문명은 영문만 입력 가능합니다.", "error");
+      showToast("원자재 영문명은 영문 또는 숫자만 입력 가능합니다.", "error");
       return;
     }
 

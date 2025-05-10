@@ -425,7 +425,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
                           <p className="w-15 h-15">
                             <Hint />
                           </p>
-                          영문만 입력 가능합니다.
+                          영문 또는 숫자만 입력 가능합니다.
                         </div>
                       ) : (
                         <></>
@@ -491,7 +491,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
               setOpen={setDeleteConfirm}
               type="warning"
               title="경고"
-              contents="데이터를 삭제하시겠습니까?."
+              contents="데이터를 삭제하시겠습니까?"
               okText="삭제"
               cancelText="취소"
               onOk={() => {

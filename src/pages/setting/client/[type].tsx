@@ -50,6 +50,7 @@ import { isValidEmail } from "@/utils/formatEmail";
 import { isValidTel, inputTel } from "@/utils/formatPhoneNumber";
 import AntdInput from "@/components/Input/AntdInput";
 import _ from "lodash";
+import { inputFax } from "@/utils/formatFax";
 
 const ClientCuListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -229,11 +230,11 @@ const ClientCuListPage: React.FC & {
       }
 
       if (data.prtEngNm && !isValidEnglish(data.prtEngNm)) {
-        showToast("영문만 입력 가능합니다.", "error");
+        showToast("영문 또는 숫자만 입력 가능합니다.", "error");
         return;
       }
       if (data.prtEngSNm && !isValidEnglish(data.prtEngSNm)) {
-        showToast("영문만 입력 가능합니다.", "error");
+        showToast("영문 또는 숫자만 입력 가능합니다.", "error");
         return;
       }
       if (data.prtTel && !isValidTel(data.prtTel)) {
@@ -682,6 +683,7 @@ const ClientCuListPage: React.FC & {
                             onChange={({ target }) =>
                               updatePrt(mng.id, "prtMngNm", target.value)
                             }
+                            placeholder="담당자명"
                           />
                         </div>
                         <div className="w-[130px] px-4 flex gap-5 h-center">
@@ -694,6 +696,7 @@ const ClientCuListPage: React.FC & {
                             onChange={({ target }) =>
                               updatePrt(mng.id, "prtMngDeptNm", target.value)
                             }
+                            placeholder="부서"
                           />
                         </div>
                         <div className="w-[145px] px-4 flex gap-5 h-center">
@@ -703,9 +706,11 @@ const ClientCuListPage: React.FC & {
                           <Input
                             value={mng.prtMngFax}
                             size="small"
-                            onChange={({ target }) =>
-                              updatePrt(mng.id, "prtMngFax", target.value)
-                            }
+                            onChange={({ target }) => {
+                              const formatted = inputFax(target.value);
+                              updatePrt(mng.id, "prtMngFax", formatted);
+                            }}
+                            placeholder="팩스"
                           />
                         </div>
                         <div className="w-[145px] px-4 flex gap-5 h-center">
@@ -719,6 +724,7 @@ const ClientCuListPage: React.FC & {
                               const formatted = inputTel(target.value);
                               updatePrt(mng.id, "prtMngTel", formatted);
                             }}
+                            placeholder="연락처"
                           />
                         </div>
                         <div className="flex-1 px-4 flex gap-5 h-center">
@@ -729,6 +735,7 @@ const ClientCuListPage: React.FC & {
                             onChange={({ target }) =>
                               updatePrt(mng.id, "prtMngEmail", target.value)
                             }
+                            placeholder="이메일"
                           />
                         </div>
                         <Button
