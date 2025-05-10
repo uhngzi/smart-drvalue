@@ -61,7 +61,7 @@ const WkProcessVendorListPage: React.FC & {
 
   const [treeData, setTreeData] = useState<treeType[]>([]);
   const { data: queryTreeData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "process"],
+    queryKey: ["process-group/jsxcrud/many"],
     queryFn: async () => {
       const result = await getAPI(
         {
