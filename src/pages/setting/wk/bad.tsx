@@ -385,7 +385,7 @@ const WkBadListPage: React.FC & {
           불량 관리
         </div>
       </div>
-      <div className="w-full flex gap-30">
+      <div className="w-full flex gap-30 !h-[calc(100vh-210px)]">
         <div
           className="p-20 min-h-[600px] w-[50%] rounded-8"
           style={{ border: "1px solid #B9B9B9" }}
@@ -407,98 +407,10 @@ const WkBadListPage: React.FC & {
             isCheck={true}
             checkedData={procBadData}
             checkChange={handleCheck}
-            //notCollapsed={true}
           />
-          {/* <AntdTableEdit
-            columns={[
-              {
-                title: 'No',
-                width: 50,
-                dataIndex: 'no',
-                align: 'center',
-                render: (_: any, __: any, index: number) => totalData - ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-              },
-              {
-                title: '공정그룹명',
-                width: 100,
-                dataIndex: 'processGroup.prcGrpNm',
-                key: 'processGroup.prcGrpNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectOptions: dataGroup?.map((item:processGroupRType)=>({value:item.id,label:item.prcGrpNm})) ?? [],
-                selectValue: 'processGroup.id',
-                req: true,
-              },
-              {
-                title: '공정명',
-                width: 100,
-                dataIndex: 'process.prcNm',
-                key: 'process.prcNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectOptions: dataProcess?.map((item:processRType)=>({value:item.id,label:item.prcNm})) ?? [],
-                selectValue: 'process.id',
-                req: true,
-              },
-              {
-                title: '불량명',
-                width: 100,
-                dataIndex: 'process.prcNm',
-                key: 'process.prcNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectValue: 'process.id',
-                req: true,
-              },
-              {
-                title: '불량순서',
-                width: 80,
-                dataIndex: 'process.prcNm',
-                key: 'process.prcNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectValue: 'process.id',
-                req: true,
-              },
-              {
-                title: '타입',
-                width: 80,
-                dataIndex: 'process.prcNm',
-                key: 'process.prcNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectValue: 'process.id',
-                req: true,
-              },
-              {
-                title: '내용',
-                dataIndex: 'process.prcNm',
-                key: 'process.prcNm',
-                align: 'center',
-                editable: true,
-                editType: 'select',
-                selectValue: 'process.id',
-                req: true,
-              },
-              {
-                title: '사용여부',
-                width: 130,
-                dataIndex: 'useYn',
-                key: 'useYn',
-                align: 'center',
-                editable: true,
-                editType: 'toggle',
-              },
-            ]}
-            data={[]}
-          /> */}
         </div>
       </div>
+
       <BaseTreeCUDModal
         title={{ name: "불량 관리" }}
         open={badPopOpen}
