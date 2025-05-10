@@ -1,27 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 
 import { getAPI } from "@/api/get";
-import { postAPI } from "@/api/post";
 
 import { apiGetResponseType } from "@/data/type/apiResponse";
-import {
-  newDataProcessGroupCUType,
-  processGroupCUType,
-  processGroupRType,
-  processRType,
-} from "@/data/type/base/process";
+import { processGroupRType, processRType } from "@/data/type/base/process";
 
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
-import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
-import AntdModal from "@/components/Modal/AntdModal";
-import AddContents from "@/contents/base/wk/process/group/AddContents";
+import { AlertType } from "@/components/Modal/AntdAlertModal";
 import CustomTree from "@/components/Tree/CustomTree";
-import { patchAPI } from "@/api/patch";
 import useToast from "@/utils/useToast";
-import { CUtreeType, treeType } from "@/data/type/componentStyles";
+import { treeType } from "@/data/type/componentStyles";
 import {
   onTreeAdd,
   onTreeDelete,
@@ -29,6 +20,8 @@ import {
   updateTreeDatas,
 } from "@/utils/treeCUDfunc";
 import { Spin } from "antd";
+import { port } from "@/pages/_app";
+import cookie from "cookiejs";
 
 const WkProcessGroupListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -37,7 +30,6 @@ const WkProcessGroupListPage: React.FC & {
   const { showToast, ToastContainer } = useToast();
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
-  const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
     current: 1,
     size: 10,
@@ -47,13 +39,11 @@ const WkProcessGroupListPage: React.FC & {
   };
 
   // --------- 리스트 데이터 시작 ---------
-  const [data, setData] = useState<Array<processGroupRType>>([]);
   const [treeData, setTreeData] = useState<treeType[]>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ["setting", "wk", "process"],
     queryFn: async () => {
       setDataLoading(true);
-      setData([]);
       const result = await getAPI(
         {
           type: "baseinfo",
@@ -66,8 +56,6 @@ const WkProcessGroupListPage: React.FC & {
       );
 
       if (result.resultCode === "OK_0000") {
-        setData(result.data?.data ?? []);
-        setTotalData((result.data?.data ?? []).length ?? 0);
         let childArr: processRType[] = [];
 
         const arr = (result.data?.data ?? []).map(
@@ -105,11 +93,6 @@ const WkProcessGroupListPage: React.FC & {
   });
   // ---------- 리스트 데이터 끝 ----------
 
-  // ---------- 신규 데이터 시작 ----------
-  // 결과 모달창을 위한 변수
-  const [resultOpen, setResultOpen] = useState<boolean>(false);
-  const [resultType, setResultType] = useState<AlertType>("info");
-
   // ---------- 신규 tree 데이터 시작 ----------
   const [addList, setAddList] = useState<any[]>([]);
   const [editList, setEditList] = useState<any[]>([]);
@@ -124,10 +107,14 @@ const WkProcessGroupListPage: React.FC & {
     setInfo: setAddParentEditsInfo,
     childInfo: addChildEditsInfo,
     setChildInfo: setAddChildEditsInfo,
-    addChildEditList: [
-      { type: "input", key: "wipPrcNm", name: "WIP 공정명" },
-      { type: "switch", key: "isInternal", name: "내부 여부" },
-    ],
+    addChildEditList: (
+      port === "3000" ? cookie.get("companySY") === "sy" : port === "90"
+    )
+      ? [
+          { type: "input", key: "wipPrcNm", name: "WIP 공정명" },
+          { type: "switch", key: "isInternal", name: "내부 여부" },
+        ]
+      : [{ type: "switch", key: "isInternal", name: "내부 여부" }],
   };
 
   // 트리데이터 submit 함수
@@ -155,8 +142,11 @@ const WkProcessGroupListPage: React.FC & {
         parent = "process-group";
         jsonData.processGroup = { id: item.parentId };
         jsonData.prcNm = item.label;
+        jsonData.ordNo = item.ordNo;
+        jsonData.isInternal = item.isInternal ?? true;
       } else {
         jsonData.prcGrpNm = item.label;
+        jsonData.ordNo = item.ordNo;
       }
       result = await onTreeAdd(url, jsonData);
       if (!result) {
@@ -218,7 +208,6 @@ const WkProcessGroupListPage: React.FC & {
           <div className="!h-[calc(100vh-210px)] h-full">
             <CustomTree
               data={treeData}
-              // handleDataChange={handleTreeDataChange}
               onSubmit={onTreeSubmit}
               setAddList={setAddList}
               setEditList={setEditList}
