@@ -413,6 +413,7 @@ const WkProcessVendorPriceListPage: React.FC & {
       }
 
       if (item.name === "processGroupIdx") {
+        console.log("g:", dataGroup);
         return {
           key: "id",
           ...item,
@@ -476,7 +477,8 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
   useEffect(() => {
-    if (!dataGroup.length || !dataProcess.length || !dataVendor.length) return;
+    console.log(dataGroup.length, dataProcess.length, dataVendor.length);
+    if (!dataGroup || !dataProcess || !dataVendor) return;
 
     const updatedItems = getUpdatedCUDPopItems();
     setAddModalInfoList(updatedItems);
