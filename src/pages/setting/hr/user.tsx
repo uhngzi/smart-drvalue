@@ -118,7 +118,7 @@ const HrUserListPage: React.FC & {
           ordNo: group.ordNo,
           children: group.teams
             ?.sort((a: any, b: any) => a.ordNo - b.ordNo)
-            .map((team: any) => ({
+            ?.map((team: any) => ({
               id: team.id,
               label: team.teamNm,
               ordNo: team.ordNo,
@@ -214,7 +214,7 @@ const HrUserListPage: React.FC & {
     apiGetResponseType,
     Error
   >({
-    queryKey: ["setting", "default-metadata", "user", newTitle],
+    queryKey: ["default-metadata/jsxcrud/many", newTitle],
     enabled: newTitle == "WORK_TYPE" || newTitle === "JOB_TYPE",
     queryFn: async () => {
       setDataLoading(true);
@@ -260,7 +260,7 @@ const HrUserListPage: React.FC & {
     apiGetResponseType,
     Error
   >({
-    queryKey: ["auth", "tenant", "user", selectedTeam, pagination.current],
+    queryKey: ["user/jsxcrud/many", selectedTeam, pagination.current],
     enabled: newTitle === "user",
     queryFn: async () => {
       const result = await getAPI(
@@ -275,7 +275,6 @@ const HrUserListPage: React.FC & {
           s_query: selectedTeam
             ? { "detail.team.id": { $eq: selectedTeam } }
             : "",
-          sort: "ordNo,ASC",
         }
       );
 
@@ -649,9 +648,9 @@ const HrUserListPage: React.FC & {
                 구성원 관리
               </div>
             </div>
-            <div className="flex gap-20">
+            <div className="flex gap-20 max-w-[1300px]">
               <div
-                className="w-[300px] rounded-14 p-20 bg-white"
+                className="w-[230px] min-w-[230px] rounded-14 p-20 bg-white"
                 style={{ border: "1px solid #D9D9D9" }}
               >
                 <CustomTreeUsed
@@ -661,7 +660,7 @@ const HrUserListPage: React.FC & {
                   setSelectId={setSelectedTeam}
                 />
               </div>
-              <div className="w-full">
+              <div className="flex-1 max-w-[1000px]">
                 <AntdTable
                   columns={[
                     {
@@ -675,7 +674,7 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "부서명",
-                      width: 130,
+                      minWidth: 100,
                       dataIndex: "detail.dept.deptNm",
                       key: "detail.dept.deptNm",
                       align: "center",
@@ -683,7 +682,7 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "팀명",
-                      width: 130,
+                      minWidth: 100,
                       dataIndex: "detail.team.teamNm",
                       key: "detail.team.teamNm",
                       align: "center",
@@ -691,12 +690,13 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "이름",
+                      width: 100,
                       dataIndex: "name",
                       key: "name",
                       align: "center",
                       render: (_, record) => (
                         <div
-                          className="w-full h-full h-center cursor-pointer reference-detail"
+                          className="reference-detail !text-center !justify-center"
                           onClick={() => {
                             const recordData = {
                               id: record.id,
@@ -732,7 +732,7 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "직함",
-                      width: 130,
+                      width: 80,
                       dataIndex: "detail.empTit",
                       key: "detail.empTit",
                       align: "center",
@@ -740,7 +740,7 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "직급",
-                      width: 130,
+                      width: 80,
                       dataIndex: "detail.empRank",
                       key: "detail.empRank",
                       align: "center",
@@ -756,7 +756,7 @@ const HrUserListPage: React.FC & {
                     },
                     {
                       title: "근무상태",
-                      width: 130,
+                      width: 80,
                       dataIndex: "detail.empRank",
                       key: "detail.empRank",
                       align: "center",
@@ -764,6 +764,7 @@ const HrUserListPage: React.FC & {
                     },
                   ]}
                   data={userList}
+                  styles={{ td_bg: "#FFF" }}
                 />
                 <div className="w-full h-100 h-center justify-end">
                   <AntdSettingPagination
