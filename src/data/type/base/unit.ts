@@ -16,9 +16,9 @@ export type unitModelType = {
   useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-}
+};
 
-export const setUnitModelType = (data: any):unitModelType => {
+export const setUnitModelType = (data: any): unitModelType => {
   return {
     id: data.id,
     layerEm: data.layerEm,
@@ -32,8 +32,8 @@ export const setUnitModelType = (data: any):unitModelType => {
     useYn: data.useYn,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
-  }
-}
+  };
+};
 
 export type unitModelCUType = {
   id?: string;
@@ -49,10 +49,9 @@ export type unitModelCUType = {
   appOriginDt?: Date | Dayjs | null;
   applyAppDt?: Date | Dayjs | null;
   applyPrice?: number;
-  originPrice?: number;
-}
+};
 
-export const setUnitModelCUType = (data: any):unitModelCUType => {
+export const setUnitModelCUType = (data: any): unitModelCUType => {
   return {
     id: data.id,
     layerEm: data.layerEm,
@@ -67,11 +66,10 @@ export const setUnitModelCUType = (data: any):unitModelCUType => {
     appOriginDt: data.appDt,
     applyAppDt: data.appDt,
     applyPrice: data.price,
-    originPrice: data.price,
-  }
-}
+  };
+};
 
-export const newUnitModelCUType = ():unitModelCUType => {
+export const newUnitModelCUType = (): unitModelCUType => {
   return {
     layerEm: null,
     minAmount: 0,
@@ -82,16 +80,17 @@ export const newUnitModelCUType = ():unitModelCUType => {
     useYn: true,
     remark: "",
     appDt: null,
-  }
-}
+  };
+};
 
 export const unitModelReq = () => [
-  { field: 'layerEm', label: '레이어 유형' },
-  { field: 'minAmount', label: '최소 수량' },
-  { field: 'maxAmount', label: '최대 수량' },
-  { field: 'price', label: '가격' },
-  { field: 'deliveryDays', label: '배송일' },
-  { field: 'appDt', label: '적용일' },
+  { field: "layerEm", label: "레이어 유형" },
+  { field: "minAmount", label: "최소 수량" },
+  { field: "maxAmount", label: "최대 수량" },
+  { field: "price", label: "현재 단가" },
+  { field: "deliveryDays", label: "배송일" },
+  { field: "useYn", label: "사용 여부" },
+  { field: "appDt", label: "초기 적용일" },
 ];
 
 export type unitModelApplyType = {
@@ -113,6 +112,6 @@ export type unitModelApplyType = {
   updatedAt?: string;
 
   mapping?: {
-    priceUnit?: number;
+    price?: number;
   };
 };

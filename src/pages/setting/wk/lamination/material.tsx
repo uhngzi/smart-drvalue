@@ -309,24 +309,29 @@ const WkLaminationMaterialListPage: React.FC & {
                 dataIndex: "lamDtlTypeEm",
                 key: "lamDtlTypeEm",
                 align: "center",
-                render: (_, record) => (
-                  <div
-                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
-                    onClick={() => {
-                      setNewData(setLaminationMaterialType(record));
-                      setNewOpen(true);
-                    }}
-                  >
-                    {record.lamDtlTypeEm}
-                  </div>
-                ),
+                render: (_, record) => <div>{record.lamDtlTypeEm}</div>,
               },
               {
                 title: "재질",
                 dataIndex: "matNm",
                 key: "matNm",
                 align: "center",
-                render: (_, record) => <div>{record.matNm}</div>,
+                render: (_, record) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    onClick={() => {
+                      setNewData(setLaminationMaterialType(record));
+                      setNewOpen(true);
+                    }}
+                  >
+                    {record.matNm}
+                  </div>
+                ),
               },
 
               {

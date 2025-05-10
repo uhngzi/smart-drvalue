@@ -6,17 +6,17 @@ import { commonCodeRType } from "./common"; // 공통코드
 export type unitTextureType = {
   id?: string;
   texture?: commonCodeRType | null;
-  remark?: string,
-  weight?: number,
-  addCost?: number,
+  remark?: string;
+  weight?: number;
+  addCost?: number;
   appDt?: Date | Dayjs | null;
-  ordNo?: number,
-  useYn?: boolean,
+  ordNo?: number;
+  useYn?: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
-}
+};
 
-export const setUnitTextureType = (data: any):unitTextureType => {
+export const setUnitTextureType = (data: any): unitTextureType => {
   return {
     id: data.id,
     texture: data.texture,
@@ -28,21 +28,24 @@ export const setUnitTextureType = (data: any):unitTextureType => {
     useYn: data.useYn,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
-  }
-}
+  };
+};
 
 export type unitTextureCUType = {
   id?: string;
   texture?: commonCodeRType | null;
-  remark?: string,
-  weight?: number,
-  addCost?: number,
+  remark?: string;
+  weight?: number;
+  addCost?: number;
   appDt?: Date | Dayjs | null;
-  ordNo?: number,
-  useYn?: boolean,
-}
+  ordNo?: number;
+  useYn?: boolean;
+  appOriginDt?: Date | Dayjs | null;
+  applyAppDt?: Date | Dayjs | null;
+  applyPrice?: number;
+};
 
-export const setUnitTextureCUType = (data: any):unitTextureCUType => {
+export const setUnitTextureCUType = (data: any): unitTextureCUType => {
   return {
     id: data.id,
     texture: data.texture?.id,
@@ -52,17 +55,51 @@ export const setUnitTextureCUType = (data: any):unitTextureCUType => {
     appDt: data.appDt,
     ordNo: data.ordNo,
     useYn: data.useYn,
-  }
-}
+    appOriginDt: data.appDt,
+    applyAppDt: data.appDt,
+    applyPrice: data.addCost,
+  };
+};
 
-export const newUnitTextureCUType = ():unitTextureCUType => {
+export const newUnitTextureCUType = (): unitTextureCUType => {
   return {
-    texture: { id: '' },
+    texture: { id: "" },
     remark: "",
     ordNo: 0,
     useYn: true,
     weight: 0,
     addCost: 0,
     appDt: null,
-  }
-}
+  };
+};
+
+export const unitTextureReq = () => [
+  { field: "texture", label: "재질" },
+  { field: "weight", label: "추가 비율(%)" },
+  { field: "addCost", label: "현재 단가" },
+  { field: "appDt", label: "초기 적용일" },
+  { field: "useYn", label: "사용 여부" },
+];
+
+export type unitTextureApplyType = {
+  id?: string;
+  targetIndex?: string;
+  typeName?: string;
+
+  fData1?: number;
+  fData2?: number;
+  iData1?: number;
+  iData2?: number;
+  sData1?: string | null;
+  sData2?: string | null;
+
+  applyDate?: Date | Dayjs | null;
+  applyYn?: boolean;
+
+  createdAt?: string;
+  updatedAt?: string;
+
+  mapping?: {
+    addCost?: number;
+  };
+};

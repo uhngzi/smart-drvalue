@@ -1,35 +1,47 @@
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
 
+// React 및 라이브러리 훅
+import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { useBase } from "@/data/context/BaseContext";
+import dayjs from "dayjs";
+
+// API 모듈
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
+import { patchAPI } from "@/api/patch";
+import { deleteAPI } from "@/api/delete";
+
+// 공통 컴포넌트
 import AntdTable from "@/components/List/AntdTable";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
 import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import { apiGetResponseType } from "@/data/type/apiResponse";
-``;
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import { useEffect, useState, useMemo } from "react";
 
-// 기초 타입 import
+// 유틸
+import useToast from "@/utils/useToast";
+import { validReq } from "@/utils/valid";
+import { MOCK } from "@/utils/Mock";
+
+// 타입 정의
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import { selectType } from "@/data/type/componentStyles";
+import { processRType } from "@/data/type/base/process";
+
 import {
   unitSpecialType,
   unitSpecialCUType,
   setUnitSpecialType,
   setUnitSpecialCUType,
   newUnitSpecialCUType,
+  unitSpecialReq,
+  unitSpecialApplyType,
 } from "@/data/type/base/special";
 
+// 아이콘
 import Bag from "@/assets/svg/icons/bag.svg";
-import { MOCK } from "@/utils/Mock";
-import { patchAPI } from "@/api/patch";
-import { deleteAPI } from "@/api/delete";
 import { Radio, Spin } from "antd";
-import { useBase } from "@/data/context/BaseContext";
-
-import { selectType } from "@/data/type/componentStyles";
-import { processRType } from "@/data/type/base/process";
 
 const BuyUnitSpecialListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -37,6 +49,7 @@ const BuyUnitSpecialListPage: React.FC & {
   const router = useRouter();
   const { type } = router.query;
   const { unitSelectList } = useBase();
+  const { showToast, ToastContainer } = useToast();
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -95,7 +108,6 @@ const BuyUnitSpecialListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<unitSpecialType>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
     queryKey: ["special-specifications/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
@@ -176,10 +188,42 @@ const BuyUnitSpecialListPage: React.FC & {
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
-      console.log(data);
+      const val = validReq(data, unitSpecialReq());
+      if (!val.isValid) {
+        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, "error");
+        return;
+      }
+
       if (data?.id) {
         const id = data.id;
         delete data.id;
+
+        // 적용일이 오늘 또는 이전인지 확인
+        const isPastOrToday =
+          dayjs(newData.appOriginDt).isBefore(dayjs(), "day") ||
+          dayjs(newData.appOriginDt).isSame(dayjs(), "day");
+
+        // 적용일이 지났으면 가격만 업데이트
+        const patchData = isPastOrToday
+          ? {
+              addCost: newData.addCost,
+              appDt: newData.applyAppDt,
+            }
+          : {
+              ...data,
+              process: {
+                id: data.process,
+              },
+              unit: {
+                id: data.unit,
+              },
+            };
+
+        // 필요없는 필드 제거
+        delete patchData.id;
+        delete patchData.applyAppDt;
+        delete patchData.applyPrice;
+        delete patchData.appOriginDt;
 
         // 특별사양 수정
         const result = await patchAPI(
@@ -191,14 +235,8 @@ const BuyUnitSpecialListPage: React.FC & {
           },
           id,
           {
-            ...data,
-            weight: Number(data.weight) * 0.01, // 가중치 수정 시 백분율 -> 소수점 변환
-            process: {
-              id: data.process,
-            },
-            unit: {
-              id: data.unit,
-            },
+            ...patchData,
+            weight: Number(data.weight) * 0.01, // 가중치(추가 비율) 수정 시 백분율 -> 소수점 변환
           }
         );
         console.log(result);
@@ -230,7 +268,7 @@ const BuyUnitSpecialListPage: React.FC & {
           },
           {
             ...newData,
-            weight: Number(newData.weight) * 0.01, // 가중치 등록 시 백분율 -> 소수점 변환
+            weight: Number(newData.weight) * 0.01, // 가중치(추가 비율) 등록 시 백분율 -> 소수점 변환
             process: {
               id: newData.process,
             },
@@ -239,10 +277,6 @@ const BuyUnitSpecialListPage: React.FC & {
             },
           }
         );
-
-        // Debug
-        // console.log(result, JSON.stringify(newData));
-
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
           setResultFunc(
@@ -269,6 +303,132 @@ const BuyUnitSpecialListPage: React.FC & {
     }
   };
   // ----------- 신규 데이터 끝 -----------
+
+  // ----------- 단가 적용일, 예정 단가 데이터 시작 -----------
+  // apply 데이터
+  const [applyData, setApplyData] = useState<unitSpecialApplyType[]>([]);
+
+  const fetchApplyData = async (targetId: string) => {
+    const result = await getAPI({
+      type: "core-d2",
+      utype: "tenant/",
+      url: `cbiz-apply-price-data/default/one/SPECIAL_SPECIFICATIONS/${targetId}`,
+    });
+
+    if (result.resultCode === "OK_0000") {
+      setApplyData(result.data?.data ?? []);
+      console.log("applydata:", result.data?.data);
+    } else {
+      console.log("error:", result.response);
+    }
+
+    return result;
+  };
+
+  const handleEditClick = async (record: unitSpecialCUType) => {
+    const applyDataResult = await fetchApplyData(record.id ?? "");
+    const converted = setUnitSpecialCUType(record);
+
+    // 기본값으로 현재 단가 설정
+    let currentData = {
+      ...converted,
+      weight: parseFloat((Number(record.weight) * 100).toFixed(1)), // 가중치(추가 비율) -> 백분율 형태로 보여줌
+      applyPrice: record.addCost, // 기본값으로 현재 단가 설정
+    };
+
+    if (applyDataResult.resultCode === "OK_0000") {
+      const applyData = applyDataResult.data;
+      const applyDate = dayjs(applyData.applyDate);
+      const today = dayjs();
+
+      // 단가적용일이 오늘이거나 과거면 적용단가 정보 설정
+      if (applyDate.isBefore(today, "day") || applyDate.isSame(today, "day")) {
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.price ?? record.addCost, // 예정 단가로 설정
+        };
+      }
+
+      if (applyDataResult.resultCode === "OK_0000") {
+        const applyData = applyDataResult.data;
+
+        currentData = {
+          ...currentData,
+          applyPrice: applyData.mapping?.price ?? record.addCost,
+          applyAppDt: applyData.applyDate ?? record.appDt, // 직접 넣어줘야 함
+        };
+      }
+    }
+
+    setNewData(currentData);
+
+    const today = dayjs();
+    // 적용일 기준으로 다른 모달 아이템 표시
+    if (
+      record.appDt &&
+      (dayjs(record.appDt).isSame(today, "day") ||
+        dayjs(record.appDt).isBefore(today, "day"))
+    ) {
+      // 과거/오늘이면 적용단가 수정 폼 (적용가격만 수정 가능)
+      const applyItems = getUpdatedCUDPopItems(
+        MOCK.applyUnitSpecialItems.CUDPopItems
+      );
+      setAddModalInfoList(applyItems);
+    } else {
+      // 미래면 기본 폼 (모든 필드 수정 가능)
+      const standardItems = getUpdatedCUDPopItems(
+        MOCK.unitSpecialItems.CUDPopItems
+      );
+      setAddModalInfoList(standardItems);
+    }
+
+    setNewOpen(true);
+  };
+
+  // 적용일이 지난 경우 가격만 수정 불가능하도록 처리
+  const getUpdatedCUDPopItems = (items = addModalInfoList) => {
+    return items.map((item) => {
+      let disabled = false;
+
+      if (
+        newData.id &&
+        newData.appDt &&
+        dayjs(newData.appDt).isValid() &&
+        (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
+          dayjs(newData.appDt).isSame(dayjs(), "day"))
+      ) {
+        if (item.name !== "addCost" && item.name !== "applyAppDt") {
+          disabled = true;
+        }
+      }
+
+      if (item.name === "unit") {
+        return {
+          key: "id",
+          ...item,
+          option: unitSelectList,
+          disabled,
+        };
+      }
+
+      if (item.name === "process") {
+        return {
+          key: "id",
+          ...item,
+          option: memoDataProcessList,
+          disabled,
+        };
+      }
+
+      return { ...item, disabled };
+    });
+  };
+
+  useEffect(() => {
+    setAddModalInfoList(getUpdatedCUDPopItems());
+  }, [data, newData.appDt, newData.id]);
+
+  // ----------- 단가 적용일, 예정 단가 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
     try {
@@ -306,40 +466,34 @@ const BuyUnitSpecialListPage: React.FC & {
     setNewData(newUnitSpecialCUType);
   }
 
-  // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
+  // modal의 공정 및 단위 리스트 갱신
   useEffect(() => {
-    if (
-      !unitSelectList ||
-      unitSelectList.length < 1 ||
-      !memoDataProcessList ||
-      memoDataProcessList.length < 1
-    )
-      return;
+    if (!newData.id) {
+      const updatedItems = MOCK.unitSpecialItems.CUDPopItems.map((item) => {
+        let disabled = false;
 
-    const arr = MOCK.unitSpecialItems.CUDPopItems.map((item) => {
-      if (item.name === "unit") {
-        return {
-          key: "id",
-          ...item,
-          option: unitSelectList,
-        };
-      }
+        if (item.name === "unit") {
+          return {
+            key: "id",
+            ...item,
+            option: unitSelectList,
+            disabled,
+          };
+        }
 
-      if (item.name === "process") {
-        return {
-          key: "id",
-          ...item,
-          option: memoDataProcessList,
-        };
-      }
-
-      return {
-        ...item,
-      };
-    });
-
-    setAddModalInfoList(arr);
-  }, [unitSelectList, memoDataProcessList]);
+        if (item.name === "process") {
+          return {
+            key: "id",
+            ...item,
+            option: memoDataProcessList,
+            disabled,
+          };
+        }
+        return { ...item, disabled };
+      });
+      setAddModalInfoList(updatedItems);
+    }
+  }, [newData, unitSelectList, memoDataProcessList]);
 
   return (
     <>
@@ -353,17 +507,13 @@ const BuyUnitSpecialListPage: React.FC & {
           <div className="v-between-h-center pb-20">
             <div className="flex gap-10">
               <p>총 {totalData}건</p>
-              {/* <Radio.Group value={type ? type : ""} size="small" className="custom-radio-group">
-              <Radio.Button value="" onClick={() => router.push("/setting/wk/lamination")}>전체</Radio.Button>
-              <Radio.Button value="cf" onClick={() => router.push("/setting/wk/lamination?type=cf")}>C/F</Radio.Button>
-              <Radio.Button value="pp" onClick={() => router.push("/setting/wk/lamination?type=pp")}>P/P</Radio.Button>
-              <Radio.Button value="ccl" onClick={() => router.push("/setting/wk/lamination?type=ccl")}>CCL</Radio.Button>
-            </Radio.Group> */}
             </div>
             <div
               className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
               onClick={() => {
                 setNewOpen(true);
+                setNewData(newUnitSpecialCUType());
+                setAddModalInfoList(MOCK.unitSpecialItems.CUDPopItems);
               }}
             >
               등록
@@ -391,8 +541,7 @@ const BuyUnitSpecialListPage: React.FC & {
                   <div
                     className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                     onClick={() => {
-                      setNewData(setUnitSpecialCUType(record));
-                      setNewOpen(true);
+                      handleEditClick(record);
                     }}
                   >
                     {record.process?.prcNm}
@@ -400,15 +549,13 @@ const BuyUnitSpecialListPage: React.FC & {
                 ),
               },
               {
-                title: "가중치(%)",
+                title: "추가 비율(%)",
                 width: 130,
                 dataIndex: "weight",
                 key: "weight",
                 align: "center",
                 render: (value: number) => (
-                  <div>
-                    {value * 100} {/* 가중치 -> 백분율 형태로 보여줌 */}
-                  </div>
+                  <div>{parseFloat((value * 100).toFixed(1))}</div>
                 ),
               },
               {
@@ -432,7 +579,7 @@ const BuyUnitSpecialListPage: React.FC & {
                 ),
               },
               {
-                title: "추가 비용",
+                title: "현재 단가",
                 width: 130,
                 dataIndex: "addCost",
                 key: "addCost",
@@ -467,13 +614,6 @@ const BuyUnitSpecialListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              /*{
-              title: '사용 여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-            },*/
             ]}
             data={data}
           />

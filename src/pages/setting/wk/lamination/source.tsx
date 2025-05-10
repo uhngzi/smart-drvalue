@@ -160,19 +160,46 @@ const WkLaminationSourceListPage: React.FC & {
       const { value } = e.target;
       setNewData({ ...newData, [name]: value });
     } else if (type === "select") {
-      if (key) {
+      const value = e as string;
+
+      if (name === "lamDtlTypeEm") {
+        // 유형 선택 시 자재 초기화
+        setNewData({
+          ...newData,
+          [name]: value as LamDtlTypeEm,
+          matNm: "",
+        });
+      } else if (name === "matNm") {
+        //epoxy, code
+        const matchedMaterial = dataGroup.find((d) => d.id === value);
+        setNewData({
+          ...newData,
+          [name]: value,
+          epoxy: matchedMaterial?.epoxy ?? "",
+          code: matchedMaterial?.code ?? "",
+        });
+      } else if (name === "name") {
+        //copThk
+        const matchedCopper = dataCopper.find((d) => d.id === value);
+        setNewData({
+          ...newData,
+          name: value,
+          copThk: matchedCopper?.copThk ?? "",
+        });
+      } else if (key) {
         setNewData({
           ...newData,
           [name]: {
-            ...((newData as any)[name] || {}), // 기존 객체 값 유지
-            [key]: e?.toString(), // 새로운 key 값 업데이트
+            ...((newData as any)[name] || {}),
+            [key]: value.toString(),
           },
         });
       } else {
-        setNewData({ ...newData, [name]: e });
+        setNewData({ ...newData, [name]: value });
       }
     }
   };
+
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
@@ -508,7 +535,23 @@ const WkLaminationSourceListPage: React.FC & {
                     <div
                       className="w-full h-full justify-center h-center cursor-pointer reference-detail"
                       onClick={() => {
-                        setNewData(setLaminationSourceList(record));
+                        const fullRecord = setLaminationSourceList(record);
+
+                        const matchedMaterial = dataGroup.find(
+                          (d) => d.matNm === record.matNm
+                        );
+                        const matchedCopper = dataCopper.find(
+                          (d) => d.id === record.copNm
+                        );
+                        setNewData({
+                          ...fullRecord,
+                          matNm: matchedMaterial?.id ?? record.matNm,
+                          name: matchedCopper?.id ?? record.copNm,
+                          epoxy: matchedMaterial?.epoxy ?? record.epoxy,
+                          code: matchedMaterial?.code ?? record.code,
+                          copThk: matchedCopper?.copThk ?? record.copThk,
+                        });
+
                         setNewOpen(true);
                       }}
                     >

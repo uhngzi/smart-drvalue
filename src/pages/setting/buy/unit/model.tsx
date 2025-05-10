@@ -177,7 +177,6 @@ const BuyUnitModelListPage: React.FC & {
         delete patchData.id;
         delete patchData.applyAppDt;
         delete patchData.applyPrice;
-        delete patchData.originPrice;
         delete patchData.appOriginDt;
 
         // 모델 단가 수정
@@ -252,7 +251,7 @@ const BuyUnitModelListPage: React.FC & {
   };
   // ----------- 신규 데이터 끝 -----------
 
-  // ----------- 단가 적용일, 적용단가 데이터 시작 -----------
+  // ----------- 단가 적용일, 예정 단가 데이터 시작 -----------
   // apply 데이터
   const [applyData, setApplyData] = useState<unitModelApplyType[]>([]);
 
@@ -308,7 +307,7 @@ const BuyUnitModelListPage: React.FC & {
       if (applyDate.isBefore(today, "day") || applyDate.isSame(today, "day")) {
         currentData = {
           ...currentData,
-          applyPrice: applyData.price ?? record.price, // 적용 단가로 설정
+          applyPrice: applyData.price ?? record.price, // 예정 단가로 설정
         };
       }
 
@@ -383,7 +382,7 @@ const BuyUnitModelListPage: React.FC & {
     setAddModalInfoList(getUpdatedCUDPopItems());
   }, [data, newData.appDt, newData.id]);
 
-  // ----------- 단가 적용일, 적용단가 데이터 끝 -----------
+  // ----------- 단가 적용일, 예정 단가 데이터 끝 -----------
 
   const handleDataDelete = async (id: string) => {
     try {
@@ -519,7 +518,7 @@ const BuyUnitModelListPage: React.FC & {
                 ),
               },
               {
-                title: "가격",
+                title: "현재 단가",
                 width: 130,
                 dataIndex: "price",
                 key: "price",
@@ -536,7 +535,7 @@ const BuyUnitModelListPage: React.FC & {
                 align: "center",
               },
               {
-                title: "적용일",
+                title: "초기 적용일",
                 width: 130,
                 dataIndex: "appDt",
                 key: "appDt",
@@ -549,13 +548,6 @@ const BuyUnitModelListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              /*{
-              title: '사용 여부',
-              width: 130,
-              dataIndex: 'useYn',
-              key: 'useYn',
-              align: 'center',
-            },*/
               {
                 title: "변경이력",
                 width: 130,

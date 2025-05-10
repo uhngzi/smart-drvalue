@@ -263,11 +263,7 @@ const WkLaminationCopperListPage: React.FC & {
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full justify-center h-center cursor-pointer reference-detail"
-                    onClick={() => {
-                      setNewData(setlaminationCopperList(record));
-                      setNewOpen(true);
-                    }}
+                    className="w-full h-full justify-center h-center"
                   >
                     {record.copThk}
                   </div>
@@ -282,7 +278,7 @@ const WkLaminationCopperListPage: React.FC & {
                 render: (value: boolean) => (
                   <div
                     className={
-                      "w-full h-full h-center justify-center cursor-pointer reference-detail"
+                      "w-full h-full h-center justify-center"
                     }
                   >
                     {value ? "사용" : "미사용"}
