@@ -275,8 +275,9 @@ const CustomTree: React.FC<Props> = ({
       <div>
         <label className="text-12">순서</label>
         <div className="relative h-center">
-          <Input
-            className="w-full pr-40"
+          <AntdInput
+            className="w-full"
+            styles={{ ta: "left" }}
             type="number"
             value={ordNo}
             onChange={(e) => setOrdNo(e.target.value)}
@@ -694,9 +695,9 @@ const CustomTree: React.FC<Props> = ({
                 <p className="w-24 h-24">
                   <Search />
                 </p>
-                <Input
+                <AntdInput
                   className="h-full focus:outline-none"
-                  style={{ border: 0, outline: "none" }}
+                  styles={{ bw: "0" }}
                   value={searchText}
                   onChange={(e) => treeSearch(e)}
                   onBlur={() => {
@@ -750,7 +751,8 @@ const CustomTree: React.FC<Props> = ({
                     <div className="relative flex-1 pr-10">
                       <AntdInput
                         ref={newInputRef}
-                        className="w-full h-35 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
+                        className="w-full h-35 !focus:outline-none !focus:ring-2 !focus:ring-[#09BB1B]"
+                        styles={{ bc: "#09BB1B", bw: "2px" }}
                         value={item.label}
                         onChange={(e) =>
                           handleChangeList(item.id, e.target.value)
@@ -881,7 +883,8 @@ const CustomTree: React.FC<Props> = ({
                               <div className="relative flex-1 pr-10">
                                 <AntdInput
                                   ref={newInputRef}
-                                  className="w-full h-35 pl-5 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
+                                  className="w-full h-35 pl-5"
+                                  styles={{ bc: "#09BB1B", bw: "2px" }}
                                   value={child.label}
                                   onChange={(e) =>
                                     handleChangeChild(
