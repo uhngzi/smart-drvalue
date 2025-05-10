@@ -37,7 +37,7 @@ import useToast from "@/utils/useToast";
 import Arrow from "@/assets/svg/icons/t-r-arrow.svg";
 import Search from "@/assets/svg/icons/s_search.svg";
 import Bag from "@/assets/svg/icons/bag.svg";
-import { MoreOutlined } from "@ant-design/icons";
+import { CloseOutlined, MoreOutlined } from "@ant-design/icons";
 import { deleteAPI } from "@/api/delete";
 import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 
@@ -248,25 +248,29 @@ const WkProcessVendorListPage: React.FC & {
       return;
     }
     const newId = `new${Math.random()}`;
-    const group = dataGroup.find((group) =>
-      group.processes?.some((proc) => proc.id === childCheckId)
-    );
+    const find = dataProcess.find((proc) => proc.id === childCheckId);
+    if (!find) {
+      showToast("추가 중 오류가 발생하였습니다.", "error");
+      return;
+    }
+
     const newData = {
       id: newId,
       process: { id: childCheckId },
-      processGroup: { id: group?.id ?? "" },
+      processGroup: { id: find?.processGroup?.id ?? "" },
       vendor: { id: record.id ?? "" },
       ordNo: 0,
       useYn: true,
     };
     const renderAddData = {
       id: newId,
-      processGroup: { id: group?.id ?? "", prcGrpNm: group?.prcGrpNm ?? "" },
+      processGroup: {
+        id: find?.processGroup?.id ?? "",
+        prcGrpNm: find?.processGroup?.prcGrpNm ?? "",
+      },
       process: {
         id: childCheckId,
-        prcNm:
-          group?.processes?.find((proc) => proc.id === childCheckId)?.prcNm ??
-          "",
+        prcNm: find?.prcNm,
       },
       vendor: { id: record.id, prtNm: record.prtNm },
       createdAt: dayjs().format("YYYY-MM-DD"),
@@ -278,7 +282,8 @@ const WkProcessVendorListPage: React.FC & {
   }
 
   async function vendorSave() {
-    console.log("new : ", newData + " / " + "delete : ", deleteData);
+    console.log("new : ", newData);
+    console.log("delete : ", deleteData);
     if (newData.length < 1 && deleteData.length < 1) {
       showToast("변경된 내용이 없습니다.", "error");
       return;
@@ -314,6 +319,7 @@ const WkProcessVendorListPage: React.FC & {
       for (const item of newData) {
         try {
           delete item.id;
+          console.log(JSON.stringify(item));
           const result = await postAPI(
             {
               type: "baseinfo",
@@ -425,9 +431,9 @@ const WkProcessVendorListPage: React.FC & {
                             items: [
                               {
                                 label: (
-                                  <div className="h-center gap-5 flex">
-                                    <Bag />
-                                    외주처 지정해제
+                                  <div className="h-center gap-5 flex text-[red]">
+                                    <CloseOutlined />
+                                    해제
                                   </div>
                                 ),
                                 key: 0,
@@ -490,7 +496,16 @@ const WkProcessVendorListPage: React.FC & {
                     width: 50,
                     dataIndex: "id",
                     render: (_, record) => (
-                      <Button size="small" onClick={() => addVendor(record)}>
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          if (childCheckId === "" || !childCheckId) {
+                            showToast("공정을 먼저 선택해주세요.", "error");
+                            return;
+                          }
+                          addVendor(record);
+                        }}
+                      >
                         추가
                       </Button>
                     ),
