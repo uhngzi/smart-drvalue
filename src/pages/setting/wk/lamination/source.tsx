@@ -175,7 +175,7 @@ const WkLaminationSourceListPage: React.FC & {
         setNewData({
           ...newData,
           [name]: value,
-          epoxy: matchedMaterial?.epoxy ?? "",
+          epoxy: Number(matchedMaterial?.epoxy ?? 0),
           code: matchedMaterial?.code ?? "",
         });
       } else if (name === "name") {
