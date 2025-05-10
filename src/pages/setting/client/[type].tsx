@@ -441,7 +441,7 @@ const ClientCuListPage: React.FC & {
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full h-center cursor-pointer"
+                    className="reference-detail"
                     onClick={() => {
                       setPrtData(
                         record.managers?.length > 0 ? record.managers : []
