@@ -366,8 +366,8 @@ const WkProcessVendorListPage: React.FC & {
                 setSelectId={handleSelect}
               />
             </div>
-            <div className="w-[70%] flex flex-col gap-15">
-              <div className="flex justify-end pt-10">
+            <div className="w-[850px] flex flex-col gap-15">
+              <div className="flex justify-end">
                 <div
                   className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
                   onClick={vendorSave}
@@ -378,12 +378,6 @@ const WkProcessVendorListPage: React.FC & {
               <div className="flex flex-col">
                 <AntdTableEdit
                   columns={[
-                    {
-                      title: "",
-                      width: 50,
-                      dataIndex: "no",
-                      align: "center",
-                    },
                     {
                       title: "공정그룹명",
                       dataIndex: "processGroup.prcGrpNm",
@@ -489,7 +483,7 @@ const WkProcessVendorListPage: React.FC & {
                 </div>
               </div>
 
-              <AntdTable
+              <AntdTableEdit
                 columns={[
                   {
                     title: "",
@@ -510,30 +504,16 @@ const WkProcessVendorListPage: React.FC & {
                   },
                   {
                     title: "식별코드",
-                    width: 65,
-                    dataIndex: "prtTypeEm",
-                    key: "prtTypeEm",
-                    align: "center",
-                  },
-                  {
-                    title: "축약명",
-                    width: 90,
-                    dataIndex: "prtSnm",
-                    key: "prtSnm",
+                    width: 100,
+                    dataIndex: "prtRegCd",
+                    key: "prtRegCd",
                     align: "center",
                   },
                   {
                     title: "영문명",
-                    width: 90,
+                    width: 100,
                     dataIndex: "prtEngNm",
                     key: "prtEngNm",
-                    align: "center",
-                  },
-                  {
-                    title: "영문축약",
-                    width: 65,
-                    dataIndex: "prtEngSnm",
-                    key: "prtEngSnm",
                     align: "center",
                   },
                   {
@@ -551,7 +531,6 @@ const WkProcessVendorListPage: React.FC & {
                     align: "center",
                   },
                 ]}
-                styles={{ round: "0" }}
                 data={dataVendor}
               />
 

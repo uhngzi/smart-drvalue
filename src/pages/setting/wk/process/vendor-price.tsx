@@ -573,7 +573,7 @@ const WkProcessVendorPriceListPage: React.FC & {
               setSelectId={handleSelect}
             />
           </div>
-          <div className="flex-1">
+          <div className="w-[850px] flex flex-col gap-15">
             <div className="v-between-h-center pb-10">
               <p>총 {totalData}건</p>
               <div
