@@ -23,7 +23,7 @@ import {
   processVendorRType,
 } from "@/data/type/base/process";
 import { partnerRType } from "@/data/type/base/partner";
-import { generateFloorOptions, LayerEm } from "@/data/type/enum";
+import { generateFloorOptions, LayerEm, ModelTypeEm } from "@/data/type/enum";
 
 // 레이아웃
 import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
@@ -46,6 +46,10 @@ import { validReq } from "@/utils/valid";
 // 아이콘
 import Bag from "@/assets/svg/icons/bag.svg";
 import { Spin } from "antd";
+import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
+import { treeType } from "@/data/type/componentStyles";
+import { port } from "@/pages/_app";
+import cookie from "cookiejs";
 
 const WkProcessVendorPriceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -57,7 +61,15 @@ const WkProcessVendorPriceListPage: React.FC & {
     newDataProcessVendorPriceCUType
   );
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
-    MOCK.vendorItems.CUDPopItems
+    (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+      ? MOCK.vendorItems.CUDPopItems.filter(
+          (f) =>
+            !f.name.includes("layerEm") &&
+            !f.name.includes("modelTypeEm") &&
+            !f.name.includes("pnl") &&
+            !f.name.includes("hole")
+        )
+      : MOCK.vendorItems.CUDPopItems
   );
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(0);
@@ -70,6 +82,62 @@ const WkProcessVendorPriceListPage: React.FC & {
   };
 
   // --------- 필요 데이터 시작 ----------
+  const [dataGroup, setDataGroup] = useState<processGroupRType[]>([]);
+  const [dataProcess, setDataProcess] = useState<processRType[]>([]);
+  const [treeData, setTreeData] = useState<treeType[]>([]);
+  const { data: queryTreeData } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-group/jsxcrud/many"],
+    queryFn: async () => {
+      setDataLoading(true);
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "process-group/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
+
+      if (result.resultCode === "OK_0000") {
+        let parr: processRType[] = [];
+        const arr = (result.data?.data ?? []).map(
+          (group: processGroupRType) => ({
+            id: group.id,
+            label: group.prcGrpNm,
+            children: group.processes
+              .sort((a, b) => (a.ordNo ?? 0) - (b.ordNo ?? 0))
+              .map((process: processRType) => {
+                parr.push({
+                  ...process,
+                  processGroup: {
+                    id: group.id,
+                    prcGrpNm: group.prcGrpNm,
+                    useYn: group.useYn,
+                  },
+                });
+                return {
+                  id: process.id,
+                  label: process.prcNm,
+                  wipPrcNm: process.wipPrcNm,
+                  isInternal: process.isInternal,
+                };
+              }),
+            open: true,
+          })
+        );
+        setDataGroup(result.data?.data ?? []);
+        setDataProcess(parr);
+        setTreeData(arr);
+      } else {
+        console.log("error:", result.response);
+      }
+      setDataLoading(false);
+      console.log(result.data);
+      return result;
+    },
+  });
 
   //외주처
   const [dataVendor, setDataVendor] = useState<Array<processVendorRType>>([]);
@@ -97,78 +165,36 @@ const WkProcessVendorPriceListPage: React.FC & {
       return result;
     },
   });
-
-  // 공정 그룹 조회
-  const [dataGroup, setDataGroup] = useState<Array<processGroupRType>>([]);
-  const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["process-group/jsxcrud/many"],
-    queryFn: async () => {
-      setDataGroup([]);
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "process-group/jsxcrud/many",
-        },
-        {
-          sort: "ordNo,ASC",
-        }
-      );
-
-      if (result.resultCode === "OK_0000") {
-        setDataGroup(result.data?.data ?? []);
-        console.log("group : ", result.data?.data);
-      } else {
-        console.log("error:", result.response);
-      }
-      return result;
-    },
-  });
-
-  // 공정 목록 조회
-  const [dataProcess, setDataProcess] = useState<Array<processRType>>([]);
-  const { data: queryDataProcess } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["process/jsxcrud/many"],
-    queryFn: async () => {
-      setDataProcess([]);
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "process/jsxcrud/many",
-        },
-        {
-          sort: "ordNo,ASC",
-        }
-      );
-
-      if (result.resultCode === "OK_0000") {
-        setDataProcess(result.data?.data ?? []);
-        console.log("process : ", result.data?.data);
-      } else {
-        console.log("error:", result.response);
-      }
-      return result;
-    },
-  });
   // ---------- 필요 데이터 끝 -----------
 
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<processVendorRType>>([]);
-  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["process-vendor-price/jsxcrud/many", pagination.current],
+  const [childCheckId, setChildCheckId] = useState<string | null>(null);
+  const [parentsCheckId, setParentsCheckId] = useState<string | null>(null);
+  useEffect(() => {
+    if (childCheckId == null) {
+      setData([]);
+    }
+  }, [childCheckId]);
+  const { refetch: refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: [
+      "process-vendor-price/jsxcrud/many",
+      pagination.current,
+      childCheckId,
+    ],
     queryFn: async () => {
-      setDataLoading(true);
       setData([]);
       const result = await getAPI(
         {
           type: "baseinfo",
           utype: "tenant/",
-          url: "process-vendor-price/jsxcrud/many",
+          url: `process-vendor-price/jsxcrud/many`,
         },
         {
-          limit: pagination.size,
           page: pagination.current,
+          limit: pagination.size,
+          sort: "ordNo,ASC",
+          anykeys: { prcIdx: childCheckId },
         }
       );
 
@@ -179,10 +205,38 @@ const WkProcessVendorPriceListPage: React.FC & {
       } else {
         console.log("error:", result.response);
       }
-      setDataLoading(false);
       return result;
     },
+    enabled: !!childCheckId, // childCheckId가 있을 때만 쿼리 실행
   });
+  // const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
+  //   queryKey: ["process-vendor-price/jsxcrud/many", pagination.current],
+  //   queryFn: async () => {
+  //     setDataLoading(true);
+  //     setData([]);
+  //     const result = await getAPI(
+  //       {
+  //         type: "baseinfo",
+  //         utype: "tenant/",
+  //         url: "process-vendor-price/jsxcrud/many",
+  //       },
+  //       {
+  //         limit: pagination.size,
+  //         page: pagination.current,
+  //       }
+  //     );
+
+  //     if (result.resultCode === "OK_0000") {
+  //       setData(result.data?.data ?? []);
+  //       setTotalData(result.data?.total ?? 0);
+  //       console.log("data : ", result.data?.data);
+  //     } else {
+  //       console.log("error:", result.response);
+  //     }
+  //     setDataLoading(false);
+  //     return result;
+  //   },
+  // });
   // ---------- 리스트 데이터 끝 ----------
 
   // ---------- 신규 데이터 시작 ----------
@@ -238,7 +292,6 @@ const WkProcessVendorPriceListPage: React.FC & {
   function setDataProcessVendorPriceType(
     record: any
   ): processVendorPriceCUType {
-    console.log("hi");
     return {
       id: record.id,
       process: record.process,
@@ -306,6 +359,9 @@ const WkProcessVendorPriceListPage: React.FC & {
                 processIdx: undefined,
                 processGroupIdx: undefined,
                 vendorIdx: undefined,
+                appDt: newData.appDt
+                  ? dayjs(newData.appDt).format("YYYY-MM-DD")
+                  : dayjs().format("YYYY-MM-DD"),
               }
         );
 
@@ -361,10 +417,6 @@ const WkProcessVendorPriceListPage: React.FC & {
     }
   };
 
-  useEffect(() => {
-    console.log("newData : ", newData);
-  }, [newData]);
-
   // 삭제 버튼 함수
   const handleDataDelete = async (id: string) => {
     try {
@@ -413,7 +465,6 @@ const WkProcessVendorPriceListPage: React.FC & {
       }
 
       if (item.name === "processGroupIdx") {
-        console.log("g:", dataGroup);
         return {
           key: "id",
           ...item,
@@ -477,12 +528,30 @@ const WkProcessVendorPriceListPage: React.FC & {
 
   // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
   useEffect(() => {
-    console.log(dataGroup.length, dataProcess.length, dataVendor.length);
     if (!dataGroup || !dataProcess || !dataVendor) return;
 
     const updatedItems = getUpdatedCUDPopItems();
-    setAddModalInfoList(updatedItems);
+    setAddModalInfoList(
+      (port === "3000" ? cookie.get("companySY") === "sy" : port === "90")
+        ? updatedItems.filter(
+            (f) =>
+              !f.name.includes("layerEm") &&
+              !f.name.includes("modelTypeEm") &&
+              !f.name.includes("pnl") &&
+              !f.name.includes("hole")
+          )
+        : updatedItems
+    );
   }, [dataGroup, dataProcess, dataVendor, newData]);
+
+  function handleSelect(id: string) {
+    const select = dataProcess.find((f) => f.id === id);
+    console.log(select);
+    setChildCheckId(select?.id ?? null);
+    setParentsCheckId(select?.processGroup?.id ?? null);
+    // const selectId = id;
+    // setChildCheckId((prev) => (prev === selectId ? null : selectId));
+  }
 
   return (
     <>
@@ -492,102 +561,134 @@ const WkProcessVendorPriceListPage: React.FC & {
         </div>
       )}
       {!dataLoading && (
-        <>
-          <div className="v-between-h-center pb-10">
-            <p>총 {totalData}건</p>
-            <div
-              className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
-              onClick={() => {
-                setNewOpen(true);
-                setNewData(newDataProcessVendorPriceCUType);
-              }}
-            >
-              등록
-            </div>
-          </div>
-          <AntdTable
-            columns={[
-              {
-                title: "No",
-                width: 50,
-                dataIndex: "no",
-                render: (_: any, __: any, index: number) =>
-                  totalData -
-                  ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
-                align: "center",
-              },
-              {
-                title: "공정그룹명",
-                dataIndex: "processGroup",
-                key: "processGroup",
-                align: "center",
-                render: (item: processGroupRType) => item.prcGrpNm,
-              },
-              {
-                title: "공정명",
-                dataIndex: "process",
-                key: "process",
-                align: "center",
-                render: (item: processRType) => item.prcNm,
-              },
-              {
-                title: "외주처명",
-                dataIndex: "vendor",
-                key: "vendor",
-                align: "center",
-                render: (item: partnerRType) => item.prtNm,
-              },
-              {
-                title: "가격명",
-                dataIndex: "priceNm",
-                key: "priceNm",
-                align: "center",
-                render: (_: any, record: any) => (
-                  <div
-                    className="cursor-pointer reference-detail"
-                    onClick={() => {
-                      setNewData(setDataProcessVendorPriceType(record));
-                      setNewOpen(true);
-                    }}
-                  >
-                    {record.priceNm}
-                  </div>
-                ),
-              },
-              {
-                title: "가격",
-                dataIndex: "priceUnit",
-                key: "priceUnit",
-                align: "center",
-              },
-              {
-                title: "제품유형",
-                dataIndex: "modelTypeEm",
-                key: "modelTypeEm",
-                align: "center",
-                render: (item: string) => (item === "sample" ? "샘플" : "양산"),
-              },
-              {
-                title: "사용여부",
-                width: 130,
-                dataIndex: "useYn",
-                key: "useYn",
-                align: "center",
-                render: (value: boolean) => (value ? "사용" : "미사용"),
-              },
-            ]}
-            data={data}
-          />
-
-          <div className="w-full h-100 v-h-center">
-            <AntdSettingPagination
-              current={pagination.current}
-              total={totalData}
-              size={pagination.size}
-              onChange={handlePageChange}
+        <div className="w-full flex gap-30">
+          <div
+            className="w-[30%] h-[calc(100vh-210px)] rounded-14 p-20"
+            style={{ border: "1px solid #D9D9D9" }}
+          >
+            <CustomTreeUsed
+              data={treeData}
+              isSelect={true}
+              selectId={childCheckId}
+              setSelectId={handleSelect}
             />
           </div>
-        </>
+          <div className="flex-1">
+            <div className="v-between-h-center pb-10">
+              <p>총 {totalData}건</p>
+              <div
+                className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
+                onClick={() => {
+                  setNewOpen(true);
+                  setNewData(
+                    childCheckId
+                      ? ({
+                          ...newDataProcessVendorPriceCUType,
+                          modelTypeEm: ModelTypeEm.SAMPLE,
+                          layerEm: LayerEm.L1,
+                          useYn: true,
+                          appDt: dayjs(),
+                          processGroupIdx: parentsCheckId,
+                          processIdx: childCheckId,
+                        } as processVendorPriceCUType)
+                      : ({
+                          ...newDataProcessVendorPriceCUType,
+                          modelTypeEm: ModelTypeEm.SAMPLE,
+                          layerEm: LayerEm.L1,
+                          useYn: true,
+                          appDt: dayjs(),
+                        } as processVendorPriceCUType)
+                  );
+                }}
+              >
+                등록
+              </div>
+            </div>
+            <AntdTable
+              columns={[
+                {
+                  title: "No",
+                  width: 50,
+                  dataIndex: "no",
+                  render: (_: any, __: any, index: number) =>
+                    totalData -
+                    ((pagination.current - 1) * pagination.size + index), // 역순 번호 매기기
+                  align: "center",
+                },
+                {
+                  title: "공정그룹명",
+                  dataIndex: "processGroup",
+                  key: "processGroup",
+                  align: "center",
+                  render: (item: processGroupRType) => item.prcGrpNm,
+                },
+                {
+                  title: "공정명",
+                  dataIndex: "process",
+                  key: "process",
+                  align: "center",
+                  render: (item: processRType) => item.prcNm,
+                },
+                {
+                  title: "외주처명",
+                  dataIndex: "vendor",
+                  key: "vendor",
+                  align: "center",
+                  render: (item: partnerRType) => item.prtNm,
+                },
+                {
+                  title: "가격명",
+                  dataIndex: "priceNm",
+                  key: "priceNm",
+                  align: "center",
+                  render: (_: any, record: any) => (
+                    <div
+                      className="cursor-pointer reference-detail"
+                      onClick={() => {
+                        setNewData(setDataProcessVendorPriceType(record));
+                        setNewOpen(true);
+                      }}
+                    >
+                      {record.priceNm}
+                    </div>
+                  ),
+                },
+                {
+                  title: "가격",
+                  dataIndex: "priceUnit",
+                  key: "priceUnit",
+                  align: "center",
+                },
+                {
+                  title: "제품유형",
+                  dataIndex: "modelTypeEm",
+                  key: "modelTypeEm",
+                  align: "center",
+                  render: (item: string) =>
+                    item === "sample" ? "샘플" : "양산",
+                },
+                {
+                  title: "사용여부",
+                  width: 130,
+                  dataIndex: "useYn",
+                  key: "useYn",
+                  align: "center",
+                  render: (value: boolean) => (value ? "사용" : "미사용"),
+                },
+              ]}
+              data={data}
+            />
+
+            <div className="w-full h-100 h-center justify-end">
+              <AntdSettingPagination
+                current={pagination.current}
+                total={totalData}
+                size={pagination.size}
+                onChange={handlePageChange}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
       <BaseInfoCUDModal
