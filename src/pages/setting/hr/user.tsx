@@ -116,7 +116,7 @@ const HrUserListPage: React.FC & {
           id: group.id,
           label: group.deptNm,
           ordNo: group.ordNo,
-          children: group.teams.map((team: any) => ({
+          children: group.teams?.map((team: any) => ({
             id: team.id,
             label: team.teamNm,
             ordNo: team.ordNo,
@@ -140,7 +140,7 @@ const HrUserListPage: React.FC & {
           }
         );
         if (baseJob.resultCode === "OK_0000") {
-          baseJobData = baseJob.data?.data.map((item: any) => ({
+          baseJobData = baseJob.data?.data?.map((item: any) => ({
             value: item.data,
             label: item.data,
           }));
@@ -157,7 +157,7 @@ const HrUserListPage: React.FC & {
           }
         );
         if (baseWork.resultCode === "OK_0000") {
-          baseWorkData = baseWork.data?.data.map((item: any) => ({
+          baseWorkData = baseWork.data?.data?.map((item: any) => ({
             value: item.data,
             label: item.data,
           }));
@@ -172,7 +172,7 @@ const HrUserListPage: React.FC & {
                 option: arr.map((group: any) => ({
                   value: group.id,
                   label: group.label,
-                  children: group.children.map((team: any) => ({
+                  children: group.children?.map((team: any) => ({
                     // 팀 option
                     value: team.id,
                     label: team.label,
@@ -354,7 +354,7 @@ const HrUserListPage: React.FC & {
         if (result) refetch();
       } else {
         console.log(updatedAddList);
-        const data = updatedAddList.map((item) => ({
+        const data = updatedAddList?.map((item) => ({
           type: newTitle,
           data: item.label,
           useYn: true,
@@ -784,7 +784,7 @@ const HrUserListPage: React.FC & {
         items={
           userData?.id
             ? [
-                ...addModalInfoList.map((f) => {
+                ...addModalInfoList?.map((f) => {
                   if (f.name === "userPassword") {
                     return {
                       name: "userPassword",
