@@ -3,6 +3,8 @@
 import dayjs, { Dayjs } from "dayjs";
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
 import { partnerRType } from "./partner";
+import { port } from "@/pages/_app";
+import cookie from "cookiejs";
 
 export type processRType = {
   id: string;
@@ -15,8 +17,8 @@ export type processRType = {
     createdAt?: Date | Dayjs | null;
     updatedAt?: Date | Dayjs | null;
     deletedAt?: Date | Dayjs | null;
-  },
-  processVendors?:{
+  };
+  processVendors?: {
     id: string;
     useYn: 0 | 1;
     vendor: partnerRType;
@@ -29,21 +31,21 @@ export type processRType = {
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
   remark?: string;
-}
+};
 
 export type processCUType = {
-  processGroup: { id: string; },
+  processGroup: { id: string };
   prcNm: string;
   useYn: boolean;
-}
+};
 
-export const newDataProcessCUType = ():processCUType => {
+export const newDataProcessCUType = (): processCUType => {
   return {
-    processGroup: { id: '' },
-    prcNm: '',
+    processGroup: { id: "" },
+    prcNm: "",
     useYn: true,
-  }
-}
+  };
+};
 
 export type processGroupRType = {
   id: string;
@@ -54,47 +56,47 @@ export type processGroupRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};
 
 export type processGroupCUType = {
   prcGrpNm: string;
   useYn: boolean;
-}
+};
 
-export const newDataProcessGroupCUType = ():processGroupCUType => {
+export const newDataProcessGroupCUType = (): processGroupCUType => {
   return {
-    prcGrpNm: '',
+    prcGrpNm: "",
     useYn: true,
-  }
-}
+  };
+};
 
 export type processVendorRType = {
   id: string;
   process: processRType;
   vendor: partnerRType;
-  processGroup: processGroupRType,
+  processGroup: processGroupRType;
   useYn: boolean;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};
 
 export type processVendorCUType = {
-  process: { id: string|null; };
-  processGroup: { id: string; };
-  vendor: { id: string; };
+  process: { id: string | null };
+  processGroup: { id: string };
+  vendor: { id: string };
   useYn: boolean;
-  ordNo?: number|string;
-}
+  ordNo?: number | string;
+};
 
-export const newDataProcessVendorCUType = ():processVendorCUType => {
+export const newDataProcessVendorCUType = (): processVendorCUType => {
   return {
-    process: { id: '' },
-    processGroup: { id: '' },
-    vendor: { id: '' },
+    process: { id: "" },
+    processGroup: { id: "" },
+    vendor: { id: "" },
     useYn: true,
-  }
-}
+  };
+};
 
 export type processVendorPriceRType = {
   id: string;
@@ -123,13 +125,13 @@ export type processVendorPriceRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};
 
 export type processVendorPriceCUType = {
   id?: string;
-  process: { id: string; };
-  processGroup: { id: string; };
-  vendor: { id: string; };
+  process: { id: string };
+  processGroup: { id: string };
+  vendor: { id: string };
   priceNm: string;
   priceUnit: number;
   modelTypeEm: ModelTypeEm | null;
@@ -153,17 +155,17 @@ export type processVendorPriceCUType = {
   processGroupIdx?: string;
   vendorIdx?: string;
   appOriginDt?: Date | Dayjs | null;
-}
+};
 
-export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
+export const newDataProcessVendorPriceCUType = (): processVendorPriceCUType => {
   return {
-    process: { id: '' },
-    processGroup: { id: '' },
-    vendor: { id: '' },
-    priceNm: '',
+    process: { id: "" },
+    processGroup: { id: "" },
+    vendor: { id: "" },
+    priceNm: "",
     priceUnit: 0,
-    modelTypeEm: null,
-    layerEm: null,
+    modelTypeEm: ModelTypeEm.SAMPLE,
+    layerEm: LayerEm.L1,
     thk: 0,
     pnlcntMin: 0,
     pnlcntMax: 0,
@@ -171,16 +173,16 @@ export const newDataProcessVendorPriceCUType = ():processVendorPriceCUType => {
     holecntMax: 0,
     m2Min: 0,
     m2Max: 0,
-    matCd: '',
-    metCd: '',
+    matCd: "",
+    metCd: "",
     wgtMin: 0,
     wgtMax: 0,
     cntMin: 0,
     cntMax: 0,
     appDt: dayjs(),
     useYn: true,
-  }
-}
+  };
+};
 
 export type processVendorPriceHistoryRType = {
   id: string;
@@ -193,30 +195,17 @@ export type processVendorPriceHistoryRType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
-
+};
 
 export const processVendorPriceReq = () => {
   return [
-    { field: 'processGroupIdx', label: '공정그룹' },
-    { field: 'processIdx', label: '공정' },
-    { field: 'vendorIdx', label: '외주처' },
-    { field: 'priceNm', label: '가격명' },
-    { field: 'priceUnit', label: '가격' },
-    { field: 'modelTypeEm', label: '제품유형' },
-    { field: 'layerEm', label: '층' },
-    { field: 'thk', label: '두께' },
-    { field: 'pnlcntMin', label: 'PNL최소수량' },
-    { field: 'pnlcntMax', label: 'PNL최대수량' },
-    { field: 'holecntMin', label: '최소홀수' },
-    { field: 'holecntMax', label: '최대홀수' },
-    { field: 'm2Min', label: '최저면적' },
-    { field: 'm2Max', label: '최대면적' },
-    { field: 'wgtMin', label: '최소무게' },
-    { field: 'wgtMax', label: '최대무게' },
-    { field: 'cntMin', label: '최소수량' },
-    { field: 'cntMax', label: '최대수량' },
-    { field: 'useYn', label: '사용여부' },
-    { field: 'appDt', label: '적용일' },
-  ]
-}
+    { field: "processGroupIdx", label: "공정그룹" },
+    { field: "processIdx", label: "공정" },
+    { field: "vendorIdx", label: "외주처" },
+    { field: "priceNm", label: "가격명" },
+    { field: "priceUnit", label: "가격" },
+    { field: "modelTypeEm", label: "제품유형" },
+    { field: "layerEm", label: "층" },
+    { field: "appDt", label: "적용일" },
+  ];
+};
