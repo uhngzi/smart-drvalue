@@ -339,7 +339,6 @@ const CustomTree: React.FC<Props> = ({
       isCheckUse.setCheckId(null);
     }
     setList(data);
-    console.log(data);
   }, [open]);
 
   useEffect(() => {
@@ -350,11 +349,13 @@ const CustomTree: React.FC<Props> = ({
   }, [data]);
 
   useEffect(() => {
-    const hasNewItem = list.some(
-      (item) =>
-        item.id.includes("new") ||
-        item.children?.some((child: any) => child.id.includes("new"))
-    );
+    const hasNewItem = Array.isArray(list)
+      ? list.some(
+          (item) =>
+            item.id.includes("new") ||
+            item.children?.some((child: any) => child.id.includes("new"))
+        )
+      : [];
     if (hasNewItem && newInputRef.current) {
       newInputRef.current.focus();
     }
@@ -583,7 +584,7 @@ const CustomTree: React.FC<Props> = ({
 
   const handleAddChild = (id: string) => {
     setList(
-      list.map((item) =>
+      list?.map((item) =>
         item.id === id
           ? {
               ...item,
@@ -619,12 +620,11 @@ const CustomTree: React.FC<Props> = ({
     };
     setDelList((prev) => [...prev, ...list]);
     setList((prevList) => removeItemById(prevList));
-    // setSelectId([])
   };
 
   const handleChangeList = (id: string, value: string) => {
     setList(
-      list.map((item) => (item.id === id ? { ...item, label: value } : item))
+      list?.map((item) => (item.id === id ? { ...item, label: value } : item))
     );
   };
 
@@ -634,7 +634,7 @@ const CustomTree: React.FC<Props> = ({
     value: string
   ) => {
     setList(
-      list.map((item) =>
+      list?.map((item) =>
         item.id === parentId
           ? {
               ...item,
@@ -649,7 +649,7 @@ const CustomTree: React.FC<Props> = ({
 
   const handleShowList = (id: string) => {
     setList(
-      list.map((item) =>
+      list?.map((item) =>
         item.id === id ? { ...item, open: !item.open } : item
       )
     );
@@ -657,7 +657,7 @@ const CustomTree: React.FC<Props> = ({
 
   const handleCollapseAll = () => {
     setCollapsedAll(!collapsedAll);
-    setList(list.map((item) => ({ ...item, open: !item.open })));
+    setList(list?.map((item) => ({ ...item, open: !item.open })));
   };
 
   return (
@@ -738,61 +738,62 @@ const CustomTree: React.FC<Props> = ({
           </div>
         </div>
         <div>
-          {list.map((item) => {
-            if (item.id.includes("new")) {
-              return (
-                <div
-                  className="w-full h-40 h-center pl-10 gap-10"
-                  key={item.id}
-                >
-                  <div className="w-5 h-5 bg-[#ddd] rounded-50" />
-                  <div className="relative flex-1 pr-10">
-                    <AntdInput
-                      ref={newInputRef}
-                      className="w-full h-35 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
-                      value={item.label}
-                      onChange={(e) =>
-                        handleChangeList(item.id, e.target.value)
-                      }
-                      onFocus={() => handleFocus(item.id)}
-                      onBlur={handleBlur}
-                      placeholder="새 항목 입력"
-                      onKeyDown={(e) => {
-                        if (e.nativeEvent.isComposing) return;
-                        if (e.key === "Enter") {
-                          handleDataAdd("main", item.id, item.label);
-                          // e.currentTarget.blur();
-                        }
-                      }}
-                    />
-                    {focusId === item.id && (
-                      <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
-                        엔터 시 저장
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            } else {
-              return (
-                <div key={item.id}>
+          {Array.isArray(list) &&
+            list.map((item) => {
+              if (item?.id?.includes("new")) {
+                return (
                   <div
-                    className={`w-full h-40 h-center pl-5 gap-10 hover:bg-[#0000000a] cursor-pointer ${
-                      isCheckUse
-                        ? isCheckUse.checkId === item.id
-                          ? "!bg-[#f3faff]"
-                          : ""
-                        : ""
-                    } ${isCheckUse ? "cursor-pointer" : ""}`}
-                    key={item.id} //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleShowList(item.id);
-                    }} //handleSelect(item)
-                    onMouseEnter={() => setHoverId(item.id)}
-                    onMouseLeave={() => setHoverId(null)}
+                    className="w-full h-40 h-center pl-10 gap-10"
+                    key={item.id}
                   >
-                    {/* {(isChild && searchText === '') ? (
+                    <div className="w-5 h-5 bg-[#ddd] rounded-50" />
+                    <div className="relative flex-1 pr-10">
+                      <AntdInput
+                        ref={newInputRef}
+                        className="w-full h-35 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
+                        value={item.label}
+                        onChange={(e) =>
+                          handleChangeList(item.id, e.target.value)
+                        }
+                        onFocus={() => handleFocus(item.id)}
+                        onBlur={handleBlur}
+                        placeholder="새 항목 입력"
+                        onKeyDown={(e) => {
+                          if (e.nativeEvent.isComposing) return;
+                          if (e.key === "Enter") {
+                            handleDataAdd("main", item.id, item.label);
+                            // e.currentTarget.blur();
+                          }
+                        }}
+                      />
+                      {focusId === item.id && (
+                        <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
+                          엔터 시 저장
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={item.id}>
+                    <div
+                      className={`w-full h-40 h-center pl-5 gap-10 hover:bg-[#0000000a] cursor-pointer ${
+                        isCheckUse
+                          ? isCheckUse.checkId === item.id
+                            ? "!bg-[#f3faff]"
+                            : ""
+                          : ""
+                      } ${isCheckUse ? "cursor-pointer" : ""}`}
+                      key={item.id} //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowList(item.id);
+                      }} //handleSelect(item)
+                      onMouseEnter={() => setHoverId(item.id)}
+                      onMouseLeave={() => setHoverId(null)}
+                    >
+                      {/* {(isChild && searchText === '') ? (
                     <>
                       {item.open ? (
                         <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
@@ -807,193 +808,199 @@ const CustomTree: React.FC<Props> = ({
                   ) : (
                     <div className="w-5 h-5 bg-[#000000] rounded-50" />
                   )} */}
-                    {/* <div className="flex h-center gap-10"> */}
-                    <SettingFill />
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {/* </div> */}
-                    {isCheckUse && isCheckUse.checkId == item.id ? (
-                      <BlueCheck />
-                    ) : (
-                      <div
-                        className={`${
-                          item.id === hoverId ? "visible" : "invisible"
-                        }`}
-                      >
-                        {!(item?.id ?? "").includes("temp") && isChild && (
+                      {/* <div className="flex h-center gap-10"> */}
+                      <SettingFill />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {/* </div> */}
+                      {isCheckUse && isCheckUse.checkId == item.id ? (
+                        <BlueCheck />
+                      ) : (
+                        <div
+                          className={`${
+                            item.id === hoverId ? "visible" : "invisible"
+                          }`}
+                        >
+                          {!(item?.id ?? "").includes("temp") && isChild && (
+                            <Button
+                              size="small"
+                              type="text"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddChild(item.id);
+                              }}
+                            >
+                              <Plus />
+                            </Button>
+                          )}
                           <Button
                             size="small"
                             type="text"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleAddChild(item.id);
+                              setTreeName(item.label);
+                              setOrdNo(item?.ordNo);
                             }}
                           >
-                            <Plus />
-                          </Button>
-                        )}
-                        <Button
-                          size="small"
-                          type="text"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTreeName(item.label);
-                            setOrdNo(item?.ordNo);
-                          }}
-                        >
-                          <Dropdown
-                            trigger={["click"]}
-                            dropdownRender={() =>
-                              customEditItems("main", item.id)
-                            }
-                          >
-                            <a onClick={(e) => e.preventDefault()}>
-                              <div
-                                className="w-full h-full v-h-center cursor-pointer"
-                                onClick={() => {}}
-                              >
-                                <p className="w-16 h-16 v-h-center">
-                                  <Edit />
-                                </p>
-                              </div>
-                            </a>
-                          </Dropdown>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  <div
-                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      item.open ? "max-h-full opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                    key={item.id + "child"}
-                  >
-                    {item.children?.map((child: any) => {
-                      if (child.id.includes("new")) {
-                        return (
-                          <div
-                            key={child.id}
-                            className="w-full h-40 h-center gap-10 pl-25"
-                          >
-                            <div className="w-5 h-5 bg-[#ddd] rounded-50" />
-                            <div className="relative flex-1 pr-10">
-                              <AntdInput
-                                ref={newInputRef}
-                                className="w-full h-35 pl-5 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
-                                value={child.label}
-                                onChange={(e) =>
-                                  handleChangeChild(
-                                    item.id,
-                                    child.id,
-                                    e.target.value
-                                  )
-                                }
-                                onFocus={() => handleFocus(child.id)}
-                                onBlur={handleBlur}
-                                onKeyDown={(e) => {
-                                  if (e.nativeEvent.isComposing) return;
-                                  if (e.key === "Enter") {
-                                    handleDataAdd(
-                                      "child",
-                                      child.id,
-                                      child.label,
-                                      item.id
-                                    );
-                                  }
-                                }}
-                              />
-                              {focusId === child.id && (
-                                <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
-                                  엔터 시 저장
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <Button
-                            type="text"
-                            className={`w-full h-40 h-center !pl-30 !gap-10 ${
-                              isCheckUse && isCheckUse.checkId === child.id
-                                ? "!bg-[#f3faff]"
-                                : ""
-                            }`}
-                            key={child.id} //${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}
-                            style={{
-                              transition: "none",
-                              animation: "none",
-                              WebkitTransition: "none",
-                              MozTransition: "none",
-                              OTransition: "none",
-                            }}
-                            onClick={() => handleSelect(child)}
-                            onMouseEnter={() => setHoverId(child.id)}
-                            onMouseLeave={() => setHoverId(null)}
-                          >
-                            <div className="w-5 h-5 bg-[#ddd] rounded-50" />
-                            <div className="h-center flex-1 text-left gap-8">
-                              {child.isInternal === false ? (
-                                <FullChip label="외주" state="mint" />
-                              ) : (
-                                <></>
-                              )}
-                              <span className="">{child.label}</span>
-                              {child.wipPrcNm && (
-                                <span className="h-center gap-8">
-                                  - <FullChip label="WIP" /> {child.wipPrcNm}
-                                </span>
-                              )}
-                            </div>
-                            {/* {!selectId.some(v => v.id.includes(child.id)) ? ( */}
-                            <div
-                              className={`${
-                                child.id === hoverId ? "visible" : "invisible"
-                              }`}
+                            <Dropdown
+                              trigger={["click"]}
+                              dropdownRender={() =>
+                                customEditItems("main", item.id)
+                              }
                             >
-                              <Button
-                                size="small"
-                                type="text"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <Dropdown
-                                  onOpenChange={(visible) => {
-                                    if (visible) {
-                                      setTreeName(child.label);
-                                      setOrdNo(Number(child?.ordNo));
+                              <a onClick={(e) => e.preventDefault()}>
+                                <div
+                                  className="w-full h-full v-h-center cursor-pointer"
+                                  onClick={() => {}}
+                                >
+                                  <p className="w-16 h-16 v-h-center">
+                                    <Edit />
+                                  </p>
+                                </div>
+                              </a>
+                            </Dropdown>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        item.open
+                          ? "max-h-full opacity-100"
+                          : "max-h-0 opacity-0"
+                      }`}
+                      key={item.id + "child"}
+                    >
+                      {item.children?.map((child: any) => {
+                        if (child.id.includes("new")) {
+                          return (
+                            <div
+                              key={child.id}
+                              className="w-full h-40 h-center gap-10 pl-25"
+                            >
+                              <div className="w-5 h-5 bg-[#ddd] rounded-50" />
+                              <div className="relative flex-1 pr-10">
+                                <AntdInput
+                                  ref={newInputRef}
+                                  className="w-full h-35 pl-5 focus:outline-none focus:ring-2 focus:ring-[#09BB1B]"
+                                  value={child.label}
+                                  onChange={(e) =>
+                                    handleChangeChild(
+                                      item.id,
+                                      child.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  onFocus={() => handleFocus(child.id)}
+                                  onBlur={handleBlur}
+                                  onKeyDown={(e) => {
+                                    if (e.nativeEvent.isComposing) return;
+                                    if (e.key === "Enter") {
+                                      handleDataAdd(
+                                        "child",
+                                        child.id,
+                                        child.label,
+                                        item.id
+                                      );
                                     }
                                   }}
-                                  trigger={["click"]}
-                                  dropdownRender={() =>
-                                    customEditItems("child", child.id, item.id)
-                                  }
-                                >
-                                  <a onClick={(e) => e.preventDefault()}>
-                                    <div
-                                      className="w-full h-full v-h-center cursor-pointer"
-                                      onClick={() => {}}
-                                    >
-                                      <p className="w-16 h-16 v-h-center">
-                                        <Edit />
-                                      </p>
-                                    </div>
-                                  </a>
-                                </Dropdown>
-                              </Button>
+                                />
+                                {focusId === child.id && (
+                                  <span className="absolute right-15 top-1/2 transform -translate-y-1/2">
+                                    엔터 시 저장
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            {/* ) : (
+                          );
+                        } else {
+                          return (
+                            <Button
+                              type="text"
+                              className={`w-full h-40 h-center !pl-30 !gap-10 ${
+                                isCheckUse && isCheckUse.checkId === child.id
+                                  ? "!bg-[#f3faff]"
+                                  : ""
+                              }`}
+                              key={child.id} //${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}
+                              style={{
+                                transition: "none",
+                                animation: "none",
+                                WebkitTransition: "none",
+                                MozTransition: "none",
+                                OTransition: "none",
+                              }}
+                              onClick={() => handleSelect(child)}
+                              onMouseEnter={() => setHoverId(child.id)}
+                              onMouseLeave={() => setHoverId(null)}
+                            >
+                              <div className="w-5 h-5 bg-[#ddd] rounded-50" />
+                              <div className="h-center flex-1 text-left gap-8">
+                                {child.isInternal === false ? (
+                                  <FullChip label="외주" state="mint" />
+                                ) : (
+                                  <></>
+                                )}
+                                <span className="">{child.label}</span>
+                                {child.wipPrcNm && (
+                                  <span className="h-center gap-8">
+                                    - <FullChip label="WIP" /> {child.wipPrcNm}
+                                  </span>
+                                )}
+                              </div>
+                              {/* {!selectId.some(v => v.id.includes(child.id)) ? ( */}
+                              <div
+                                className={`${
+                                  child.id === hoverId ? "visible" : "invisible"
+                                }`}
+                              >
+                                <Button
+                                  size="small"
+                                  type="text"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  <Dropdown
+                                    onOpenChange={(visible) => {
+                                      if (visible) {
+                                        setTreeName(child.label);
+                                        setOrdNo(Number(child?.ordNo));
+                                      }
+                                    }}
+                                    trigger={["click"]}
+                                    dropdownRender={() =>
+                                      customEditItems(
+                                        "child",
+                                        child.id,
+                                        item.id
+                                      )
+                                    }
+                                  >
+                                    <a onClick={(e) => e.preventDefault()}>
+                                      <div
+                                        className="w-full h-full v-h-center cursor-pointer"
+                                        onClick={() => {}}
+                                      >
+                                        <p className="w-16 h-16 v-h-center">
+                                          <Edit />
+                                        </p>
+                                      </div>
+                                    </a>
+                                  </Dropdown>
+                                </Button>
+                              </div>
+                              {/* ) : (
                             <BlueCheck/>
                           )} */}
-                          </Button>
-                        );
-                      }
-                    })}
+                            </Button>
+                          );
+                        }
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            }
-          })}
+                );
+              }
+            })}
         </div>
       </div>
       <div className="pt-20 pb-10 ">
