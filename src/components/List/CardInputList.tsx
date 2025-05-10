@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { getPrtCsAPI } from "@/api/cache/client";
 import { partnerRType } from "@/data/type/base/partner";
+import { isValidEnglish } from "@/utils/formatEnglish";
 
 interface Item {
   name: string;
@@ -209,13 +210,23 @@ const CardInputList: React.FC<CardInputListProps> = ({
                   ) : // 전화번호 형식 체크
                   (item.name.toLowerCase().includes("tel") ||
                       item.name.toLowerCase().includes("mobile") ||
-                      item.name === "taxManagerPhone") &&
+                      item.name.toLowerCase().includes("phone")) &&
                     !isValidTel(item?.value?.toString()) ? (
                     <div className="h-center gap-3 text-[red]">
                       <p className="w-15 h-15">
                         <Hint />
                       </p>
                       올바르지 않은 전화번호입니다.
+                    </div>
+                  ) : // 영문 입력 체크
+                  (item.name.toLowerCase().includes("enm") ||
+                      item.name.toLowerCase().includes("eng")) &&
+                    !isValidEnglish(item?.value?.toString()) ? (
+                    <div className="h-center gap-3 text-[red]">
+                      <p className="w-15 h-15">
+                        <Hint />
+                      </p>
+                      영문 또는 숫자만 입력 가능합니다.
                     </div>
                   ) : (
                     <></>
