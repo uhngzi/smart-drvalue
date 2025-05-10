@@ -154,7 +154,7 @@ const SettingSider: React.FC<Props> = ({}) => {
         },
         {
           key: "wk/lamination",
-          title: "wk/lamination/material",
+          title: "wk/lamination/source",
           label: "적층 구조 유형",
         },
         {
@@ -375,7 +375,7 @@ const SiderStyled = styled.div<{}>`
   }
 
   .ant-menu-item-selected {
-    background: #038D07;
+    background: #038d07;
     color: white !important;
   }
 
