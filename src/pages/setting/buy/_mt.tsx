@@ -466,7 +466,7 @@ const BuyMtListPage: React.FC & {
     const url = "material-group";
 
     for (const item of updatedAddList) {
-      const jsonData = { mtGrpNm: item.label, ordNo: 1, useYn: true };
+      const jsonData = { mtGrpNm: item.label, ordNo: item.ordNo, useYn: true };
 
       result = await onTreeAdd(url, jsonData);
 

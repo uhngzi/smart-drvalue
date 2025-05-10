@@ -203,18 +203,7 @@ const WkProductListPage: React.FC & {
         showToast("삭제가 완료되었습니다.", "success");
       }
     }
-    // setPrdProcData((prev) => {
-    //   if (prev.includes(e.target.value)) {
-    //     return prev.filter((id) => id !== e.target.value);
-    //   } else {
-    //     return [...prev, e.target.value];
-    //   }
-    // });
   };
-
-  function onSubmit() {
-    console.log(productGroupId, checkProcessList);
-  }
 
   function modalClose() {
     setProdGroupOpen(false);
@@ -235,7 +224,7 @@ const WkProductListPage: React.FC & {
     const url = "product-lines-group";
 
     for (const item of updatedAddList) {
-      const jsonData = { name: item.label };
+      const jsonData = { name: item.label, ordNo: item.ordNo };
 
       result = await onTreeAdd(url, jsonData);
 
@@ -288,7 +277,7 @@ const WkProductListPage: React.FC & {
             제품군 관리
           </div>
         </div>
-        <div className="w-full flex gap-30">
+        <div className="w-full flex gap-30 !h-[calc(100vh-210px)]">
           <div
             className="p-20 min-h-[600px] w-[50%] rounded-8"
             style={{ border: "1px solid #B9B9B9" }}

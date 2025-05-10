@@ -186,8 +186,10 @@ const CommonListPage: React.FC & {
         parent = "common-code-group";
         jsonData.codeGroup = { id: item.parentId };
         jsonData.cdNm = item.label;
+        jsonData.ordNo = item.ordNo;
       } else {
         jsonData.cdGrpNm = item.label;
+        jsonData.ordNo = item.ordNo;
       }
       result = await onTreeAdd(url, jsonData);
       if (!result) {

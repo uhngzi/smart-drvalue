@@ -316,7 +316,11 @@ const WkBoardListPage: React.FC & {
 
     console.log(updatedAddList);
     for (const item of updatedAddList) {
-      const jsonData = { brdGrpName: item.label, ordNo: 1, useYn: true };
+      const jsonData = {
+        brdGrpName: item.label,
+        ordNo: item.ordNo,
+        useYn: true,
+      };
 
       result = await onTreeAdd(url, jsonData);
 

@@ -315,8 +315,10 @@ const HrUserListPage: React.FC & {
             parent = newTitle;
             jsonData[parent] = { id: item.parentId };
             jsonData[`${groupType[newTitle].child}Nm`] = item.label;
+            jsonData.ordNo = Number(item.ordNo);
           } else {
             jsonData[`${newTitle}Nm`] = item.label;
+            jsonData.ordNo = Number(item.ordNo);
           }
           result = await onTreeAdd(url, jsonData);
           if (!result) {
@@ -358,12 +360,13 @@ const HrUserListPage: React.FC & {
         }
         if (result) refetch();
       } else {
-        console.log(updatedAddList);
         const data = updatedAddList?.map((item) => ({
           type: newTitle,
           data: item.label,
+          ordNo: item.ordNo,
           useYn: true,
         }));
+        console.log(JSON.stringify(data));
         if (data.length > 0) {
           const metaCreateRes = await patchAPI(
             {

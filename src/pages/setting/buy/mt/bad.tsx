@@ -260,7 +260,7 @@ const BuyMtBadListPage: React.FC & {
     for (const item of updatedAddList) {
       const jsonData: { [key: string]: any; useYn: boolean } = {
         useYn: true,
-        ordNo: 0,
+        ordNo: item.ordNo,
       };
       let url = "";
       if (item.parentId) {
