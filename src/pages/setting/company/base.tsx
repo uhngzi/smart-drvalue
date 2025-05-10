@@ -25,6 +25,12 @@ import AntdModal from "@/components/Modal/AntdModal";
 import AntdDragger from "@/components/Upload/AntdDragger";
 import { baseURL } from "@/api/lib/config";
 import { PictureOutlined } from "@ant-design/icons";
+import {
+  isValidBusinessLicense,
+  isValidCorpRegNo,
+} from "@/utils/formatBusinessHyphen";
+import { inputTel } from "@/utils/formatPhoneNumber";
+import { inputFax } from "@/utils/formatFax";
 
 const CompanyBaseListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -270,7 +276,17 @@ const CompanyBaseListPage: React.FC & {
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
-      setData({ ...data, [name]: value });
+      if (name.includes("businessRegNo")) {
+        setData({ ...data, [name]: isValidBusinessLicense(value) });
+      } else if (name.includes("corpRegNo")) {
+        setData({ ...data, [name]: isValidCorpRegNo(value) });
+      } else if (name.includes("Phone")) {
+        setData({ ...data, [name]: inputTel(value) });
+      } else if (name.includes("Fax")) {
+        setData({ ...data, [name]: inputFax(value) });
+      } else {
+        setData({ ...data, [name]: value });
+      }
     } else if (type === "select") {
       if (key) {
         setData({

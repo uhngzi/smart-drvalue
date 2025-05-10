@@ -7,8 +7,8 @@ import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 
 import {
-  autoHyphenBusinessLicense,
-  autoHyphenCorpRegNo,
+  isValidBusinessLicense,
+  isValidCorpRegNo,
 } from "@/utils/formatBusinessHyphen";
 
 import {
@@ -490,7 +490,7 @@ const ClientCuListPage: React.FC & {
                 align: "center",
                 render: (value: string) => (
                   <div className="w-full h-full v-h-center">
-                    {autoHyphenBusinessLicense(value)}
+                    {isValidBusinessLicense(value)}
                   </div>
                 ),
               },
@@ -502,7 +502,7 @@ const ClientCuListPage: React.FC & {
                 align: "center",
                 render: (value: string) => (
                   <div className="w-full h-full v-h-center">
-                    {autoHyphenCorpRegNo(value)}
+                    {isValidCorpRegNo(value)}
                   </div>
                 ),
               },

@@ -19,8 +19,8 @@ import { partnerRType } from "@/data/type/base/partner";
 import useToast from "@/utils/useToast";
 import { set } from "lodash";
 import {
-  autoHyphenBusinessLicense,
-  autoHyphenCorpRegNo,
+  isValidBusinessLicense,
+  isValidCorpRegNo,
 } from "@/utils/formatBusinessHyphen";
 
 interface Option {
@@ -140,9 +140,9 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
     } else if (itemName.toLowerCase().includes("fax")) {
       value = inputFax(value);
     } else if (itemName.toLowerCase().includes("corpregno")) {
-      value = autoHyphenCorpRegNo(value);
+      value = isValidCorpRegNo(value);
     } else if (itemName.toLowerCase().includes("regno")) {
-      value = autoHyphenBusinessLicense(value);
+      value = isValidBusinessLicense(value);
     }
     setFormData((prev) => ({ ...prev, [itemName]: value }));
     setData(itemName, value);

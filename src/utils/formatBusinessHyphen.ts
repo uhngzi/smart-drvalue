@@ -4,7 +4,7 @@
  * -----------------------------------------------------
  * 2025-03-11          최시훈      빈 문자열일 경우 빈 문자열 반환
  */
-export function autoHyphenBusinessLicense(value: string) {
+export function isValidBusinessLicense(value: string) {
   // Null 또는 빈 문자열일 경우 빈 문자열 반환
   if (!value) return "";
 
@@ -26,7 +26,7 @@ export function autoHyphenBusinessLicense(value: string) {
  * -----------------------------------------------------
  * 2025-03-11          최시훈      빈 문자열일 경우 빈 문자열 반환
  */
-export function autoHyphenCorpRegNo(value: string) {
+export function isValidCorpRegNo(value: string) {
   // Null 또는 빈 문자열일 경우 빈 문자열 반환
   if (!value) return "";
 
