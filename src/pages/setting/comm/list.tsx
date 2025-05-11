@@ -42,6 +42,10 @@ const CommonListPage: React.FC & {
     []
   );
   const [teamList, setTeamList] = useState<selectType[]>([]);
+  const [addParentEditList, setAddParentEditList] = useState<any[]>([
+    { type: "input", key: "cdGrpDesc", name: "시스템사용" },
+    { type: "select", key: "teamId", name: "팀", selectData: teamList },
+  ]);
   const [addParentEditsInfo, setAddParentEditsInfo] = useState<any[]>([]);
   const [addChildEditsInfo, setAddChildEditsInfo] = useState<any[]>([]);
 
@@ -50,12 +54,19 @@ const CommonListPage: React.FC & {
     setInfo: setAddParentEditsInfo,
     childInfo: addChildEditsInfo,
     setChildInfo: setAddChildEditsInfo,
-    addParentEditList: [
-      { type: "input", key: "cdGrpDesc", name: "시스템사용" },
-      { type: "select", key: "teamId", name: "부서", selectData: teamList },
-    ],
+    addParentEditList: addParentEditList,
     addChildEditList: [{ type: "input", key: "cdDesc", name: "설명" }],
   };
+
+  useEffect(() => {
+    console.log(teamList);
+    if (teamList.length > 0) {
+      setAddParentEditList([
+        { type: "input", key: "cdGrpDesc", name: "시스템사용" },
+        { type: "select", key: "teamId", name: "팀", selectData: teamList },
+      ]);
+    }
+  }, [teamList]);
 
   // --------- 리스트 데이터 시작 ---------
   const [editIndex, setEditIndex] = useState<number>(-1);
@@ -89,12 +100,14 @@ const CommonListPage: React.FC & {
           cdGrpDesc: d.cdGrpDesc,
           ordNo: d.ordNo,
           teamId: d.team?.id,
-          children: (d.codes ?? []).map((c: commonCodeRType) => ({
-            id: c.id,
-            label: c.cdNm,
-            cdDesc: c.cdDesc,
-            ordNo: c.ordNo,
-          })),
+          children: (d.codes ?? [])
+            .sort((a: any, b: any) => a.ordNo - b.ordNo)
+            .map((c: commonCodeRType) => ({
+              id: c.id,
+              label: c.cdNm,
+              cdDesc: c.cdDesc,
+              ordNo: c.ordNo,
+            })),
           open: true,
         }));
         const addInfoArr = (result.data?.data ?? []).map(
@@ -115,10 +128,6 @@ const CommonListPage: React.FC & {
               ordNo: c.ordNo,
             }))
         );
-        console.log(
-          addInfoArr,
-          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        );
         setTreeData(arr);
         setAddParentEditsInfo(addInfoArr);
         setAddChildEditsInfo(childInfoArr);
@@ -131,28 +140,27 @@ const CommonListPage: React.FC & {
     },
   });
 
-  const { data: deptData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["dept/jsxcrud/many"],
+  const { data: teamData } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["team/jsxcrud/many"],
     queryFn: async () => {
       const result = await getAPI(
         {
           type: "baseinfo",
           utype: "tenant/",
-          url: "dept/jsxcrud/many",
+          url: "team/jsxcrud/many",
         },
         {
-          sort: "ordNo,ASC",
+          sort: ["dept.ordNo,ASC", "ordNo,ASC"],
         }
       );
 
       if (result.resultCode === "OK_0000") {
-        const arr = result.data.data;
-        const teams = arr.map((v: any) => v.teams.flat())[0];
-        console.log(
-          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-          teams.map((v: any) => ({ value: v.id, label: v.teamNm }))
+        setTeamList(
+          (result?.data?.data ?? []).map((v: any) => ({
+            value: v.id,
+            label: v.teamNm,
+          }))
         );
-        setTeamList(teams.map((v: any) => ({ value: v.id, label: v.teamNm })));
       } else {
         console.log("error:", result.response);
       }
@@ -188,7 +196,9 @@ const CommonListPage: React.FC & {
         jsonData.cdNm = item.label;
         jsonData.ordNo = item.ordNo;
       } else {
+        jsonData.team = { id: item.teamId };
         jsonData.cdGrpNm = item.label;
+        jsonData.cdGrpDesc = item.cdGrpDesc;
         jsonData.ordNo = item.ordNo;
       }
       result = await onTreeAdd(url, jsonData);
