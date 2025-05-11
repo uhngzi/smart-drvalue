@@ -41,6 +41,7 @@ import { isValidNumber } from "@/utils/formatNumber";
 // 아이콘
 import Bag from "@/assets/svg/icons/bag.svg";
 import { Spin } from "antd";
+import AntdTableEdit from "@/components/List/AntdTableEdit";
 
 const BuyMtUnitListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
@@ -141,10 +142,7 @@ const BuyMtUnitListPage: React.FC & {
 
   // 선택된 원자재에 따라 공급처 필터링
   useEffect(() => {
-    console.log("[materialIdx 변경 감지]", newData.materialIdx);
-
     if (!newData.materialIdx) {
-      console.log("[partnerIdx 옵션 초기화 진행됨]");
       setAddModalInfoList((prev) =>
         prev.map((item) =>
           item.name === "partnerIdx" ? { ...item, option: [] } : item
@@ -168,7 +166,6 @@ const BuyMtUnitListPage: React.FC & {
         }
       );
 
-      console.log("특정 원자재에 대한 공급처 응답:", result);
       if (result.resultCode === "OK_0000") {
         const partners =
           (result.data?.data as materialSupplierType[]).map((sup) => ({
@@ -189,7 +186,7 @@ const BuyMtUnitListPage: React.FC & {
   // --------- 필요 데이터 끝 ----------
 
   const { refetch } = useQuery<apiGetResponseType>({
-    queryKey: ["material-price/jsxcrud/many", pagination.current],
+    queryKey: ["material-price/jsxcrud/many", pagination],
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI(
@@ -301,7 +298,7 @@ const BuyMtUnitListPage: React.FC & {
         );
 
         if (result.resultCode === "OK_0000") {
-          setResultType("success");
+          showToast("등록 완료", "success");
           setNewData(newMaterialPriceCUType());
           refetch();
         } else {
@@ -309,6 +306,7 @@ const BuyMtUnitListPage: React.FC & {
           setErrMsg(
             result?.response?.data?.message || "처리 중 오류가 발생했습니다."
           );
+          setResultOpen(true);
         }
       } else {
         // 수정인 경우
@@ -337,14 +335,15 @@ const BuyMtUnitListPage: React.FC & {
           );
 
           if (result.resultCode === "OK_0000") {
-            setResultType("success");
             setNewData(newMaterialPriceCUType());
+            showToast("수정 완료", "success");
             refetch();
           } else {
             setResultType("error");
             setErrMsg(
               result?.response?.data?.message || "처리 중 오류가 발생했습니다."
             );
+            setResultOpen(true);
           }
         } else {
           // 적용일이 지나지 않은 경우 모든 필드 변경 가능
@@ -374,22 +373,23 @@ const BuyMtUnitListPage: React.FC & {
           );
 
           if (result.resultCode === "OK_0000") {
-            setResultType("success");
             setNewData(newMaterialPriceCUType());
+            showToast("수정 완료", "success");
             refetch();
           } else {
             setResultType("error");
             setErrMsg(
               result?.response?.data?.message || "처리 중 오류가 발생했습니다."
             );
+            setResultOpen(true);
           }
         }
       }
     } catch (e) {
       setResultType("error");
       setErrMsg("처리 중 오류가 발생했습니다.");
-    } finally {
       setResultOpen(true);
+    } finally {
       setNewOpen(false);
     }
   };
@@ -397,7 +397,6 @@ const BuyMtUnitListPage: React.FC & {
   const handleEditClick = async (record: materialPriceType) => {
     setActionType("update");
     const applyDataResult = await fetchApplyPriceData(record.id);
-    console.log("[applyDataResult]", applyDataResult);
     const converted = convertToCUType(record);
 
     // 기본값으로 현재 단가 설정
@@ -522,10 +521,6 @@ const BuyMtUnitListPage: React.FC & {
     }
   };
 
-  useEffect(() => {
-    console.log("[newData 변경 감지]", newData);
-  }, [newData]);
-
   return (
     <>
       {dataLoading ? (
@@ -540,15 +535,15 @@ const BuyMtUnitListPage: React.FC & {
               className="w-80 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
               onClick={() => {
                 setActionType("create");
-                setNewOpen(true);
                 setNewData(newMaterialPriceCUType());
                 setAddModalInfoList(MOCK.materialPriceItems.CUDPopItems);
+                setNewOpen(true);
               }}
             >
               등록
             </div>
           </div>
-          <AntdTable
+          <AntdTableEdit
             columns={[
               {
                 title: "No",
@@ -563,39 +558,51 @@ const BuyMtUnitListPage: React.FC & {
                 dataIndex: "material",
                 render: (m: materialType | null) => m?.mtNm ?? "-",
                 align: "center",
+                cellAlign: "left",
               },
               {
-                title: "공급처명",
+                title: "외주처명",
                 dataIndex: "partner",
                 render: (p: partnerRType | null) => p?.prtNm ?? "-",
                 align: "center",
+                cellAlign: "left",
               },
               {
                 title: "가격명",
                 dataIndex: "priceNm",
                 render: (_: any, record: any) => (
                   <span
-                    className="cursor-pointer reference-detail"
+                    className="reference-detail"
                     onClick={() => handleEditClick(record)}
                   >
-                    {record.priceNm}
+                    {record.priceNm && record.priceNm !== ""
+                      ? record.priceNm
+                      : "미입력"}
                   </span>
                 ),
                 align: "center",
               },
               {
-                title: "가격",
+                title: "현재 단가",
+                width: 120,
                 dataIndex: "priceUnit",
                 align: "center",
+                cellAlign: "right",
+                render: (value: number) => {
+                  return (value ?? 0).toLocaleString();
+                },
               },
               {
                 title: "적용일",
+                width: 120,
                 dataIndex: "appDt",
-                render: (date) => dayjs(date).format("YYYY-MM-DD"),
+                render: (date) =>
+                  date ? dayjs(date).format("YYYY-MM-DD") : "",
                 align: "center",
               },
               {
                 title: "사용여부",
+                width: 100,
                 dataIndex: "useYn",
                 render: (value: boolean) => (value ? "사용" : "미사용"),
                 align: "center",

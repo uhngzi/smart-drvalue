@@ -69,8 +69,7 @@ const BuyMtBadListPage: React.FC & {
           url: "material-group/jsxcrud/many",
         },
         {
-          limit: pagination.size,
-          page: pagination.current,
+          sort: "ordNo,ASC",
         }
       );
 
@@ -97,11 +96,16 @@ const BuyMtBadListPage: React.FC & {
     queryKey: ["material-group-bad-group/jsxcrud/many"],
     queryFn: async () => {
       //원자재 불량 그룹 목록 조회
-      const result = await getAPI({
-        type: "baseinfo",
-        utype: "tenant/",
-        url: "material-group-bad-group/jsxcrud/many",
-      });
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "material-group-bad-group/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
 
       if (result.resultCode === "OK_0000") {
         const arr = (result.data?.data ?? []).map((group: any) => ({
@@ -118,14 +122,18 @@ const BuyMtBadListPage: React.FC & {
           open: true,
         }));
         setBadGroupData(arr);
-        const childInfoArr = (result.data?.data ?? []).flatMap((d: any) =>
-          (d.materialGroupBads ?? []).map((c: any) => ({
-            id: c.id,
-            label: c.badNm,
-            badDesc: c.badDesc,
-            ordNo: c.ordNo,
-          }))
-        );
+        const childInfoArr = (result.data?.data ?? [])
+          .sort((a: any, b: any) => a.ordNo - b.ordNo)
+          .flatMap((d: any) =>
+            (d.materialGroupBads ?? [])
+              .sort((a: any, b: any) => a.ordNo - b.ordNo)
+              .map((c: any) => ({
+                id: c.id,
+                label: c.badNm,
+                badDesc: c.badDesc,
+                ordNo: c.ordNo,
+              }))
+          );
         setAddChildEditsInfo(childInfoArr);
       } else {
         console.log("error:", result.response);

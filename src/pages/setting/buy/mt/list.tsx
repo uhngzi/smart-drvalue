@@ -76,7 +76,7 @@ const BuyMtListPage: React.FC & {
         {
           limit: pagination.size,
           page: pagination.current,
-          sort: "ordNo,ASC",
+          sort: ["ordNo,ASC", "createdAt,DESC"],
           s_query: groupCheck
             ? { "materialGroup.id": { $eq: groupCheck } }
             : undefined,
@@ -158,6 +158,11 @@ const BuyMtListPage: React.FC & {
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
+      if (!(data.materialGroupIdx && data.mtNm && data.unitType)) {
+        showToast("원자재 그룹, 원자재명, 단위는 필수 입력입니다.", "error");
+        return;
+      }
+
       if (data.mtEnm && !isValidEnglish(data.mtEnm)) {
         showToast("원자재 영문명은 영문 또는 숫자만 입력 가능합니다.", "error");
         return;
@@ -186,6 +191,17 @@ const BuyMtListPage: React.FC & {
         );
 
         if (result.resultCode === "OK_0000") {
+          if (
+            !supplierIdxs ||
+            !supplierIdxs.length ||
+            supplierIdxs.length < 1
+          ) {
+            setNewOpen(false);
+            showToast("수정 완료", "success");
+            refetch();
+            return;
+          }
+
           const supResult = await postAPI(
             {
               type: "baseinfo",
@@ -237,6 +253,16 @@ const BuyMtListPage: React.FC & {
 
         if (result.resultCode === "OK_0000") {
           const id = result.data?.entity.id;
+          if (
+            !supplierIdxs ||
+            !supplierIdxs.length ||
+            supplierIdxs.length < 1
+          ) {
+            setNewOpen(false);
+            showToast("등록 완료", "success");
+            refetch();
+            return;
+          }
 
           const supResult = await postAPI(
             {
@@ -469,6 +495,7 @@ const BuyMtListPage: React.FC & {
                   <div
                     className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
                     onClick={() => {
+                      setNewData(newMaterialCUType());
                       addModalOpen();
                     }}
                   >
@@ -607,8 +634,8 @@ BuyMtListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
       { text: "원자재 및 원자재 구매처", link: "/setting/buy/mt/list" },
-      { text: "불량", link: "/setting/buy/mt/bad" },
-      { text: "단가", link: "/setting/buy/mt/unit" },
+      { text: "원자재 불량", link: "/setting/buy/mt/bad" },
+      { text: "원자재 단가", link: "/setting/buy/mt/unit" },
     ]}
   >
     {page}
