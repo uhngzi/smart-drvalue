@@ -2,6 +2,7 @@ import { deleteAPI } from "@/api/delete";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
+import CustomTreeSelect from "@/components/Tree/CustomTreeSelect";
 import CustomTreeUsed from "@/components/Tree/CustomTreeUsed";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import { processGroupRType, processRType } from "@/data/type/base/process";
@@ -282,12 +283,11 @@ const WkProductListPage: React.FC & {
             className="p-20 min-h-[600px] w-[50%] rounded-8"
             style={{ border: "1px solid #B9B9B9" }}
           >
-            <CustomTreeUsed
+            <CustomTreeSelect
               data={treeData}
-              selectId={productGroupId}
-              setSelectId={setProductGroupId}
-              notCollapsed={true}
-              isSelect={true}
+              mainCheckId={productGroupId}
+              setMainCheckId={setProductGroupId}
+              mainCheck={true}
             />
           </div>
           <div
@@ -301,7 +301,6 @@ const WkProductListPage: React.FC & {
               isCheck={true}
               checkChange={handleCheck}
               notCollapsed={true}
-              // notCollapsed={true}
             />
           </div>
         </div>

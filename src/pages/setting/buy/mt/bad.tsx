@@ -347,7 +347,6 @@ const BuyMtBadListPage: React.FC & {
             mainCheckId={processId}
             setMainCheckId={setProcessId}
             mainCheck={true}
-            //notCollapsed={true}
           />
         </div>
         <div
