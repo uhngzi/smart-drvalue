@@ -26,6 +26,7 @@ export type componentsStylesType = {
   bw?: string; // border width
   bc?: string; // border color
   br?: string; // border radius
+  focus?: string; // focus 시 스타일, important 필수 입력 ex) border-color: #4096ff !important;
 };
 
 export const componentsStyles = (styles: componentsStylesType | undefined) => {
