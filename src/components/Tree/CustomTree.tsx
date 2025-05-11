@@ -201,7 +201,7 @@ const CustomTree: React.FC<Props> = ({
               <div className="relative h-center">
                 <AntdInput
                   className="w-full"
-                  type={edit.type === "number" ? "text" : "text"}
+                  type={edit.type === "number" ? "number" : "text"}
                   value={
                     (addEdits.childInfo ?? []).find((v) => v.id === id)?.[
                       edit.key

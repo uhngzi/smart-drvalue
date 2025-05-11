@@ -101,12 +101,14 @@ const WkBadListPage: React.FC & {
           id: group.id,
           label: group.badGrpNm,
           ordNo: group.ordNo,
-          children: group.processBads.map((process: any) => ({
-            id: process.id,
-            label: process.badNm,
-            badDesc: process.badDesc || "",
-            ordNo: process.ordNo,
-          })),
+          children: group.processBads
+            .sort((a: any, b: any) => a.ordNo - b.ordNo)
+            .map((process: any) => ({
+              id: process.id,
+              label: process.badNm,
+              badDesc: process.badDesc || "",
+              ordNo: process.ordNo,
+            })),
           open: true,
         }));
         setBadGroupData(arr);
