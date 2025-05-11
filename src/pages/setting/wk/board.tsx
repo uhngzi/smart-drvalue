@@ -25,7 +25,7 @@ import { MOCK } from "@/utils/Mock";
 import { deleteAPI } from "@/api/delete";
 import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
 import BaseTreeCUDModal from "@/components/Modal/BaseTreeCUDModal";
-import { CUtreeType, treeType } from "@/data/type/componentStyles";
+import { CUtreeType, selectType, treeType } from "@/data/type/componentStyles";
 import {
   onTreeAdd,
   onTreeDelete,
@@ -33,14 +33,57 @@ import {
   updateTreeDatas,
 } from "@/utils/treeCUDfunc";
 import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
+import { useBase } from "@/data/context/BaseContext";
 
 const WkBoardListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
+  const { showToast, ToastContainer } = useToast();
+  const { metarialSelectList } = useBase();
+
   // true - 등록 눌렸을 때 (저장 시 false)
   const [addOpen, setAddOpen] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
 
+  const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
+    MOCK.wkBoardItems.CUDPopItems
+  );
+
+  // ---------- 필요 데이터 시작 ---------
+  const [groupOptions, setGroupOptions] = useState<selectType[]>([]);
+  const { data: queryGroupData } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["board-group/jsxcrud/many"],
+    queryFn: async () => {
+      setDataLoading(true);
+      const result = await getAPI(
+        {
+          type: "baseinfo",
+          utype: "tenant/",
+          url: "board-group/jsxcrud/many",
+        },
+        {
+          sort: "ordNo,ASC",
+        }
+      );
+
+      if (result.resultCode === "OK_0000") {
+        setGroupOptions(
+          ((result.data?.data as BoardGroupType[]) ?? []).map((grp) => ({
+            value: grp.id,
+            label: grp.brdGrpName ?? "",
+          }))
+        );
+      } else {
+        console.log("error:", result.response);
+      }
+
+      setDataLoading(false);
+      return result;
+    },
+  });
+  // ----------- 필요 데이터 끝 ----------
+
+  // --------- 리스트 데이터 시작 ---------
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
@@ -53,11 +96,10 @@ const WkBoardListPage: React.FC & {
 
   const [addData, setAddData] = useState<boardType>(newDataBoardType);
   const [data, setData] = useState<Array<boardType>>([]);
-  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
+  const { refetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ["board/jsxcrud/many", pagination.current],
     queryFn: async () => {
       setDataLoading(true);
-      setData([]);
       const result = await getAPI(
         {
           type: "baseinfo",
@@ -82,31 +124,19 @@ const WkBoardListPage: React.FC & {
       return result;
     },
   });
-  function changeNewData(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: "input" | "select" | "date" | "other"
-  ) {
-    if (typeof e === "string") {
-      setAddData((prev) => ({ ...prev, [name]: e } as boardType));
-    } else {
-      const { value } = e.target;
-      setAddData((prev) => ({ ...prev, [name]: value } as boardType));
-    }
-  }
-  function setResultFunc(type: AlertType, title: string, text: string) {
-    setResultOpen(true);
-    setResultType(type);
-    setResultTitle(title);
-    setResultText(text);
-  }
+  // ---------- 리스트 데이터 끝 ----------
 
   // 결과 모달창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<AlertType>("info");
   const [resultTitle, setResultTitle] = useState<string>("");
   const [resultText, setResultText] = useState<string>("");
-  const { showToast, ToastContainer } = useToast();
+  function setResultFunc(type: AlertType, title: string, text: string) {
+    setResultOpen(true);
+    setResultType(type);
+    setResultTitle(title);
+    setResultText(text);
+  }
 
   const regBoard = async () => {
     const val = validReq(addData, boardReq());
@@ -139,12 +169,23 @@ const WkBoardListPage: React.FC & {
     setAddOpen(false);
   };
 
-  // 수정 함수
+  // 등록, 수정 함수
   const handleSubmit = async (data: boardType) => {
     try {
+      const jsonData = {
+        ...data,
+        material: {
+          id: data.material,
+        },
+        brdGrp: {
+          id: data.brdGrp,
+        },
+        matNm: undefined,
+      };
+      console.log(JSON.stringify(jsonData));
+      delete data.id;
+
       if (data?.id) {
-        const id = data.id;
-        delete data.id;
         const result = await patchAPI(
           {
             type: "baseinfo",
@@ -152,24 +193,17 @@ const WkBoardListPage: React.FC & {
             url: "board",
             jsx: "jsxcrud",
           },
-          id,
-          data
+          data.id,
+          jsonData
         );
 
         if (result.resultCode === "OK_0000") {
           setAddOpen(false);
-          setResultFunc(
-            "success",
-            "수정 성공",
-            "원판정보 수정이 완료되었습니다"
-          );
+          showToast("수정 완료", "success");
         } else {
+          const msg = result?.response?.data?.message;
           setAddOpen(false);
-          setResultFunc(
-            "error",
-            "수정 실패",
-            "원판정보 수정을 실패하였습니다."
-          );
+          setResultFunc("error", "수정 실패", msg);
         }
 
         refetch();
@@ -187,25 +221,20 @@ const WkBoardListPage: React.FC & {
             url: "board",
             jsx: "jsxcrud",
           },
-          data
+          jsonData
         );
 
         if (result.resultCode === "OK_0000") {
           setAddOpen(false);
-          setResultFunc("success", "등록 성공", "원판정보 등록되었습니다.");
+          showToast("등록 완료", "success");
         } else {
+          const msg = result?.response?.data?.message;
           setAddOpen(false);
-          setResultFunc(
-            "success",
-            "등록 실패",
-            "원판정보 등록을 실패하였습니다."
-          );
+          setResultFunc("error", "등록 실패", msg);
         }
         refetch();
         setAddOpen(false);
       }
-      // const newData = data[editIndex];
-      // console.log(newData);
     } catch (e) {
       showToast(
         "원판 등록 중 문제가 발생하였습니다. 잠시후 다시 이용해주세요.",
@@ -244,8 +273,6 @@ const WkBoardListPage: React.FC & {
       setResultFunc("error", "삭제 실패", "원판정보 삭제를 실패하였습니다.");
     }
   };
-
-  // 엔터 시 data의 값이 변경되므로 useEffect로 자동 insert / update 되도록 변경
 
   function modalClose() {
     setAddOpen(false);
@@ -292,7 +319,6 @@ const WkBoardListPage: React.FC & {
           label: d.brdGrpName,
         }));
         console.log(addList);
-        // setAddModalInfoList((prev:any) => prev.map((d:any) => d.name === 'materialGroup.id' ? {...d, option: addList} : d));
       } else {
         console.log("error:", result.response);
       }
@@ -357,6 +383,26 @@ const WkBoardListPage: React.FC & {
   }
   // ---------- 트리 관련 끝 ----------
 
+  // ------- 옵션 업데이트 시작 ---------
+  useEffect(() => {
+    if (metarialSelectList.length > 0 && groupOptions.length > 0) {
+      const updatedItems = MOCK.wkBoardItems.CUDPopItems.map((item) => {
+        if (item.name === "material") {
+          return { ...item, option: metarialSelectList };
+        }
+
+        if (item.name === "brdGrp") {
+          return { ...item, option: groupOptions };
+        }
+
+        return item;
+      });
+
+      setAddModalInfoList(updatedItems);
+    }
+  }, [metarialSelectList, groupOptions]);
+  // --------- 옵션 업데이트 끝 ---------
+
   return (
     <>
       {dataLoading && (
@@ -364,6 +410,7 @@ const WkBoardListPage: React.FC & {
           <Spin tip="Loading..." />
         </div>
       )}
+
       {!dataLoading && (
         <>
           <div className="h-center justify-between pb-10">
@@ -410,7 +457,11 @@ const WkBoardListPage: React.FC & {
                   <div
                     className="w-full h-full h-center justify-center cursor-pointer reference-detail"
                     onClick={() => {
-                      setAddData(setDataBoardType(record));
+                      setAddData({
+                        ...setDataBoardType(record),
+                        material: record?.material?.id ?? "",
+                        brdGrp: record?.brdGrp?.id ?? "",
+                      });
                       setAddOpen(true);
                     }}
                   >
@@ -456,12 +507,13 @@ const WkBoardListPage: React.FC & {
           </div>
         </>
       )}
+
       <BaseInfoCUDModal
         title={{ name: `원판 ${addData?.id ? "수정" : "등록"}`, icon: <Bag /> }}
         open={addOpen}
         setOpen={setAddOpen}
         onClose={() => modalClose()}
-        items={MOCK.wkBoardItems.CUDPopItems}
+        items={addModalInfoList}
         data={addData}
         onSubmit={handleSubmit}
         onDelete={handleDataDelete}
@@ -484,6 +536,7 @@ const WkBoardListPage: React.FC & {
           setDeleteList: setDeleteList,
         }}
       />
+
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}

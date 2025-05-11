@@ -49,10 +49,29 @@ const MOCK = {
   wkBoardItems: {
     tableColumns: [],
     CUDPopItems: [
-      { name: "brdType", label: "원판유형", widthType: "full", type: "input" },
-      { name: "brdDesc", label: "원판명", widthType: "full", type: "input" },
-      { name: "brdW", label: "가로", widthType: "full", type: "input" },
-      { name: "brdH", label: "세로", widthType: "full", type: "input" },
+      {
+        name: "material",
+        label: "원판재질",
+        widthType: "half",
+        type: "select",
+      },
+      { name: "brdGrp", label: "원판그룹", widthType: "half", type: "select" },
+      { name: "brdType", label: "원판유형", widthType: "half", type: "input" },
+      { name: "brdDesc", label: "원판명", widthType: "half", type: "input" },
+      {
+        name: "brdW",
+        label: "가로",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
+      },
+      {
+        name: "brdH",
+        label: "세로",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
+      },
       {
         name: "brdExtraInfo",
         label: "추가정보",
