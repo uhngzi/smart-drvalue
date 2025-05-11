@@ -1,6 +1,6 @@
 // 구매/매입 - 제품 단가 - 특별사양
 
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { commonCodeRType } from "./common"; // 공통코드
 import { processRType } from "./process"; // 공정
 
@@ -83,7 +83,7 @@ export const newUnitSpecialCUType = (): unitSpecialCUType => {
     minRange: 0,
     maxRange: 0,
     unit: { id: "" },
-    appDt: null,
+    appDt: dayjs(),
     ordNo: 0,
     useYn: true,
   };

@@ -1,6 +1,6 @@
 // 구매/매입 - 제품 단가 - 모델 단가
 
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { LayerEm } from "../enum";
 
 export type unitModelType = {
@@ -79,12 +79,12 @@ export const newUnitModelCUType = (): unitModelCUType => {
     ordNo: 0,
     useYn: true,
     remark: "",
-    appDt: null,
+    appDt: dayjs(),
   };
 };
 
 export const unitModelReq = () => [
-  { field: "layerEm", label: "레이어 유형" },
+  { field: "layerEm", label: "층수" },
   { field: "minAmount", label: "최소 수량" },
   { field: "maxAmount", label: "최대 수량" },
   { field: "price", label: "현재 단가" },

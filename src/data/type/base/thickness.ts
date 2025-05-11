@@ -1,6 +1,6 @@
 // 구매/매입 - 제품 단가 - 추가비용(두께)
 
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { LayerEm } from "../enum";
 
 export type unitThicknessType = {
@@ -75,12 +75,12 @@ export const newUnitThicknessCUType = (): unitThicknessCUType => {
     addCost: 0,
     ordNo: 0,
     useYn: true,
-    appDt: null,
+    appDt: dayjs(),
   };
 };
 
 export const unitThicknessReq = () => [
-  { field: "layerEm", label: "레이어 유형" },
+  { field: "layerEm", label: "층" },
   { field: "minThickness", label: "최소 두께" },
   { field: "maxThickness", label: "최대 두께" },
   { field: "weight", label: "추가 비율(%)" },

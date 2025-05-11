@@ -1,6 +1,6 @@
 // 구매/매입 - 제품 단가 - 재질
 
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { commonCodeRType } from "./common"; // 공통코드
 
 export type unitTextureType = {
@@ -69,14 +69,12 @@ export const newUnitTextureCUType = (): unitTextureCUType => {
     useYn: true,
     weight: 0,
     addCost: 0,
-    appDt: null,
+    appDt: dayjs(),
   };
 };
 
 export const unitTextureReq = () => [
   { field: "texture", label: "재질" },
-  { field: "weight", label: "추가 비율(%)" },
-  { field: "addCost", label: "현재 단가" },
   { field: "appDt", label: "초기 적용일" },
   { field: "useYn", label: "사용 여부" },
 ];
