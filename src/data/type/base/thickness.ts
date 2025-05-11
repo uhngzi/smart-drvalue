@@ -80,12 +80,8 @@ export const newUnitThicknessCUType = (): unitThicknessCUType => {
 };
 
 export const unitThicknessReq = () => [
-  { field: "layerEm", label: "층" },
-  { field: "minThickness", label: "최소 두께" },
-  { field: "maxThickness", label: "최대 두께" },
-  { field: "weight", label: "추가 비율(%)" },
-  { field: "addCost", label: "현재 단가" },
-  { field: "appDt", label: "초기 적용일" },
+  { field: "layerEm", label: "층수" },
+  { field: "appDt", label: "적용일" },
   { field: "useYn", label: "사용 여부" },
 ];
 

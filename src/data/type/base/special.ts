@@ -76,13 +76,11 @@ export const setUnitSpecialCUType = (data: any): unitSpecialCUType => {
 
 export const newUnitSpecialCUType = (): unitSpecialCUType => {
   return {
-    process: { id: "" },
     remark: "",
     weight: 0,
     addCost: 0,
     minRange: 0,
     maxRange: 0,
-    unit: { id: "" },
     appDt: dayjs(),
     ordNo: 0,
     useYn: true,

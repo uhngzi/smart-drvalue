@@ -193,14 +193,9 @@ const BuyunitTextureListPage: React.FC & {
 
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
-    if (!newData.texture || String(newData.texture) === "") {
+    console.log(newData);
+    if (!newData.texture) {
       showToast("재질은 필수 입력입니다.", "error");
-      return;
-    }
-
-    const val = validReq(newData, unitTextureReq());
-    if (!val.isValid) {
-      showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, "error");
       return;
     }
 

@@ -63,7 +63,6 @@ export const setUnitTextureCUType = (data: any): unitTextureCUType => {
 
 export const newUnitTextureCUType = (): unitTextureCUType => {
   return {
-    texture: { id: "" },
     remark: "",
     ordNo: 0,
     useYn: true,
