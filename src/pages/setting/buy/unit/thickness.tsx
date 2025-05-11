@@ -27,7 +27,7 @@ import { validReq } from "@/utils/valid";
 import { MOCK } from "@/utils/Mock";
 
 // 타입 정의
-import { LayerEm } from "@/data/type/enum";
+import { generateFloorOptions, LayerEm } from "@/data/type/enum";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import {
   unitThicknessType,
@@ -57,12 +57,6 @@ const BuyUnitThicknessListPage: React.FC & {
     current: 1,
     size: 10,
   });
-
-  // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
-  const layerEmList = Object.keys(LayerEm).map((key) => ({
-    value: key,
-    label: LayerEm[key as keyof typeof LayerEm],
-  }));
 
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
@@ -134,6 +128,13 @@ const BuyUnitThicknessListPage: React.FC & {
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
+
+      if (name === "weight" && Number(value ?? 0) > 100) {
+        showToast("최대 100까지 입력할 수 있습니다.", "error");
+        setNewData({ ...newData, weight: 100 });
+        return;
+      }
+
       setNewData({ ...newData, [name]: value });
     } else if (type === "select") {
       if (key) {
@@ -201,11 +202,8 @@ const BuyUnitThicknessListPage: React.FC & {
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
           setNewData(newUnitThicknessCUType());
-          setResultFunc(
-            "success",
-            "두께 수정 성공",
-            "두께 수정이 완료되었습니다."
-          );
+          showToast("수정 완료", "success");
+          refetch();
         } else {
           setNewOpen(false);
           setResultFunc(
@@ -230,11 +228,8 @@ const BuyUnitThicknessListPage: React.FC & {
         );
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "두께 등록 성공",
-            "두께 등록이 완료되었습니다."
-          );
+          showToast("등록 완료", "success");
+          refetch();
         } else {
           setNewOpen(false);
           setResultFunc(
@@ -360,22 +355,25 @@ const BuyUnitThicknessListPage: React.FC & {
         (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
           dayjs(newData.appDt).isSame(dayjs(), "day"))
       ) {
-        if (item.name !== "addCost" && item.name !== "applyAppDt") {
+        if (
+          item.name !== "addCost" &&
+          item.name !== "weight" &&
+          item.name !== "applyAppDt"
+        ) {
           disabled = true;
         }
       }
 
-      // 레이어 유형 리스트 갱신
       if (item.name === "layerEm") {
         return {
           key: "id",
           ...item,
-          option: layerEmList,
-          disabled,
+          option: generateFloorOptions(),
+          disabled: true,
         };
       }
 
-      return { ...item, disabled };
+      return { ...item, disabled: disabled };
     });
   };
 
@@ -419,17 +417,15 @@ const BuyUnitThicknessListPage: React.FC & {
 
   // newData 변경 감지
   useEffect(() => {
-    // 등록 modal의 레이어 유형 리스트 갱신
     if (!newData.id) {
       const updatedItems = MOCK.unitThicknessItems.CUDPopItems.map((item) => {
         let disabled = false;
 
-        // 레이어 유형 리스트 갱신
         if (item.name === "layerEm") {
           return {
             key: "id",
             ...item,
-            option: layerEmList,
+            option: generateFloorOptions(),
             disabled,
           };
         }
@@ -478,14 +474,14 @@ const BuyUnitThicknessListPage: React.FC & {
                 align: "center",
               },
               {
-                title: "레이어 유형",
+                title: "층수",
                 width: 130,
                 dataIndex: "layerEm",
                 key: "layerEm",
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    className="!justify-center reference-detail"
                     onClick={() => {
                       handleEditClick(record);
                     }}
@@ -592,6 +588,8 @@ const BuyUnitThicknessListPage: React.FC & {
         hideCancel={true}
         theme="base"
       />
+
+      <ToastContainer />
     </>
   );
 };

@@ -133,6 +133,13 @@ const BuyunitTextureListPage: React.FC & {
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
+
+      if (name === "weight" && Number(value ?? 0) > 100) {
+        showToast("최대 100까지 입력할 수 있습니다.", "error");
+        setNewData({ ...newData, weight: 100 });
+        return;
+      }
+
       setNewData({ ...newData, [name]: value });
     } else if (type === "select") {
       if (key) {
@@ -159,9 +166,21 @@ const BuyunitTextureListPage: React.FC & {
         (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
           dayjs(newData.appDt).isSame(dayjs(), "day"))
       ) {
-        if (item.name !== "addCost" && item.name !== "applyAppDt") {
+        if (
+          item.name !== "addCost" &&
+          item.name !== "weight" &&
+          item.name !== "applyAppDt"
+        ) {
           disabled = true;
         }
+
+        if (item.name === "texture") {
+          return { ...item, option: metarialSelectList, disabled };
+        }
+      }
+
+      if (item.name === "texture") {
+        return { ...item, option: metarialSelectList };
       }
 
       return { ...item, disabled };
@@ -174,6 +193,11 @@ const BuyunitTextureListPage: React.FC & {
 
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
+    if (!newData.texture || String(newData.texture) === "") {
+      showToast("재질은 필수 입력입니다.", "error");
+      return;
+    }
+
     const val = validReq(newData, unitTextureReq());
     if (!val.isValid) {
       showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, "error");
@@ -203,19 +227,16 @@ const BuyunitTextureListPage: React.FC & {
             },
             newData?.id ?? "",
             {
-              addCost: newData.addCost,
+              addCost: newData.addCost ?? 0,
               appDt: newData.applyAppDt,
-              weight: Number(data.weight) * 0.01, // 가중치(추가 비율) 수정 시 백분율 -> 소수점 변환
+              weight: Number(data.weight ?? 0) * 0.01, // 가중치(추가 비율) 수정 시 백분율 -> 소수점 변환
             }
           );
 
           if (result.resultCode === "OK_0000") {
             setNewOpen(false);
-            setResultFunc(
-              "success",
-              "재질 수정 성공",
-              "재질 수정이 완료되었습니다."
-            );
+            showToast("수정 완료", "success");
+            refetch();
           } else {
             setNewOpen(false);
             setResultFunc(
@@ -235,19 +256,20 @@ const BuyunitTextureListPage: React.FC & {
             },
             newData?.id ?? "",
             {
-              texture: { id: "" },
-              addCost: newData.addCost,
-              weight: Number(data.weight) * 0.01,
+              remark: newData.remark,
+              appDt: newData.appDt,
+              ordNo: newData.ordNo,
+              useYn: newData.useYn,
+              texture: { id: newData.texture },
+              addCost: newData.addCost ?? 0,
+              weight: Number(data.weight ?? 0) * 0.01,
             }
           );
 
           if (result.resultCode === "OK_0000") {
             setNewOpen(false);
-            setResultFunc(
-              "success",
-              "재질 수정 성공",
-              "재질 수정이 완료되었습니다."
-            );
+            showToast("수정 완료", "success");
+            refetch();
           } else {
             setNewOpen(false);
             setResultFunc(
@@ -280,11 +302,8 @@ const BuyunitTextureListPage: React.FC & {
 
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "재질 등록 성공",
-            "재질 등록이 완료되었습니다."
-          );
+          showToast("등록 완료", "success");
+          refetch();
         } else {
           setNewOpen(false);
           setResultFunc(
@@ -392,27 +411,6 @@ const BuyunitTextureListPage: React.FC & {
     setNewData(newUnitTextureCUType);
   }
 
-  // 의존성 중 하나라도 바뀌면 옵션 리스트 갱신
-  useEffect(() => {
-    if (!metarialSelectList || metarialSelectList.length < 1) return;
-
-    const arr = MOCK.unitTextureItems.CUDPopItems.map((item) => {
-      if (item.name === "texture") {
-        return {
-          key: "id",
-          ...item,
-          option: metarialSelectList,
-        };
-      }
-
-      return {
-        ...item,
-      };
-    });
-
-    setAddModalInfoList(arr);
-  }, [metarialSelectList]);
-
   return (
     <>
       {dataLoading && (
@@ -430,7 +428,15 @@ const BuyunitTextureListPage: React.FC & {
               className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
               onClick={() => {
                 setNewOpen(true);
-                setAddModalInfoList(MOCK.unitTextureItems.CUDPopItems);
+                setAddModalInfoList(
+                  MOCK.unitTextureItems.CUDPopItems.map((item) => {
+                    if (item.name === "texture") {
+                      return { ...item, option: metarialSelectList };
+                    } else {
+                      return item;
+                    }
+                  })
+                );
                 setNewOpen(true);
                 setNewData(newUnitTextureCUType());
               }}
@@ -458,7 +464,7 @@ const BuyunitTextureListPage: React.FC & {
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    className="reference-detail"
                     onClick={() => handleEditClick(record)}
                   >
                     {record.texture?.cdNm}
@@ -502,14 +508,14 @@ const BuyunitTextureListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              {
-                title: "변경이력",
-                width: 130,
-                dataIndex: "updatedAt",
-                key: "updatedAt",
-                align: "center",
-                render: (value: string) => <div>{value.split("T")[0]}</div>,
-              },
+              // {
+              //   title: "변경이력",
+              //   width: 130,
+              //   dataIndex: "updatedAt",
+              //   key: "updatedAt",
+              //   align: "center",
+              //   render: (value: string) => <div>{value.split("T")[0]}</div>,
+              // },
             ]}
             data={data}
           />

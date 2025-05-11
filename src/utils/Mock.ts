@@ -454,41 +454,6 @@ const MOCK = {
           { value: false, label: "미사용" },
         ],
       },
-      // <<<<<<< HEAD
-      //       { name: "appDt", label: "적용일", widthType: "third", type: "date" },
-      //     ],
-      //   },
-
-      //   // 모델 단가 items 추가
-      //   unitModelItems: {
-      //     tableColumns: [],
-      //     CUDPopItems: [
-      //       {
-      //         name: "layerEm",
-      //         label: "레이어 유형",
-      //         widthType: "half",
-      //         type: "select",
-      //         option: [{ value: "L1", label: "L1" }],
-      //       },
-      //       {
-      //         name: "minAmount",
-      //         label: "최소 수량",
-      //         widthType: "half",
-      //         type: "input",
-      //         inputType: "number",
-      //       },
-      //       {
-      //         name: "maxAmount",
-      //         label: "최대 수량",
-      //         widthType: "half",
-      //         type: "input",
-      //         inputType: "number",
-      //       },
-      //       {
-      //         name: "price",
-      //         label: "가격",
-      //         widthType: "half",
-      // =======
     ],
   },
   mtItems: {
@@ -760,14 +725,6 @@ const MOCK = {
           { value: false, label: "미사용" },
         ],
       },
-      // <<<<<<< HEAD
-      //       { name: "remark", label: "비고", widthType: "half", type: "input" },
-      //       { name: "appDt", label: "적용일", widthType: "half", type: "date" },
-      //     ],
-      //   },
-
-      //   applyUnitModelItems: {
-      // =======
       { name: "appDt", label: "적용일", widthType: "third", type: "date" },
     ],
   },
@@ -778,10 +735,17 @@ const MOCK = {
     CUDPopItems: [
       {
         name: "layerEm",
-        label: "레이어 유형",
+        label: "층수",
         widthType: "half",
         type: "select",
         option: [{ value: "L1", label: "L1" }],
+      },
+      {
+        name: "price",
+        label: "현재 단가",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
       },
       {
         name: "minAmount",
@@ -798,15 +762,8 @@ const MOCK = {
         inputType: "number",
       },
       {
-        name: "price",
-        label: "현재 단가",
-        widthType: "half",
-        type: "input",
-        inputType: "number",
-      },
-      {
         name: "deliveryDays",
-        label: "배송일",
+        label: "배송소요일",
         widthType: "half",
         type: "input",
         inputType: "number",
@@ -821,28 +778,8 @@ const MOCK = {
           { value: false, label: "미사용" },
         ],
       },
-      { name: "remark", label: "비고", widthType: "half", type: "input" },
-      // <<<<<<< HEAD
-      //       { name: "appDt", label: "적용일", widthType: "half", type: "date" },
-      //       {
-      //         name: "applyAppDt",
-      //         label: "단가 적용일",
-      //         widthType: "half",
-      //         type: "date",
-      //       },
-      //       {
-      //         name: "applyPrice",
-      //         label: "적용단가",
-      //         widthType: "half",
-      //         type: "input",
-      //         inputType: "number",
-      //       },
-      //     ],
-      //   },
-
-      //   // 추가비용(두께) items 추가
-      //   unitThicknessItems: {
       { name: "appDt", label: "초기 적용일", widthType: "half", type: "date" },
+      { name: "remark", label: "비고", widthType: "half", type: "input" },
     ],
   },
 
@@ -851,10 +788,17 @@ const MOCK = {
     CUDPopItems: [
       {
         name: "layerEm",
-        label: "레이어 유형",
+        label: "층수",
         widthType: "half",
         type: "select",
         option: [{ value: "L1", label: "L1" }],
+      },
+      {
+        name: "price",
+        label: "현재 단가",
+        widthType: "half",
+        type: "input",
+        inputType: "number",
       },
       {
         name: "minAmount",
@@ -866,13 +810,6 @@ const MOCK = {
       {
         name: "maxAmount",
         label: "최대 수량",
-        widthType: "half",
-        type: "input",
-        inputType: "number",
-      },
-      {
-        name: "price",
-        label: "현재 단가",
         widthType: "half",
         type: "input",
         inputType: "number",
@@ -894,14 +831,6 @@ const MOCK = {
           { value: false, label: "미사용" },
         ],
       },
-      { name: "remark", label: "비고", widthType: "half", type: "input" },
-      { name: "appDt", label: "초기 적용일", widthType: "half", type: "date" },
-      {
-        name: "applyAppDt",
-        label: "단가 적용일",
-        widthType: "half",
-        type: "date",
-      },
       {
         name: "applyPrice",
         label: "예정 단가",
@@ -909,6 +838,14 @@ const MOCK = {
         type: "input",
         inputType: "number",
       },
+      {
+        name: "applyAppDt",
+        label: "단가 적용일",
+        widthType: "half",
+        type: "date",
+      },
+      { name: "remark", label: "비고", widthType: "half", type: "input" },
+      { name: "appDt", label: "초기 적용일", widthType: "half", type: "date" },
     ],
   },
 
@@ -918,7 +855,7 @@ const MOCK = {
     CUDPopItems: [
       {
         name: "layerEm",
-        label: "레이어 유형",
+        label: "층수",
         widthType: "half",
         type: "select",
         option: [{ value: "L1", label: "L1" }],
@@ -972,7 +909,7 @@ const MOCK = {
     CUDPopItems: [
       {
         name: "layerEm",
-        label: "레이어 유형",
+        label: "층수",
         widthType: "half",
         type: "select",
         option: [{ value: "L1", label: "L1" }],
@@ -1016,8 +953,6 @@ const MOCK = {
           { value: false, label: "미사용" },
         ],
       },
-      { name: "remark", label: "비고", widthType: "half", type: "input" },
-      { name: "appDt", label: "초기 적용일", widthType: "half", type: "date" },
       {
         name: "applyAppDt",
         label: "단가 적용일",
@@ -1031,6 +966,8 @@ const MOCK = {
         type: "input",
         inputType: "number",
       },
+      { name: "remark", label: "비고", widthType: "half", type: "input" },
+      { name: "appDt", label: "초기 적용일", widthType: "half", type: "date" },
     ],
   },
   // 재질 items 추가
@@ -1042,10 +979,6 @@ const MOCK = {
         label: "재질",
         widthType: "half",
         type: "select",
-        option: [
-          { value: "FR-1", label: "FR-1" },
-          { value: "FR-4", label: "FR-4" },
-        ],
       },
       {
         name: "weight",
@@ -1290,7 +1223,7 @@ const MOCK = {
       },
       {
         name: "partnerIdx",
-        label: "공급처",
+        label: "외주처",
         widthType: "third",
         type: "select",
         required: true,
@@ -1419,7 +1352,7 @@ const MOCK = {
       },
       {
         name: "partnerIdx",
-        label: "공급처",
+        label: "외주처",
         widthType: "third",
         type: "select",
         required: true,
@@ -1441,13 +1374,13 @@ const MOCK = {
       },
       {
         name: "materialType",
-        label: "금속 타입",
+        label: "금속",
         widthType: "third",
         type: "input",
       },
       {
         name: "txturType",
-        label: "재질 타입",
+        label: "재질",
         widthType: "third",
         type: "input",
       },

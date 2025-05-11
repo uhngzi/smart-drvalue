@@ -170,6 +170,13 @@ const BuyUnitSpecialListPage: React.FC & {
   ) => {
     if (type === "input" && typeof e !== "string") {
       const { value } = e.target;
+
+      if (name === "weight" && Number(value ?? 0) > 100) {
+        showToast("최대 100까지 입력할 수 있습니다.", "error");
+        setNewData({ ...newData, weight: 100 });
+        return;
+      }
+
       setNewData({ ...newData, [name]: value });
     } else if (type === "select") {
       if (key) {
@@ -397,7 +404,11 @@ const BuyUnitSpecialListPage: React.FC & {
         (dayjs(newData.appDt).isBefore(dayjs(), "day") ||
           dayjs(newData.appDt).isSame(dayjs(), "day"))
       ) {
-        if (item.name !== "addCost" && item.name !== "applyAppDt") {
+        if (
+          item.name !== "addCost" &&
+          item.name !== "weight" &&
+          item.name !== "applyAppDt"
+        ) {
           disabled = true;
         }
       }
@@ -539,7 +550,7 @@ const BuyUnitSpecialListPage: React.FC & {
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    className="reference-detail"
                     onClick={() => {
                       handleEditClick(record);
                     }}
@@ -658,6 +669,8 @@ const BuyUnitSpecialListPage: React.FC & {
         hideCancel={true}
         theme="base"
       />
+
+      <ToastContainer />
     </>
   );
 };

@@ -26,7 +26,7 @@ import { MOCK } from "@/utils/Mock";
 import { isValidNumber } from "@/utils/formatNumber";
 
 // 타입 정의
-import { LayerEm } from "@/data/type/enum";
+import { generateFloorOptions, LayerEm } from "@/data/type/enum";
 import { apiGetResponseType } from "@/data/type/apiResponse";
 import {
   unitModelType,
@@ -57,12 +57,6 @@ const BuyUnitModelListPage: React.FC & {
     size: 10,
   });
 
-  // 레이어 유형 enum을 [0: {value: 'L1', label: 'L1'}, ... ] 형태로 변환
-  const layerEmList = Object.keys(LayerEm).map((key) => ({
-    value: key,
-    label: LayerEm[key as keyof typeof LayerEm],
-  }));
-
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
@@ -70,7 +64,6 @@ const BuyUnitModelListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<unitModelType>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    //queryKey: ['setting', 'buy', 'unit', type, pagination.current],
     queryKey: ["model-base-price/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
@@ -290,6 +283,7 @@ const BuyUnitModelListPage: React.FC & {
 
   const handleEditClick = async (record: unitModelCUType) => {
     const applyDataResult = await fetchApplyData(record.id ?? "");
+    console.log(applyDataResult);
     const converted = convertCUType(record);
 
     // 기본값으로 현재 단가 설정
@@ -364,12 +358,11 @@ const BuyUnitModelListPage: React.FC & {
         }
       }
 
-      // 레이어 유형 리스트 갱신
       if (item.name === "layerEm") {
         return {
           key: "id",
           ...item,
-          option: layerEmList,
+          option: generateFloorOptions(),
           disabled,
         };
       }
@@ -422,17 +415,15 @@ const BuyUnitModelListPage: React.FC & {
 
   // newData 변경 감지
   useEffect(() => {
-    // 등록 modal의 레이어 유형 리스트 갱신
     if (!newData.id) {
       const updatedItems = MOCK.unitModelItems.CUDPopItems.map((item) => {
         let disabled = false;
 
-        // 레이어 유형 리스트 갱신
         if (item.name === "layerEm") {
           return {
             key: "id",
             ...item,
-            option: layerEmList,
+            option: generateFloorOptions(),
             disabled,
           };
         }
@@ -481,14 +472,14 @@ const BuyUnitModelListPage: React.FC & {
                 align: "center",
               },
               {
-                title: "레이어 유형",
+                title: "층수",
                 width: 130,
                 dataIndex: "layerEm",
                 key: "layerEm",
                 align: "center",
                 render: (_, record) => (
                   <div
-                    className="w-full h-full h-center justify-center cursor-pointer reference-detail"
+                    className="!justify-center reference-detail"
                     onClick={() => {
                       handleEditClick(record);
                     }}
@@ -528,14 +519,14 @@ const BuyUnitModelListPage: React.FC & {
                 ),
               },
               {
-                title: "배송일",
+                title: "배송소요일",
                 width: 130,
                 dataIndex: "deliveryDays",
                 key: "deliveryDays",
                 align: "center",
               },
               {
-                title: "초기 적용일",
+                title: "적용일",
                 width: 130,
                 dataIndex: "appDt",
                 key: "appDt",
@@ -548,14 +539,14 @@ const BuyUnitModelListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              {
-                title: "변경이력",
-                width: 130,
-                dataIndex: "updatedAt",
-                key: "updatedAt",
-                align: "center",
-                render: (value: string) => <div>{value.split("T")[0]}</div>,
-              },
+              // {
+              //   title: "변경이력",
+              //   width: 130,
+              //   dataIndex: "updatedAt",
+              //   key: "updatedAt",
+              //   align: "center",
+              //   render: (value: string) => <div>{value.split("T")[0]}</div>,
+              // },
             ]}
             data={data}
           />
