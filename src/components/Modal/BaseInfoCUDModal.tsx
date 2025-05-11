@@ -22,6 +22,7 @@ import {
   isValidBusinessLicense,
   isValidCorpRegNo,
 } from "@/utils/formatBusinessHyphen";
+import AntdInput from "../Input/AntdInput";
 
 interface Option {
   value: string | number | boolean;
@@ -252,12 +253,16 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
                         </>
                       )}
                       {item.type === "input" && (
-                        <Input
+                        <AntdInput
+                          styles={{
+                            br: "6px",
+                            bg: item.disabled ? "rgba(0,0,0,0.04)" : "#FFF",
+                            fc: item.disabled ? "rgba(0,0,0,0.25)" : "#FFF",
+                            focus: "border-color: #4096ff !important;",
+                          }}
                           name={item.name}
                           value={formData[item.name] || ""}
                           onChange={(e) => {
-                            // ....
-
                             handleDataChange?.(
                               e,
                               item.name,
@@ -362,7 +367,7 @@ const BaseInfoCUDModal: React.FC<CardInputListProps> = ({
                         <DatePicker
                           key={formData[item.name]}
                           placeholder={item?.placeholder}
-                          className="w-full !rounded-0 h-32"
+                          className="w-full h-32"
                           onChange={(value) => {
                             setData(
                               item.name,
