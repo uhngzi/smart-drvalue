@@ -26,11 +26,6 @@ const WkBadListPage: React.FC & {
   const router = useRouter();
   const { showToast, ToastContainer } = useToast();
 
-  const [pagination, setPagination] = useState({
-    current: 1,
-    size: 10,
-  });
-
   // ---------- 필요 데이터 ---------- 시작
   const [addChildEditsInfo, setAddChildEditsInfo] = useState<any[]>([]);
 
@@ -47,7 +42,7 @@ const WkBadListPage: React.FC & {
     { matchId: string; checkId: string }[]
   >([]);
   const { data: queryTreeData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "process"],
+    queryKey: ["process-group/jsxcrud/many"],
     queryFn: async () => {
       //공정그룹 목록 조회
       const result = await getAPI(
@@ -72,6 +67,7 @@ const WkBadListPage: React.FC & {
               .map((process: processRType) => ({
                 id: process.id,
                 label: process.prcNm,
+                isInternal: process.isInternal,
                 ordNo: process.ordNo,
               })),
             open: true,
@@ -85,11 +81,8 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-  const { data: querybadData, refetch: badGroupRefetch } = useQuery<
-    apiGetResponseType,
-    Error
-  >({
-    queryKey: ["setting", "wk", "bad-group"],
+  const { refetch: badGroupRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-bad-group/jsxcrud/many"],
     queryFn: async () => {
       //공정 불량 그룹 목록 조회
       const result = await getAPI(
@@ -120,8 +113,8 @@ const WkBadListPage: React.FC & {
         const childInfoArr = (result.data?.data ?? []).flatMap((d: any) =>
           (d.processBads ?? []).map((c: any) => ({
             id: c.id,
-            label: c.cdNm,
-            cdDesc: c.badDesc,
+            label: c.badNm,
+            badDesc: c.badDesc,
             ordNo: c.ordNo,
           }))
         );
@@ -133,30 +126,22 @@ const WkBadListPage: React.FC & {
       return result;
     },
   });
-  console.log(badGroupData);
+
   useEffect(() => {
     if (processId == null) {
       setProcBadData([]);
     }
   }, [processId]);
 
-  const { data: badData, refetch: procBadRefetch } = useQuery<
-    apiGetResponseType,
-    Error
-  >({
-    queryKey: ["setting", "wk", "bad", processId],
+  const { refetch: procBadRefetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process/bad-mapping/jsxcrud/many", processId],
     queryFn: async () => {
       //공정 불량 매핑 조회
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: `process/bad-mapping/jsxcrud/many`,
-        },
-        {
-          // sort: "ordNo,ASC"
-        }
-      );
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: `process/bad-mapping/jsxcrud/many`,
+      });
 
       if (result.resultCode === "OK_0000") {
         const arr = (result.data?.data ?? [])
@@ -170,57 +155,10 @@ const WkBadListPage: React.FC & {
       } else {
         console.log("error:", result.response);
       }
-      console.log(result.data);
       return result;
     },
     enabled: !!processId,
   });
-
-  // const [ dataGroup, setDataGroup ] = useState<Array<processGroupRType>>([]);
-  // const { data:queryDataGroup } = useQuery<
-  //   apiGetResponseType, Error
-  // >({
-  //   queryKey: ['process-group/jsxcrud/many'],
-  //   queryFn: async () => {
-  //     setDataGroup([]);
-  //     const result = await getAPI({
-  //       type: 'baseinfo',
-  //       utype: 'tenant/',
-  //       url: 'process-group/jsxcrud/many'
-  //     });
-
-  //     if (result.resultCode === 'OK_0000') {
-  //       setDataGroup(result.data?.data ?? []);
-  //       console.log('group : ', result.data?.data);
-  //     } else {
-  //       console.log('error:', result.response);
-  //     };
-  //     return result;
-  //   },
-  // });
-
-  // const [ dataProcess, setDataProcess ] = useState<Array<processRType>>([]);
-  // const { data:queryDataProcess } = useQuery<
-  //   apiGetResponseType, Error
-  // >({
-  //   queryKey: ['process/jsxcrud/many'],
-  //   queryFn: async () => {
-  //     setDataProcess([]);
-  //     const result = await getAPI({
-  //       type: 'baseinfo',
-  //       utype: 'tenant/',
-  //       url: 'process/jsxcrud/many'
-  //     });
-
-  //     if (result.resultCode === 'OK_0000') {
-  //       setDataProcess(result.data?.data ?? []);
-  //       console.log('process : ', result.data?.data);
-  //     } else {
-  //       console.log('error:', result.response);
-  //     }
-  //     return result;
-  //   },
-  // });
 
   const handleCheck = async (e: CheckboxChangeEvent, matchId: any) => {
     if (!processId) {
@@ -294,14 +232,6 @@ const WkBadListPage: React.FC & {
   async function onBadPopSubmit(list: treeType[]) {
     const { updatedAddList, finalEditList, updatedDeleteList } =
       updateTreeDatas(addList, editList, deleteList);
-    console.log(
-      "add:",
-      updatedAddList,
-      "edit:",
-      finalEditList,
-      "delete: ",
-      updatedDeleteList
-    );
     let result: boolean = false;
 
     for (const item of updatedAddList) {
@@ -314,10 +244,12 @@ const WkBadListPage: React.FC & {
         url = "process/bad";
         jsonData.processBadGroup = { id: item.parentId };
         jsonData.badNm = item.label;
+        jsonData.badDesc = item.badDesc;
       } else {
         url = "process-bad-group";
         jsonData.badGrpNm = item.label;
       }
+      console.log("add :: ", JSON.stringify(jsonData));
       result = await onTreeAdd(url, jsonData);
 
       if (!result) {
@@ -341,6 +273,7 @@ const WkBadListPage: React.FC & {
         url = "process-bad-group";
         jsonData.badGrpNm = item.label;
       }
+      console.log("edit :: ", JSON.stringify(jsonData));
 
       result = await onTreeEdit(item, url, jsonData);
       if (!result) {
@@ -355,13 +288,14 @@ const WkBadListPage: React.FC & {
       } else {
         url = "process-bad-group";
       }
+      console.log("delete :: ", JSON.stringify(item));
       result = await onTreeDelete(item, url);
 
       if (!result) {
         showToast("데이터 삭제중 오류가 발생했습니다.", "error");
       }
     }
-    console.log(result);
+
     if (result) {
       setAddList([]);
       setEditList([]);
