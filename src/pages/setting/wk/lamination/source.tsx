@@ -1,45 +1,101 @@
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { Radio, Spin } from "antd";
 import { getAPI } from "@/api/get";
 import { postAPI } from "@/api/post";
-import AntdTable from "@/components/List/AntdTable";
-import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
-import AntdModal from "@/components/Modal/AntdModal";
-import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
-import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
-import AddContents from "@/contents/base/wk/lamination/AddContents";
-import { apiGetResponseType } from "@/data/type/apiResponse";
-import {
-  laminationSourceList,
-  newLaminationSourceList,
-  setLaminationSourceList,
-} from "@/data/type/base/lamination";
-import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
-import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-
-import Bag from "@/assets/svg/icons/bag.svg";
-import { MOCK } from "@/utils/Mock";
 import { patchAPI } from "@/api/patch";
 import { deleteAPI } from "@/api/delete";
-import { Radio, Spin } from "antd";
-import { useBase } from "@/data/context/BaseContext";
+
+import AntdTable from "@/components/List/AntdTable";
+import AntdAlertModal, { AlertType } from "@/components/Modal/AntdAlertModal";
+import BaseInfoCUDModal from "@/components/Modal/BaseInfoCUDModal";
+import AntdSettingPagination from "@/components/Pagination/AntdSettingPagination";
+
+import { apiGetResponseType } from "@/data/type/apiResponse";
+import {
+  laminationCopperList,
+  laminationMaterialType,
+  laminationSourceList,
+  newLaminationSourceList,
+} from "@/data/type/base/lamination";
 import { selectType } from "@/data/type/componentStyles";
 import { LamDtlTypeEm } from "@/data/type/enum";
+
+import SettingPageLayout from "@/layouts/Main/SettingPageLayout";
+
+import Bag from "@/assets/svg/icons/bag.svg";
+
+import { MOCK } from "@/utils/Mock";
+import useToast from "@/utils/useToast";
 
 const WkLaminationSourceListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
+  const { ToastContainer, showToast } = useToast();
   const [type, setType] = useState<"cf" | "pp" | "ccl" | "">("");
 
-  const { metarialSelectList } = useBase();
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
-    MOCK.MaterialListPage.CUDPopItems
+    MOCK.laminationItems.CUDPopItems
   );
-  const [addModalCopper, setaddModalCopper] = useState<any[]>(
-    MOCK.MaterialListPage.CUDPopItems
-  );
+
+  // --------- 필요 데이터 세팅 ---------- 시작
+  const [materialOptions, setMaterialOptions] = useState<selectType[]>([]);
+  const [material, setMaterial] = useState<Array<laminationMaterialType>>([]);
+  const { data: queryMaterialGroup } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["lamination-material/jsxcrud/many"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "lamination-material/jsxcrud/many",
+      });
+      if (result.resultCode === "OK_0000") {
+        setMaterial(result.data?.data ?? []);
+        setMaterialOptions(
+          ((result.data?.data as laminationMaterialType[]) ?? []).map(
+            (materialMatNm) => ({
+              value: materialMatNm.id,
+              label: materialMatNm.matNm ?? "",
+            })
+          )
+        );
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
+
+  const [copperOptions, setCopperOptions] = useState<selectType[]>([]);
+  const [copper, setCopper] = useState<Array<laminationCopperList>>([]);
+  const { data: queryCopperData } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["lamination-copper-foil/jsxcrud/many"],
+    queryFn: async () => {
+      const result = await getAPI({
+        type: "baseinfo",
+        utype: "tenant/",
+        url: "lamination-copper-foil/jsxcrud/many",
+      });
+
+      if (result.resultCode === "OK_0000") {
+        setCopper(result.data?.data ?? []);
+        setCopperOptions(
+          ((result.data?.data as laminationCopperList[]) ?? []).map(
+            (copper) => ({
+              value: copper.id,
+              label: copper.name ?? "",
+            })
+          )
+        );
+      } else {
+        console.log("error:", result.response);
+      }
+      return result;
+    },
+  });
+  // --------- 필요 데이터 세팅 ---------- 끝
 
   const [dataLoading, setDataLoading] = useState<boolean>(true);
   const [totalData, setTotalData] = useState<number>(1);
@@ -50,13 +106,13 @@ const WkLaminationSourceListPage: React.FC & {
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
-  // --------- 리스트 데이터 시작 ---------
+
+  // --------- 리스트 데이터 세팅 --------- 시작
   const [data, setData] = useState<Array<laminationSourceList>>([]);
-  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
+  const { refetch } = useQuery<apiGetResponseType, Error>({
     queryKey: ["lamination-source/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
-      setData([]);
       const result = await getAPI(
         {
           type: "baseinfo",
@@ -78,60 +134,11 @@ const WkLaminationSourceListPage: React.FC & {
       }
 
       setDataLoading(false);
-      console.log(result.data);
-      return result;
-    },
-  }); // --------------------------meterial API-----------------------------`
-  const [materialOptions, setMaterialOptions] = useState<selectType[]>([]);
-  const [materialEpoxy, setMaterialEpoxy] = useState<selectType[]>([]);
-  const [materialCode, setMaterialCode] = useState<selectType[]>([]);
-  const [dataGroup, setDataGroup] = useState<Array<laminationSourceList>>([]);
-  const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["lamination-material/jsxcrud/many"],
-    queryFn: async () => {
-      setDataGroup([]);
-      const result = await getAPI({
-        type: "baseinfo",
-        utype: "tenant/",
-        url: "lamination-material/jsxcrud/many",
-      });
-      if (result.resultCode === "OK_0000") {
-        setDataGroup(result.data?.data ?? []);
-        console.log("group : ", result.data?.data);
-      } else {
-        console.log("error:", result.response);
-      }
       return result;
     },
   });
-  // --------------------------meterial API----------------------------- 끝
-  // --------------------------Copper API-------------------------------
-  const [copperList, setCopperList] = useState<selectType[]>([]);
-  const [copperListCopThk, setCopperListCopThk] = useState<selectType[]>([]);
-  const [dataCopper, setDataCopper] = useState<Array<laminationSourceList>>([]);
-  const { data: queryDataCopper } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["lamination-copper-foil/jsxcrud/many"],
-    queryFn: async () => {
-      setDataCopper([]);
-      const result = await getAPI({
-        type: "baseinfo",
-        utype: "tenant/",
-        url: "lamination-copper-foil/jsxcrud/many",
-      });
+  // --------- 리스트 데이터 세팅 --------- 끝
 
-      if (result.resultCode === "OK_0000") {
-        setDataCopper(result.data?.data ?? []);
-        console.log("group : ", result.data?.data);
-      } else {
-        console.log("error:", result.response);
-      }
-      return result;
-    },
-  });
-  // -----------------------------Copper API----------------------------끝
-  // ---------- 리스트 데이터 끝 ----------
-
-  // ---------- 신규 데이터 시작 ----------
   // 결과 모달창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<AlertType>("info");
@@ -143,12 +150,14 @@ const WkLaminationSourceListPage: React.FC & {
     setResultTitle(title);
     setResultText(text);
   }
+
   //등록 모달창을 위한 변수
   const [newOpen, setNewOpen] = useState<boolean>(false);
   //등록 모달창 데이터
   const [newData, setNewData] = useState<laminationSourceList>(
     newLaminationSourceList
   );
+
   //값 변경 함수
   const handleDataChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -167,23 +176,29 @@ const WkLaminationSourceListPage: React.FC & {
         setNewData({
           ...newData,
           [name]: value as LamDtlTypeEm,
+          matIdx: "",
           matNm: "",
+          epoxy: 0,
+          code: "",
         });
-      } else if (name === "matNm") {
-        //epoxy, code
-        const matchedMaterial = dataGroup.find((d) => d.id === value);
+      } else if (name === "matIdx") {
+        // 자재 선택 시 해당 자재의 name, epoxy, code 값 자동 세팅
+        const matchedMaterial = material.find((d) => d.id === value);
+
         setNewData({
           ...newData,
           [name]: value,
+          matNm: matchedMaterial?.matNm,
           epoxy: Number(matchedMaterial?.epoxy ?? 0),
           code: matchedMaterial?.code ?? "",
         });
       } else if (name === "name") {
-        //copThk
-        const matchedCopper = dataCopper.find((d) => d.id === value);
+        // 동박 선택 시 해당 동박의 copNm, copThk 값 자동 세팅
+        const matchedCopper = copper.find((d) => d.id === value);
         setNewData({
           ...newData,
           name: value,
+          copNm: matchedCopper?.name ?? "",
           copThk: matchedCopper?.copThk ?? "",
         });
       } else if (key) {
@@ -200,24 +215,27 @@ const WkLaminationSourceListPage: React.FC & {
     }
   };
 
-  //등록 버튼 함수
+  // 등록, 수정 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
-      const payload = {
-        ...data,
-        matNm: data.matNm,
-        copNm: data.name,
-        epoxy: Number(data.epoxy),
+      const jsonData = {
+        lamDtlTypeEm: data.lamDtlTypeEm,
+        material: {
+          id: data?.matIdx,
+        },
+        matNm: data?.matNm,
+        epoxy: data?.epoxy,
+        code: data?.code,
+        copperFoil: {
+          id: data?.name,
+        },
+        copNm: data?.copNm,
+        copThk: data?.copThk,
+        useYn: data?.useYn,
       };
-      delete payload.id;
-      delete payload.createdAt;
-      delete payload.updatedAt;
-      delete payload.name;
+      console.log(JSON.stringify(jsonData));
 
-      console.log(data);
       if (data?.id) {
-        const id = data.id;
-
         const result = await patchAPI(
           {
             type: "baseinfo",
@@ -225,39 +243,26 @@ const WkLaminationSourceListPage: React.FC & {
             url: "lamination-source/",
             jsx: "jsxcrud",
           },
-          id,
-          payload
+          data.id,
+          jsonData
         );
         console.log(result);
 
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "적층 구조 수정 성공",
-            "적층 구조 수정이 완료되었습니다."
-          );
+          showToast("수정 완료", "success");
         } else {
+          const msg = result?.response?.data?.message;
           setNewOpen(false);
 
           setResultFunc(
             "error",
             "적층 구조 수정 실패",
-            "적층 구조 수정을 실패하였습니다."
+            msg ??
+              "데이터 저장 중 오류가 발생하였습니다. 잠시 후에 다시 시도해주세요."
           );
         }
       } else {
-        const payload = {
-          ...data,
-          matNm: data.matNm,
-          copNm: data.name,
-          epoxy: Number(data.epoxy),
-        };
-        delete payload.id;
-        delete payload.createdAt;
-        delete payload.updatedAt;
-        delete payload.name;
-
         const result = await postAPI(
           {
             type: "baseinfo",
@@ -265,23 +270,22 @@ const WkLaminationSourceListPage: React.FC & {
             url: "lamination-source",
             jsx: "jsxcrud",
           },
-          payload
+          jsonData
         );
         console.log(result);
 
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "적층 구조 등록 성공",
-            "적층 구조 등록이 완료되었습니다."
-          );
+          showToast("등록 완료", "success");
         } else {
+          const msg = result?.response?.data?.message;
           setNewOpen(false);
+
           setResultFunc(
             "error",
-            "적층 구조 등록 실패",
-            "적층 구조 등록을 실패하였습니다."
+            "적층 구조 수정 실패",
+            msg ??
+              "데이터 저장 중 오류가 발생하였습니다. 잠시 후에 다시 시도해주세요."
           );
         }
       }
@@ -289,75 +293,21 @@ const WkLaminationSourceListPage: React.FC & {
       setNewOpen(false);
       setResultFunc(
         "error",
-        "적층 구조 등록 실패",
-        "적층 구조 등록을 실패하였습니다."
+        "오류 발생",
+        "데이터 저장 중 오류가 발생하였습니다. 잠시 후에 다시 시도해주세요."
       );
     }
   };
-  //----------------------------------copper,material API 설정 ---------------------------------------------------
+
+  // ---------- 옵션 업데이트 ----------- 시작
   useEffect(() => {
-    if (dataGroup.length > 0) {
-      setMaterialOptions(
-        dataGroup.map((materialMatNm) => ({
-          value: materialMatNm.id,
-          label: materialMatNm.matNm ?? "",
-        }))
-      );
-    }
-
-    if (dataGroup.length > 0) {
-      setMaterialEpoxy(
-        dataGroup.map((materialEpoxyGap) => ({
-          value: materialEpoxyGap.id,
-          label: materialEpoxyGap.epoxy ?? "",
-        }))
-      );
-    }
-
-    if (dataGroup.length > 0) {
-      setMaterialCode(
-        dataGroup.map((materialCodeGap) => ({
-          value: materialCodeGap.id,
-          label: materialCodeGap.code ?? "",
-        }))
-      );
-    }
-
-    if (dataCopper.length > 0) {
-      setCopperList(
-        dataCopper.map((copper) => ({
-          value: copper.id,
-          label: copper.name ?? "",
-        }))
-      );
-    }
-
-    if (dataCopper.length > 0) {
-      setCopperListCopThk(
-        dataCopper.map((copperCopThk) => ({
-          value: copperCopThk.id,
-          label: copperCopThk.copThk ?? "",
-        }))
-      );
-    }
-  }, [dataGroup, dataCopper]);
-
-  useEffect(() => {
-    if (
-      materialOptions.length > 0 ||
-      copperList.length > 0 ||
-      materialEpoxy.length > 0 ||
-      materialCode.length > 0 ||
-      copperListCopThk.length > 0
-    ) {
+    if (materialOptions.length > 0 || copperOptions.length > 0) {
       const updatedItems = MOCK.laminationItems.CUDPopItems.map((item) => {
-        if (
-          item.optionSource === "materialOptions" &&
-          materialOptions.length > 0
-        ) {
+        if (item.optionSource === "materialOptions") {
+          // 유형 변경 시 자재의 값도 해당 유형에 맞춰 SELECT 값 수정
           const filteredMaterialOptions = newData?.lamDtlTypeEm
             ? materialOptions.filter((opt) =>
-                dataGroup.find(
+                material.find(
                   (d) =>
                     d.id === opt.value &&
                     d.lamDtlTypeEm === newData.lamDtlTypeEm
@@ -368,20 +318,8 @@ const WkLaminationSourceListPage: React.FC & {
           return { ...item, option: filteredMaterialOptions };
         }
 
-        if (item.optionSource === "copperList" && copperList.length > 0) {
-          return { ...item, option: copperList };
-        }
-        if (item.optionSource === "materialEpoxy" && materialEpoxy.length > 0) {
-          return { ...item, option: materialEpoxy };
-        }
-        if (item.optionSource === "materialCode" && materialCode.length > 0) {
-          return { ...item, option: materialCode };
-        }
-        if (
-          item.optionSource === "copperListCopThk" &&
-          copperListCopThk.length > 0
-        ) {
-          return { ...item, option: copperListCopThk };
+        if (item.optionSource === "copperList") {
+          return { ...item, option: copperOptions };
         }
 
         return item;
@@ -389,17 +327,10 @@ const WkLaminationSourceListPage: React.FC & {
 
       setAddModalInfoList(updatedItems);
     }
-  }, [
-    materialOptions,
-    copperList,
-    materialEpoxy,
-    materialCode,
-    copperListCopThk,
-    newData?.lamDtlTypeEm,
-    dataGroup,
-  ]);
-  //----------------------------------copper,material API 설정  끝 ---------------------------------------------------
-  // ----------- 신규 데이터 끝 -----------
+  }, [materialOptions, copperOptions, newData?.lamDtlTypeEm]);
+  // ---------- 옵션 업데이트 ----------- 끝
+
+  // ----------- 데이터 삭제 ----------- 시작
   const handleDataDelete = async (id: string) => {
     try {
       const result = await deleteAPI(
@@ -429,6 +360,7 @@ const WkLaminationSourceListPage: React.FC & {
       setResultFunc("error", "삭제 실패", "적층 구조 삭제를 실패하였습니다.");
     }
   };
+  // ----------- 데이터 삭제 ----------- 끝
 
   function modalClose() {
     setNewOpen(false);
@@ -527,38 +459,21 @@ const WkLaminationSourceListPage: React.FC & {
                 dataIndex: "matNm",
                 key: "matNm",
                 align: "center",
-                render: (_, record) => {
-                  const materialMatNm = materialOptions.find(
-                    (option) => option.value === record.matNm
-                  );
-                  return (
-                    <div
-                      className="w-full h-full justify-center h-center cursor-pointer reference-detail"
-                      onClick={() => {
-                        const fullRecord = setLaminationSourceList(record);
-
-                        const matchedMaterial = dataGroup.find(
-                          (d) => d.matNm === record.matNm
-                        );
-                        const matchedCopper = dataCopper.find(
-                          (d) => d.id === record.copNm
-                        );
-                        setNewData({
-                          ...fullRecord,
-                          matNm: matchedMaterial?.id ?? record.matNm,
-                          name: matchedCopper?.id ?? record.copNm,
-                          epoxy: matchedMaterial?.epoxy ?? record.epoxy,
-                          code: matchedMaterial?.code ?? record.code,
-                          copThk: matchedCopper?.copThk ?? record.copThk,
-                        });
-
-                        setNewOpen(true);
-                      }}
-                    >
-                      {materialMatNm?.label ?? "-"}
-                    </div>
-                  );
-                },
+                render: (value, record) => (
+                  <div
+                    className="w-full h-full justify-center h-center cursor-pointer reference-detail"
+                    onClick={() => {
+                      setNewData({
+                        ...(record as laminationSourceList),
+                        matIdx: record?.material?.id ?? "",
+                        name: record?.copperFoil?.id ?? "",
+                      });
+                      setNewOpen(true);
+                    }}
+                  >
+                    {value}
+                  </div>
+                ),
               },
               {
                 title: "Epoxy",
@@ -566,12 +481,6 @@ const WkLaminationSourceListPage: React.FC & {
                 dataIndex: "epoxy",
                 key: "epoxy",
                 align: "center",
-                render: (_, record) => {
-                  const materialEpoxyGap = materialEpoxy.find(
-                    (option) => option.value === record.matNm
-                  );
-                  return <div>{materialEpoxyGap?.label ?? "-"}</div>;
-                },
               },
               {
                 title: "코드",
@@ -579,12 +488,6 @@ const WkLaminationSourceListPage: React.FC & {
                 dataIndex: "code",
                 key: "code",
                 align: "center",
-                render: (_, record) => {
-                  const materialCodeGap = materialCode.find(
-                    (option) => option.value === record.matNm
-                  );
-                  return <div>{materialCodeGap?.label ?? "-"}</div>;
-                },
               },
               {
                 title: "동박",
@@ -592,12 +495,6 @@ const WkLaminationSourceListPage: React.FC & {
                 dataIndex: "copNm",
                 key: "copNm",
                 align: "center",
-                render: (_, record) => {
-                  const copper = copperList.find(
-                    (option) => option.value === record.copNm
-                  );
-                  return <div>{copper?.label ?? "-"}</div>;
-                },
               },
               {
                 title: "동박두께",
@@ -605,12 +502,6 @@ const WkLaminationSourceListPage: React.FC & {
                 dataIndex: "copThk",
                 key: "copThk",
                 align: "center",
-                render: (_, record) => {
-                  const copperCopThk = copperListCopThk.find(
-                    (option) => option.value === record.copNm
-                  );
-                  return <div>{copperCopThk?.label ?? "-"}</div>;
-                },
               },
               {
                 title: "사용여부",
@@ -652,82 +543,6 @@ const WkLaminationSourceListPage: React.FC & {
         handleDataChange={handleDataChange}
       />
 
-      {/* <AntdModal
-        title={"거래처 등록"}
-        open={newOpen}
-        setOpen={setNewOpen}
-        width={800}
-        contents={
-          <AddContents
-            handleDataChange={handleDataChange}
-            newData={newData}
-            handleSubmitNewData={handleSubmitNewData}
-            setNewOpen={setNewOpen}
-            setNewData={setNewData}
-            item={[
-              { 
-                name: 'lamDtlTypeEm',
-                label: '유형',
-                type: 'select',
-                value: newData.lamDtlTypeEm,
-                option: [{value:'cf',label:'CF'},{value:'pp',label:'PP'},{value:'ccl',label:'CCL'}]
-              },
-              { 
-                name: 'matCd',
-                label: '재질',
-                type: 'select',
-                value: newData.matCd,
-                option: [{value:'FR-1',label:'FR-1'},{value:'FR-4',label:'FR-4'}]
-              },
-              { 
-                name: 'matThk',
-                label: '재질두께',
-                type: 'input',
-                value: newData.matThk,
-                inputType: 'number',
-              },
-              { 
-                name: 'copOut',
-                label: '동박외층',
-                type: 'input',
-                value: newData.copOut,
-              },
-              { 
-                name: 'copIn',
-                label: '동박내층',
-                type: 'input',
-                value: newData.copIn,
-              },
-              { 
-                name: 'lamDtlThk',
-                label: '두께',
-                type: 'input',
-                value: newData.lamDtlThk,
-                inputType: 'number',
-              },
-              { 
-                name: 'lamDtlRealThk',
-                label: '실두께',
-                type: 'input',
-                value: newData.lamDtlRealThk,
-                inputType: 'number',
-              },
-              { 
-                name: 'useYn',
-                label: '사용여부',
-                type: 'select',
-                option: [{value:true,label:"사용"},{value:false,label:"미사용"}],
-                value: newData.useYn,
-              },
-            ]}
-          />
-        }
-        onClose={()=>{
-          setNewOpen(false);
-          setNewData(newLaminationCUType);
-        }}
-      /> */}
-
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
@@ -742,6 +557,8 @@ const WkLaminationSourceListPage: React.FC & {
         hideCancel={true}
         theme="base"
       />
+
+      <ToastContainer />
     </>
   );
 };

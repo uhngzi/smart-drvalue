@@ -76,7 +76,7 @@ const MOCK = {
         ],
       },
       {
-        name: "matNm",
+        name: "matIdx",
         label: "자재",
         widthType: "full",
         type: "select",

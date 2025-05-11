@@ -3,7 +3,7 @@
 import { Dayjs } from "dayjs";
 import { LamDtlTypeEm } from "../enum";
 
-//--------------------copper.tsx------------------------------------------------//
+// -------------- 동박 -------------- 시작
 export type laminationCopperList = {
   id?: string;
   name?: string;
@@ -36,9 +36,9 @@ export const newlaminationCopperList = (): laminationCopperList => {
     updatedAt: null,
   };
 };
-//--------------------copper.tsx------------------------------------------------// 끝
+// -------------- 동박 -------------- 끝
 
-//--------------------material.tsx----------------------------------------------//
+// -------------- 자재 -------------- 시작
 export type laminationMaterialType = {
   id?: string;
   matNm?: string;
@@ -79,14 +79,15 @@ export const newLaminationMaterialType = (): laminationMaterialType => {
     updatedAt: null,
   };
 };
-//--------------------material.tsx----------------------------------------------//끝
+// -------------- 자재 -------------- 끝
 
-//--------------------source.tsx------------------------------------------------//
+// -------------- 요소 -------------- 시작
 export type laminationSourceList = {
   id?: string;
   name?: string;
   copNm?: string;
   lamDtlRealThk?: number;
+  matIdx?: string;
   matNm?: string;
   copperFoil: { copNm?: string };
   material: { matNm?: string };
@@ -100,31 +101,14 @@ export type laminationSourceList = {
   updatedAt?: Date | Dayjs | null;
 };
 
-export const setLaminationSourceList = (data: any): laminationSourceList => {
+export const newLaminationSourceList = (): laminationSourceList => {
   return {
-    id: data.id,
-    name: data.name,
-    copperFoil: { copNm: data.copperFoil?.copNm || "" },
-    material: { matNm: data.material?.matNm || "" },
-    copThk: data.copperFoil?.copThk || "",
-    epoxy: data.epoxy,
-    code: data.code,
-    lamDtlTypeEm: data.lamDtlTypeEm,
-    ordNo: data.ordNo,
-    useYn: data.useYn,
-    createdAt: null,
-    updatedAt: null,
-  };
-};
-//
-export const newLaminationSourceList= (): laminationSourceList => {
-  return { 
     name: " ",
     copperFoil: { copNm: "" },
     material: { matNm: "" },
     copThk: "",
     epoxy: 0,
-    code: "0",
+    code: "",
     lamDtlTypeEm: null,
     ordNo: 0,
     useYn: true,
@@ -132,8 +116,6 @@ export const newLaminationSourceList= (): laminationSourceList => {
     updatedAt: null,
   };
 };
-
-//--------------------source.tsx------------------------------------------------//끝
 
 export type laminationCUType = {
   id?: string;
@@ -173,3 +155,4 @@ export const newLaminationCUType = (): laminationCUType => {
     useYn: true,
   };
 };
+// -------------- 요소 -------------- 끝
