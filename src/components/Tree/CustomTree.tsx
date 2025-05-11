@@ -38,13 +38,30 @@ import AntdDatePicker from "../DatePicker/AntdDatePicker";
 import AntdSelect from "../Select/AntdSelect";
 import FullChip from "../Chip/FullChip";
 
+export type scrollType = {
+  // 데이터 로딩중인지 판별
+  loading: boolean;
+  // 데이터 로딩을 시키기 위해 진행 (true일 경우 데이터 로딩하고 있는 중 / false일 경우 데이터 로딩 완료)
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  // main의 총 개수
+  mainTotCnt: number;
+  // child의 현재 데이터 수
+  childCnt?: number;
+  // child의 총 데이터 수
+  childTotCnt?: number;
+};
+
 interface Props {
   open?: boolean;
   data: treeType[];
   isChild?: boolean;
   isCheckUse?:
     | false
-    | { checkId: string | null; setCheckId: (id: string | null) => void };
+    | {
+        checkId: string | null;
+        setCheckId: (id: string | null) => void;
+        child?: boolean;
+      };
   onSubmit: (newData: any) => void;
   setAddList: Dispatch<SetStateAction<CUtreeType[]>>;
   setEditList: Dispatch<SetStateAction<CUtreeType[]>>;
@@ -68,6 +85,9 @@ interface Props {
     }[];
   };
   notCollapsed?: boolean;
+
+  // 스크롤 할 때마다 값을 가져오기 위한 변수
+  scroll?: scrollType;
 }
 
 const CustomTree: React.FC<Props> = ({
@@ -88,6 +108,7 @@ const CustomTree: React.FC<Props> = ({
     addChildEditList: [],
   },
   notCollapsed,
+  scroll,
 }) => {
   const [treeName, setTreeName] = useState<string>("");
   const [ordNo, setOrdNo] = useState<string | number>("");
@@ -391,7 +412,6 @@ const CustomTree: React.FC<Props> = ({
     adds?: any
   ) => {
     console.log(type, id, value, parentsId, adds);
-    console.log(ordNo);
     if (type === "main") {
       const addChk = (addEdits.addParentEditList ?? []).length > 0;
       let edits = addChk ? (addEdits.info ?? []).find((v) => v.id === id) : {};
@@ -680,21 +700,40 @@ const CustomTree: React.FC<Props> = ({
 
   return (
     <section className="flex flex-col h-full justify-between">
-      <div className="w-full flex flex-col gap-20 h-full min-h-[500px] overflow-y-auto">
-        {/* <div className="flex flex-col">
-        <p className="pb-8">적용일</p>
-        <AntdDatePicker
-          value={null}
-          onChange={(e:Date)=>{}}
-          placeholder="적용일"
-          className="w-full !rounded-0 h-32"
-          styles={{bc: '#e5e7eb', wd: '100%'}}
-          suffixIcon="cal"
-        />
-      </div> */}
-        <div className="v-between-h-center ">
-          <p className="min-w-70">전체 ({list.length})</p>
+      <div
+        className="w-full flex flex-col gap-20 h-full min-h-[500px] overflow-y-auto"
+        onScroll={(e) => {
+          if (!scroll) {
+            return;
+          }
 
+          const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+          const threshold = 10;
+
+          if (
+            // 스크롤이 가까이 근접했고
+            scrollTop + clientHeight >= scrollHeight - threshold &&
+            // 데이터가 세팅되어있을 때
+            !scroll.loading
+          ) {
+            // data.length는 main 데이터의 개수와 동일하다.
+            if (scroll.mainTotCnt > data.length) {
+              // 가지고 있는 현재 메인 데이터 개수보다 부모 총 개수가 더 많을때
+              scroll.setLoading(true);
+            } else if (
+              scroll.childCnt &&
+              scroll.childTotCnt &&
+              scroll.childTotCnt > scroll.childCnt
+            ) {
+              // 가지고 있는 현재 자식 데이터 개수보다 자식 총 데이터 개수가 더 많을때
+              scroll.setLoading(true);
+            }
+          }
+        }}
+      >
+        {/* 헤더 영역 */}
+        <div className="v-between-h-center">
+          <p className="min-w-70">전체 ({list.length})</p>
           <div className="h-center gap-8">
             {!isSearch ? (
               <p
@@ -755,9 +794,12 @@ const CustomTree: React.FC<Props> = ({
             )}
           </div>
         </div>
+
+        {/* 리스트 영역 */}
         <div>
           {Array.isArray(list) &&
             list.map((item) => {
+              // ----- 부모 영역 내 새 값 출력 시작 -----
               if (item?.id?.includes("new")) {
                 return (
                   <div
@@ -793,53 +835,54 @@ const CustomTree: React.FC<Props> = ({
                     </div>
                   </div>
                 );
+                // ----- 부모 영역 내 새 값 출력 끝 -----
               } else {
                 return (
+                  // ----- 부모 영역 내 기존 값 출력 시작 -----
                   <div key={item.id}>
                     <div
                       className={`w-full h-40 h-center pl-5 gap-10 hover:bg-[#0000000a] cursor-pointer ${
-                        isCheckUse
+                        // 선택 모드일 경우 스타일 설정
+                        isCheckUse && !isCheckUse.child
                           ? isCheckUse.checkId === item.id
                             ? "!bg-[#f3faff]"
                             : ""
                           : ""
-                      } ${isCheckUse ? "cursor-pointer" : ""}`}
-                      key={item.id} //${selectId.some(v => v.id.includes(item.id)) ? '!bg-[#f3faff]' : ''}
+                      } ${
+                        isCheckUse && !isCheckUse.child ? "cursor-pointer" : ""
+                      }`}
+                      key={item.id}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleShowList(item.id);
-                      }} //handleSelect(item)
+
+                        if (isCheckUse && !isCheckUse.child) {
+                          isCheckUse.setCheckId(
+                            // 선택 모드에서 기존 값과 동일할 경우 체크 해제
+                            isCheckUse.checkId === item.id ? null : item.id
+                          );
+                        }
+                      }}
                       onMouseEnter={() => setHoverId(item.id)}
                       onMouseLeave={() => setHoverId(null)}
                     >
-                      {/* {(isChild && searchText === '') ? (
-                    <>
-                      {item.open ? (
-                        <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                          <CaretDownFilled />
-                        </Button>
-                        ) : (
-                          <Button className="!w-22 !h-22 !p-0" type="text" onClick={(e)=>{e.stopPropagation(); handleShowList(item.id)}}>
-                            <CaretUpFilled />
-                          </Button>
-                        )}
-                    </>
-                  ) : (
-                    <div className="w-5 h-5 bg-[#000000] rounded-50" />
-                  )} */}
-                      {/* <div className="flex h-center gap-10"> */}
                       <SettingFill />
                       <span className="flex-1 text-left">{item.label}</span>
-                      {/* </div> */}
-                      {isCheckUse && isCheckUse.checkId == item.id ? (
+                      {/* 선택했을 경우 체크 표시 우선 */}
+                      {isCheckUse &&
+                      isCheckUse.checkId == item.id &&
+                      !isCheckUse.child ? (
                         <BlueCheck />
                       ) : (
+                        // 마우스 오버 시
                         <div
                           className={`${
                             item.id === hoverId ? "visible" : "invisible"
                           }`}
                         >
+                          {/* 신규 값일 경우 ID값이 존재하지 않으므로 자식 요소 추가 방지 */}
                           {!(item?.id ?? "").includes("temp") && isChild && (
+                            // 추가 버튼
                             <Button
                               size="small"
                               type="text"
@@ -851,6 +894,7 @@ const CustomTree: React.FC<Props> = ({
                               <Plus />
                             </Button>
                           )}
+                          {/* 수정 버튼 */}
                           <Button
                             size="small"
                             type="text"
@@ -881,6 +925,7 @@ const CustomTree: React.FC<Props> = ({
                         </div>
                       )}
                     </div>
+                    {/* ----- 부모 영역 내 자식 값 출력 시작 ----- */}
                     <div
                       className={`transition-all duration-300 ease-in-out overflow-hidden ${
                         item.open
@@ -890,8 +935,9 @@ const CustomTree: React.FC<Props> = ({
                       key={item.id + "child"}
                     >
                       {item.children?.map((child: any) => {
-                        if (child.id.includes("new")) {
+                        if (child?.id?.includes("new")) {
                           return (
+                            // ----- 자식 영역 내 새 값 출력 시작 -----
                             <div
                               key={child.id}
                               className="w-full h-40 h-center gap-10 pl-25"
@@ -931,9 +977,11 @@ const CustomTree: React.FC<Props> = ({
                                 )}
                               </div>
                             </div>
+                            // ----- 자식 영역 내 새 값 출력 끝 -----
                           );
                         } else {
                           return (
+                            // ----- 자식 영역 내 기존 값 출력 시작 -----
                             <Button
                               type="text"
                               className={`w-full h-40 h-center !pl-30 !gap-10 ${
@@ -941,7 +989,7 @@ const CustomTree: React.FC<Props> = ({
                                   ? "!bg-[#f3faff]"
                                   : ""
                               }`}
-                              key={child.id} //${selectId.some(v => v.id.includes(child.id)) ? '!bg-[#f3faff]' : ''}
+                              key={child.id}
                               style={{
                                 transition: "none",
                                 animation: "none",
@@ -954,6 +1002,7 @@ const CustomTree: React.FC<Props> = ({
                               onMouseLeave={() => setHoverId(null)}
                             >
                               <div className="w-5 h-5 bg-[#ddd] rounded-50" />
+                              {/* ~ isInternal, wipPrcNm :: 공정 트리 관련 요소 ~ */}
                               <div className="h-center flex-1 text-left gap-8">
                                 {child.isInternal === false ? (
                                   <FullChip label="외주" state="mint" />
@@ -967,12 +1016,18 @@ const CustomTree: React.FC<Props> = ({
                                   </span>
                                 )}
                               </div>
-                              {/* {!selectId.some(v => v.id.includes(child.id)) ? ( */}
+
+                              {/* 마우스 오버 시 */}
+                              {isCheckUse &&
+                                isCheckUse.checkId === child.id && (
+                                  <BlueCheck />
+                                )}
                               <div
                                 className={`${
                                   child.id === hoverId ? "visible" : "invisible"
                                 }`}
                               >
+                                {/* 수정 버튼 */}
                                 <Button
                                   size="small"
                                   type="text"
@@ -1014,30 +1069,21 @@ const CustomTree: React.FC<Props> = ({
                           )} */}
                             </Button>
                           );
+                          // ----- 자식 영역 내 기존 값 출력 끝 -----
                         }
                       })}
                     </div>
+                    {/* ----- 부모 영역 내 자식 값 출력 끝 ----- */}
                   </div>
+                  // ----- 부모 영역 내 기존 값 출력 끝 -----
                 );
               }
             })}
         </div>
       </div>
+
+      {/* 버튼 영역 */}
       <div className="pt-20 pb-10 ">
-        {/* {selectId.length > 0 ? (
-        <div className="w-full justify-center flex h-center gap-8">
-          <span style={{color:'#00000073'}} className="mr-20">{selectId.length}개 선택됨</span>
-          <Button size="large" className="!w-[170px] !h-[50px]" style={{color:'#DF2C2C'}} onClick={() => handleDeleteList(selectId)}>삭제</Button>
-          <Button size="large" className="!w-[170px] !h-[50px] bg-[#EEEEEEA6]" style={{color:'#444444'}}>숨기기</Button>
-          <Tooltip title="이동">
-            <Button size="large" className="!h-[50px] bg-[#EEEEEEA6]"><Edit/></Button>
-          </Tooltip>
-          <Tooltip title="취소">
-            <Button size="large" className="!h-[50px] bg-[#EEEEEEA6]" onClick={() => setSelectId([])}><Close/></Button>
-          </Tooltip>
-        </div>
-      ) : (
-      )} */}
         <Button
           type="primary"
           size="large"
