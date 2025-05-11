@@ -7,22 +7,24 @@ export type materialType = {
   mtEnm?: string;
   unitType?: string;
   useYn?: boolean;
+  ordNo?: number;
   materialGroup?: materialGroupType;
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};
 
 export type materialGroupType = {
   id?: string;
   mtGrpNm?: string;
   odNum?: number;
+  ordNo?: number;
   useYn?: boolean;
   materials?: materialType[];
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};
 
 export type materialSupType = {
   createdAt?: Date | Dayjs | null;
@@ -33,13 +35,14 @@ export type materialSupType = {
   materialGroup?: materialGroupType;
   material?: materialType;
   supplier?: partnerRType;
-}
+};
 
 export type materialPriceType = {
   id?: string;
   material?: materialType;
   priceNm?: string;
   odNum?: number;
+  ordNo?: number;
   partner?: partnerRType;
   priceUnit?: number;
   materialType?: string;
@@ -62,7 +65,7 @@ export type materialPriceType = {
   deletedAt?: Date | Dayjs | null;
   index?: number;
   orderId?: string;
-}
+};
 
 export type materialGroupBadType = {
   id?: string;
@@ -74,4 +77,4 @@ export type materialGroupBadType = {
   createdAt?: Date | Dayjs | null;
   updatedAt?: Date | Dayjs | null;
   deletedAt?: Date | Dayjs | null;
-}
+};

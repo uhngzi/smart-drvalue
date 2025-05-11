@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import { LayerEm, ModelTypeEm, PrtTypeEm } from "../enum";
+import { partnerRType } from "./partner";
 
 export type materialType = {
   id: string | undefined;
@@ -16,6 +17,12 @@ export type materialType = {
     deletedAt?: string;
   };
   materialSuppliers?: { id: string } | string[];
+  materialSupplierList?: {
+    id?: string;
+    ordNo?: number;
+    useYn?: boolean;
+    supplier?: partnerRType;
+  }[];
   useYn: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -24,6 +31,7 @@ export type materialType = {
 
 export type materialCUType = {
   id?: string;
+  materialGroupIdx?: string;
   materialGroup: {
     id: string | null;
   };
@@ -37,6 +45,7 @@ export type materialCUType = {
 export const setMaterialCUType = (data: any): materialCUType => {
   return {
     id: data.id,
+    materialGroupIdx: "",
     materialGroup: {
       id: data.materialGroup.id,
     },

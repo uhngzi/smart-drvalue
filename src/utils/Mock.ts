@@ -495,7 +495,7 @@ const MOCK = {
     tableColumns: [],
     CUDPopItems: [
       {
-        name: "materialGroup.id",
+        name: "materialGroupIdx",
         label: "원자재그룹",
         widthType: "full",
         type: "select",

@@ -108,7 +108,6 @@ const WkProcessVendorListPage: React.FC & {
   } = useQuery<apiGetResponseType, Error>({
     queryKey: ["biz-partner/jsxcrud/many", pagination.current],
     queryFn: async () => {
-      setDataVendor([]);
       const result = await getAPI(
         {
           type: "baseinfo",
@@ -324,6 +323,7 @@ const WkProcessVendorListPage: React.FC & {
     setDeleteData([]);
     refetch();
   }
+
   return (
     <>
       {vendorLoading && (

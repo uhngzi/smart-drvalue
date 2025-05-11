@@ -37,51 +37,36 @@ import { useBase } from "@/data/context/BaseContext";
 import CustomTree from "@/components/Tree/CustomTree";
 import { getPrtBuyerAPI } from "@/api/cache/client";
 import { Spin } from "antd";
+import { partnerRType } from "@/data/type/base/partner";
 
 const BuyMtListPage: React.FC & {
   layout?: (page: React.ReactNode) => React.ReactNode;
 } = () => {
   const router = useRouter();
-  const { type } = router.query;
   const { unitSelectList } = useBase();
+  const { showToast, ToastContainer } = useToast();
+
+  const { data: cs, isLoading: csLoading } = useQuery({
+    queryKey: ["getClientBuyer"],
+    queryFn: () => getPrtBuyerAPI(),
+  });
+
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [totalData, setTotalData] = useState<number>(1);
   const [pagination, setPagination] = useState({
     current: 1,
-    size: 10,
+    size: 14,
   });
   const handlePageChange = (page: number) => {
     setPagination({ ...pagination, current: page });
   };
 
-  const {
-    data: cs,
-    isLoading: csLoading,
-    refetch: csRefetch,
-  } = useQuery({
-    queryKey: ["getClientBuyer"],
-    queryFn: () => getPrtBuyerAPI(),
-  });
-
   // --------- 리스트 데이터 시작 ---------
   const [groupCheck, setGroupCheck] = useState<string | null>(null);
   const [data, setData] = useState<Array<materialType>>([]);
-  const {
-    data: queryData,
-    refetch,
-    isFetching,
-  } = useQuery<apiGetResponseType, Error>({
-    queryKey: [
-      "setting",
-      "buy",
-      "material",
-      type,
-      pagination.current,
-      groupCheck,
-    ],
+  const { refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["material/jsxcrud/many", pagination.current, groupCheck],
     queryFn: async () => {
-      // setDataLoading(true);
-      setData([]);
       const result = await getAPI(
         {
           type: "baseinfo",
@@ -101,6 +86,8 @@ const BuyMtListPage: React.FC & {
       if (result.resultCode === "OK_0000") {
         const resData = result.data?.data.map((d: materialType) => ({
           ...d,
+          materialGroupIdx: d.materialGroup.id,
+          materialSupplierList: d.materialSuppliers,
           materialSuppliers: Array.isArray(d.materialSuppliers)
             ? d.materialSuppliers
                 .filter((item: any) => item?.supplier)
@@ -108,21 +95,18 @@ const BuyMtListPage: React.FC & {
             : [],
         }));
         console.log(resData);
+
         setData(resData);
         setTotalData(result.data?.total ?? 0);
       } else {
         console.log("error:", result.response);
       }
-
-      // setDataLoading(false);
-      console.log(result.data);
       return result;
     },
   });
   // ---------- 리스트 데이터 끝 ----------
-  console.log(isFetching);
+
   // ---------- 등록 팝업 데이터 시작 -----------
-  const [mtGroupSelectData, setMtGroupSelectData] = useState<selectType[]>([]);
   const [addModalInfoList, setAddModalInfoList] = useState<any[]>(
     MOCK.mtItems.CUDPopItems
   );
@@ -153,9 +137,9 @@ const BuyMtListPage: React.FC & {
         )
       );
     }
-    console.log(cs?.data?.data);
   }, [cs?.data?.data]);
   // ---------- 신규 데이터 시작 ----------
+
   // 결과 모달창을 위한 변수
   const [resultOpen, setResultOpen] = useState<boolean>(false);
   const [resultType, setResultType] = useState<AlertType>("info");
@@ -171,70 +155,17 @@ const BuyMtListPage: React.FC & {
   const [newOpen, setNewOpen] = useState<boolean>(false);
   //등록 모달창 데이터
   const [newData, setNewData] = useState<materialCUType>(newMaterialCUType);
-  //값 변경 함수
-  const handleDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
-    name: string,
-    type: "input" | "select" | "date" | "other",
-    key?: string
-  ) => {
-    if (type === "input" && typeof e !== "string") {
-      const { value } = e.target;
-      setNewData({ ...newData, [name]: value });
-    } else if (type === "select") {
-      if (key) {
-        setNewData({
-          ...newData,
-          [name]: {
-            ...((newData as any)[name] || {}), // 기존 객체 값 유지
-            [key]: e?.toString(), // 새로운 key 값 업데이트
-          },
-        });
-      } else {
-        setNewData({ ...newData, [name]: e });
-      }
-    }
-  };
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
-    if (
-      Object.keys(data).map((key) => {
-        console.log(key);
-        if (key.includes(".")) {
-          console.log("들어옴?");
-          const keys = key.split(".");
-          data[keys[0]][keys[1]] = data[key];
-          delete data[key];
-        }
-      })
-    )
-      // data의 value가 비어있는지 확인하는 유효성검사
-      for (const key in data) {
-        const inputType = typeof data[key];
-
-        if (inputType === "object") {
-          if (data[key].id === "" || data[key].id === null) {
-            const label = addModalInfoList.find((v) => v.name === key)?.label;
-            showToast(`${label}을(를) 입력해 주세요`, "error");
-            return;
-          }
-        } else {
-          if (data[key] === "") {
-            const label = addModalInfoList.find((v) => v.name === key)?.label;
-            showToast(`${label}을 입력해 주세요`, "error");
-            return;
-          }
-        }
+    try {
+      if (data.mtEnm && !isValidEnglish(data.mtEnm)) {
+        showToast("원자재 영문명은 영문 또는 숫자만 입력 가능합니다.", "error");
+        return;
       }
 
-    if (data.mtEnm && !isValidEnglish(data.mtEnm)) {
-      showToast("원자재 영문명은 영문 또는 숫자만 입력 가능합니다.", "error");
-      return;
-    }
-
-    try {
       const supplierIdxs = data?.materialSuppliers;
       const id = data.id;
+
       if (data?.id) {
         delete data.id;
         delete data.materialSuppliers;
@@ -247,9 +178,12 @@ const BuyMtListPage: React.FC & {
             jsx: "jsxcrud",
           },
           id,
-          data
+          {
+            ...data,
+            materialGroup: { id: data.materialGroupIdx },
+            materialGroupIdx: undefined,
+          }
         );
-        console.log(result);
 
         if (result.resultCode === "OK_0000") {
           const supResult = await postAPI(
@@ -261,37 +195,30 @@ const BuyMtListPage: React.FC & {
               etc: true,
             },
             {
-              materialGroupIdx: data.materialGroup.id,
+              materialGroupIdx: data.materialGroupIdx,
               materialIdx: id,
               supplierIdxs: supplierIdxs,
               useYn: true,
             }
           );
+
           if (supResult.resultCode === "OK_0000") {
             setNewOpen(false);
-            setResultFunc(
-              "success",
-              "원자재 수정 성공",
-              "원자재 수정이 완료되었습니다."
-            );
+            showToast("수정 완료", "success");
+            refetch();
           } else {
+            const msg = supResult?.response?.data?.message;
             setNewOpen(false);
-            setResultFunc(
-              "error",
-              "원자재 수정 오류",
-              "원자재 수정은 성공하였지만 외주처 저장에 실패하였습니다."
-            );
+            setResultFunc("error", "원자재 구매처 수정 오류", msg);
           }
         } else {
+          const msg = result?.response?.data?.message;
           setNewOpen(false);
-          setResultFunc(
-            "error",
-            "원자재 수정 실패",
-            "원자재 수정을 실패하였습니다."
-          );
+          setResultFunc("error", "원자재 수정 실패", msg);
         }
       } else {
         delete data.materialSuppliers;
+
         const result = await postAPI(
           {
             type: "baseinfo",
@@ -299,12 +226,18 @@ const BuyMtListPage: React.FC & {
             url: "material",
             jsx: "jsxcrud",
           },
-          data
+          {
+            ...data,
+            materialGroup: {
+              id: data.materialGroupIdx,
+            },
+            materialGroupIdx: undefined,
+          }
         );
-        console.log(result);
 
         if (result.resultCode === "OK_0000") {
           const id = result.data?.entity.id;
+
           const supResult = await postAPI(
             {
               type: "baseinfo",
@@ -314,7 +247,7 @@ const BuyMtListPage: React.FC & {
               etc: true,
             },
             {
-              materialGroupIdx: data.materialGroup.id,
+              materialGroupIdx: data.materialGroupIdx,
               materialIdx: id,
               supplierIdxs: supplierIdxs,
               useYn: true,
@@ -322,26 +255,17 @@ const BuyMtListPage: React.FC & {
           );
           if (supResult.resultCode === "OK_0000") {
             setNewOpen(false);
-            setResultFunc(
-              "success",
-              "원자재 등록 성공",
-              "원자재 등록이 완료되었습니다."
-            );
+            showToast("등록 완료", "success");
+            refetch();
           } else {
+            const msg = supResult?.response?.data?.message;
             setNewOpen(false);
-            setResultFunc(
-              "error",
-              "원자재 등록 오류",
-              "원자재 등록은 성공하였지만 외주처 저장에 실패하였습니다."
-            );
+            setResultFunc("error", "원자재 구매처 등록 오류", msg);
           }
         } else {
+          const msg = result?.response?.data?.message;
           setNewOpen(false);
-          setResultFunc(
-            "error",
-            "원자재 등록 실패",
-            "원자재 등록을 실패하였습니다."
-          );
+          setResultFunc("error", "원자재 등록 실패", msg);
         }
       }
     } catch (e) {
@@ -357,6 +281,7 @@ const BuyMtListPage: React.FC & {
   function addModalOpen() {
     if (groupCheck != null) {
       setNewData({
+        materialGroupIdx: groupCheck,
         materialGroup: { id: groupCheck },
         mtNm: "",
         mtEnm: "",
@@ -401,10 +326,7 @@ const BuyMtListPage: React.FC & {
   }
 
   // ---------- 트리 관련 시작 ----------
-  const [mtGroupOpen, setMtGroupOpen] = useState<boolean>(false);
   const [mtGroupTreeData, setMtGroupTreeData] = useState<any>([]);
-
-  const { showToast, ToastContainer } = useToast();
 
   // 트리를 사용하는 메뉴인 경우, 추가, 수정, 삭제를 하기위한 리스트, 한번에 submit을 하기때문에 각각의 리스트를 만들어서 한번에 처리
   const [addList, setAddList] = useState<CUtreeType[]>([]);
@@ -443,13 +365,12 @@ const BuyMtListPage: React.FC & {
             label: d.mtGrpNm,
           })
         );
-        console.log(addList);
+
         setAddModalInfoList((prev: any) =>
           prev.map((d: any) =>
-            d.name === "materialGroup.id" ? { ...d, option: addList } : d
+            d.name === "materialGroupIdx" ? { ...d, option: addList } : d
           )
         );
-        setMtGroupSelectData(addList); // 원자재 등록 팝업 그룹 select에 들어갈 데이터
       } else {
         console.log("error:", result.response);
       }
@@ -498,7 +419,7 @@ const BuyMtListPage: React.FC & {
         showToast("데이터 삭제중 오류가 발생했습니다.", "error");
       }
     }
-    console.log(result);
+
     if (result) {
       setAddList([]);
       setEditList([]);
@@ -507,8 +428,10 @@ const BuyMtListPage: React.FC & {
       groupRefetch();
     }
   }
+
   function treeCheck(id: string | null) {
     setNewData({
+      materialGroupIdx: id ?? "",
       materialGroup: { id: id },
       mtNm: "",
       mtEnm: "",
@@ -518,15 +441,15 @@ const BuyMtListPage: React.FC & {
     setGroupCheck(id);
   }
   // ---------- 트리 관련 끝 ----------
-  console.log(newData);
+
   return (
     <>
       {dataLoading && <Spin />}
       {!dataLoading && (
         <>
-          <section className="flex gap-20">
+          <section className="w-full h-[calc(100vh-210px)] flex gap-20">
             <div
-              className="w-[346px] rounded-14 p-20"
+              className="w-[346px] h-full rounded-14 p-20"
               style={{ border: "1px solid #D9D9D9" }}
             >
               <CustomTree
@@ -537,14 +460,12 @@ const BuyMtListPage: React.FC & {
                 setDelList={setDeleteList}
                 isChild={false}
                 isCheckUse={{ checkId: groupCheck, setCheckId: treeCheck }}
-                //notCollapsed={true}
               />
             </div>
-            <div>
+            <div className="w-[850px] flex flex-col gap-15">
               <div className="v-between-h-center pb-10">
                 <p>총 {totalData}건</p>
                 <div className="flex gap-10">
-                  {/* <div className="w-[130px] h-30 v-h-center rounded-6 bg-[#03C75A] text-white cursor-pointer" onClick={()=>{setMtGroupOpen(true)}}>원자재 그룹 관리</div> */}
                   <div
                     className="w-56 h-30 v-h-center rounded-6 bg-[#038D07] text-white cursor-pointer"
                     onClick={() => {
@@ -572,13 +493,7 @@ const BuyMtListPage: React.FC & {
                     key: "materialGroup.mtGrpNm",
                     align: "center",
                     render: (_, record) => (
-                      <div
-                        className="w-full h-full justify-center h-center cursor-pointer"
-                        onClick={() => {
-                          setNewData({ ...setMaterialCUType(record) });
-                          setNewOpen(true);
-                        }}
-                      >
+                      <div className="w-full h-full h-center">
                         {record.materialGroup.mtGrpNm}
                       </div>
                     ),
@@ -591,22 +506,18 @@ const BuyMtListPage: React.FC & {
                     align: "center",
                     render: (_, record) => (
                       <div
-                        className="w-full h-full h-center justify-center cursor-pointer"
+                        className="reference-detail"
                         onClick={() => {
-                          setNewData({ ...setMaterialCUType(record) });
+                          setNewData({
+                            ...setMaterialCUType(record),
+                            materialGroupIdx: record?.materialGroup?.id,
+                          });
                           setNewOpen(true);
                         }}
                       >
                         {record.mtNm}
                       </div>
                     ),
-                  },
-                  {
-                    title: "원자재영문명",
-                    width: 130,
-                    dataIndex: "mtEnm",
-                    key: "mtEnm",
-                    align: "center",
                   },
                   {
                     title: "단위",
@@ -616,8 +527,26 @@ const BuyMtListPage: React.FC & {
                     align: "center",
                   },
                   {
+                    title: "구매처",
+                    width: 250,
+                    dataIndex: "materialSuppliers",
+                    key: "materialSuppliers",
+                    align: "center",
+                    render: (_, record) =>
+                      Array.isArray(record?.materialSupplierList) &&
+                      record.materialSupplierList.length > 0 &&
+                      record.materialSupplierList[0]?.supplier?.prtNm ? (
+                        <div className="v-h-center">
+                          {record.materialSupplierList[0]?.supplier?.prtNm} 외{" "}
+                          {record.materialSupplierList.length}개
+                        </div>
+                      ) : (
+                        ""
+                      ),
+                  },
+                  {
                     title: "사용여부",
-                    width: 130,
+                    width: 100,
                     dataIndex: "useYn",
                     key: "useYn",
                     align: "center",
@@ -655,24 +584,6 @@ const BuyMtListPage: React.FC & {
         onDelete={handleDataDelete}
       />
 
-      {/* <BaseTreeCUDModal
-        title={{name: `원자재 그룹 관리`}}
-        open={mtGroupOpen} 
-        setOpen={setMtGroupOpen} 
-        data={mtGroupTreeData}
-        isChild={false}
-        onClose={() => setMtGroupOpen(false)}
-        onSubmit={onMtGroupPopSubmit}
-        onUpdateDataFunc={{
-          addList: addList,
-          editList: editList,
-          deleteList: deleteList,
-          setAddList: setAddList,
-          setEditList: setEditList,
-          setDeleteList: setDeleteList,
-        }}
-      /> */}
-
       <AntdAlertModal
         open={resultOpen}
         setOpen={setResultOpen}
@@ -696,8 +607,8 @@ BuyMtListPage.layout = (page: React.ReactNode) => (
   <SettingPageLayout
     menu={[
       { text: "원자재 및 원자재 구매처", link: "/setting/buy/mt/list" },
-      { text: "원자재 불량", link: "/setting/buy/mt/bad" },
-      { text: "원자재 단가", link: "/setting/buy/mt/unit" },
+      { text: "불량", link: "/setting/buy/mt/bad" },
+      { text: "단가", link: "/setting/buy/mt/unit" },
     ]}
   >
     {page}
