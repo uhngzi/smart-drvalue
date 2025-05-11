@@ -32,6 +32,7 @@ interface Props {
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
   autoFocus?: boolean;
   memoView?: boolean;
+  name?: any;
 }
 
 const AntdInput = forwardRef<InputRef, Props>(
@@ -55,6 +56,7 @@ const AntdInput = forwardRef<InputRef, Props>(
       onBlur,
       autoFocus,
       memoView,
+      name,
     },
     ref
   ) => {
@@ -183,10 +185,12 @@ const AntdInput = forwardRef<InputRef, Props>(
           $br={styles?.br ? styles.br : "2px"}
           $type={type ?? "string"}
           $ta={styles?.ta}
+          $focus={styles?.focus}
           className={`${className}`}
         >
           <div className="relative w-full h-full">
             <Input
+              name={name}
               // 숫자 타입이면 내부 값은 숫자 그대로 저장되지만 화면에는 콤마 포맷팅 적용
               value={
                 type === "number" &&
@@ -333,9 +337,19 @@ const AntdInputStyled = styled.div<{
   $br: string;
   $type: string;
   $ta?: string;
+  $focus?: string;
 }>`
   width: 100%;
   height: ${({ $ht }) => $ht} !important;
+
+  ${({ $focus }) =>
+    $focus &&
+    `
+    &:hover .ant-input,
+    &:focus-within .ant-input {
+      ${$focus}
+    }
+  `}
 
   .ant-input {
     height: ${({ $ht }) => $ht} !important;
@@ -346,7 +360,6 @@ const AntdInputStyled = styled.div<{
     font-family: "Spoqa Han Sans Neo", "sans-serif";
     text-align: ${({ $ta, $type }) =>
       $ta ? `${$ta}` : $type === "number" ? "right" : "left"} !important;
-  }
 `;
 
 AntdInput.displayName = "AntdInput";
