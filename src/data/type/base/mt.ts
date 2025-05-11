@@ -189,24 +189,11 @@ export const newMaterialPriceCUType = (): materialPriceCUType => ({
 });
 
 export const materialPriceReq = () => [
-  { field: "materialIdx", label: "원자재" }, // material.id에 해당
-  { field: "partnerIdx", label: "공급처" }, // partner.id에 해당
+  { field: "materialIdx", label: "원자재" },
   { field: "priceNm", label: "가격명" },
+  { field: "partnerIdx", label: "외주처" },
   { field: "priceUnit", label: "가격" },
   { field: "useYn", label: "사용여부" },
-  { field: "materialType", label: "원자재 타입" },
-  { field: "txturType", label: "재질 타입" },
-  { field: "thicMin", label: "최소 두께" },
-  { field: "thicMax", label: "최대 두께" },
-  { field: "sizeW", label: "가로(mm)" },
-  { field: "sizeH", label: "세로(mm)" },
-  { field: "cntMin", label: "최소 수량" },
-  { field: "cntMax", label: "최대 수량" },
-  { field: "wgtMin", label: "최소 중량" },
-  { field: "wgtMax", label: "최대 중량" },
-  { field: "unitType", label: "단위" },
-  { field: "safeInv", label: "안전재고" },
-  { field: "appDt", label: "적용일" },
 ];
 
 export type materialSupplierType = {
