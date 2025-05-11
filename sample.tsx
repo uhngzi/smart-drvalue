@@ -1,30 +1,29 @@
+// 모델 등록 드래그 앤 드롭으로 크기 조절
+// const containerRef = useRef<HTMLDivElement>(null);
+// const [width, setWidth] = useState(800);
+// const handleModelMouseDown = (e: React.MouseEvent) => {
+//   const startX = e.clientX;
+//   const startWidth = width;
 
-  // 모델 등록 드래그 앤 드롭으로 크기 조절
-  // const containerRef = useRef<HTMLDivElement>(null);
-  // const [width, setWidth] = useState(800);
-  // const handleModelMouseDown = (e: React.MouseEvent) => {
-  //   const startX = e.clientX;
-  //   const startWidth = width;
+//   const handleMouseMove = (moveEvent: MouseEvent) => {
+//     const diffX = startX - moveEvent.clientX; // 왼쪽으로 이동 → diffX 증가
+//     const newWidth = startWidth + diffX;
+//     if (newWidth >= 100 && newWidth <= 1100) { // 최소/최대 너비 제한
+//       setWidth(newWidth);
+//     }
+//   };
 
-  //   const handleMouseMove = (moveEvent: MouseEvent) => {
-  //     const diffX = startX - moveEvent.clientX; // 왼쪽으로 이동 → diffX 증가
-  //     const newWidth = startWidth + diffX;
-  //     if (newWidth >= 100 && newWidth <= 1100) { // 최소/최대 너비 제한
-  //       setWidth(newWidth);
-  //     }
-  //   };
+//   const handleMouseUp = () => {
+//     document.removeEventListener('mousemove', handleMouseMove);
+//     document.removeEventListener('mouseup', handleMouseUp);
+//   };
 
-  //   const handleMouseUp = () => {
-  //     document.removeEventListener('mousemove', handleMouseMove);
-  //     document.removeEventListener('mouseup', handleMouseUp);
-  //   };
+//   document.addEventListener('mousemove', handleMouseMove);
+//   document.addEventListener('mouseup', handleMouseUp);
+// };
 
-  //   document.addEventListener('mousemove', handleMouseMove);
-  //   document.addEventListener('mouseup', handleMouseUp);
-  // };
-
-
-      {/* <AntdModalStep2
+{
+  /* <AntdModalStep2
         open={open}
         setOpen={setOpen}
         items={stepItems}
@@ -108,4 +107,57 @@
             :<></>
           }
         </div>}
-      /> */}
+      /> */
+}
+
+//  스크롤을 통한 값 세팅 및 값 가져오기...
+// useEffect(() => {
+//   if (
+//     !mtLoading &&
+//     !mtGrpLoading &&
+//     queryMtData?.data?.data &&
+//     queryMtData?.data?.data?.length
+//   ) {
+//     setMt((prev) => {
+//       const newItems = (
+//         (queryMtData.data.data as materialType[]) ?? []
+//       ).filter(
+//         (newItem) => !prev.some((existing) => existing.id === newItem.id)
+//       );
+//       return [...prev, ...newItems];
+//     });
+//     setMainTotCnt((queryMtGrpData?.data?.data ?? []).length);
+//     setChildTotCnt(queryMtData.data.total ?? 0);
+//   }
+// }, [queryMtData, queryMtGrpData]);
+
+// useEffect(() => {
+//   const tree = Object.values(
+//     mt.reduce((acc: any, item: materialType) => {
+//       const groupId = item.materialGroup?.id ?? "";
+//       if (!acc[groupId]) {
+//         acc[groupId] = {
+//           id: groupId,
+//           ordNo: item.materialGroup?.ordNo ?? item.materialGroup?.odNum ?? 0,
+//           label: item.materialGroup?.mtGrpNm,
+//           children: [],
+//           open: true,
+//         };
+//       }
+//       acc[groupId].children.push({
+//         id: item.id ?? "",
+//         label: item.mtNm ?? "",
+//         mtEnm: item.mtEnm,
+//         unitType: item.unitType,
+//         ordNo: item.ordNo,
+//         useYn: item.useYn,
+//       });
+//       return acc;
+//     }, {} as Record<number, materialType>)
+//   ).sort((a: any, b: any) => (a.ordNo ?? 0) - b.ordNo);
+//   console.log("tree : ", tree);
+//   setTreeData(tree);
+
+//   setDataLoading(false);
+//   setChildCnt(tree.length);
+// }, [mt]);
