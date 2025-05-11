@@ -509,6 +509,13 @@ const BuyUnitModelListPage: React.FC & {
                 ),
               },
               {
+                title: "배송소요일",
+                width: 130,
+                dataIndex: "deliveryDays",
+                key: "deliveryDays",
+                align: "center",
+              },
+              {
                 title: "현재 단가",
                 width: 130,
                 dataIndex: "price",
@@ -517,13 +524,6 @@ const BuyUnitModelListPage: React.FC & {
                 render: (value: number) => (
                   <div className="text-right">{value.toLocaleString()}</div>
                 ),
-              },
-              {
-                title: "배송소요일",
-                width: 130,
-                dataIndex: "deliveryDays",
-                key: "deliveryDays",
-                align: "center",
               },
               {
                 title: "적용일",
@@ -539,14 +539,6 @@ const BuyUnitModelListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              // {
-              //   title: "변경이력",
-              //   width: 130,
-              //   dataIndex: "updatedAt",
-              //   key: "updatedAt",
-              //   align: "center",
-              //   render: (value: string) => <div>{value.split("T")[0]}</div>,
-              // },
             ]}
             data={data}
           />

@@ -195,9 +195,9 @@ const BuyUnitSpecialListPage: React.FC & {
   //등록 버튼 함수
   const handleSubmitNewData = async (data: any) => {
     try {
-      const val = validReq(data, unitSpecialReq());
-      if (!val.isValid) {
-        showToast(`${val.missingLabels}은(는) 필수 입력입니다.`, "error");
+      console.log(newData);
+      if (!newData.process || !newData.unit) {
+        showToast("공정, 단위는 필수 입력입니다.", "error");
         return;
       }
 
@@ -250,11 +250,8 @@ const BuyUnitSpecialListPage: React.FC & {
 
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "특별사양 수정 성공",
-            "특별사양 수정이 완료되었습니다."
-          );
+          showToast("수정 완료", "success");
+          refetch();
         } else {
           setNewOpen(false);
 
@@ -286,11 +283,8 @@ const BuyUnitSpecialListPage: React.FC & {
         );
         if (result.resultCode === "OK_0000") {
           setNewOpen(false);
-          setResultFunc(
-            "success",
-            "특별사양 등록 성공",
-            "특별사양 등록이 완료되었습니다."
-          );
+          showToast("등록 완료", "success");
+          refetch();
         } else {
           setNewOpen(false);
           setResultFunc(
@@ -560,16 +554,6 @@ const BuyUnitSpecialListPage: React.FC & {
                 ),
               },
               {
-                title: "추가 비율(%)",
-                width: 130,
-                dataIndex: "weight",
-                key: "weight",
-                align: "center",
-                render: (value: number) => (
-                  <div>{parseFloat((value * 100).toFixed(1))}</div>
-                ),
-              },
-              {
                 title: "최소 범위",
                 width: 130,
                 dataIndex: "minRange",
@@ -590,16 +574,6 @@ const BuyUnitSpecialListPage: React.FC & {
                 ),
               },
               {
-                title: "현재 단가",
-                width: 130,
-                dataIndex: "addCost",
-                key: "addCost",
-                align: "center",
-                render: (value: number) => (
-                  <div className="text-right">{value.toLocaleString()}</div>
-                ),
-              },
-              {
                 title: "단위",
                 width: 130,
                 dataIndex: "unit",
@@ -609,6 +583,26 @@ const BuyUnitSpecialListPage: React.FC & {
                   <div className="w-full h-full h-center justify-center cursor-pointer">
                     {record.unit?.cdNm}
                   </div>
+                ),
+              },
+              {
+                title: "추가 비율(%)",
+                width: 130,
+                dataIndex: "weight",
+                key: "weight",
+                align: "center",
+                render: (value: number) => (
+                  <div>{parseFloat((value * 100).toFixed(1))}</div>
+                ),
+              },
+              {
+                title: "현재 단가",
+                width: 130,
+                dataIndex: "addCost",
+                key: "addCost",
+                align: "center",
+                render: (value: number) => (
+                  <div className="text-right">{value.toLocaleString()}</div>
                 ),
               },
               {

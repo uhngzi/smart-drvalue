@@ -508,14 +508,6 @@ const BuyunitTextureListPage: React.FC & {
                 key: "remark",
                 align: "center",
               },
-              // {
-              //   title: "변경이력",
-              //   width: 130,
-              //   dataIndex: "updatedAt",
-              //   key: "updatedAt",
-              //   align: "center",
-              //   render: (value: string) => <div>{value.split("T")[0]}</div>,
-              // },
             ]}
             data={data}
           />

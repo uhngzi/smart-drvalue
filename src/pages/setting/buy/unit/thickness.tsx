@@ -491,19 +491,6 @@ const BuyUnitThicknessListPage: React.FC & {
                 ),
               },
               {
-                title: "추가 비율(%)",
-                width: 130,
-                dataIndex: "weight",
-                key: "weight",
-                align: "center",
-                render: (value: number) => (
-                  <div>
-                    {/* 가중치(추가 비율) -> 백분율 형태로 보여줌 (소수점 첫째 자리까지) */}
-                    {parseFloat((value * 100).toFixed(1))}
-                  </div>
-                ),
-              },
-              {
                 title: "최소 두께",
                 width: 130,
                 dataIndex: "minThickness",
@@ -521,6 +508,19 @@ const BuyUnitThicknessListPage: React.FC & {
                 align: "center",
                 render: (value: number) => (
                   <div className="text-right">{value.toLocaleString()}</div>
+                ),
+              },
+              {
+                title: "추가 비율(%)",
+                width: 130,
+                dataIndex: "weight",
+                key: "weight",
+                align: "center",
+                render: (value: number) => (
+                  <div>
+                    {/* 가중치(추가 비율) -> 백분율 형태로 보여줌 (소수점 첫째 자리까지) */}
+                    {parseFloat((value * 100).toFixed(1))}
+                  </div>
                 ),
               },
               {
