@@ -41,7 +41,7 @@ const WkProcessGroupListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [treeData, setTreeData] = useState<treeType[]>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "process"],
+    queryKey: ["process-group/jsxcrud/many"],
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI(

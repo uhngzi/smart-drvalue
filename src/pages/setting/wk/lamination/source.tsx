@@ -53,7 +53,7 @@ const WkLaminationSourceListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<laminationSourceList>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "lamination", type, pagination.current],
+    queryKey: ["lamination-source/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

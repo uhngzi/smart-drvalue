@@ -67,7 +67,7 @@ const CommonListPage: React.FC & {
     refetch,
     isFetching: groupFetching,
   } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "comm"],
+    queryKey: ["common-code-group/jsxcrud/many"],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -132,7 +132,7 @@ const CommonListPage: React.FC & {
   });
 
   const { data: deptData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "dept"],
+    queryKey: ["dept/jsxcrud/many"],
     queryFn: async () => {
       const result = await getAPI(
         {

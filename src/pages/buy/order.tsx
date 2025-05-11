@@ -255,7 +255,7 @@ const BuyOrderPage: React.FC & {
   // 회사 조회
   const [company, setCompany] = useState<companyType | null>(null);
   const { data: queryCompanyData } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "company", "base"],
+    queryKey: ["company-default/jsxcrud/one"],
     queryFn: async () => {
       const result = await getAPI({
         type: "baseinfo",

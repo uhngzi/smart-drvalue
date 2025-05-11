@@ -44,7 +44,7 @@ const WkLaminationCopperListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<laminationCopperList>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "lamination", type, pagination.current],
+    queryKey: ["lamination-copper-foil/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);
@@ -262,9 +262,7 @@ const WkLaminationCopperListPage: React.FC & {
                 key: "copThk",
                 align: "center",
                 render: (_, record) => (
-                  <div
-                    className="w-full h-full justify-center h-center"
-                  >
+                  <div className="w-full h-full justify-center h-center">
                     {record.copThk}
                   </div>
                 ),
@@ -276,11 +274,7 @@ const WkLaminationCopperListPage: React.FC & {
                 key: "useYn",
                 align: "center",
                 render: (value: boolean) => (
-                  <div
-                    className={
-                      "w-full h-full h-center justify-center"
-                    }
-                  >
+                  <div className={"w-full h-full h-center justify-center"}>
                     {value ? "사용" : "미사용"}
                   </div>
                 ),

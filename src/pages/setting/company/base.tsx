@@ -39,7 +39,7 @@ const CompanyBaseListPage: React.FC & {
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [data, setData] = useState<companyType>(newDataCompanyType);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "company", "base"],
+    queryKey: ["company-default/jsxcrud/one"],
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI({

@@ -114,8 +114,8 @@ const WkProductListPage: React.FC & {
     enabled: !!productGroupId,
   });
 
-  const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "process"],
+  const { refetch } = useQuery<apiGetResponseType, Error>({
+    queryKey: ["process-group/jsxcrud/many"],
     queryFn: async () => {
       setDataLoading(true);
       const result = await getAPI(
@@ -137,6 +137,7 @@ const WkProductListPage: React.FC & {
             children: group.processes.map((process: processRType) => ({
               id: process.id,
               label: process.prcNm,
+              isInternal: process.isInternal,
             })),
             open: true,
           })

@@ -106,7 +106,7 @@ const WkProcessVendorListPage: React.FC & {
     isLoading: vendorLoading,
     refetch: vendorRefetch,
   } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "client", "vndr", pagination.current],
+    queryKey: ["biz-partner/jsxcrud/many", pagination.current],
     queryFn: async () => {
       setDataVendor([]);
       const result = await getAPI(
@@ -136,37 +136,10 @@ const WkProcessVendorListPage: React.FC & {
     },
   });
 
-  const [dataGroup, setDataGroup] = useState<Array<processGroupRType>>([]);
-  const { data: queryDataGroup } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["process-group/jsxcrud/many"],
-    queryFn: async () => {
-      setDataGroup([]);
-      const result = await getAPI(
-        {
-          type: "baseinfo",
-          utype: "tenant/",
-          url: "process-group/jsxcrud/many",
-        },
-        {
-          sort: "ordNo,ASC",
-        }
-      );
-
-      if (result.resultCode === "OK_0000") {
-        setDataGroup(result.data?.data ?? []);
-        console.log("group : ", result.data?.data);
-      } else {
-        console.log("error:", result.response);
-      }
-      return result;
-    },
-  });
-
   const [dataProcess, setDataProcess] = useState<Array<processRType>>([]);
   const { data: queryDataProcess } = useQuery<apiGetResponseType, Error>({
     queryKey: ["process/jsxcrud/many"],
     queryFn: async () => {
-      setDataProcess([]);
       const result = await getAPI(
         {
           type: "baseinfo",

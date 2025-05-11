@@ -54,7 +54,7 @@ const WkBoardListPage: React.FC & {
   const [addData, setAddData] = useState<boardType>(newDataBoardType);
   const [data, setData] = useState<Array<boardType>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "wk", "board", pagination.current],
+    queryKey: ["board/jsxcrud/many", pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

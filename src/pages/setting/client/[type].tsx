@@ -72,7 +72,7 @@ const ClientCuListPage: React.FC & {
   // --------- 리스트 데이터 시작 ---------
   const [data, setData] = useState<Array<partnerRType>>([]);
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "client", type, pagination.current],
+    queryKey: ["biz-partner/jsxcrud/many", type, pagination.current],
     queryFn: async () => {
       setDataLoading(true);
       setData([]);

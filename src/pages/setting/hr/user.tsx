@@ -94,7 +94,7 @@ const HrUserListPage: React.FC & {
     MOCK.userItem.CUDPopItems
   );
   const { data: queryData, refetch } = useQuery<apiGetResponseType, Error>({
-    queryKey: ["setting", "hr", "user", newTitle],
+    queryKey: ["dept/jsxcrud/many", newTitle],
     enabled: newTitle === "dept" || newTitle === "user",
     queryFn: async () => {
       setDataLoading(true);
