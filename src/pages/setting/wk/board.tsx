@@ -174,16 +174,20 @@ const WkBoardListPage: React.FC & {
     try {
       const jsonData = {
         ...data,
-        material: {
-          id: data.material,
-        },
-        brdGrp: {
-          id: data.brdGrp,
-        },
+        material: data.material
+          ? {
+              id: data.material,
+            }
+          : undefined,
+        brdGrp: data.brdGrp
+          ? {
+              id: data.brdGrp,
+            }
+          : undefined,
         matNm: undefined,
       };
+      delete jsonData.id;
       console.log(JSON.stringify(jsonData));
-      delete data.id;
 
       if (data?.id) {
         const result = await patchAPI(
